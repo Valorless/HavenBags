@@ -4,38 +4,31 @@
 <br>
 
 ## Commands
-| Command | Parameters | Permission | Description |
-| --- | --- | --- | --- |
-| `/havenbags` |  |  |
-| `/havenbags reload` | | `havenbags.reload` | Reloads config.yml & lang.yml |
-| `/havenbags create` | `<size>` | `havenbags.create` | Create new bags |
-| `/havenbags give` | `<player> <size>` | `havenbags.create` | Give player a bag |
-| `/havenbags restore` | `<player> (bag-uuid)` | `havenbags.restore` | Show all bags by \<player\>,<br> or restore specific bag with (bag-uuid) |
+| Command | Permission | Description |
+| --- | --- | --- |
+| `/havenbags` |  | §7[§aHaven§bBags§7]§r HavenBags by Valorless. |
+| `/havenbags reload`| `havenbags.reload` | Reloads config.yml & lang.yml |
+| `/havenbags create <size>` | `havenbags.create` | Create a new bag |
+| `/havenbags create ownerless <size>` | `havenbags.create` | Create a new ownerless bag |
+| `/havenbags give <player> <size>` | `havenbags.create` | Give player a bag |
+| `/havenbags give <player> ownerless <size>` | `havenbags.create` | Give player an ownerless bag |
+| `/havenbags restore <player>` | `havenbags.restore` | Shows a list of bags by that player. |
+| `/havenbags restore <player> <bag-uuid>` | `havenbags.restore` | Gives a copy of the bag stored on the server. |
 
-Required: \<\><br>
-Optional: ( )<br>
-<br>
 *All commands can be shortened to /bags*<br>
-<br>
-*Example of a bound bag: `/bags create 27`*<br>
-*Example of an ownerless bag: `/bags create ownerless 27`*<br>
-*(The same can be applied to the 'give' command.)*
 
-  
 ## Permissions
 | Permission | Description |
 | --- | --- |
 | `havenbags.*` | Gives all HavenBags permissions. |
 | `havenbags.reload` | Allows you to reload the plugin. |
 | `havenbags.use` | Allows you to use bags. |
-| `havenbags.create` | Allows you to create bags. |
+| `havenbags.create` | Allows you to create bags and give. |
 | `havenbags.restore` | Allows you to restore bags. |
 | `havenbags.bypass` | Allows you to bypass ownership locks. |
 
-
 ## Configuration
 [config.yml](/src/main/resources/config.yml)
-
 
 ## Lang
 [lang.yml](/src/main/resources/lang.yml)
