@@ -1,0 +1,109 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                      Messages                        | #
+# +------------------------------------------------------+ #
+############################################################
+
+### NOTE: You cannot change %s. %s is used when formatting messages.
+# You may move %s around, but cannot rename it.
+
+# Prefix in front of all plugin messages. '' for blank.
+prefix: '&7[&aHaven&bBags&7] &r'
+
+### Player ###
+
+# Message sent to player should their bag's content fail to load.
+# Likely case is the data file in '/plugins' is missing.
+bag-load-error: '&cBag failed to load.\nPlease notify staff.'
+
+# Message sent when the player interacts with a bag item, while inside the bag GUI.
+bag-in-bag-error: '&cBags cannot be placed inside bags.'
+
+# Message sent to the player when a bag is renamed.
+# %s - bag's new name.
+bag-rename: '&fRenamed bag to %s.'
+
+# Message sent to the player when given a bag.
+# %s - Name of the bag 
+bag-given: '&aYou''ve been given an %s!'
+
+# Message sent to the player if they attempt to open a bag bound to another player.
+bag-cannot-use: '&cYou cannot use this bag.'
+
+# Message sent to the player if the bag does not exist on the server.
+bag-does-not-exist: '&cThis bag does not exist.'
+
+### Admin ###
+
+#
+bag-create: ''
+
+# Message sent when '/bags restore' fails to locate bag of specific UUID.
+bag-not-found: '&cNo bag found with that UUID.'
+
+# Bags MUST be a number to the power of 9, up to 54.
+# 9, 18, 27, 36, 45, 54. Rows*9
+bag-size-error: '&cSize must be to the power of 9. Max size 54. (6 rows)'
+
+# If no size is given.
+bag-ownerless-no-size: '&cOwnerless bag must have a size.'
+
+# If size contains anything not numbers.
+# %s - size given by command user.
+number-conversion-error: '&cCannot convert ''%s'' to a number!'
+
+# If a player searched with '/bags restore <player>' has no found bag data.
+# %s - Player's name.
+player-no-bags: '&cPlayer ''%s'' has no bags.'
+
+# Bags found of player, using '/bags restore <player>'.
+# %s - Name of the player specified.
+bags-of: 'Bags of %s:'
+
+############################################################
+# +------------------------------------------------------+ #
+# |                      Bag Item                        | #
+# +------------------------------------------------------+ #
+############################################################
+
+# When an unbound bag gets bound.
+# The player can rename this.
+# %s - Player's name.
+bag-bound-name: '&a%s''s Bag'
+
+# Name of the unbound bag item.
+bag-unbound-name: '&aUnbound Bag'
+
+# Name of an unused ownerless bag.
+bag-ownerless-unused: '&aUnused Bag'
+
+# Name of a used ownerless bag.
+bag-ownerless-used: '&aBag'
+
+### Lore ###
+
+# Who the bag is bound to, if bound.
+# %s - Bag owner's name.
+bound-to: '&7Bound to %s'
+
+# Bag size.
+# %s - Bag size.
+bag-size: '&7Size: %s'
+
+# Content preview.
+bag-content-title: '&7Content:'
+
+# How many items should be previewed in the tooltip.
+bag-content-preview-size: 5
+
+# Content preview entry.
+# %s - Item name.
+bag-content-item: '&7%s'
+
+# Content preview entry with amount.
+# 1. %s - Item name.
+# 2. %s - Item amount.
+bag-content-item-amount: '&7%s &7x%s'
+
+# If bag content exceeds the number of bag-content-preview-size.
+bag-content-and-more: '  &7And more..'

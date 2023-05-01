@@ -1,0 +1,13 @@
+valorless\havenbags\PlacementBlocker.class
+valorless\havenbags\HavenBags.class
+valorless\havenbags\BagDamagePrevention.class
+valorless\havenbags\Lang.class
+valorless\havenbags\BagGUI.class
+valorless\havenbags\ArmorStands.class
+valorless\havenbags\Bag.class
+valorless\havenbags\CommandListener.class
+valorless\havenbags\PickupPrevention.class
+valorless\havenbags\BagListener.class
+valorless\havenbags\CustomModelData.class
+valorless\havenbags\BagGUI$Items.class
+valorless\havenbags\Lang$Placeholders.class
