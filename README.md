@@ -3,6 +3,8 @@
 <a href="https://github.com/Valorless/ValorlessUtils" rel="nofollow"><img src="https://img.shields.io/badge/Requires-ValorlessUtils-red?style=flat" alt="Dependency" style="max-width: 100%;"/>
 <br>
 
+Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
+
 ## Commands
 | Command | Permission | Description |
 | --- | --- | --- |
@@ -15,6 +17,7 @@
 | `/havenbags restore <player>` | `havenbags.restore` | Shows a list of bags by that player. |
 | `/havenbags restore <player> <bag-uuid>` | `havenbags.restore` | Gives a copy of the bag stored on the server. |
 
+*`<size>` must be to the power of 9. Max size 54. (6 rows)*<br>
 *All commands can be shortened to /bags*<br>
 
 ## Permissions
