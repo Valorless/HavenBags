@@ -69,6 +69,7 @@ public class CommandListener implements Listener {
 			if (args.length >= 2){
 				if(args[1].equalsIgnoreCase("reload") && sender.hasPermission("havenbags.reload")) {
 					HavenBags.config.Reload();
+					Lang.lang.Reload();
 					sender.sendMessage(Name +" §aReloaded.");
 					if(!console) { Log.Info(plugin, " §aReloaded!"); }
 				}
@@ -338,7 +339,7 @@ public class CommandListener implements Listener {
 							String owner = args[2];
 							String path = String.format("%s/bags/%s/", plugin.getDataFolder(), owner);
 							Set<String> files = listFilesUsingJavaIO(path);
-							String fileString = Lang.Get("bags-of", owner);
+							String fileString = Lang.Get("prefix") + Lang.Get("bags-of", owner);
 							List<String> fileNames = new ArrayList<String>();
 							fileNames.addAll(files);
 							for(int i = 0; i < files.size(); i++) {

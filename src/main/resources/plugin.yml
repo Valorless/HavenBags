@@ -46,7 +46,7 @@ permissions:
     description: Allows you to use bags.
     default: op
   havenbags.create:
-    description: Allows you to create bags.
+    description: Allows you to create bags and give.
     default: op
   havenbags.restore:
     description: Allows you to restore bags.
