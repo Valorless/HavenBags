@@ -36,6 +36,7 @@ public class BagListener implements Listener{
     		if(!player.hasPermission("havenbags.use")) {
     			return;
     		}else {
+    			Log.Debug(plugin, player + " is attempting to open a bag");
     			ItemStack hand = player.getInventory().getItemInMainHand();
     			ItemMeta item = player.getInventory().getItemInMainHand().getItemMeta();
     			//player.sendMessage("has meta: " + hand.hasItemMeta());
@@ -65,6 +66,7 @@ public class BagListener implements Listener{
     					//Tags.Set(plugin, item.getPersistentDataContainer(), "content", JsonUtils.toJson(content), PersistentDataType.STRING);
     					hand.setItemMeta(item);
     					WriteToServer(player, item, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER));
+    	    			Log.Debug(plugin, "Ownerless bag created.");
     					return;
     				}
 				
@@ -87,6 +89,7 @@ public class BagListener implements Listener{
     					//Tags.Set(plugin, item.getPersistentDataContainer(), "content", JsonUtils.toJson(content), PersistentDataType.STRING);
     					hand.setItemMeta(item);
     					WriteToServer(player, item, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER));
+    	    			Log.Debug(plugin, "Bound new bag to: " + player.getName());
     					return;
     				}
     				
@@ -98,6 +101,7 @@ public class BagListener implements Listener{
     					BagGUI gui = new BagGUI(plugin, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER), player, hand, (SkullMeta)hand.getItemMeta());
     					Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
     					gui.OpenInventory(player);
+    	    			Log.Debug(plugin, "Attempting to open ownerless bag");
     					return;
     				}
     				if(canbind.equalsIgnoreCase("true")) {
@@ -106,11 +110,13 @@ public class BagListener implements Listener{
     						BagGUI gui = new BagGUI(plugin, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER), player, hand, (SkullMeta)hand.getItemMeta());
     						Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
     						gui.OpenInventory(player);
+    		    			Log.Debug(plugin, "Attempting to open bag");
     						return;
     					} else if (player.hasPermission("havenbags.bypass")) {
     						BagGUI gui = new BagGUI(plugin, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER), player, hand, (SkullMeta)hand.getItemMeta());
     						Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
     						gui.OpenInventory(player);
+    		    			Log.Debug(plugin, player + "has attempted to open a bag, bypassing the lock");
     						return;
     					}
     					else {
@@ -130,6 +136,7 @@ public class BagListener implements Listener{
     void WriteToServer(Player player, ItemMeta bagMeta, int size) {
     	String uuid = Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "uuid", PersistentDataType.STRING).toString();
     	String owner = Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
+    	Log.Debug(plugin, "Attempting to write bag " + owner + "/" + uuid + " onto server");
     	if(owner != "ownerless") {
     		player = Bukkit.getPlayer(UUID.fromString(owner));
     	}

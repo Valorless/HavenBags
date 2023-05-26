@@ -1,6 +1,6 @@
 name: HavenBags
 main: valorless.havenbags.HavenBags
-version: 1.0.0.107
+version: 1.0.0.108
 author: Valorless
 api-version: 1.18
 depend: [ValorlessUtils]
@@ -46,7 +46,7 @@ permissions:
     description: Allows you to use bags.
     default: op
   havenbags.create:
-    description: Allows you to create bags.
+    description: Allows you to create bags and give.
     default: op
   havenbags.restore:
     description: Allows you to restore bags.

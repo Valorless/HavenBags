@@ -99,6 +99,7 @@ public class CommandListener implements Listener {
 									bagMeta.setLore(lore);
 									bagItem.setItemMeta(bagMeta);
 									Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
+									Log.Debug(plugin, String.format("Bag created: %s %s %s %s (ownerless)", uuid, "null", bag.size, "false"));
 									//sender.sendMessage(JsonUtils.toJson(bagItem));
 								}
 								else {
@@ -132,6 +133,7 @@ public class CommandListener implements Listener {
 									bagItem.setItemMeta(bagMeta);
 									Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
 									//sender.sendMessage(JsonUtils.toJson(bagItem));
+									Log.Debug(plugin, String.format("Bag created: %s %s %s %s", uuid, "null", bag.size, "true"));
 								}
 								else {
 									sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-ownerless-no-size"));
@@ -175,6 +177,7 @@ public class CommandListener implements Listener {
 									bagItem.setItemMeta(bagMeta);
 									receiver.getInventory().addItem(bagItem);
 									receiver.sendMessage(String.format(Lang.Get("bag-given", Lang.Get("bag-ownerless-unused"))));
+									Log.Debug(plugin, String.format("Bag created: %s %s %s %s (ownerless)", uuid, "null", bag.size, "false"));
 									//sender.sendMessage(JsonUtils.toJson(bagItem));
 								}
 								else {
@@ -210,6 +213,7 @@ public class CommandListener implements Listener {
 									receiver.getInventory().addItem(bagItem);
 									receiver.sendMessage(Lang.Get("prefix") + Lang.Get("bag-given", Lang.Get("bag-unbound-name")));
 									//sender.sendMessage(JsonUtils.toJson(bagItem));
+									Log.Debug(plugin, String.format("Bag created: %s %s %s %s", uuid, "null", bag.size, "true"));
 								}
 								else {
 									sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-size-error"));
@@ -333,6 +337,7 @@ public class CommandListener implements Listener {
 							
 							bagItem.setItemMeta(bagMeta);
 							Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
+							Log.Debug(plugin, String.format("%s restored bag: %s/%s size: %s", sender.getName(), owner, uuid, contSize.size()));
 							//content = 
 						}else {
 							// No uuid

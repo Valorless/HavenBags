@@ -40,6 +40,7 @@ public class BagGUI implements Listener {
 	public List<ItemStack> content;
 	public static Config config;
 	public Player player;
+	String bag = "";
 	
 	public class Items {
 		public String name = "";
@@ -50,10 +51,13 @@ public class BagGUI implements Listener {
 	}
 
     public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, SkullMeta bagMeta) {
+    	this.bag = Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString() + "/" + Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "uuid", PersistentDataType.STRING).toString();
+    	Log.Debug(plugin, "Attempting to create and open bag " + bag);
     	this.plugin = plugin;
     	this.bagItem = bagItem;
     	this.bagMeta = bagMeta;
     	this.player = player;
+    	
     	
         inv = Bukkit.createInventory(player, size, bagMeta.getDisplayName());
         //this.content = JsonUtils.fromJson(Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "content", PersistentDataType.STRING).toString());
@@ -66,12 +70,14 @@ public class BagGUI implements Listener {
     }
     
 	public void InitializeItems() {
+		Log.Debug(plugin, "Attempting to initialize bag items");
     	for(int i = 0; i < content.size(); i++) {
     		inv.setItem(i, content.get(i));
     	}
     }
 	
 	List<ItemStack> LoadContent() {
+		Log.Debug(plugin, "Attempting to load bag content");
 		String uuid = Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "uuid", PersistentDataType.STRING).toString();
 		String owner = Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
 		if(owner != "ownerless") {
@@ -128,6 +134,7 @@ public class BagGUI implements Listener {
     @EventHandler
     public void onInventoryClose(final InventoryCloseEvent e) {
         if (!e.getInventory().equals(inv)) return;
+        Log.Debug(plugin, "Bag closed, attempting to save bag. (" + bag + ")");
         List<ItemStack> cont = new ArrayList<ItemStack>();
         int a = 0;
         List<String> items = new ArrayList<String>();
@@ -206,6 +213,8 @@ public class BagGUI implements Listener {
     void WriteToServer() {
     	String uuid = Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "uuid", PersistentDataType.STRING).toString();
     	String owner = Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
+    	Log.Debug(plugin, "Attempting to write bag " + bag + " onto server");
+    	
 		if(owner != "ownerless") {
     		player = Bukkit.getPlayer(UUID.fromString(owner));
     	}
@@ -218,13 +227,13 @@ public class BagGUI implements Listener {
     		bagData = new File(plugin.getDataFolder() + "/bags/", player.getName() + "/" + uuid + ".json");
     		if(!bagData.exists()) {
             	bagData.getParentFile().mkdirs();
-                Log.Info(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", player.getName(), uuid));
+                Log.Debug(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", player.getName(), uuid));
             }
     	}else {
     		bagData = new File(plugin.getDataFolder() + "/bags/", owner + "/" + uuid + ".json");
     		if(!bagData.exists()) {
             	bagData.getParentFile().mkdirs();
-                Log.Info(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
+                Log.Debug(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
             }
     	}
         
