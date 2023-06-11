@@ -13,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class HavenBags extends JavaPlugin implements Listener {
 	public static JavaPlugin plugin;
 	public static Config config;
-	public static List<BagGUI> activeBags = new ArrayList<BagGUI>();
+	public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	
 	public String[] commands = {
     		"havenbags", "bags", "bag",
@@ -43,6 +43,7 @@ public final class HavenBags extends JavaPlugin implements Listener {
 		config.AddValidationEntry("inventory-full-sound", "ENTITY_VILLAGER_NO");
 		config.AddValidationEntry("inventory-full-volume", 1);
 		config.AddValidationEntry("inventory-full-pitch", 1);
+		config.AddValidationEntry("protect-bags", true);
 		Log.Debug(plugin, "Validating config.yml");
 		config.Validate();
 		
@@ -83,6 +84,8 @@ public final class HavenBags extends JavaPlugin implements Listener {
 
 		Log.Debug(plugin, "Registering PlacementListener");
 		getServer().getPluginManager().registerEvents(new PlacementBlocker(), this);
+		Log.Debug(plugin, "Registering BagDamagePrevention");
+		getServer().getPluginManager().registerEvents(new BagDamagePrevention(), this);
 		Log.Debug(plugin, "Registering BagListener");
 		getServer().getPluginManager().registerEvents(new BagListener(), this);
 		
@@ -94,8 +97,8 @@ public final class HavenBags extends JavaPlugin implements Listener {
     	if(activeBags.size() != 0) {
     		Log.Info(plugin, "Closing all open bags.");
     		try {
-    			for(BagGUI bag : activeBags) {
-    				bag.Close(true);
+    			for(ActiveBag bag : activeBags) {
+    				bag.gui.Close(true);
     			}
     		} catch (Exception e) {
     		

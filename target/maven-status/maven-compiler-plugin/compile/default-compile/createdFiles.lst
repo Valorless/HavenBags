@@ -1,9 +1,9 @@
 valorless\havenbags\PlacementBlocker.class
 valorless\havenbags\HavenBags.class
 valorless\havenbags\BagDamagePrevention.class
+valorless\havenbags\ActiveBag.class
 valorless\havenbags\Lang.class
 valorless\havenbags\BagGUI.class
-valorless\havenbags\Bag.class
 valorless\havenbags\CommandListener.class
 valorless\havenbags\PickupPrevention.class
 valorless\havenbags\SFX.class

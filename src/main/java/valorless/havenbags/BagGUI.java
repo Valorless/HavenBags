@@ -12,7 +12,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,18 +19,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
-import valorless.valorlessutils.skulls.SkullCreator;
+import valorless.valorlessutils.nbt.NBT;
+import valorless.valorlessutils.uuid.UUIDFetcher;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.ValorlessUtils.Tags;
 
 public class BagGUI implements Listener {
 	public JavaPlugin plugin;
@@ -54,16 +51,38 @@ public class BagGUI implements Listener {
 	}
 
     public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, SkullMeta bagMeta) {
-    	HavenBags.activeBags.add(this);
+    	HavenBags.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid")));
     	
-    	this.bag = Bukkit.getPlayer(UUID.fromString(Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString())).getName() + "/" + Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "uuid", PersistentDataType.STRING).toString();
+    	try {
+    		// Try get owner's name on the server.
+    		this.bag = Bukkit.getPlayer(UUID.fromString(NBT.GetString(bagItem, "bag-owner"))).getName() + "/" + NBT.GetString(bagItem, "bag-uuid");
+    	} catch (Exception e) {
+    		// Otherwise use MojangAPI
+    		if(!NBT.GetString(bagItem, "bag-owner").equalsIgnoreCase("ownerless")) {
+    			this.bag = UUIDFetcher.getName(UUID.fromString(NBT.GetString(bagItem, "bag-owner"))) + "/" + NBT.GetString(bagItem, "bag-uuid");
+    		} else {
+    			this.bagOwner = "ownerless" + "/" + NBT.GetString(bagItem, "bag-uuid").toString();
+    		}
+    	}
     	Log.Debug(plugin, "Attempting to create and open bag " + bag);
     	this.plugin = plugin;
     	this.bagItem = bagItem;
     	this.bagMeta = bagMeta;
     	this.player = player;
-    	this.bagOwner = Bukkit.getPlayer(UUID.fromString(Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString())).getName();
+    	try {
+    		// Try get owner's name on the server.
+    		this.bagOwner = Bukkit.getPlayer(UUID.fromString(NBT.GetString(bagItem, "bag-owner"))).getName();
+    	} catch (Exception e) {
+    		// Otherwise use MojangAPI
+    		if(!NBT.GetString(bagItem, "bag-owner").equalsIgnoreCase("ownerless")) {
+    			this.bagOwner = UUIDFetcher.getName(UUID.fromString(NBT.GetString(bagItem, "bag-owner")));
+    		} else {
+    			this.bagOwner = "ownerless";
+    		}
+    	}
     	
+
+    	CheckInstances(); // Check for multiple of the same bags
     	
         inv = Bukkit.createInventory(player, size, bagMeta.getDisplayName());
         //this.content = JsonUtils.fromJson(Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "content", PersistentDataType.STRING).toString());
@@ -73,6 +92,25 @@ public class BagGUI implements Listener {
         
         InitializeItems();
         //LoadContent();
+    }
+    
+    void CheckInstances() {
+    	List<BagGUI> thisUUID = new ArrayList<BagGUI>();
+    	for (ActiveBag openBag : HavenBags.activeBags) {
+    		Log.Debug(plugin, "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
+    		if(openBag.uuid.equalsIgnoreCase(NBT.GetString(bagItem, "bag-uuid"))) {
+    			thisUUID.add(openBag.gui);
+    		}
+    	}
+    	//Log.Debug(plugin, "" + thisUUID.size());
+    	if(thisUUID.size() > 1) {
+    		Log.Warning(plugin, "Multiple instances of the same bag is opened by: " + thisUUID.get(0).player.getName() + " & " + thisUUID.get(1).player.getName());
+    		Log.Warning(plugin, "They might be trying to dupe items. Forcing their bags to close.");
+    		for (BagGUI openBag : thisUUID) {
+    			openBag.player.closeInventory();
+        	}
+    		player.closeInventory();
+    	}
     }
     
 	public void InitializeItems() {
@@ -95,7 +133,12 @@ public class BagGUI implements Listener {
 						"\n" +
 						"################################\n";
 				console.sendMessage(String.format(errorMessage, bag));
-		    	HavenBags.activeBags.remove(this);
+				for (ActiveBag openBag : HavenBags.activeBags) {
+		    		Log.Debug(plugin, "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
+		    		if(openBag.uuid == NBT.GetString(bagItem, "bag-uuid")) {
+		    			HavenBags.activeBags.remove(openBag);
+		    		}
+		    	}
 				throw(new NullPointerException(""));
 			} else {
 				e.printStackTrace();
@@ -105,10 +148,14 @@ public class BagGUI implements Listener {
 	
 	List<ItemStack> LoadContent() {
 		Log.Debug(plugin, "Attempting to load bag content");
-		String uuid = Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "uuid", PersistentDataType.STRING).toString();
-		String owner = Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
+
+    	String uuid = NBT.GetString(this.bagItem, "bag-uuid");
+    	String owner = NBT.GetString(this.bagItem, "bag-owner");
+		//String uuid = Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "uuid", PersistentDataType.STRING).toString();
+		//String owner = Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
 		if(owner != "ownerless") {
-			owner = Bukkit.getPlayer(UUID.fromString(owner)).getName();
+			//owner = Bukkit.getPlayer(UUID.fromString(owner)).getName();
+			owner = bagOwner;
     	}
 		//owner = Bukkit.getPlayer(UUID.fromString(owner)).getName();
 		String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, uuid);
@@ -150,8 +197,8 @@ public class BagGUI implements Listener {
         ItemStack clickedItem = e.getCurrentItem();
         if(clickedItem == null) return;
         
-        /*if(Tags.Get(plugin, clickedItem.getItemMeta().getPersistentDataContainer(), "uuid", PersistentDataType.STRING) != null) {
-        	e.getWhoClicked().closeInventory();
+        /*if(NBT.Has(clickedItem, "bag-uuid")) {
+        	//e.getWhoClicked().closeInventory();
         	//e.getWhoClicked().sendMessage(Name + "§c Bags cannot be placed inside bags.");
         	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
         	e.setCancelled(true);
@@ -256,7 +303,7 @@ public class BagGUI implements Listener {
     		}
     	}
         List<String> lore = new ArrayList<String>();
-        if(Tags.Get(HavenBags.plugin, bagMeta.getPersistentDataContainer(), "canbind", PersistentDataType.STRING).toString() != "false") {
+        if(NBT.GetBool(bagItem, "bag-canBind")) {
         	//lore.add(String.format("§7Bound to %s", e.getPlayer().getName()));
         	lore.add(Lang.Get("bound-to", bagOwner));
         }
@@ -283,7 +330,16 @@ public class BagGUI implements Listener {
 		bagItem.setItemMeta(bagMeta);
 		GivePlayerBagBack();
 		WriteToServer();
-    	HavenBags.activeBags.remove(this);
+		try {
+		for (ActiveBag openBag : HavenBags.activeBags) {
+    		Log.Debug(plugin, "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
+    		if(openBag.uuid == NBT.GetString(bagItem, "bag-uuid")) {
+    			HavenBags.activeBags.remove(openBag);
+    		}
+    	}
+		} catch(Exception e) {}
+		
+		Log.Debug(plugin, "Remaining Open Bags: " + HavenBags.activeBags.size());
     }
     
     void GivePlayerBagBack() {
@@ -322,12 +378,13 @@ public class BagGUI implements Listener {
     }
     
     void WriteToServer() {
-    	String uuid = Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "uuid", PersistentDataType.STRING).toString();
-    	String owner = Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
+    	String uuid = NBT.GetString(bagItem, "bag-uuid");
+    	String owner = NBT.GetString(bagItem, "bag-owner");
     	Log.Debug(plugin, "Attempting to write bag " + bag + " onto server");
     	
 		if(owner != "ownerless") {
-    		player = Bukkit.getPlayer(UUID.fromString(owner));
+    		//player = Bukkit.getPlayer(UUID.fromString(owner));
+			//player = bagOwner;
     	}
     	File bagData;
     	List<ItemStack> cont = new ArrayList<ItemStack>();
@@ -335,16 +392,16 @@ public class BagGUI implements Listener {
     		cont.add(inv.getItem(i));
     	}
     	if(owner != "ownerless") {
-    		bagData = new File(plugin.getDataFolder() + "/bags/", player.getName() + "/" + uuid + ".json");
+    		bagData = new File(plugin.getDataFolder() + "/bags/", bagOwner + "/" + uuid + ".json");
     		if(!bagData.exists()) {
             	bagData.getParentFile().mkdirs();
-                Log.Debug(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", player.getName(), uuid));
+                Log.Debug(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", bagOwner, uuid));
             }
     	}else {
-    		bagData = new File(plugin.getDataFolder() + "/bags/", owner + "/" + uuid + ".json");
+    		bagData = new File(plugin.getDataFolder() + "/bags/", bagOwner + "/" + uuid + ".json");
     		if(!bagData.exists()) {
             	bagData.getParentFile().mkdirs();
-                Log.Debug(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
+                Log.Debug(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", bagOwner, uuid));
             }
     	}
         

@@ -67,14 +67,16 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (args[0].equalsIgnoreCase("restore") && sender.hasPermission("havenbags.restore")) {
 				// /bags restore <player>
-				List<String> playerNames = getOnlinePlayerNames();
-				playerNames.add("ownerless");
+				//List<String> playerNames = getOnlinePlayerNames();
+				//playerNames.add("ownerless");
+				List<String> playerNames = GetBagOwners();
 				StringUtil.copyPartialMatches(cmd, playerNames, completions);
 			}
 			if (args[0].equalsIgnoreCase("preview") && sender.hasPermission("havenbags.preview")) {
 				// /bags preview <player>
-				List<String> playerNames = getOnlinePlayerNames();
-				playerNames.add("ownerless");
+				//List<String> playerNames = getOnlinePlayerNames();
+				//playerNames.add("ownerless");
+				List<String> playerNames = GetBagOwners();
 				StringUtil.copyPartialMatches(cmd, playerNames, completions);
 			}
 		}
@@ -152,6 +154,18 @@ public class TabCompletion implements TabCompleter {
 				bags.set(i, bags.get(i).replace(".json", ""));
 			}
 			return bags;
+		} catch (Exception e) {
+			return new ArrayList<String>();
+		}
+	}
+	
+	public List<String> GetBagOwners(){
+		try {
+			List<String> bagOwners = Stream.of(new File(String.format("%s/bags/", HavenBags.plugin.getDataFolder())).listFiles())
+					.filter(file -> file.isDirectory())
+					.map(File::getName)
+					.collect(Collectors.toList());
+			return bagOwners;
 		} catch (Exception e) {
 			return new ArrayList<String>();
 		}

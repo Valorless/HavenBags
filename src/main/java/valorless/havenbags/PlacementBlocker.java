@@ -1,17 +1,15 @@
 package valorless.havenbags;
 
 import valorless.valorlessutils.ValorlessUtils.*;
+import valorless.valorlessutils.nbt.NBT;
 
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 public class PlacementBlocker implements Listener {
 	
@@ -20,16 +18,20 @@ public class PlacementBlocker implements Listener {
 		Block block = event.getBlockPlaced();
 		ItemStack item = event.getItemInHand();
 		ItemMeta nbt = item.getItemMeta();
-		Log.Debug(HavenBags.plugin, "Block Placed: " + block.getType().toString());
-		Log.Debug(HavenBags.plugin, "Player Holding: " + item.getType().toString());
+		//Log.Debug(HavenBags.plugin, "Block Placed: " + block.getType().toString());
+		//Log.Debug(HavenBags.plugin, "Player Holding: " + item.getType().toString());
 	 
 		if(block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
 			Log.Debug(HavenBags.plugin, "Block was head.");
 			if(nbt != null) {
 				Log.Debug(HavenBags.plugin, "Block has ItemMeta.");
-				if(Tags.Get(HavenBags.plugin, nbt.getPersistentDataContainer(), "uuid", PersistentDataType.STRING) != null) {
+				if(NBT.Has(item, "bag-uuid")) {
 					Log.Debug(HavenBags.plugin, "Block was bag!");
-					Player player = event.getPlayer();
+					Log.Warning(HavenBags.plugin, "Oops.. This shouldnt happen... Please tell the developer 'PlacementBlocker:onBlockPlace()' :)");
+					Log.Warning(HavenBags.plugin, "This warning was tested quite a lot and was never triggered.");
+					Log.Warning(HavenBags.plugin, "I left this in on purpose, should it work as intended.");
+					Log.Warning(HavenBags.plugin, "No additional code is run, so you're good!");
+					/*Player player = event.getPlayer();
 					block.setType(Material.AIR);
 					
 					if(player.getGameMode() != GameMode.CREATIVE) { //Dont give Creative a replacement.
@@ -43,12 +45,13 @@ public class PlacementBlocker implements Listener {
 					}
 					
 					player.closeInventory();
-					event.setCancelled(true);
+					event.setCancelled(true);*/
 				}
 			}else {
 				Log.Debug(HavenBags.plugin, "Block has no ItemMeta.");
 				Log.Debug(HavenBags.plugin, "Block was likely bag, removing.");
 				block.setType(Material.AIR);
+				event.setCancelled(true);
 			}
 		}
 	}

@@ -5,6 +5,17 @@
 
 Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
 
+## Extra Features
+
+#### Placement Blocker
+- To avoid bags being placed down and the data destroyed, bags are unable to be placed down.
+
+#### Bag Protection (Optional)
+- Bags cannot be destroyed by things such as fire, lava and cactus.<br>Among other things.
+
+#### Dupe Prevention
+- If multiple of the same bags are detected, a warning will be sent in the console, and one of the players will have their bag forcefully closed.
+
 ## Commands
 | Command | Permission | Description |
 | --- | --- | --- |

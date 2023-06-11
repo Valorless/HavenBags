@@ -28,3 +28,6 @@ close-pitch: 1
 inventory-full-sound: 'ENTITY_VILLAGER_NO'
 inventory-full-volume: 1
 inventory-full-pitch: 1
+
+# Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?
+protect-bags: true
