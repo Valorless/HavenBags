@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -40,6 +42,7 @@ public class BagGUI implements Listener {
 	public List<ItemStack> content;
 	public static Config config;
 	public Player player;
+	public String bagOwner;
 	String bag = "";
 	
 	public class Items {
@@ -51,12 +54,15 @@ public class BagGUI implements Listener {
 	}
 
     public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, SkullMeta bagMeta) {
-    	this.bag = Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString() + "/" + Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "uuid", PersistentDataType.STRING).toString();
+    	HavenBags.activeBags.add(this);
+    	
+    	this.bag = Bukkit.getPlayer(UUID.fromString(Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString())).getName() + "/" + Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "uuid", PersistentDataType.STRING).toString();
     	Log.Debug(plugin, "Attempting to create and open bag " + bag);
     	this.plugin = plugin;
     	this.bagItem = bagItem;
     	this.bagMeta = bagMeta;
     	this.player = player;
+    	this.bagOwner = Bukkit.getPlayer(UUID.fromString(Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString())).getName();
     	
     	
         inv = Bukkit.createInventory(player, size, bagMeta.getDisplayName());
@@ -70,10 +76,31 @@ public class BagGUI implements Listener {
     }
     
 	public void InitializeItems() {
-		Log.Debug(plugin, "Attempting to initialize bag items");
-    	for(int i = 0; i < content.size(); i++) {
-    		inv.setItem(i, content.get(i));
-    	}
+		try {
+			Log.Debug(plugin, "Attempting to initialize bag items");
+    		for(int i = 0; i < content.size(); i++) {
+    			inv.setItem(i, content.get(i));
+    		}
+		} catch (Exception e) {
+			if(e.toString().contains("because \"this.content\" is null")) {
+				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+				//Log.Error(plugin, String.format("Failed to load content of bag '%s'. Is the file empty?", bag));
+				String errorMessage = 
+						ChatColor.RED + "\n################################\n" +
+						"THIS IS A CUSTOM ERROR THROWN BY THE PLUGIN, NO THE SERVER\n" +
+						"\n" +
+						"Failed to load content of bag\n" +
+						ChatColor.GOLD + "'%s.json'\n" +
+						ChatColor.RED + "Please check if the file is empty or missing before reporting any errors.\n" +
+						"\n" +
+						"################################\n";
+				console.sendMessage(String.format(errorMessage, bag));
+		    	HavenBags.activeBags.remove(this);
+				throw(new NullPointerException(""));
+			} else {
+				e.printStackTrace();
+			}
+		}
     }
 	
 	List<ItemStack> LoadContent() {
@@ -123,18 +150,20 @@ public class BagGUI implements Listener {
         ItemStack clickedItem = e.getCurrentItem();
         if(clickedItem == null) return;
         
-        if(Tags.Get(plugin, clickedItem.getItemMeta().getPersistentDataContainer(), "uuid", PersistentDataType.STRING) != null) {
+        /*if(Tags.Get(plugin, clickedItem.getItemMeta().getPersistentDataContainer(), "uuid", PersistentDataType.STRING) != null) {
         	e.getWhoClicked().closeInventory();
         	//e.getWhoClicked().sendMessage(Name + "§c Bags cannot be placed inside bags.");
         	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
         	e.setCancelled(true);
-        }
+        }*/
     }
 
     @EventHandler
     public void onInventoryClose(final InventoryCloseEvent e) {
         if (!e.getInventory().equals(inv)) return;
-        Log.Debug(plugin, "Bag closed, attempting to save bag. (" + bag + ")");
+        Close(false);
+        /*
+        GivePlayerBagBack();
         List<ItemStack> cont = new ArrayList<ItemStack>();
         int a = 0;
         List<String> items = new ArrayList<String>();
@@ -164,7 +193,7 @@ public class BagGUI implements Listener {
         List<String> lore = new ArrayList<String>();
         if(Tags.Get(HavenBags.plugin, bagMeta.getPersistentDataContainer(), "canbind", PersistentDataType.STRING).toString() != "false") {
         	//lore.add(String.format("§7Bound to %s", e.getPlayer().getName()));
-        	lore.add(Lang.Get("bound-to", e.getPlayer().getName()));
+        	lore.add(Lang.Get("bound-to", bagOwner));
         }
         //lore.add("§7Size: " + inv.getSize());
         lore.add(Lang.Get("bag-size", inv.getSize()));
@@ -188,6 +217,88 @@ public class BagGUI implements Listener {
 		//bagMeta.addEnchant(Enchantment.LUCK, 1, true);
 		bagItem.setItemMeta(bagMeta);
 		WriteToServer();
+
+    	HavenBags.activeBags.remove(this);
+    	*/
+    }
+    
+    public void Close(boolean forced) {
+    	if(forced) {
+    		Log.Warning(plugin, String.format("%s forcefully closed! Attempting to save it and return it to %s!", bag, player.getName()));
+    		player.closeInventory();
+    	}
+        Log.Debug(plugin, "Bag closed, attempting to save bag. (" + bag + ")");
+    	
+        List<ItemStack> cont = new ArrayList<ItemStack>();
+        int a = 0;
+        List<String> items = new ArrayList<String>();
+        for(int i = 0; i < inv.getSize(); i++) {
+    		cont.add(inv.getItem(i));
+    		if(inv.getItem(i) != null) {
+    			if(inv.getItem(i).getItemMeta().hasDisplayName()) {
+    				if(inv.getItem(i).getAmount() != 1) {
+    					//items.add("§7" + inv.getItem(i).getItemMeta().getDisplayName() + " §7x" + inv.getItem(i).getAmount());
+    					items.add(Lang.Get("bag-content-item-amount", inv.getItem(i).getItemMeta().getDisplayName(), inv.getItem(i).getAmount()));
+    				} else {
+    					//items.add("§7" + inv.getItem(i).getItemMeta().getDisplayName());
+    					items.add(Lang.Get("bag-content-item", inv.getItem(i).getItemMeta().getDisplayName()));
+    				}
+    			}else {
+    				if(inv.getItem(i).getAmount() != 1) {
+    					//items.add("§7" + FixMaterialName(inv.getItem(i).getType().name()) + " §7x" + inv.getItem(i).getAmount());
+    					items.add(Lang.Get("bag-content-item-amount", FixMaterialName(inv.getItem(i).getType().name()), inv.getItem(i).getAmount()));
+    				} else {
+    					//items.add("§7" + FixMaterialName(inv.getItem(i).getType().name()));
+    					items.add(Lang.Get("bag-content-item", FixMaterialName(inv.getItem(i).getType().name())));
+    				}
+    			}
+    			a++;
+    		}
+    	}
+        List<String> lore = new ArrayList<String>();
+        if(Tags.Get(HavenBags.plugin, bagMeta.getPersistentDataContainer(), "canbind", PersistentDataType.STRING).toString() != "false") {
+        	//lore.add(String.format("§7Bound to %s", e.getPlayer().getName()));
+        	lore.add(Lang.Get("bound-to", bagOwner));
+        }
+        //lore.add("§7Size: " + inv.getSize());
+        lore.add(Lang.Get("bag-size", inv.getSize()));
+        if(a > 0) {
+        	//lore.add("§7Content:");
+        	lore.add(Lang.Get("bag-content-title"));
+        	for(int k = 0; k < items.size(); k++) {
+        		if(k < Lang.lang.GetInt("bag-content-preview-size")) {
+        			lore.add("  " + items.get(k));
+        		}
+        	}
+        	if(a > 5) {
+        		//lore.add("  §7And more..");
+        		lore.add(Lang.Get("bag-content-and-more"));
+        	}
+        }
+        bagMeta.setLore(lore);
+        
+		//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "content", JsonUtils.toJson(cont), PersistentDataType.STRING);
+		//bagMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+		//bagMeta.addEnchant(Enchantment.LUCK, 1, true);
+		bagItem.setItemMeta(bagMeta);
+		GivePlayerBagBack();
+		WriteToServer();
+    	HavenBags.activeBags.remove(this);
+    }
+    
+    void GivePlayerBagBack() {
+    	if(player.getInventory().firstEmpty() != -1) {
+    		player.getInventory().addItem(bagItem);
+			SFX.Play(HavenBags.config.GetString("close-sound"), 
+					HavenBags.config.GetFloat("close-volume").floatValue(), 
+					HavenBags.config.GetFloat("close-pitch").floatValue(), player);
+    	} else {
+    		player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
+			SFX.Play(HavenBags.config.GetString("inventory-full-sound"), 
+					HavenBags.config.GetFloat("inventory-full-volume").floatValue(), 
+					HavenBags.config.GetFloat("inventory-full-pitch").floatValue(), player);
+    		player.getWorld().dropItem(player.getLocation(), bagItem);
+    	}
     }
     
     String FixMaterialName(String string) {

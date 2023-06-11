@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -36,13 +37,13 @@ public class BagListener implements Listener{
     		if(!player.hasPermission("havenbags.use")) {
     			return;
     		}else {
-    			Log.Debug(plugin, player + " is attempting to open a bag");
     			ItemStack hand = player.getInventory().getItemInMainHand();
     			ItemMeta item = player.getInventory().getItemInMainHand().getItemMeta();
     			//player.sendMessage("has meta: " + hand.hasItemMeta());
     			if(item == null) return;
     			
     			if(Tags.Get(plugin, item.getPersistentDataContainer(), "uuid", PersistentDataType.STRING) != null) {
+        			Log.Debug(plugin, player.getName() + " is attempting to open a bag");
     				//player.sendMessage("has uuid: true");
     				String owner = Tags.Get(plugin, item.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
     				String canbind = Tags.Get(plugin, item.getPersistentDataContainer(), "canbind", PersistentDataType.STRING).toString();
@@ -100,7 +101,11 @@ public class BagListener implements Listener{
     					//player.sendMessage("Ownerless Bag");
     					BagGUI gui = new BagGUI(plugin, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER), player, hand, (SkullMeta)hand.getItemMeta());
     					Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
+    			    	player.getInventory().remove(hand);
     					gui.OpenInventory(player);
+    					SFX.Play(HavenBags.config.GetString("open-sound"), 
+    							HavenBags.config.GetFloat("open-volume").floatValue(), 
+    							HavenBags.config.GetFloat("open-pitch").floatValue(), player);
     	    			Log.Debug(plugin, "Attempting to open ownerless bag");
     					return;
     				}
@@ -109,13 +114,21 @@ public class BagListener implements Listener{
     					if(owner.equalsIgnoreCase(player.getUniqueId().toString())) {
     						BagGUI gui = new BagGUI(plugin, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER), player, hand, (SkullMeta)hand.getItemMeta());
     						Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
+        			    	player.getInventory().remove(hand);
     						gui.OpenInventory(player);
+        					SFX.Play(HavenBags.config.GetString("open-sound"), 
+        							HavenBags.config.GetFloat("open-volume").floatValue(), 
+        							HavenBags.config.GetFloat("open-pitch").floatValue(), player);
     		    			Log.Debug(plugin, "Attempting to open bag");
     						return;
     					} else if (player.hasPermission("havenbags.bypass")) {
     						BagGUI gui = new BagGUI(plugin, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER), player, hand, (SkullMeta)hand.getItemMeta());
     						Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
+        			    	player.getInventory().remove(hand);
     						gui.OpenInventory(player);
+        					SFX.Play(HavenBags.config.GetString("open-sound"), 
+        							HavenBags.config.GetFloat("open-volume").floatValue(), 
+        							HavenBags.config.GetFloat("open-pitch").floatValue(), player);
     		    			Log.Debug(plugin, player + "has attempted to open a bag, bypassing the lock");
     						return;
     					}

@@ -1,6 +1,6 @@
 name: HavenBags
 main: valorless.havenbags.HavenBags
-version: 1.0.0.108
+version: 1.0.0.198
 author: Valorless
 api-version: 1.18
 depend: [ValorlessUtils]
@@ -8,50 +8,41 @@ commands:
   havenbags:
     description: Main command.
     usage:
-    aliases: bags
-  havenbags reload:
-    description: Reloads the configuration file.
-    usage: /havenbags reload
-    permission: havenbags.reload
-    permission-message: You don't have havenbags.reload.
-    aliases: bags reload
-  havenbags create:
-    description: Create bags.
-    usage: /havenbags create
-    permission-message: You don't have havenbags.create.
-    aliases: bags create
-  havenbags give:
-    description: Give bags.
-    usage: /havenbags give
-    permission-message: You don't have havenbags.create.
-    aliases: bags give
-  havenbags restore:
-    description: Restore bags.
-    usage: /havenbags restore
-    permission-message: You don't have havenbags.restore.
-    aliases: bags restore
+    aliases: [bags, bag]
 permissions:
   havenbags.*:
     description: Gives access to all HavenBags commands.
     children:
       havenbags.reload: true
       havenbags.use: true
+      havenbags.rename: true
       havenbags.create: true
+      havenbags.give: true
       havenbags.restore: true
       havenbags.bypass: true
+      havenbags.preview: true
   havenbags.reload:
     description: Allows you to reload the configuration.
     default: op
   havenbags.use:
     description: Allows you to use bags.
     default: op
+  havenbags.rename:
+    description: Allows you to rename bags. Without havenbags.bypass, you can only rename your own bags.
+    default: op
   havenbags.create:
-    description: Allows you to create bags and give.
+    description: Allows you to create bags.
+    default: op
+  havenbags.give:
+    description: Allows you to give bags.
     default: op
   havenbags.restore:
     description: Allows you to restore bags.
     default: op
   havenbags.bypass:
     description: Allows you to bypass ownership locks.
+    default: op
+  havenbags.preview:
+    description: Allows you to bypass preview bags.
     default: op
   

@@ -2,6 +2,7 @@ package valorless.havenbags;
 
 import valorless.valorlessutils.ValorlessUtils.*;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -13,30 +14,41 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 public class PlacementBlocker implements Listener {
+	
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Block block = event.getBlockPlaced();
 		ItemStack item = event.getItemInHand();
 		ItemMeta nbt = item.getItemMeta();
-		//Log.Info(String.valueOf(nbt.getCustomModelData()));
-		//Log.Info(nbt.getDisplayName());
+		Log.Debug(HavenBags.plugin, "Block Placed: " + block.getType().toString());
+		Log.Debug(HavenBags.plugin, "Player Holding: " + item.getType().toString());
 	 
 		if(block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
+			Log.Debug(HavenBags.plugin, "Block was head.");
 			if(nbt != null) {
+				Log.Debug(HavenBags.plugin, "Block has ItemMeta.");
 				if(Tags.Get(HavenBags.plugin, nbt.getPersistentDataContainer(), "uuid", PersistentDataType.STRING) != null) {
+					Log.Debug(HavenBags.plugin, "Block was bag!");
 					Player player = event.getPlayer();
 					block.setType(Material.AIR);
+					
+					if(player.getGameMode() != GameMode.CREATIVE) { //Dont give Creative a replacement.
+						Integer amount = player.getInventory().getItemInMainHand().getAmount();
+						item.setAmount(amount -1);
 			
-					Integer amount = player.getInventory().getItemInMainHand().getAmount();
-					item.setAmount(amount -1);
+						ItemStack replacement = new ItemStack(Material.PLAYER_HEAD, 1);
+						replacement.setItemMeta(nbt);
 			
-					ItemStack replacement = new ItemStack(Material.PLAYER_HEAD, 1);
-					replacement.setItemMeta(nbt);
-			
-					player.getInventory().addItem(replacement);
+						player.getInventory().addItem(replacement);
+					}
+					
 					player.closeInventory();
 					event.setCancelled(true);
 				}
+			}else {
+				Log.Debug(HavenBags.plugin, "Block has no ItemMeta.");
+				Log.Debug(HavenBags.plugin, "Block was likely bag, removing.");
+				block.setType(Material.AIR);
 			}
 		}
 	}

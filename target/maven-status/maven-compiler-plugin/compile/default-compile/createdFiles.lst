@@ -6,6 +6,8 @@ valorless\havenbags\BagGUI.class
 valorless\havenbags\Bag.class
 valorless\havenbags\CommandListener.class
 valorless\havenbags\PickupPrevention.class
+valorless\havenbags\SFX.class
+valorless\havenbags\TabCompletion.class
 valorless\havenbags\BagListener.class
 valorless\havenbags\BagGUI$Items.class
 valorless\havenbags\Lang$Placeholders.class

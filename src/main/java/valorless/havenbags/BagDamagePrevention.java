@@ -9,6 +9,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class BagDamagePrevention implements Listener{
 	public static JavaPlugin plugin;
 	String Name = "§7[§aHaven§bBags§7]§r";
+	
+	// NOT IN USE!
+	// NOTE: Causes the bag to corrupt.
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {

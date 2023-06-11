@@ -6,6 +6,7 @@
 
 ### NOTE: You cannot change %s. %s is used when formatting messages.
 # You may move %s around, but cannot rename it.
+# In addition will any % cause errors, as they're using for parsing.
 
 # Prefix in front of all plugin messages. '' for blank.
 prefix: '&7[&aHaven&bBags&7] &r'
@@ -16,16 +17,15 @@ prefix: '&7[&aHaven&bBags&7] &r'
 # Likely case is the data file in '/plugins' is missing.
 bag-load-error: '&cBag failed to load.\nPlease notify staff.'
 
-# Message sent when the player interacts with a bag item, while inside the bag GUI.
-bag-in-bag-error: '&cBags cannot be placed inside bags.'
-
 # Message sent to the player when a bag is renamed.
 # %s - bag's new name.
-bag-rename: '&fRenamed bag to %s.'
+bag-rename: '&fRenamed bag to%s.'
 
-# Message sent to the player when given a bag.
-# %s - Name of the bag 
-bag-given: '&aYou''ve been given an %s!'
+# Message sent to the player if they remove a bag's custom name.
+bag-rename-reset: '&fReset bag''s name.'
+
+# Message sent to the player if they attempt to rename an item that is not a bag.
+bag-cannot-rename: '&cYou can only rename bags.'
 
 # Message sent to the player if they attempt to open a bag bound to another player.
 bag-cannot-use: '&cYou cannot use this bag.'
@@ -33,20 +33,25 @@ bag-cannot-use: '&cYou cannot use this bag.'
 # Message sent to the player if the bag does not exist on the server.
 bag-does-not-exist: '&cThis bag does not exist.'
 
-### Admin ###
+# Message sent to the player if their inventory is full when a bag is exited.
+inventory-full: '&cInventory full, dropping bag on the ground!'
 
-#
-bag-create: ''
+### Admin ###
 
 # Message sent when '/bags restore' fails to locate bag of specific UUID.
 bag-not-found: '&cNo bag found with that UUID.'
 
-# Bags MUST be a number to the power of 9, up to 54.
-# 9, 18, 27, 36, 45, 54. Rows*9
-bag-size-error: '&cSize must be to the power of 9. Max size 54. (6 rows)'
+# If a size provided is not within the allowed range.
+# 1, 2, 3, 4, 5, 6.
+# (Rows of slots. Row*9 = slots)
+bag-size-error: '&cSize cannot be over 6 rows.'
 
 # If no size is given.
 bag-ownerless-no-size: '&cOwnerless bag must have a size.'
+
+# Message sent to the player when given a bag.
+# %s - Name of the bag 
+bag-given: '&aYou''ve been given an %s!'
 
 # If size contains anything not numbers.
 # %s - size given by command user.
@@ -86,7 +91,7 @@ bag-ownerless-used: '&aBag'
 # %s - Bag owner's name.
 bound-to: '&7Bound to %s'
 
-# Bag size.
+# Bag size in slots.
 # %s - Bag size.
 bag-size: '&7Size: %s'
 

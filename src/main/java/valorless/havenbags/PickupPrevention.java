@@ -15,6 +15,8 @@ public class PickupPrevention implements Listener {
 	public static JavaPlugin plugin;
 	String Name = "§7[§aHaven§bBags§7]§r";
 
+	// NOT IN USE!
+	
     @EventHandler
     public void onEntityPickupItem(EntityPickupItemEvent event) {
     	ItemStack bag = event.getItem().getItemStack();
