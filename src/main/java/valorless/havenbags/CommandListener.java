@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -473,7 +472,7 @@ public class CommandListener implements CommandExecutor {
 						BagGUI gui = new BagGUI(plugin, NBT.GetInt(bagItem, "bag-size"), Bukkit.getPlayer(sender.getName()), bagItem, (SkullMeta)bagItem.getItemMeta());
 						//Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
 						gui.OpenInventory(Bukkit.getPlayer(sender.getName()));
-				    	HavenBags.activeBags.remove(gui);
+				    	//HavenBags.activeBags.remove(gui);
 						
 		    			Log.Debug(plugin, "Attempting to preview bag");
 						Log.Debug(plugin, String.format("%s previwing bag: %s/%s size: %s", sender.getName(), owner, uuid, contSize.size()));

@@ -11,9 +11,6 @@ import valorless.valorlessutils.nbt.NBT;
 
 public class BagDamagePrevention implements Listener{
 	String Name = "§7[§aHaven§bBags§7]§r";
-	
-	// NOT IN USE!
-	// NOTE: Causes the bag to corrupt.
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
