@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -96,11 +96,11 @@
             <id>install-external</id>
             <phase>clean</phase>
             <configuration>
-                <file>${basedir}\dependencies/ValorlessUtils-1.2.0.123-SNAPSHOT.jar</file>
+                <file>${basedir}\dependencies/ValorlessUtils-1.2.2.125-SNAPSHOT.jar</file>
                 <repositoryLayout>default</repositoryLayout>
                 <groupId>valorless.valorlessutils</groupId>
                 <artifactId>ValorlessUtils</artifactId>
-                <version>1.2.0.123-SNAPSHOT</version>
+                <version>1.2.2.125-SNAPSHOT</version>
                 <packaging>jar</packaging>
                 <generatePom>true</generatePom>
             </configuration>
@@ -122,6 +122,10 @@
             <id>minecraft-repo</id>
             <url>https://libraries.minecraft.net/</url>
         </repository>
+	<repository>
+		<id>jeff-media-public</id>
+		<url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
+	</repository>
    </repositories>
   <dependencies>
        <dependency>
@@ -134,7 +138,7 @@
        <dependency>
 		<groupId>valorless.valorlessutils</groupId>
 		<artifactId>ValorlessUtils</artifactId>
-		<version>1.2.0.123-SNAPSHOT</version>
+		<version>1.2.2.125-SNAPSHOT</version>
 	</dependency>
 	<dependency>
             <groupId>com.mojang</groupId>
@@ -152,5 +156,11 @@
     <artifactId>snakeyaml</artifactId>
     <version>2.0</version>
 </dependency>
+	<dependency>
+		<groupId>de.jeff_media</groupId>
+		<artifactId>ChestSortAPI</artifactId>
+		<version>13.0.0-SNAPSHOT</version>
+		<scope>provided</scope>
+	</dependency>
    </dependencies>
 </project>

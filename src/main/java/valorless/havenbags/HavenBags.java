@@ -6,8 +6,10 @@ import valorless.valorlessutils.config.Config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class HavenBags extends JavaPlugin implements Listener {
@@ -30,6 +32,14 @@ public final class HavenBags extends JavaPlugin implements Listener {
 	
 	@Override
     public void onEnable() {
+        // All you have to do is adding the following two lines in your onEnable method.
+        // You can find the plugin ids of your plugins on the page https://bstats.org/what-is-my-plugin-id
+        int pluginId = 18791; // <-- Replace with the id of your plugin!
+        Metrics metrics = new Metrics(this, pluginId);
+
+        // Optional: Add custom charts
+        //metrics.addCustomChart(new Metrics.SimplePie("chart_id", () -> "My value"));
+		
 		Log.Debug(plugin, "HavenBags Debugging Enabled!");
 		
 		config.AddValidationEntry("debug", false);
@@ -90,6 +100,9 @@ public final class HavenBags extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new BagListener(), this);
 		
 		RegisterCommands();
+
+		getServer().getPluginManager().registerEvents(new CustomRecipe(), this);
+		CustomRecipe.PrepareRecipes();
     }
     
     @Override
@@ -104,6 +117,8 @@ public final class HavenBags extends JavaPlugin implements Listener {
     		
     		}
     	}
+    	
+    	CustomRecipe.RemoveRecipes();
     }
     
     public void RegisterCommands() {

@@ -51,6 +51,9 @@ public class CommandListener implements CommandExecutor {
 			if(args[0].equalsIgnoreCase("reload") && sender.hasPermission("havenbags.reload")) {
 				HavenBags.config.Reload();
 				Lang.lang.Reload();
+				CustomRecipe.config.Reload();
+				CustomRecipe.RemoveRecipes();
+				CustomRecipe.PrepareRecipes();
 				sender.sendMessage(Name +" §aReloaded.");
 				if(!(sender instanceof Player)) { Log.Info(plugin, " §aReloaded!"); }
 			}

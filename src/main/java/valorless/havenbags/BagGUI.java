@@ -85,6 +85,9 @@ public class BagGUI implements Listener {
     	CheckInstances(); // Check for multiple of the same bags
     	
         inv = Bukkit.createInventory(player, size, bagMeta.getDisplayName());
+        if(Bukkit.getPluginManager().getPlugin("ChestSort") != null) {
+            de.jeff_media.chestsort.api.ChestSortAPI.setSortable(inv);   
+        }
         //this.content = JsonUtils.fromJson(Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "content", PersistentDataType.STRING).toString());
 		//player.sendMessage(content.toString());
 

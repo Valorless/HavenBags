@@ -1,0 +1,63 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                      Crafting                        | #
+# +------------------------------------------------------+ #
+############################################################
+
+### Recipes for crafting custom bags
+enabled: false
+
+# You can copy and paste more recipes for the different sizes. 
+recipes:
+ ### Unbound Bag
+ unbound-1:
+  # This bag will bind to any player using it.
+  # Name of the item is specified in lang.yml.
+  enabled: false
+  type: 'bound'
+  # Use this for custom bag textures, the same format as in config.yml.
+  # Leave empty to use bag-texture from config.yml.
+  bag-texture: ''
+  # Permission required to craft this specific bag.
+  permission: havenbags.crafting.unbound
+  # Bag size, the number of slots is size*9. 1=9, 2=18.
+  bag-size: 1
+  # How the recipe is layed out in the crafting table.
+  # Use X for air/nothing.
+  recipe:
+   - LEL
+   - LCL
+   - LLL
+  ingredients:
+   L:
+    material: LEATHER
+   C:
+    material: CHEST
+   E:
+    material: EMERALD
+    
+ ### Unused Bag
+ ownerless-1:
+  # This bag is ownerless and cannot bind.
+  # Name of the item is specified in lang.yml.
+  enabled: false
+  type: 'ownerless'
+  # Use this for custom bag textures, the same format as in config.yml.
+  # Leave empty to use bag-texture from config.yml.
+  bag-texture: ''
+  # Permission required to craft this specific bag.
+  permission: havenbags.crafting.unused
+  # Bag size, the number of slots is size*9. 1=9, 2=18.
+  bag-size: 1
+  # How the recipe is layed out in the crafting table.
+  # Use X for air/nothing.
+  recipe:
+   - LLL
+   - LCL
+   - LLL
+  ingredients:
+   L:
+    material: LEATHER
+   C:
+    material: CHEST
+    
