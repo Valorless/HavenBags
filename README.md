@@ -12,4 +12,4 @@ Create shulker-like bags of varying sizes bound to a player, or accessible by an
 [lang.yml](/src/main/resources/lang.yml)
 
 ## Recipes
-[lang.yml](/src/main/resources/recipes.yml)
+[recipes.yml](/src/main/resources/recipes.yml)
