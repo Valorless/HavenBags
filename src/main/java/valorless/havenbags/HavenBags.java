@@ -7,15 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class HavenBags extends JavaPlugin implements Listener {
 	public static JavaPlugin plugin;
 	public static Config config;
 	public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
+	Boolean uptodate = true;
+	String newupdate = null;
 	
 	public String[] commands = {
     		"havenbags", "bags", "bag",
@@ -32,6 +36,7 @@ public final class HavenBags extends JavaPlugin implements Listener {
 	
 	@Override
     public void onEnable() {
+		
         // All you have to do is adding the following two lines in your onEnable method.
         // You can find the plugin ids of your plugins on the page https://bstats.org/what-is-my-plugin-id
         int pluginId = 18791; // <-- Replace with the id of your plugin!
@@ -43,6 +48,7 @@ public final class HavenBags extends JavaPlugin implements Listener {
 		Log.Debug(plugin, "HavenBags Debugging Enabled!");
 		
 		config.AddValidationEntry("debug", false);
+		config.AddValidationEntry("check-updates", true);
 		config.AddValidationEntry("bag-texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=");
 		config.AddValidationEntry("open-sound", "ITEM_BUNDLE_INSERT");
 		config.AddValidationEntry("open-volume", 1);
@@ -99,10 +105,31 @@ public final class HavenBags extends JavaPlugin implements Listener {
 		Log.Debug(plugin, "Registering BagListener");
 		getServer().getPluginManager().registerEvents(new BagListener(), this);
 		
+		Bukkit.getPluginManager().registerEvents(this, this);
+				
 		RegisterCommands();
 
 		getServer().getPluginManager().registerEvents(new CustomRecipe(), this);
 		CustomRecipe.PrepareRecipes();
+		
+		if(config.GetBool("check-updates") == true) {
+			new UpdateChecker(this, 110420).getVersion(version -> {
+
+				newupdate = version;
+
+				if (getDescription().getVersion().equals(version)) {
+					Log.Info(plugin, "Checking for updates..");
+					Log.Info(plugin, "We are all up to date with the latest version. Thank you for using custom recipes :)");
+				} else {
+					Log.Info(plugin, "Checking for updates..");
+					Log.Warning(plugin, String.format("An update has been found! (v%s, you are on v%s) \n", version, getDescription().getVersion()) + 
+							"This could be bug fixes or additional features.\n" + 
+							"Please update HavenBags at https://www.spigotmc.org/resources/110420/");
+					uptodate = false;
+
+				}
+			});
+		}
     }
     
     @Override
@@ -128,4 +155,20 @@ public final class HavenBags extends JavaPlugin implements Listener {
     		getCommand(commands[i]).setTabCompleter(new TabCompletion());
     	}
     }
+
+
+	@EventHandler
+	public void UpdateNotification(PlayerJoinEvent e) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+		    public void run() {
+		    	if (config.GetBool("check-updates") && e.getPlayer().isOp() && uptodate == false) {
+					e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',
+						"&7[&aHaven&bBags&7] " + "&fAn update has been found.\nPlease download version&a " + newupdate
+						+ ", &fyou are on version&a " + getDescription().getVersion() + "!"
+						));
+				}
+		    }
+		}, 5L);
+		
+	}
 }

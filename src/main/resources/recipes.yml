@@ -4,6 +4,9 @@
 # +------------------------------------------------------+ #
 ############################################################
 
+### NOTE: Do not use & in names for colors, use §.
+### NOTE: custom-model-data at 0 will be ignored.
+
 ### Recipes for crafting custom bags
 enabled: false
 
@@ -13,7 +16,7 @@ recipes:
  unbound-1:
   # This bag will bind to any player using it.
   # Name of the item is specified in lang.yml.
-  enabled: false
+  enabled: true
   type: 'bound'
   # Use this for custom bag textures, the same format as in config.yml.
   # Leave empty to use bag-texture from config.yml.
@@ -31,16 +34,22 @@ recipes:
   ingredients:
    L:
     material: LEATHER
+    name: ''
+    custom-model-data: 0
    C:
     material: CHEST
+    name: ''
+    custom-model-data: 0
    E:
     material: EMERALD
+    name: ''
+    custom-model-data: 0
     
  ### Unused Bag
  ownerless-1:
   # This bag is ownerless and cannot bind.
   # Name of the item is specified in lang.yml.
-  enabled: false
+  enabled: true
   type: 'ownerless'
   # Use this for custom bag textures, the same format as in config.yml.
   # Leave empty to use bag-texture from config.yml.
@@ -58,6 +67,10 @@ recipes:
   ingredients:
    L:
     material: LEATHER
+    name: ''
+    custom-model-data: 0
    C:
     material: CHEST
+    name: ''
+    custom-model-data: 0
     

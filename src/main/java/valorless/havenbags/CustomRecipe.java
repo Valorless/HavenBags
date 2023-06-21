@@ -11,7 +11,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.permissions.Permission;
 
@@ -73,11 +75,30 @@ public class CustomRecipe implements Listener {
 					String letter = String.valueOf(ingredient);
 					Material material = Material.getMaterial(config.GetString("recipes." + recipe + ".ingredients." + ingredient + ".material"));
 					//Log.Error(HavenBags.plugin, "" + letter.charAt(0));
-					r.setIngredient(letter.charAt(0), material);
+					Integer custommodeldata = config.GetInt("recipes." + recipe + ".ingredients." + ingredient + ".custom-model-data");
+					String name = config.GetString("recipes." + recipe + ".ingredients." + ingredient + ".name");
+					ItemStack item = new ItemStack(material);
+					if(custommodeldata != 0) {
+						ItemMeta meta = item.getItemMeta();
+						meta.setCustomModelData(custommodeldata);
+						item.setItemMeta(meta);
+					}
+					if(!Utils.IsStringNullOrEmpty(name)) {
+						ItemMeta meta = item.getItemMeta();
+						meta.setDisplayName(name);
+						item.setItemMeta(meta);
+					}
+					if(item.hasItemMeta()) {
+						r.setIngredient(letter.charAt(0), new RecipeChoice.ExactChoice(item));
+					}else {
+						r.setIngredient(letter.charAt(0), material);
+					}
 				}
 				
 				Permission perm = new Permission(config.GetString("recipes." + recipe + ".permission"));
-				Bukkit.getPluginManager().addPermission(perm);
+				if(Bukkit.getPluginManager().getPermission(config.GetString("recipes." + recipe + ".permission")) == null) {
+					Bukkit.getPluginManager().addPermission(perm);
+				}
 				Recipes.add(key);
 				Bukkit.addRecipe(r);
 			}
