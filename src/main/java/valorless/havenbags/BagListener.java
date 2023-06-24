@@ -37,7 +37,14 @@ public class BagListener implements Listener{
     			ItemStack hand = player.getInventory().getItemInMainHand();
     			ItemMeta item = player.getInventory().getItemInMainHand().getItemMeta();
     			//player.sendMessage("has meta: " + hand.hasItemMeta());
-    			if(item == null) return;
+    			if(item == null) {
+    				// This requires more testing..
+    				//hand = player.getInventory().getItemInOffHand();
+    				//item = player.getInventory().getItemInOffHand().getItemMeta();
+    				//if(item == null) {
+    					return;
+    				//}
+    			}
     			
     			//if(Tags.Get(plugin, item.getPersistentDataContainer(), "uuid", PersistentDataType.STRING) != null || NBT.Has(hand, "bag-uuid")) {
         		if(NBT.Has(hand, "bag-uuid")) {

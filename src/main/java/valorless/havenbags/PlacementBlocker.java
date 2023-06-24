@@ -18,6 +18,8 @@ public class PlacementBlocker implements Listener {
 		Block block = event.getBlockPlaced();
 		ItemStack item = event.getItemInHand();
 		ItemMeta nbt = item.getItemMeta();
+		ItemStack offItem = event.getPlayer().getInventory().getItemInOffHand();
+		ItemMeta offMeta = offItem.getItemMeta();
 		//Log.Debug(HavenBags.plugin, "Block Placed: " + block.getType().toString());
 		//Log.Debug(HavenBags.plugin, "Player Holding: " + item.getType().toString());
 	 
@@ -27,10 +29,12 @@ public class PlacementBlocker implements Listener {
 				Log.Debug(HavenBags.plugin, "Block has ItemMeta.");
 				if(NBT.Has(item, "bag-uuid")) {
 					Log.Debug(HavenBags.plugin, "Block was bag!");
-					Log.Warning(HavenBags.plugin, "Oops.. This shouldnt happen... Please tell the developer 'PlacementBlocker:onBlockPlace()' :)");
-					Log.Warning(HavenBags.plugin, "This warning was tested quite a lot and was never triggered.");
-					Log.Warning(HavenBags.plugin, "I left this in on purpose, should it work as intended.");
-					Log.Warning(HavenBags.plugin, "No additional code is run, so you're good!");
+					block.setType(Material.AIR);
+					event.setCancelled(true);
+					//Log.Warning(HavenBags.plugin, "Oops.. This shouldnt happen... Please tell the developer 'PlacementBlocker:onBlockPlace()' :)");
+					//Log.Warning(HavenBags.plugin, "This warning was tested quite a lot and was never triggered.");
+					//Log.Warning(HavenBags.plugin, "I left this in on purpose, should it work as intended.");
+					//Log.Warning(HavenBags.plugin, "No additional code is run, so you're good!");
 					/*Player player = event.getPlayer();
 					block.setType(Material.AIR);
 					

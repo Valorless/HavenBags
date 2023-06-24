@@ -4,7 +4,6 @@ valorless\havenbags\HavenBags.class
 valorless\havenbags\Metrics$SingleLineChart.class
 valorless\havenbags\ActiveBag.class
 valorless\havenbags\Lang.class
-valorless\havenbags\cRecipe.class
 valorless\havenbags\Metrics$1.class
 valorless\havenbags\Metrics$AdvancedPie.class
 valorless\havenbags\BagListener.class
@@ -12,7 +11,6 @@ valorless\havenbags\BagGUI$Items.class
 valorless\havenbags\Metrics$JsonObjectBuilder.class
 valorless\havenbags\Lang$Placeholders.class
 valorless\havenbags\Metrics$JsonObjectBuilder$JsonObject.class
-valorless\havenbags\cRecipe$Item.class
 valorless\havenbags\PlacementBlocker.class
 valorless\havenbags\CustomRecipe.class
 valorless\havenbags\Metrics$MultiLineChart.class
