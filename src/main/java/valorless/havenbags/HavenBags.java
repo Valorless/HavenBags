@@ -123,7 +123,6 @@ public final class HavenBags extends JavaPlugin implements Listener {
 
 				if (getDescription().getVersion().equals(version)) {
 					Log.Info(plugin, "Checking for updates..");
-					Log.Info(plugin, "We are all up to date with the latest version. Thank you for using custom recipes :)");
 				} else {
 					Log.Info(plugin, "Checking for updates..");
 					Log.Warning(plugin, String.format("An update has been found! (v%s, you are on v%s) \n", version, getDescription().getVersion()) + 
