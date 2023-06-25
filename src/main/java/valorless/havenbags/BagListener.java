@@ -31,6 +31,17 @@ public class BagListener implements Listener{
     	if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
     		Player player = event.getPlayer();
     		//player.sendMessage("Right click");
+    		List<String> blacklist = HavenBags.config.GetStringList("blacklist");
+    		if(blacklist != null) {
+    			if(blacklist.size() != 0) {
+					Log.Debug(plugin, "Player World: " + player.getWorld().getName());
+    				for(String world : blacklist) {
+    					Log.Debug(plugin, "Blacklist: " + world);
+    					if(player.getWorld().getName().equalsIgnoreCase(world)) return;
+    				}
+    			}
+    		}
+    		
     		if(!player.hasPermission("havenbags.use")) {
     			return;
     		}else {

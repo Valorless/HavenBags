@@ -6,6 +6,7 @@ valorless\havenbags\ActiveBag.class
 valorless\havenbags\Lang.class
 valorless\havenbags\Metrics$1.class
 valorless\havenbags\Metrics$AdvancedPie.class
+valorless\havenbags\HavenBags$2.class
 valorless\havenbags\BagListener.class
 valorless\havenbags\BagGUI$Items.class
 valorless\havenbags\Metrics$JsonObjectBuilder.class

@@ -31,3 +31,11 @@ inventory-full-pitch: 1
 
 # Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?
 protect-bags: true
+
+# Specify if bags should not work in specific worlds.
+# Worlds do not include _nether or _the_end.
+# You have to manually add those.
+blacklist:
+ - world_name
+ - world_name_nether
+ - another_world

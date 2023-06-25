@@ -60,6 +60,10 @@ public final class HavenBags extends JavaPlugin implements Listener {
 		config.AddValidationEntry("inventory-full-volume", 1);
 		config.AddValidationEntry("inventory-full-pitch", 1);
 		config.AddValidationEntry("protect-bags", true);
+		config.AddValidationEntry("blacklist", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L;
+
+		{ add("world_name"); add("world_name_nether"); add("another_world"); }} );
 		Log.Debug(plugin, "Validating config.yml");
 		config.Validate();
 		
