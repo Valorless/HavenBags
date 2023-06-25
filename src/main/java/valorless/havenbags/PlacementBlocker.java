@@ -24,11 +24,11 @@ public class PlacementBlocker implements Listener {
 		//Log.Debug(HavenBags.plugin, "Player Holding: " + item.getType().toString());
 	 
 		if(block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
-			Log.Debug(HavenBags.plugin, "Block was head.");
+			Log.Debug(Main.plugin, "Block was head.");
 			if(nbt != null) {
-				Log.Debug(HavenBags.plugin, "Block has ItemMeta.");
+				Log.Debug(Main.plugin, "Block has ItemMeta.");
 				if(NBT.Has(item, "bag-uuid")) {
-					Log.Debug(HavenBags.plugin, "Block was bag!");
+					Log.Debug(Main.plugin, "Block was bag!");
 					block.setType(Material.AIR);
 					event.setCancelled(true);
 					//Log.Warning(HavenBags.plugin, "Oops.. This shouldnt happen... Please tell the developer 'PlacementBlocker:onBlockPlace()' :)");
@@ -52,8 +52,8 @@ public class PlacementBlocker implements Listener {
 					event.setCancelled(true);*/
 				}
 			}else {
-				Log.Debug(HavenBags.plugin, "Block has no ItemMeta.");
-				Log.Debug(HavenBags.plugin, "Block was likely bag, removing.");
+				Log.Debug(Main.plugin, "Block has no ItemMeta.");
+				Log.Debug(Main.plugin, "Block was likely bag, removing.");
 				block.setType(Material.AIR);
 				event.setCancelled(true);
 			}

@@ -26,7 +26,7 @@ public class BagDamagePrevention implements Listener{
 						//Log.Debug(HavenBags.plugin, "Dropped item is likely bag.");
 						if(NBT.Has(item.getItemStack(), "bag-uuid")) {
 							//Log.Debug(HavenBags.plugin, "Dropped item is bag!");
-							if(HavenBags.config.GetBool("protect-bags")) {
+							if(Main.config.GetBool("protect-bags")) {
 								//Log.Debug(HavenBags.plugin, "Dropped item is protected.");
 	    						e.setCancelled(true);
 							}

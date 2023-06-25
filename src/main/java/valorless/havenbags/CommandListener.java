@@ -42,14 +42,14 @@ public class CommandListener implements CommandExecutor {
     		Log.Debug(plugin, "Argument: " + a);
     	}
     	
-    	bagTexture = HavenBags.config.GetString("bag-texture");
+    	bagTexture = Main.config.GetString("bag-texture");
 		if(args.length == 0) {
 			sender.sendMessage(Name + " HavenBags by Valorless.");
 		}
 		else 
 		if (args.length >= 1){
 			if(args[0].equalsIgnoreCase("reload") && sender.hasPermission("havenbags.reload")) {
-				HavenBags.config.Reload();
+				Main.config.Reload();
 				Lang.lang.Reload();
 				CustomRecipe.config.Reload();
 				CustomRecipe.RemoveRecipes();

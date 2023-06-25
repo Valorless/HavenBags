@@ -14,7 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class HavenBags extends JavaPlugin implements Listener {
+public final class Main extends JavaPlugin implements Listener {
 	public static JavaPlugin plugin;
 	public static Config config;
 	public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
@@ -117,19 +117,17 @@ public final class HavenBags extends JavaPlugin implements Listener {
 		CustomRecipe.PrepareRecipes();
 		
 		if(config.GetBool("check-updates") == true) {
+			Log.Info(plugin, "Checking for updates..");
 			new UpdateChecker(this, 110420).getVersion(version -> {
 
 				newupdate = version;
 
-				if (getDescription().getVersion().equals(version)) {
-					Log.Info(plugin, "Checking for updates..");
-				} else {
-					Log.Info(plugin, "Checking for updates..");
+				if (!getDescription().getVersion().equals(version)) {
 					Log.Warning(plugin, String.format("An update has been found! (v%s, you are on v%s) \n", version, getDescription().getVersion()) + 
 							"This could be bug fixes or additional features.\n" + 
 							"Please update HavenBags at https://www.spigotmc.org/resources/110420/");
+					
 					uptodate = false;
-
 				}
 			});
 		}

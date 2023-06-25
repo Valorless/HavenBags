@@ -29,7 +29,7 @@ public class Lang {
 
 	public static String Get(String key) {
 		if(lang.Get(key) == null) {
-			Log.Error(HavenBags.plugin, String.format("Lang.yml is missing the key '%s'!", key));
+			Log.Error(Main.plugin, String.format("Lang.yml is missing the key '%s'!", key));
 			return "§4error";
 		}
 		return Parse(lang.GetString(key));
@@ -37,7 +37,7 @@ public class Lang {
 	
 	public static String Get(String key, Object arg) {
 		if(lang.Get(key) == null) {
-			Log.Error(HavenBags.plugin, String.format("Lang.yml is missing the key '%s'!", key));
+			Log.Error(Main.plugin, String.format("Lang.yml is missing the key '%s'!", key));
 			return "§4error";
 		}
 		return Parse(String.format(lang.GetString(key), arg.toString()));
@@ -45,7 +45,7 @@ public class Lang {
 	
 	public static String Get(String key, Object arg1, Object arg2) {
 		if(lang.Get(key) == null) {
-			Log.Error(HavenBags.plugin, String.format("Lang.yml is missing the key '%s'!", key));
+			Log.Error(Main.plugin, String.format("Lang.yml is missing the key '%s'!", key));
 			return "§4error";
 		}
 		return Parse(String.format(lang.GetString(key), arg1.toString(), arg2.toString()));

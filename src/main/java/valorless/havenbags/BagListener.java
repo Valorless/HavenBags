@@ -31,7 +31,7 @@ public class BagListener implements Listener{
     	if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
     		Player player = event.getPlayer();
     		//player.sendMessage("Right click");
-    		List<String> blacklist = HavenBags.config.GetStringList("blacklist");
+    		List<String> blacklist = Main.config.GetStringList("blacklist");
     		if(blacklist != null) {
     			if(blacklist.size() != 0) {
 					Log.Debug(plugin, "Player World: " + player.getWorld().getName());
@@ -121,9 +121,9 @@ public class BagListener implements Listener{
     					Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
     			    	player.getInventory().remove(hand);
     					gui.OpenInventory(player);
-    					SFX.Play(HavenBags.config.GetString("open-sound"), 
-    							HavenBags.config.GetFloat("open-volume").floatValue(), 
-    							HavenBags.config.GetFloat("open-pitch").floatValue(), player);
+    					SFX.Play(Main.config.GetString("open-sound"), 
+    							Main.config.GetFloat("open-volume").floatValue(), 
+    							Main.config.GetFloat("open-pitch").floatValue(), player);
     	    			Log.Debug(plugin, "Attempting to open ownerless bag");
     					return;
     				}
@@ -134,9 +134,9 @@ public class BagListener implements Listener{
     						Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
         			    	player.getInventory().remove(hand);
     						gui.OpenInventory(player);
-        					SFX.Play(HavenBags.config.GetString("open-sound"), 
-        							HavenBags.config.GetFloat("open-volume").floatValue(), 
-        							HavenBags.config.GetFloat("open-pitch").floatValue(), player);
+        					SFX.Play(Main.config.GetString("open-sound"), 
+        							Main.config.GetFloat("open-volume").floatValue(), 
+        							Main.config.GetFloat("open-pitch").floatValue(), player);
     		    			Log.Debug(plugin, "Attempting to open bag");
     						return;
     					} else if (player.hasPermission("havenbags.bypass")) {
@@ -144,9 +144,9 @@ public class BagListener implements Listener{
     						Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
         			    	player.getInventory().remove(hand);
     						gui.OpenInventory(player);
-        					SFX.Play(HavenBags.config.GetString("open-sound"), 
-        							HavenBags.config.GetFloat("open-volume").floatValue(), 
-        							HavenBags.config.GetFloat("open-pitch").floatValue(), player);
+        					SFX.Play(Main.config.GetString("open-sound"), 
+        							Main.config.GetFloat("open-volume").floatValue(), 
+        							Main.config.GetFloat("open-pitch").floatValue(), player);
     		    			Log.Debug(plugin, player + "has attempted to open a bag, bypassing the lock");
     						return;
     					}

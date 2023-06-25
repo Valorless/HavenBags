@@ -24,7 +24,7 @@ import valorless.valorlessutils.skulls.SkullCreator;
 
 public class CustomRecipe implements Listener {
 	
-	public static Config config = new Config(HavenBags.plugin, "recipes.yml");
+	public static Config config = new Config(Main.plugin, "recipes.yml");
 	public static List<NamespacedKey> Recipes = new ArrayList<NamespacedKey>();
 	
 	public static void PrepareRecipes() {
@@ -35,14 +35,14 @@ public class CustomRecipe implements Listener {
 		
 		for(Object recipe : recipes) {
 			if(config.GetBool("recipes." + recipe + ".enabled")) {
-				NamespacedKey key = new NamespacedKey(HavenBags.plugin, String.valueOf(recipe));
+				NamespacedKey key = new NamespacedKey(Main.plugin, String.valueOf(recipe));
 				//Log.Warning(HavenBags.plugin, String.valueOf(recipe));
 				
 				String bagTexture = "";
 				if(!Utils.IsStringNullOrEmpty(config.GetString("recipes." + recipe + ".bag-texture"))) {
 					bagTexture = config.GetString("recipes." + recipe + ".bag-texture");
 				}else {
-					bagTexture = HavenBags.config.GetString("bag-texture");
+					bagTexture = Main.config.GetString("bag-texture");
 				}
 				int size = config.GetInt("recipes." + recipe + ".bag-size");
 				ItemStack bagItem = SkullCreator.itemFromBase64(bagTexture);

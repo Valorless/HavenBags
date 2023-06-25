@@ -146,7 +146,7 @@ public class TabCompletion implements TabCompleter {
 	
 	public List<String> GetBags(String player){
 		try {
-			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", HavenBags.plugin.getDataFolder(), player)).listFiles())
+			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
 					.filter(file -> !file.isDirectory())
 					.map(File::getName)
 					.collect(Collectors.toList());
@@ -161,7 +161,7 @@ public class TabCompletion implements TabCompleter {
 	
 	public List<String> GetBagOwners(){
 		try {
-			List<String> bagOwners = Stream.of(new File(String.format("%s/bags/", HavenBags.plugin.getDataFolder())).listFiles())
+			List<String> bagOwners = Stream.of(new File(String.format("%s/bags/", Main.plugin.getDataFolder())).listFiles())
 					.filter(file -> file.isDirectory())
 					.map(File::getName)
 					.collect(Collectors.toList());

@@ -51,7 +51,7 @@ public class BagGUI implements Listener {
 	}
 
     public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, SkullMeta bagMeta) {
-    	HavenBags.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid")));
+    	Main.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid")));
     	
     	try {
     		// Try get owner's name on the server.
@@ -99,7 +99,7 @@ public class BagGUI implements Listener {
     
     void CheckInstances() {
     	List<BagGUI> thisUUID = new ArrayList<BagGUI>();
-    	for (ActiveBag openBag : HavenBags.activeBags) {
+    	for (ActiveBag openBag : Main.activeBags) {
     		Log.Debug(plugin, "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
     		if(openBag.uuid.equalsIgnoreCase(NBT.GetString(bagItem, "bag-uuid"))) {
     			thisUUID.add(openBag.gui);
@@ -136,10 +136,10 @@ public class BagGUI implements Listener {
 						"\n" +
 						"################################\n";
 				console.sendMessage(String.format(errorMessage, bag));
-				for (ActiveBag openBag : HavenBags.activeBags) {
+				for (ActiveBag openBag : Main.activeBags) {
 		    		Log.Debug(plugin, "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
 		    		if(openBag.uuid == NBT.GetString(bagItem, "bag-uuid")) {
-		    			HavenBags.activeBags.remove(openBag);
+		    			Main.activeBags.remove(openBag);
 		    		}
 		    	}
 				throw(new NullPointerException(""));
@@ -334,28 +334,28 @@ public class BagGUI implements Listener {
 		GivePlayerBagBack();
 		WriteToServer();
 		try {
-		for (ActiveBag openBag : HavenBags.activeBags) {
+		for (ActiveBag openBag : Main.activeBags) {
     		Log.Debug(plugin, "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
     		if(openBag.uuid == NBT.GetString(bagItem, "bag-uuid")) {
-    			HavenBags.activeBags.remove(openBag);
+    			Main.activeBags.remove(openBag);
     		}
     	}
 		} catch(Exception e) {}
 		
-		Log.Debug(plugin, "Remaining Open Bags: " + HavenBags.activeBags.size());
+		Log.Debug(plugin, "Remaining Open Bags: " + Main.activeBags.size());
     }
     
     void GivePlayerBagBack() {
     	if(player.getInventory().firstEmpty() != -1) {
     		player.getInventory().addItem(bagItem);
-			SFX.Play(HavenBags.config.GetString("close-sound"), 
-					HavenBags.config.GetFloat("close-volume").floatValue(), 
-					HavenBags.config.GetFloat("close-pitch").floatValue(), player);
+			SFX.Play(Main.config.GetString("close-sound"), 
+					Main.config.GetFloat("close-volume").floatValue(), 
+					Main.config.GetFloat("close-pitch").floatValue(), player);
     	} else {
     		player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
-			SFX.Play(HavenBags.config.GetString("inventory-full-sound"), 
-					HavenBags.config.GetFloat("inventory-full-volume").floatValue(), 
-					HavenBags.config.GetFloat("inventory-full-pitch").floatValue(), player);
+			SFX.Play(Main.config.GetString("inventory-full-sound"), 
+					Main.config.GetFloat("inventory-full-volume").floatValue(), 
+					Main.config.GetFloat("inventory-full-pitch").floatValue(), player);
     		player.getWorld().dropItem(player.getLocation(), bagItem);
     	}
     }
