@@ -2,6 +2,7 @@ package valorless.havenbags;
 
 import valorless.valorlessutils.ValorlessUtils.*;
 import valorless.valorlessutils.config.Config;
+import valorless.valorlessutils.translate.Translator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public final class Main extends JavaPlugin implements Listener {
 	public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
 	String newupdate = null;
+	public static Translator translator;
 	
 	public String[] commands = {
     		"havenbags", "bags", "bag",
@@ -49,6 +51,7 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		config.AddValidationEntry("debug", false);
 		config.AddValidationEntry("check-updates", true);
+		config.AddValidationEntry("language", "en_us");
 		config.AddValidationEntry("bag-texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=");
 		config.AddValidationEntry("open-sound", "ITEM_BUNDLE_INSERT");
 		config.AddValidationEntry("open-volume", 1);
@@ -101,6 +104,8 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		Log.Debug(plugin, "Validating lang.yml");
 		Lang.lang.Validate();
+		
+		translator = new Translator(config.GetString("language"));
 
 		Log.Debug(plugin, "Registering PlacementListener");
 		getServer().getPluginManager().registerEvents(new PlacementBlocker(), this);

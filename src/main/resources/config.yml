@@ -6,6 +6,23 @@
 
 # Additional messages used for debugging.
 debug: false
+check-updates: true
+
+# Language used when translating material and item names.
+## Supported languages:
+# English (US) --------- en_us
+# English -------------- en_gb
+# Danish --------------- da_dk
+# German --------------- de_de
+# Spanish -------------- es_es
+# French --------------- fr_fr
+# Turkish -------------- tr_tr
+# Dutch ---------------- nl_nl
+# Japenese ------------- ja_jp
+# Korean --------------- ko_kr
+# Chinese (Simplified) - zh_cn
+# Russian -------------- ru_ru
+language: 'en_us'
 
 # Texture of the bag. Must be Base64 format.
 # You can get textures from https://minecraft-heads.com/

@@ -296,10 +296,10 @@ public class BagGUI implements Listener {
     			}else {
     				if(inv.getItem(i).getAmount() != 1) {
     					//items.add("§7" + FixMaterialName(inv.getItem(i).getType().name()) + " §7x" + inv.getItem(i).getAmount());
-    					items.add(Lang.Get("bag-content-item-amount", FixMaterialName(inv.getItem(i).getType().name()), inv.getItem(i).getAmount()));
+    					items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(inv.getItem(i).getType().getTranslationKey()), inv.getItem(i).getAmount()));
     				} else {
     					//items.add("§7" + FixMaterialName(inv.getItem(i).getType().name()));
-    					items.add(Lang.Get("bag-content-item", FixMaterialName(inv.getItem(i).getType().name())));
+    					items.add(Lang.Get("bag-content-item", Main.translator.Translate(inv.getItem(i).getType().getTranslationKey())));
     				}
     			}
     			a++;

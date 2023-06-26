@@ -25,6 +25,7 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.skulls.SkullCreator;
+import valorless.valorlessutils.translate.Translator;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
 public class CommandListener implements CommandExecutor {
@@ -54,6 +55,7 @@ public class CommandListener implements CommandExecutor {
 				CustomRecipe.config.Reload();
 				CustomRecipe.RemoveRecipes();
 				CustomRecipe.PrepareRecipes();
+				Main.translator = new Translator(Main.config.GetString("language"));
 				sender.sendMessage(Name +" §aReloaded.");
 				if(!(sender instanceof Player)) { Log.Info(plugin, " §aReloaded!"); }
 			}
