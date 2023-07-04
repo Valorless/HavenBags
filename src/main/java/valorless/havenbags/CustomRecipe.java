@@ -53,6 +53,9 @@ public class CustomRecipe implements Listener {
 					bagMeta.setDisplayName(Lang.Get("bag-ownerless-unused"));
 				}
 				List<String> lore = new ArrayList<String>();
+		        for (String l : Lang.lang.GetStringList("bag-lore")) {
+		        	lore.add(Lang.Parse(l));
+		        }
 				lore.add(Lang.Get("bag-size", size*9));
 				bagMeta.setLore(lore);
 				bagItem.setItemMeta(bagMeta);

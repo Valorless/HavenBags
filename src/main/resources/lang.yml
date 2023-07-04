@@ -11,6 +11,10 @@
 # Prefix in front of all plugin messages. '' for blank.
 prefix: '&7[&aHaven&bBags&7] &r'
 
+# Message sent if the command is missing some args.
+# Some commands have their own messages.
+malformed-command: '&cUnknown command, are you missing some parameters?'
+
 ### Player ###
 
 # Message sent to player should their bag's content fail to load.
@@ -86,6 +90,10 @@ bag-ownerless-unused: '&aUnused Bag'
 bag-ownerless-used: '&aBag'
 
 ### Lore ###
+
+# Bag lore, always at the top before 'bound-to'.
+bag-lore:
+ - '&fA well crafted bag, suited for carrying stuff.'
 
 # Who the bag is bound to, if bound.
 # %s - Bag owner's name.

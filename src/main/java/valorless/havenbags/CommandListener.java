@@ -49,6 +49,7 @@ public class CommandListener implements CommandExecutor {
 		}
 		else 
 		if (args.length >= 1){
+			try {
 			if(args[0].equalsIgnoreCase("reload") && sender.hasPermission("havenbags.reload")) {
 				Main.config.Reload();
 				Lang.lang.Reload();
@@ -81,6 +82,9 @@ public class CommandListener implements CommandExecutor {
 								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "size", bag.size, PersistentDataType.INTEGER);
 								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "false", PersistentDataType.STRING);
 								List<String> lore = new ArrayList<String>();
+						        for (String l : Lang.lang.GetStringList("bag-lore")) {
+						        	lore.add(Lang.Parse(l));
+						        }
 						        lore.add(Lang.Get("bag-size", size*9));
 								bagMeta.setLore(lore);
 								bagItem.setItemMeta(bagMeta);
@@ -118,6 +122,9 @@ public class CommandListener implements CommandExecutor {
 								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "size", bag.size, PersistentDataType.INTEGER);
 								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "true", PersistentDataType.STRING);
 								List<String> lore = new ArrayList<String>();
+						        for (String l : Lang.lang.GetStringList("bag-lore")) {
+						        	lore.add(Lang.Parse(l));
+						        }
 						        lore.add(Lang.Get("bag-size", size*9));
 								bagMeta.setLore(lore);
 								bagItem.setItemMeta(bagMeta);
@@ -166,6 +173,9 @@ public class CommandListener implements CommandExecutor {
 								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "size", bag.size, PersistentDataType.INTEGER);
 								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "false", PersistentDataType.STRING);
 								List<String> lore = new ArrayList<String>();
+						        for (String l : Lang.lang.GetStringList("bag-lore")) {
+						        	lore.add(Lang.Parse(l));
+						        }
 						        lore.add(Lang.Get("bag-size", size*9));
 								bagMeta.setLore(lore);
 								bagItem.setItemMeta(bagMeta);
@@ -204,6 +214,9 @@ public class CommandListener implements CommandExecutor {
 								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "size", bag.size, PersistentDataType.INTEGER);
 								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "true", PersistentDataType.STRING);
 								List<String> lore = new ArrayList<String>();
+						        for (String l : Lang.lang.GetStringList("bag-lore")) {
+						        	lore.add(Lang.Parse(l));
+						        }
 						        lore.add(Lang.Get("bag-size", size*9));
 								bagMeta.setLore(lore);
 								bagItem.setItemMeta(bagMeta);
@@ -325,6 +338,9 @@ public class CommandListener implements CommandExecutor {
 					    		}
 					    	}
 					        List<String> lore = new ArrayList<String>();
+					        for (String l : Lang.lang.GetStringList("bag-lore")) {
+					        	lore.add(Lang.Parse(l));
+					        }
 					        if(NBT.GetBool(bagItem, "bag-canBind")) {
 					        	lore.add(Lang.Get("bound-to", owner));
 					        }
@@ -552,6 +568,9 @@ public class CommandListener implements CommandExecutor {
 	    				sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-rename"));
 	    			}
 				}
+			}
+			} catch(Exception e) {
+				sender.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
 			}
 		}
         return false;

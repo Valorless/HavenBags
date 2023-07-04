@@ -39,14 +39,6 @@ public final class Main extends JavaPlugin implements Listener {
 	@Override
     public void onEnable() {
 		
-        // All you have to do is adding the following two lines in your onEnable method.
-        // You can find the plugin ids of your plugins on the page https://bstats.org/what-is-my-plugin-id
-        int pluginId = 18791; // <-- Replace with the id of your plugin!
-        Metrics metrics = new Metrics(this, pluginId);
-
-        // Optional: Add custom charts
-        //metrics.addCustomChart(new Metrics.SimplePie("chart_id", () -> "My value"));
-		
 		Log.Debug(plugin, "HavenBags Debugging Enabled!");
 		
 		config.AddValidationEntry("debug", false);
@@ -71,6 +63,7 @@ public final class Main extends JavaPlugin implements Listener {
 		config.Validate();
 		
 		Lang.lang.AddValidationEntry("prefix", "&7[&aHaven&bBags&7] &r");
+		Lang.lang.AddValidationEntry("malformed-command", "&cUnknown command, are you missing some parameters?");
 		Lang.lang.AddValidationEntry("bag-load-error", "&cBag failed to load.\nPlease notify staff.");
 		Lang.lang.AddValidationEntry("bag-rename", "&fRenamed bag to %s.");
 		Lang.lang.AddValidationEntry("bag-rename-reset", "&fReset bag''s name.");
@@ -95,6 +88,12 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("bag-ownerless-unused", "&aUnused Bag");
 		Lang.lang.AddValidationEntry("bag-ownerless-used", "&aBag");
 		Lang.lang.AddValidationEntry("bound-to", "&7Bound to %s");
+		Lang.lang.AddValidationEntry("bag-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&fA well crafted bag, suited for carrying stuff."); 
+				}
+			} 
+		);
 		Lang.lang.AddValidationEntry("bag-size", "&7Size: %s");
 		Lang.lang.AddValidationEntry("bag-content-title", "&7Content:");
 		Lang.lang.AddValidationEntry("bag-content-preview-size", 5);
@@ -136,6 +135,14 @@ public final class Main extends JavaPlugin implements Listener {
 				}
 			});
 		}
+		
+		// All you have to do is adding the following two lines in your onEnable method.
+        // You can find the plugin ids of your plugins on the page https://bstats.org/what-is-my-plugin-id
+        int pluginId = 18791; // <-- Replace with the id of your plugin!
+        Metrics metrics = new Metrics(this, pluginId);
+
+        // Optional: Add custom charts
+        metrics.addCustomChart(new Metrics.SimplePie("language", () -> config.GetString("language")));
     }
     
     @Override

@@ -306,6 +306,9 @@ public class BagGUI implements Listener {
     		}
     	}
         List<String> lore = new ArrayList<String>();
+        for (String l : Lang.lang.GetStringList("bag-lore")) {
+        	lore.add(Lang.Parse(l));
+        }
         if(NBT.GetBool(bagItem, "bag-canBind")) {
         	//lore.add(String.format("§7Bound to %s", e.getPlayer().getName()));
         	lore.add(Lang.Get("bound-to", bagOwner));
