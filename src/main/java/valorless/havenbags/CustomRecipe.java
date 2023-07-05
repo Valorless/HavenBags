@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.permissions.Permission;
 
+import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.ValorlessUtils.Utils;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
@@ -37,6 +38,8 @@ public class CustomRecipe implements Listener {
 			if(config.GetBool("recipes." + recipe + ".enabled")) {
 				NamespacedKey key = new NamespacedKey(Main.plugin, String.valueOf(recipe));
 				//Log.Warning(HavenBags.plugin, String.valueOf(recipe));
+
+				ItemStack bagItem = new ItemStack(Material.AIR);
 				
 				String bagTexture = "";
 				if(!Utils.IsStringNullOrEmpty(config.GetString("recipes." + recipe + ".bag-texture"))) {
@@ -45,8 +48,18 @@ public class CustomRecipe implements Listener {
 					bagTexture = Main.config.GetString("bag-texture");
 				}
 				int size = config.GetInt("recipes." + recipe + ".bag-size");
-				ItemStack bagItem = SkullCreator.itemFromBase64(bagTexture);
-				SkullMeta bagMeta = (SkullMeta)bagItem.getItemMeta();
+				if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+					bagItem = SkullCreator.itemFromBase64(bagTexture);
+				} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
+					bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+				} else {
+					Log.Error(Main.plugin, Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
+					return;
+				}
+				ItemMeta bagMeta = bagItem.getItemMeta();
+				if(config.GetInt("recipes." + recipe + ".custom-model-data") != 0) {
+					bagMeta.setCustomModelData(config.GetInt("recipes." + recipe + ".custom-model-data"));
+				}
 				if(config.GetString("recipes." + recipe + ".type").equalsIgnoreCase("bound")) {
 					bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
 				} else if(config.GetString("recipes." + recipe + ".type").equalsIgnoreCase("ownerless")) {
@@ -56,7 +69,10 @@ public class CustomRecipe implements Listener {
 		        for (String l : Lang.lang.GetStringList("bag-lore")) {
 		        	lore.add(Lang.Parse(l));
 		        }
-				lore.add(Lang.Get("bag-size", size*9));
+				//lore.add(Lang.Get("bag-size", size*9));
+				for (String l : Lang.lang.GetStringList("bag-size")) {
+					lore.add(Lang.Parse(String.format(l, size*9)));
+				}
 				bagMeta.setLore(lore);
 				bagItem.setItemMeta(bagMeta);
 				NBT.SetString(bagItem, "bag-uuid", "null");

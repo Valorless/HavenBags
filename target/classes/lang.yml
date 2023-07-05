@@ -97,11 +97,13 @@ bag-lore:
 
 # Who the bag is bound to, if bound.
 # %s - Bag owner's name.
-bound-to: '&7Bound to %s'
+bound-to: 
+ - '&7Bound to %s'
 
 # Bag size in slots.
 # %s - Bag size.
-bag-size: '&7Size: %s'
+bag-size: 
+ - '&7Size: %s'
 
 # Content preview.
 bag-content-title: '&7Content:'

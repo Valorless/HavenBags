@@ -24,6 +24,17 @@ check-updates: true
 # Russian -------------- ru_ru
 language: 'en_us'
 
+# Should the bags use heads or items?
+# HEAD - use Player Heads.
+# ITEM - use regular items.
+bag-type: HEAD
+
+# Item material if the bag-type is 'ITEM'
+bag-material: ENDER_CHEST
+
+# Custom Model Data if the bag-type is 'ITEM'
+bag-custom-model-data: 0
+
 # Texture of the bag. Must be Base64 format.
 # You can get textures from https://minecraft-heads.com/
 # The texture by default: https://minecraft-heads.com/custom-heads/decoration/1906-bag

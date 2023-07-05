@@ -25,6 +25,9 @@ recipes:
   permission: havenbags.crafting.unbound
   # Bag size, the number of slots is size*9. 1=9, 2=18.
   bag-size: 1
+  # Custom Model Data
+  # Leave 0 to ignore.
+  custom-model-data: 0
   # How the recipe is layed out in the crafting table.
   # Use X for air/nothing.
   recipe:
@@ -58,6 +61,9 @@ recipes:
   permission: havenbags.crafting.unused
   # Bag size, the number of slots is size*9. 1=9, 2=18.
   bag-size: 1
+  # Custom Model Data
+  # Leave 0 to ignore.
+  custom-model-data: 0
   # How the recipe is layed out in the crafting table.
   # Use X for air/nothing.
   recipe:

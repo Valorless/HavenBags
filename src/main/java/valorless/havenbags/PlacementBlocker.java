@@ -15,13 +15,14 @@ public class PlacementBlocker implements Listener {
 	
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
+		
 		Block block = event.getBlockPlaced();
 		ItemStack item = event.getItemInHand();
 		ItemMeta nbt = item.getItemMeta();
 		ItemStack offItem = event.getPlayer().getInventory().getItemInOffHand();
 		ItemMeta offMeta = offItem.getItemMeta();
-		//Log.Debug(HavenBags.plugin, "Block Placed: " + block.getType().toString());
-		//Log.Debug(HavenBags.plugin, "Player Holding: " + item.getType().toString());
+		Log.Debug(Main.plugin, "Block Placed: " + block.getType().toString());
+		Log.Debug(Main.plugin, "Player Holding: " + item.getType().toString());
 	 
 		if(block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
 			Log.Debug(Main.plugin, "Block was head.");
@@ -56,6 +57,20 @@ public class PlacementBlocker implements Listener {
 				Log.Debug(Main.plugin, "Block was likely bag, removing.");
 				block.setType(Material.AIR);
 				event.setCancelled(true);
+			}
+		} else {
+			if(nbt != null) {
+				Log.Debug(Main.plugin, "Block has ItemMeta.");
+				if(NBT.Has(item, "bag-uuid")) {
+					Log.Debug(Main.plugin, "Block was bag!");
+				}
+			}
+			
+			if(item.getType() == Material.AIR) {
+				block.setType(Material.AIR);
+				event.setCancelled(true);
+				Log.Debug(Main.plugin, "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
+				Log.Debug(Main.plugin, "Block was likely bag, removing.");
 			}
 		}
 	}

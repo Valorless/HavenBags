@@ -1,5 +1,6 @@
 valorless\havenbags\Metrics$SimpleBarChart.class
 valorless\havenbags\Metrics.class
+valorless\havenbags\Main$5.class
 valorless\havenbags\Metrics$SingleLineChart.class
 valorless\havenbags\ActiveBag.class
 valorless\havenbags\Lang.class
@@ -20,6 +21,7 @@ valorless\havenbags\BagGUI.class
 valorless\havenbags\Metrics$MetricsBase.class
 valorless\havenbags\UpdateChecker.class
 valorless\havenbags\CommandListener.class
+valorless\havenbags\Main$4.class
 valorless\havenbags\PickupPrevention.class
 valorless\havenbags\SFX.class
 valorless\havenbags\TabCompletion.class

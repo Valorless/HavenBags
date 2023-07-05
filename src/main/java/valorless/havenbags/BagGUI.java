@@ -20,7 +20,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+//import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -35,7 +36,7 @@ public class BagGUI implements Listener {
 	String Name = "§7[§aHaven§bBags§7]§r";
 	private final Inventory inv;
 	public ItemStack bagItem;
-	public SkullMeta bagMeta;
+	public ItemMeta bagMeta;
 	public List<ItemStack> content;
 	public static Config config;
 	public Player player;
@@ -50,7 +51,7 @@ public class BagGUI implements Listener {
 		public String tag;
 	}
 
-    public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, SkullMeta bagMeta) {
+    public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, ItemMeta bagMeta) {
     	Main.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid")));
     	
     	try {
@@ -311,10 +312,16 @@ public class BagGUI implements Listener {
         }
         if(NBT.GetBool(bagItem, "bag-canBind")) {
         	//lore.add(String.format("§7Bound to %s", e.getPlayer().getName()));
-        	lore.add(Lang.Get("bound-to", bagOwner));
+        	//lore.add(Lang.Get("bound-to", bagOwner));
+            for (String l : Lang.lang.GetStringList("bound-to")) {
+            	lore.add(Lang.Parse(String.format(l, bagOwner)));
+            }
         }
         //lore.add("§7Size: " + inv.getSize());
-        lore.add(Lang.Get("bag-size", inv.getSize()));
+        //lore.add(Lang.Get("bag-size", inv.getSize()));
+        for (String l : Lang.lang.GetStringList("bag-size")) {
+        	lore.add(Lang.Parse(String.format(l, inv.getSize())));
+        }
         if(a > 0) {
         	//lore.add("§7Content:");
         	lore.add(Lang.Get("bag-content-title"));

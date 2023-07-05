@@ -20,7 +20,7 @@ public final class Main extends JavaPlugin implements Listener {
 	public static Config config;
 	public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
-	String newupdate = null;
+	int newupdate = 9999999;
 	public static Translator translator;
 	
 	public String[] commands = {
@@ -44,6 +44,9 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("debug", false);
 		config.AddValidationEntry("check-updates", true);
 		config.AddValidationEntry("language", "en_us");
+		config.AddValidationEntry("bag-type", "HEAD");
+		config.AddValidationEntry("bag-material", "ENDER_CHEST");
+		config.AddValidationEntry("bag-custom-model-data", 0);
 		config.AddValidationEntry("bag-texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=");
 		config.AddValidationEntry("open-sound", "ITEM_BUNDLE_INSERT");
 		config.AddValidationEntry("open-volume", 1);
@@ -87,14 +90,26 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("bag-unbound-name", "&aUnbound Bag");
 		Lang.lang.AddValidationEntry("bag-ownerless-unused", "&aUnused Bag");
 		Lang.lang.AddValidationEntry("bag-ownerless-used", "&aBag");
-		Lang.lang.AddValidationEntry("bound-to", "&7Bound to %s");
 		Lang.lang.AddValidationEntry("bag-lore", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L; { 
 				add("&fA well crafted bag, suited for carrying stuff."); 
 				}
 			} 
 		);
-		Lang.lang.AddValidationEntry("bag-size", "&7Size: %s");
+		//Lang.lang.AddValidationEntry("bound-to", "&7Bound to %s");
+		Lang.lang.AddValidationEntry("bound-to", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Bound to %s"); 
+				}
+			} 
+		);
+		//Lang.lang.AddValidationEntry("bag-size", "&7Size: %s");
+		Lang.lang.AddValidationEntry("bag-size", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Size: %s"); 
+				}
+			} 
+		);
 		Lang.lang.AddValidationEntry("bag-content-title", "&7Content:");
 		Lang.lang.AddValidationEntry("bag-content-preview-size", 5);
 		Lang.lang.AddValidationEntry("bag-content-item", "&7%s");
@@ -124,14 +139,21 @@ public final class Main extends JavaPlugin implements Listener {
 			Log.Info(plugin, "Checking for updates..");
 			new UpdateChecker(this, 110420).getVersion(version -> {
 
-				newupdate = version;
+				String update = version.replace(".", "");
+				newupdate = Integer.parseInt(update);
+				String current = getDescription().getVersion().replace(".", "");;
+				int v = Integer.parseInt(current);
+				
 
-				if (!getDescription().getVersion().equals(version)) {
-					Log.Warning(plugin, String.format("An update has been found! (v%s, you are on v%s) \n", version, getDescription().getVersion()) + 
+				//if (!getDescription().getVersion().equals(version)) {
+				if (v < newupdate) {
+						Log.Warning(plugin, String.format("An update has been found! (v%s, you are on v%s) \n", version, getDescription().getVersion()) + 
 							"This could be bug fixes or additional features.\n" + 
 							"Please update HavenBags at https://www.spigotmc.org/resources/110420/");
 					
 					uptodate = false;
+				}else {
+					Log.Info(plugin, "Up to date.");
 				}
 			});
 		}

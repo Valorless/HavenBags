@@ -74,7 +74,13 @@ public class BagListener implements Listener{
     					item.setDisplayName(Lang.Get("bag-ownerless-used"));
     	    			List<String> lore = new ArrayList<String>() ;
 						//lore.add(Lang.Get("bag-size", Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER)));
-						lore.add(Lang.Get("bag-size", NBT.GetInt(hand, "bag-size")));
+						//lore.add(Lang.Get("bag-size", NBT.GetInt(hand, "bag-size")));
+    	    	        for (String l : Lang.lang.GetStringList("bag-lore")) {
+    	    	        	lore.add(Lang.Parse(l));
+    	    	        }
+			            for (String l : Lang.lang.GetStringList("bag-size")) {
+			            	lore.add(Lang.Parse(String.format(l, NBT.GetInt(hand, "bag-size"))));
+			            }
     					item.setLore(lore);
     					//Tags.Set(plugin, item.getPersistentDataContainer(), "owner", "ownerless", PersistentDataType.STRING);
     					hand.setItemMeta(item);
@@ -92,11 +98,20 @@ public class BagListener implements Listener{
     					//item.setDisplayName("§a" + player.getName() +"'s Bag");
     					item.setDisplayName(Lang.Get("bag-bound-name", player.getName()));
     					List<String> lore = new ArrayList<String>();
+    			        for (String l : Lang.lang.GetStringList("bag-lore")) {
+    			        	lore.add(Lang.Parse(l));
+    			        }
     					//lore.add("§7Bound to " + player.getName());
-    					lore.add(Lang.Get("bound-to", player.getName()));
+    					//lore.add(Lang.Get("bound-to", player.getName()));
+			            for (String l : Lang.lang.GetStringList("bound-to")) {
+			            	lore.add(Lang.Parse(String.format(l, player.getName())));
+			            }
 						//lore.add("§7Size: " + Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER));
 						//lore.add(Lang.Get("bag-size", Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER)));
-						lore.add(Lang.Get("bag-size", NBT.GetInt(hand, "bag-size")));
+						//lore.add(Lang.Get("bag-size", NBT.GetInt(hand, "bag-size")));
+			            for (String l : Lang.lang.GetStringList("bag-size")) {
+			            	lore.add(Lang.Parse(String.format(l, NBT.GetInt(hand, "bag-size"))));
+			            }
     					item.setLore(lore);
     					//List<ItemStack> content = new ArrayList<ItemStack>();
     					//for(int i = 0; i < (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER); i++) {
@@ -117,7 +132,7 @@ public class BagListener implements Listener{
 				
     				if(!canbind) {
     					//player.sendMessage("Ownerless Bag");
-    					BagGUI gui = new BagGUI(plugin, NBT.GetInt(hand, "bag-size"), player, hand, (SkullMeta)hand.getItemMeta());
+    					BagGUI gui = new BagGUI(plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
     					Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
     			    	player.getInventory().remove(hand);
     					gui.OpenInventory(player);
@@ -130,7 +145,7 @@ public class BagListener implements Listener{
     				if(canbind) {
     					//player.sendMessage("Bound Bag");
     					if(owner.equalsIgnoreCase(player.getUniqueId().toString())) {
-    						BagGUI gui = new BagGUI(plugin, NBT.GetInt(hand, "bag-size"), player, hand, (SkullMeta)hand.getItemMeta());
+    						BagGUI gui = new BagGUI(plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
     						Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
         			    	player.getInventory().remove(hand);
     						gui.OpenInventory(player);
@@ -140,7 +155,7 @@ public class BagListener implements Listener{
     		    			Log.Debug(plugin, "Attempting to open bag");
     						return;
     					} else if (player.hasPermission("havenbags.bypass")) {
-    						BagGUI gui = new BagGUI(plugin, NBT.GetInt(hand, "bag-size"), player, hand, (SkullMeta)hand.getItemMeta());
+    						BagGUI gui = new BagGUI(plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
     						Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
         			    	player.getInventory().remove(hand);
     						gui.OpenInventory(player);
