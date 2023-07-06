@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -361,6 +362,12 @@ public class BagGUI implements Listener {
     }
     
     void GivePlayerBagBack() {
+    	if(player.getInventory().getItemInMainHand() != null) {
+    		if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
+    			player.getInventory().setItemInMainHand(bagItem);
+    			return;
+    		}
+    	}
     	if(player.getInventory().firstEmpty() != -1) {
     		player.getInventory().addItem(bagItem);
 			SFX.Play(Main.config.GetString("close-sound"), 

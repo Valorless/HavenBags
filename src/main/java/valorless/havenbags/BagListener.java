@@ -35,7 +35,7 @@ public class BagListener implements Listener{
     		Player player = event.getPlayer();
     		
     		if(getTargetBlock(player, 5).getType().toString().contains("SIGN")) { // Since 1.20 players can now edit signs. Block bag interaction if a sign is clicked.
-    			event.setCancelled(true); 
+    			//event.setCancelled(true); 
     			return; 
     		}
     		
@@ -105,7 +105,7 @@ public class BagListener implements Listener{
     				if(owner.equalsIgnoreCase("null") && canbind)
     				{
     					//item.setDisplayName("§a" + player.getName() +"'s Bag");
-    					item.setDisplayName(Lang.Get("bag-bound-name", player.getName()));
+    					item.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), player));
     					List<String> lore = new ArrayList<String>();
     			        for (String l : Lang.lang.GetStringList("bag-lore")) {
     			        	lore.add(Lang.Parse(l, player));

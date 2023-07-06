@@ -138,31 +138,45 @@ public class CustomRecipe implements Listener {
 	@EventHandler
 	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
 		if(config.GetBool("enabled") == false) return;
-		if(event.getInventory().getType() != InventoryType.CRAFTING) return;
-		ShapedRecipe r = (ShapedRecipe)event.getRecipe();
-		if(r == null) return;
-		if(r.getKey() == null) return;
-		String recipe = r.getKey().getKey();
-		if(!Recipes.contains(r.getKey())) return;
+		//if(event.getRecipe() == null) return;
+		//if(event.getRecipe().getClass() != ShapedRecipe.class) return;
+		try {
+			//if(event.getInventory().getType() != InventoryType.WORKBENCH) return;
+			ShapedRecipe r = (ShapedRecipe)event.getRecipe();
+			if(r == null) return;
+			if(r.getKey() == null) return;
+			String recipe = r.getKey().getKey();
+			if(!Recipes.contains(r.getKey())) return;
 		
-		for(HumanEntity player : event.getViewers()) {
-			//Log.Error(HavenBags.plugin, config.GetString("recipes." + recipe + ".permission"));
-			if(!player.hasPermission(config.GetString("recipes." + recipe + ".permission"))) {
-				event.getInventory().setResult(null);
+			for(HumanEntity player : event.getViewers()) {
+				//Log.Error(HavenBags.plugin, config.GetString("recipes." + recipe + ".permission"));
+				if(!player.hasPermission(config.GetString("recipes." + recipe + ".permission"))) {
+					event.getInventory().setResult(null);
+				}
 			}
-		}
+		} catch(Exception e) {}
 	}
 	
 	@EventHandler
 	public void onCraftItem (CraftItemEvent event) {
-		//if(!event.isLeftClick()) event.setCancelled(true);
-		if(event.isShiftClick()) event.setCancelled(true);
-		ItemStack item = event.getCurrentItem();
-		if(item.getItemMeta() != null) {
-			if(NBT.Has(item, "bag-uuid")) {
-				NBT.SetString(event.getInventory().getResult(), "bag-uuid", UUID.randomUUID().toString());
+		Log.Debug(Main.plugin, event.getInventory().getType().toString());
+		Log.Debug(Main.plugin, event.getRecipe().toString());
+		try {
+			//if(event.getInventory().getType() != InventoryType.WORKBENCH) return;
+			ShapedRecipe r = (ShapedRecipe)event.getRecipe();
+			if(r == null) return;
+			if(r.getKey() == null) return;
+			String recipe = r.getKey().getKey();
+			if(!Recipes.contains(r.getKey())) return;
+			//if(!event.isLeftClick()) event.setCancelled(true);
+			if(event.isShiftClick()) event.setCancelled(true);
+			ItemStack item = event.getCurrentItem();
+			if(item.getItemMeta() != null) {
+				if(NBT.Has(item, "bag-uuid")) {
+					NBT.SetString(event.getInventory().getResult(), "bag-uuid", UUID.randomUUID().toString());
+				}
 			}
-		}
+		} catch(Exception e) {}
 		
 	}
 
