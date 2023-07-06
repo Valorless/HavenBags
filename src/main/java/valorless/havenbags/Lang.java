@@ -6,7 +6,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
+import me.clip.placeholderapi.PlaceholderAPI;
+import valorless.havenbags.hooks.PlaceholderAPIHook;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.ValorlessUtils.Utils;
 
@@ -18,8 +21,11 @@ public class Lang {
 		public static String plugin = "§7[§aHaven§bBags§7]§r";
 	}
 	
-	public static String Parse(String text) {
+	public static String Parse(String text, Player... player) {
 		if(!Utils.IsStringNullOrEmpty(text)) {
+			if(player.length != 0) {
+				text = ParsePlaceholders(text, player[0]);
+			}
 			text = hex(text);
 			text = text.replace("&", "§");
 			text = text.replace("\\n", "\n");
@@ -69,4 +75,14 @@ public class Lang {
         }
         return ChatColor.translateAlternateColorCodes('&', message);
     }
+	
+	public static String ParsePlaceholders(String text, Player player) {
+		if(PlaceholderAPIHook.isHooked()) {
+			text = text.replace("{", "%");
+			text = text.replace("}", "%");
+			return PlaceholderAPI.setPlaceholders(player, text);
+		}else {
+			return text;
+		}
+	}
 }

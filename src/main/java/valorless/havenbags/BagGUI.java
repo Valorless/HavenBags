@@ -30,6 +30,7 @@ import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.ValorlessUtils.Utils;
 
 public class BagGUI implements Listener {
 	public JavaPlugin plugin;
@@ -85,7 +86,11 @@ public class BagGUI implements Listener {
 
     	CheckInstances(); // Check for multiple of the same bags
     	
-        inv = Bukkit.createInventory(player, size, bagMeta.getDisplayName());
+    	if(!Utils.IsStringNullOrEmpty(Lang.Get("bag-inventory-title"))) {
+    		inv = Bukkit.createInventory(player, size, Lang.Get("bag-inventory-title"));
+    	} else {
+    		inv = Bukkit.createInventory(player, size, bagMeta.getDisplayName());
+    	}
         if(Bukkit.getPluginManager().getPlugin("ChestSort") != null) {
             de.jeff_media.chestsort.api.ChestSortAPI.setSortable(inv);   
         }
@@ -308,21 +313,21 @@ public class BagGUI implements Listener {
     	}
         List<String> lore = new ArrayList<String>();
         for (String l : Lang.lang.GetStringList("bag-lore")) {
-        	lore.add(Lang.Parse(l));
+        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
         }
         if(NBT.GetBool(bagItem, "bag-canBind")) {
         	//lore.add(String.format("§7Bound to %s", e.getPlayer().getName()));
         	//lore.add(Lang.Get("bound-to", bagOwner));
             for (String l : Lang.lang.GetStringList("bound-to")) {
-            	lore.add(Lang.Parse(String.format(l, bagOwner)));
+            	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, bagOwner), player));
             }
         }
         //lore.add("§7Size: " + inv.getSize());
         //lore.add(Lang.Get("bag-size", inv.getSize()));
         for (String l : Lang.lang.GetStringList("bag-size")) {
-        	lore.add(Lang.Parse(String.format(l, inv.getSize())));
+        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inv.getSize()), player));
         }
-        if(a > 0) {
+        if(a > 0 && Lang.lang.GetBool("show-bag-content")) {
         	//lore.add("§7Content:");
         	lore.add(Lang.Get("bag-content-title"));
         	for(int k = 0; k < items.size(); k++) {
@@ -330,7 +335,7 @@ public class BagGUI implements Listener {
         			lore.add("  " + items.get(k));
         		}
         	}
-        	if(a > 5) {
+        	if(a > Lang.lang.GetInt("bag-content-preview-size")) {
         		//lore.add("  §7And more..");
         		lore.add(Lang.Get("bag-content-and-more"));
         	}

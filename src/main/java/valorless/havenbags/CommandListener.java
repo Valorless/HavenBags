@@ -23,6 +23,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.ValorlessUtils.Utils;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.skulls.SkullCreator;
@@ -96,15 +97,15 @@ public class CommandListener implements CommandExecutor {
 									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "false", PersistentDataType.STRING);
 									List<String> lore = new ArrayList<String>();
 									for (String l : Lang.lang.GetStringList("bag-lore")) {
-										lore.add(Lang.Parse(l));
+										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)sender));
 									}
 									//lore.add(Lang.Get("bag-size", size*9));
 									for (String l : Lang.lang.GetStringList("bag-size")) {
-										lore.add(Lang.Parse(String.format(l, size*9)));
+										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), (Player)sender));
 									}
 									bagMeta.setLore(lore);
 									bagItem.setItemMeta(bagMeta);
-									NBT.SetString(bagItem, "bag-uuid", "null");
+									NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
 									NBT.SetString(bagItem, "bag-owner", "null");
 									NBT.SetInt(bagItem, "bag-size", size*9);
 									NBT.SetBool(bagItem, "bag-canBind", false);
@@ -149,15 +150,15 @@ public class CommandListener implements CommandExecutor {
 									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "true", PersistentDataType.STRING);
 									List<String> lore = new ArrayList<String>();
 									for (String l : Lang.lang.GetStringList("bag-lore")) {
-										lore.add(Lang.Parse(l));
+										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)sender));
 									}
 									//lore.add(Lang.Get("bag-size", size*9));
 									for (String l : Lang.lang.GetStringList("bag-size")) {
-										lore.add(Lang.Parse(String.format(l, size*9)));
+										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), (Player)sender));
 									}
 									bagMeta.setLore(lore);
 									bagItem.setItemMeta(bagMeta);
-									NBT.SetString(bagItem, "bag-uuid", "null");
+									NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
 									NBT.SetString(bagItem, "bag-owner", "null");
 									NBT.SetInt(bagItem, "bag-size", size*9);
 									NBT.SetBool(bagItem, "bag-canBind", true);
@@ -213,15 +214,15 @@ public class CommandListener implements CommandExecutor {
 									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "false", PersistentDataType.STRING);
 									List<String> lore = new ArrayList<String>();
 									for (String l : Lang.lang.GetStringList("bag-lore")) {
-										lore.add(Lang.Parse(l));
+										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, receiver));
 									}
 									//lore.add(Lang.Get("bag-size", size*9));
 									for (String l : Lang.lang.GetStringList("bag-size")) {
-										lore.add(Lang.Parse(String.format(l, size*9)));
+										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), receiver));
 									}
 									bagMeta.setLore(lore);
 									bagItem.setItemMeta(bagMeta);
-									NBT.SetString(bagItem, "bag-uuid", "null");
+									NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
 									NBT.SetString(bagItem, "bag-owner", "null");
 									NBT.SetInt(bagItem, "bag-size", size*9);
 									NBT.SetBool(bagItem, "bag-canBind", false);
@@ -267,15 +268,15 @@ public class CommandListener implements CommandExecutor {
 									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "true", PersistentDataType.STRING);
 									List<String> lore = new ArrayList<String>();
 									for (String l : Lang.lang.GetStringList("bag-lore")) {
-										lore.add(Lang.Parse(l));
+										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l));
 									}
 									//lore.add(Lang.Get("bag-size", size*9));
 									for (String l : Lang.lang.GetStringList("bag-size")) {
-										lore.add(Lang.Parse(String.format(l, size*9)));
+										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9)));
 									}
 									bagMeta.setLore(lore);
 									bagItem.setItemMeta(bagMeta);
-									NBT.SetString(bagItem, "bag-uuid", "null");
+									NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
 									NBT.SetString(bagItem, "bag-owner", "null");
 									NBT.SetInt(bagItem, "bag-size", size*9);
 									NBT.SetBool(bagItem, "bag-canBind", true);
@@ -404,18 +405,18 @@ public class CommandListener implements CommandExecutor {
 								}
 								List<String> lore = new ArrayList<String>();
 								for (String l : Lang.lang.GetStringList("bag-lore")) {
-									lore.add(Lang.Parse(l));
+									if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer()));
 								}
 								if(NBT.GetBool(bagItem, "bag-canBind")) {
 									//lore.add(Lang.Get("bound-to", owner));
 									for (String l : Lang.lang.GetStringList("bound-to")) {
-										lore.add(Lang.Parse(String.format(l, owner)));
+										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, owner), Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer()));
 									}
 								}
 								//lore.add("§7Size: " + contSize.size());
 								//lore.add(Lang.Get("bag-size", contSize.size()));
 								for (String l : Lang.lang.GetStringList("bag-size")) {
-									lore.add(Lang.Parse(String.format(l, contSize.size())));
+									if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, contSize.size()), Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer()));
 								}
 								if(a > 0) {
 									//lore.add("§7Content:");

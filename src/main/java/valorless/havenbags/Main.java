@@ -1,5 +1,6 @@
 package valorless.havenbags;
 
+import valorless.havenbags.hooks.PlaceholderAPIHook;
 import valorless.valorlessutils.ValorlessUtils.*;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.translate.Translator;
@@ -38,6 +39,7 @@ public final class Main extends JavaPlugin implements Listener {
 	
 	@Override
     public void onEnable() {
+		PlaceholderAPIHook.Hook();
 		
 		Log.Debug(plugin, "HavenBags Debugging Enabled!");
 		
@@ -85,6 +87,9 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("player-no-bags", "&cPlayer ''%s'' has no bags.");
 		Lang.lang.AddValidationEntry("bags-of", "Bags of %s:");
 		
+		// Bag GUI
+		Lang.lang.AddValidationEntry("bag-inventory-title", "");
+		
 		// BagItem Lang
 		Lang.lang.AddValidationEntry("bag-bound-name", "&a%s''s Bag");
 		Lang.lang.AddValidationEntry("bag-unbound-name", "&aUnbound Bag");
@@ -110,6 +115,7 @@ public final class Main extends JavaPlugin implements Listener {
 				}
 			} 
 		);
+		Lang.lang.AddValidationEntry("show-bag-content", true);
 		Lang.lang.AddValidationEntry("bag-content-title", "&7Content:");
 		Lang.lang.AddValidationEntry("bag-content-preview-size", 5);
 		Lang.lang.AddValidationEntry("bag-content-item", "&7%s");

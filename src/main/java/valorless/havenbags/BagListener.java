@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.BlockIterator;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.json.JsonUtils;
@@ -30,6 +33,12 @@ public class BagListener implements Listener{
     public void onPlayerInteract(PlayerInteractEvent event) {
     	if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
     		Player player = event.getPlayer();
+    		
+    		if(getTargetBlock(player, 5).getType().toString().contains("SIGN")) { // Since 1.20 players can now edit signs. Block bag interaction if a sign is clicked.
+    			event.setCancelled(true); 
+    			return; 
+    		}
+    		
     		//player.sendMessage("Right click");
     		List<String> blacklist = Main.config.GetStringList("blacklist");
     		if(blacklist != null) {
@@ -85,7 +94,7 @@ public class BagListener implements Listener{
     					//Tags.Set(plugin, item.getPersistentDataContainer(), "owner", "ownerless", PersistentDataType.STRING);
     					hand.setItemMeta(item);
     					NBT.SetString(hand, "bag-owner", "ownerless");
-						NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
+						//NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
     					//WriteToServer(player, item, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER));
     					WriteToServer(player, hand, NBT.GetInt(hand, "bag-size"));
     	    			Log.Debug(plugin, "Ownerless bag created.");
@@ -99,18 +108,18 @@ public class BagListener implements Listener{
     					item.setDisplayName(Lang.Get("bag-bound-name", player.getName()));
     					List<String> lore = new ArrayList<String>();
     			        for (String l : Lang.lang.GetStringList("bag-lore")) {
-    			        	lore.add(Lang.Parse(l));
+    			        	lore.add(Lang.Parse(l, player));
     			        }
     					//lore.add("§7Bound to " + player.getName());
     					//lore.add(Lang.Get("bound-to", player.getName()));
 			            for (String l : Lang.lang.GetStringList("bound-to")) {
-			            	lore.add(Lang.Parse(String.format(l, player.getName())));
+			            	lore.add(Lang.Parse(String.format(l, player.getName()), player));
 			            }
 						//lore.add("§7Size: " + Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER));
 						//lore.add(Lang.Get("bag-size", Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER)));
 						//lore.add(Lang.Get("bag-size", NBT.GetInt(hand, "bag-size")));
 			            for (String l : Lang.lang.GetStringList("bag-size")) {
-			            	lore.add(Lang.Parse(String.format(l, NBT.GetInt(hand, "bag-size"))));
+			            	lore.add(Lang.Parse(String.format(l, NBT.GetInt(hand, "bag-size")), player));
 			            }
     					item.setLore(lore);
     					//List<ItemStack> content = new ArrayList<ItemStack>();
@@ -121,7 +130,7 @@ public class BagListener implements Listener{
     					//Tags.Set(plugin, item.getPersistentDataContainer(), "content", JsonUtils.toJson(content), PersistentDataType.STRING);
     					hand.setItemMeta(item);
     					NBT.SetString(hand, "bag-owner", player.getUniqueId().toString());
-						NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
+						//NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
     					WriteToServer(player, hand, NBT.GetInt(hand, "bag-size"));
     	    			Log.Debug(plugin, "Bound new bag to: " + player.getName());
     					return;
@@ -217,6 +226,7 @@ public class BagListener implements Listener{
 		}
     }*/
     
+    
     void WriteToServer(Player player, ItemStack bagMeta, int size) {
     	String uuid = NBT.GetString(bagMeta, "bag-uuid");
     	String owner = NBT.GetString(bagMeta, "bag-owner");
@@ -253,5 +263,18 @@ public class BagListener implements Listener{
 			player.sendMessage(Name + "§c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:WriteToServer()§f'. \nThank you! §4❤§r");
 			e.printStackTrace();
 		}
+    }
+    
+    public final Block getTargetBlock(Player player, int range) {
+        BlockIterator iter = new BlockIterator(player, range);
+        Block lastBlock = iter.next();
+        while (iter.hasNext()) {
+            lastBlock = iter.next();
+            if (lastBlock.getType() == Material.AIR) {
+                continue;
+            }
+            break;
+        }
+        return lastBlock;
     }
 }

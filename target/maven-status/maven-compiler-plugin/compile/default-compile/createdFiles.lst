@@ -14,6 +14,7 @@ valorless\havenbags\Lang$Placeholders.class
 valorless\havenbags\Metrics$JsonObjectBuilder$JsonObject.class
 valorless\havenbags\PlacementBlocker.class
 valorless\havenbags\CustomRecipe.class
+valorless\havenbags\hooks\PlaceholderAPIHook.class
 valorless\havenbags\Main$1.class
 valorless\havenbags\Metrics$MultiLineChart.class
 valorless\havenbags\BagDamagePrevention.class

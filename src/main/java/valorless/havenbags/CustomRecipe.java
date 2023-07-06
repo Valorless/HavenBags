@@ -2,6 +2,7 @@ package valorless.havenbags;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -9,6 +10,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
@@ -135,6 +138,7 @@ public class CustomRecipe implements Listener {
 	@EventHandler
 	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
 		if(config.GetBool("enabled") == false) return;
+		if(event.getInventory().getType() != InventoryType.CRAFTING) return;
 		ShapedRecipe r = (ShapedRecipe)event.getRecipe();
 		if(r == null) return;
 		if(r.getKey() == null) return;
@@ -147,6 +151,19 @@ public class CustomRecipe implements Listener {
 				event.getInventory().setResult(null);
 			}
 		}
+	}
+	
+	@EventHandler
+	public void onCraftItem (CraftItemEvent event) {
+		//if(!event.isLeftClick()) event.setCancelled(true);
+		if(event.isShiftClick()) event.setCancelled(true);
+		ItemStack item = event.getCurrentItem();
+		if(item.getItemMeta() != null) {
+			if(NBT.Has(item, "bag-uuid")) {
+				NBT.SetString(event.getInventory().getResult(), "bag-uuid", UUID.randomUUID().toString());
+			}
+		}
+		
 	}
 
 }
