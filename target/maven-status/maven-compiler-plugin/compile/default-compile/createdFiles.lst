@@ -12,6 +12,7 @@ valorless\havenbags\BagGUI$Items.class
 valorless\havenbags\Metrics$JsonObjectBuilder.class
 valorless\havenbags\Lang$Placeholders.class
 valorless\havenbags\Metrics$JsonObjectBuilder$JsonObject.class
+valorless\havenbags\Main$6.class
 valorless\havenbags\PlacementBlocker.class
 valorless\havenbags\CustomRecipe.class
 valorless\havenbags\hooks\PlaceholderAPIHook.class

@@ -240,10 +240,10 @@ public class BagListener implements Listener{
     		cont.add(null);
     	}
     	if(owner != "ownerless") {
-    		bagData = new File(plugin.getDataFolder() + "/bags/", player.getName() + "/" + uuid + ".json");
+    		bagData = new File(plugin.getDataFolder() + "/bags/", owner + "/" + uuid + ".json");
     		if(!bagData.exists()) {
             	bagData.getParentFile().mkdirs();
-                Log.Info(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", player.getName(), uuid));
+                Log.Info(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
             }
     	}else {
     		bagData = new File(plugin.getDataFolder() + "/bags/ownerless/" + uuid + ".json");

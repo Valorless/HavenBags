@@ -4,9 +4,15 @@ import valorless.havenbags.hooks.PlaceholderAPIHook;
 import valorless.valorlessutils.ValorlessUtils.*;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.translate.Translator;
+import valorless.valorlessutils.uuid.UUIDFetcher;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,6 +28,7 @@ public final class Main extends JavaPlugin implements Listener {
 	public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
 	int newupdate = 9999999;
+	String newVersion = null;
 	public static Translator translator;
 	
 	public String[] commands = {
@@ -44,6 +51,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Log.Debug(plugin, "HavenBags Debugging Enabled!");
 		
 		config.AddValidationEntry("debug", false);
+		config.AddValidationEntry("config-version", 1);
 		config.AddValidationEntry("check-updates", true);
 		config.AddValidationEntry("language", "en_us");
 		config.AddValidationEntry("bag-type", "HEAD");
@@ -79,6 +87,7 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		// Admin Lang
 		//Lang.lang.AddValidationEntry("bag-create", ""); //unsure wtf this was for
+		Lang.lang.AddValidationEntry("player-no-exist", "&cNo bags found for this player.");
 		Lang.lang.AddValidationEntry("bag-not-found", "&cNo bag found with that UUID.");
 		Lang.lang.AddValidationEntry("bag-size-error", "&cSize cannot be over 6 rows.");
 		Lang.lang.AddValidationEntry("bag-ownerless-no-size", "&cOwnerless bag must have a size.");
@@ -145,6 +154,7 @@ public final class Main extends JavaPlugin implements Listener {
 			Log.Info(plugin, "Checking for updates..");
 			new UpdateChecker(this, 110420).getVersion(version -> {
 
+				newVersion = version;
 				String update = version.replace(".", "");
 				newupdate = Integer.parseInt(update);
 				String current = getDescription().getVersion().replace(".", "");;
@@ -171,6 +181,8 @@ public final class Main extends JavaPlugin implements Listener {
 
         // Optional: Add custom charts
         metrics.addCustomChart(new Metrics.SimplePie("language", () -> config.GetString("language")));
+        
+        BagConversion();
     }
     
     @Override
@@ -204,7 +216,7 @@ public final class Main extends JavaPlugin implements Listener {
 		    public void run() {
 		    	if (config.GetBool("check-updates") && e.getPlayer().isOp() && uptodate == false) {
 					e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',
-						"&7[&aHaven&bBags&7] " + "&fAn update has been found.\nPlease download version&a " + newupdate
+						"&7[&aHaven&bBags&7] " + "&fAn update has been found.\nPlease download version&a " + newVersion
 						+ ", &fyou are on version&a " + getDescription().getVersion() + "!"
 						));
 				}
@@ -212,4 +224,35 @@ public final class Main extends JavaPlugin implements Listener {
 		}, 5L);
 		
 	}
+    
+    void BagConversion() {
+    	if(config.GetInt("config-version") < 2) {
+    		Log.Warning(plugin, "Old configuration found, updating bag data!");
+    		config.Set("config-version", 2);
+    		config.SaveConfig();
+    		
+    		File file = new File(String.format("%s/bags", plugin.getDataFolder()));
+    		String[] directories = file.list(new FilenameFilter() {
+    		  @Override
+    		  public boolean accept(File current, String name) {
+    		    return new File(current, name).isDirectory();
+    		  }
+    		});
+			
+			for(String folder : directories) {
+				if(folder.equalsIgnoreCase("ownerless")) continue;
+				try {
+					File f = new File(String.format("%s/bags/%s", plugin.getDataFolder(), folder));
+					File to = new File(String.format("%s/bags/%s", plugin.getDataFolder(), UUIDFetcher.getUUID(folder)));
+					f.renameTo(to);
+					Log.Warning(plugin, String.format("%s => %s", 
+						String.format("/bags/%s", folder), 
+						String.format("/bags/%s", UUIDFetcher.getUUID(folder))
+					));
+				} catch(Exception e) {
+					Log.Error(plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s", folder)));
+				}
+			}
+    	}
+    }
 }

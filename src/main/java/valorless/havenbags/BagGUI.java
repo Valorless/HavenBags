@@ -58,11 +58,11 @@ public class BagGUI implements Listener {
     	
     	try {
     		// Try get owner's name on the server.
-    		this.bag = Bukkit.getPlayer(UUID.fromString(NBT.GetString(bagItem, "bag-owner"))).getName() + "/" + NBT.GetString(bagItem, "bag-uuid");
+    		this.bag = NBT.GetString(bagItem, "bag-owner") + "/" + NBT.GetString(bagItem, "bag-uuid");
     	} catch (Exception e) {
     		// Otherwise use MojangAPI
     		if(!NBT.GetString(bagItem, "bag-owner").equalsIgnoreCase("ownerless")) {
-    			this.bag = UUIDFetcher.getName(UUID.fromString(NBT.GetString(bagItem, "bag-owner"))) + "/" + NBT.GetString(bagItem, "bag-uuid");
+    			this.bag = NBT.GetString(bagItem, "bag-owner") + "/" + NBT.GetString(bagItem, "bag-uuid");
     		} else {
     			this.bagOwner = "ownerless" + "/" + NBT.GetString(bagItem, "bag-uuid").toString();
     		}
@@ -74,11 +74,11 @@ public class BagGUI implements Listener {
     	this.player = player;
     	try {
     		// Try get owner's name on the server.
-    		this.bagOwner = Bukkit.getPlayer(UUID.fromString(NBT.GetString(bagItem, "bag-owner"))).getName();
+    		this.bagOwner = NBT.GetString(bagItem, "bag-owner");
     	} catch (Exception e) {
     		// Otherwise use MojangAPI
     		if(!NBT.GetString(bagItem, "bag-owner").equalsIgnoreCase("ownerless")) {
-    			this.bagOwner = UUIDFetcher.getName(UUID.fromString(NBT.GetString(bagItem, "bag-owner")));
+    			this.bagOwner = NBT.GetString(bagItem, "bag-owner");
     		} else {
     			this.bagOwner = "ownerless";
     		}
@@ -320,7 +320,7 @@ public class BagGUI implements Listener {
         	//lore.add(String.format("§7Bound to %s", e.getPlayer().getName()));
         	//lore.add(Lang.Get("bound-to", bagOwner));
             for (String l : Lang.lang.GetStringList("bound-to")) {
-            	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, bagOwner), player));
+            	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(bagOwner)).getName()), player));
             }
         }
         //lore.add("§7Size: " + inv.getSize());

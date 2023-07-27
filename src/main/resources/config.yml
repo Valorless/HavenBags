@@ -4,6 +4,9 @@
 # +------------------------------------------------------+ #
 ############################################################
 
+# DO NOT EDIT
+config-version: 2
+
 # Additional messages used for debugging.
 debug: false
 check-updates: true

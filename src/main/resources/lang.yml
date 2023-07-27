@@ -42,6 +42,9 @@ inventory-full: '&cInventory full, dropping bag on the ground!'
 
 ### Admin ###
 
+# Message sent when attempting to fetch a player which does not exist.
+player-no-exist: "&cNo bags found for this player."
+
 # Message sent when '/bags restore' fails to locate bag of specific UUID.
 bag-not-found: '&cNo bag found with that UUID.'
 

@@ -302,7 +302,13 @@ public class CommandListener implements CommandExecutor {
 				
 				if(args[0].equalsIgnoreCase("restore") && sender.hasPermission("havenbags.restore")) {
 					if (args.length >= 2){ // Player Name
-						String dirPath = String.format("%s/bags/%s/", plugin.getDataFolder(), args[1]);
+						String puuid = args[1]; //Player username as fallback
+						try {
+							puuid = UUIDFetcher.getUUID(args[1]).toString();
+						}catch(Exception e) {
+							sender.sendMessage(Lang.Get("player-no-exist", args[1]));
+						}
+						String dirPath = String.format("%s/bags/%s/", plugin.getDataFolder(), puuid);
 						File dir = new File(dirPath);
 						if(!dir.exists()) {
 							//sender.sendMessage(Name + "§c Player '" + args[2] + "' has no bags.");
@@ -312,7 +318,7 @@ public class CommandListener implements CommandExecutor {
 						if (args.length >= 3){ // Bag UUID
 							String uuid = args[2];
 							String owner = args[1];
-							String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, uuid);
+							String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), puuid, uuid);
 							//plugin.getDataFolder() + "/bags/", args[2] + "/" + args[3] + ".json"
 							File bagData;
 							try {
@@ -351,7 +357,7 @@ public class CommandListener implements CommandExecutor {
 								NBT.SetString(bagItem, "bag-owner", owner);
 								NBT.SetBool(bagItem, "bag-canBind", false);
 							}else {
-								NBT.SetString(bagItem, "bag-owner", UUIDFetcher.getUUID(owner).toString());
+								NBT.SetString(bagItem, "bag-owner", puuid);
 								NBT.SetBool(bagItem, "bag-canBind", true);
 							}
 							ItemMeta bagMeta = bagItem.getItemMeta();
@@ -446,7 +452,7 @@ public class CommandListener implements CommandExecutor {
 						}else {
 							// No uuid
 							String owner = args[1];
-							String path = String.format("%s/bags/%s/", plugin.getDataFolder(), owner);
+							String path = String.format("%s/bags/%s/", plugin.getDataFolder(), puuid);
 							Set<String> files = listFilesUsingJavaIO(path);
 							String fileString = Lang.Get("prefix") + Lang.Get("bags-of", owner);
 							List<String> fileNames = new ArrayList<String>();
@@ -464,7 +470,13 @@ public class CommandListener implements CommandExecutor {
 				
 				if(args[0].equalsIgnoreCase("preview") && sender.hasPermission("havenbags.preview")) {
 					if (args.length >= 2){ // Player Name
-						String dirPath = String.format("%s/bags/%s/", plugin.getDataFolder(), args[1]);
+						String puuid = args[1]; //Player username as fallback
+						try {
+							puuid = UUIDFetcher.getUUID(args[1]).toString();
+						}catch(Exception e) {
+							sender.sendMessage(Lang.Get("player-no-exist", args[1]));
+						}
+						String dirPath = String.format("%s/bags/%s/", plugin.getDataFolder(), puuid);
 						File dir = new File(dirPath);
 						if(!dir.exists()) {
 							//sender.sendMessage(Name + "§c Player '" + args[2] + "' has no bags.");
@@ -474,7 +486,7 @@ public class CommandListener implements CommandExecutor {
 						if (args.length >= 3){ // Bag UUID
 							String uuid = args[2];
 							String owner = args[1];
-							String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, uuid);
+							String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), puuid, uuid);
 							//plugin.getDataFolder() + "/bags/", args[2] + "/" + args[3] + ".json"
 							File bagData;
 							try {
@@ -514,7 +526,7 @@ public class CommandListener implements CommandExecutor {
 								NBT.SetString(bagItem, "bag-owner", owner);
 								NBT.SetBool(bagItem, "bag-canBind", false);
 							}else {
-								NBT.SetString(bagItem, "bag-owner", UUIDFetcher.getUUID(owner).toString());
+								NBT.SetString(bagItem, "bag-owner", puuid);
 								NBT.SetBool(bagItem, "bag-canBind", true);
 							}
 							ItemMeta bagMeta = bagItem.getItemMeta();
@@ -583,7 +595,7 @@ public class CommandListener implements CommandExecutor {
 						}else {
 							// No uuid
 							String owner = args[1];
-							String path = String.format("%s/bags/%s/", plugin.getDataFolder(), owner);
+							String path = String.format("%s/bags/%s/", plugin.getDataFolder(), puuid);
 							Set<String> files = listFilesUsingJavaIO(path);
 							String fileString = Lang.Get("prefix") + Lang.Get("bags-of", owner);
 							List<String> fileNames = new ArrayList<String>();
