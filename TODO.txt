@@ -1,0 +1,6 @@
+# Lost old TODO list.
+
+Remove the ability to clone bags in creative using Middle-mouse.
+
+Possible fix to compatibility to other plugins like Creates.
+Force new ID on new bags, when added to inventory, regardless of current ID.
