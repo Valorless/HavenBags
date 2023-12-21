@@ -1,6 +1,10 @@
-# Lost old TODO list.
-
 - Remove the ability to clone bags in creative using Middle-mouse.
 
 - Possible fix to compatibility to other plugins like Creates.
 Force new ID on new bags, when added to inventory, regardless of current ID.
+
+- Upgrade Lang to fully support PAPI.
+
+- Make "player" a requirement for all lang parses.
+
+- Upgrade Lang to use it's own placeholders like DiscordChatMonitor.
