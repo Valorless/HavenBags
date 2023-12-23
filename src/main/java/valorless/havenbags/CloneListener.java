@@ -20,8 +20,11 @@ public class CloneListener implements Listener{
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event){
-		HumanEntity player = event.getPlayer();
-		Log.Debug(Main.plugin, event.getEventName());
+		Proccess(event.getPlayer());
+    }
+	
+	public void Proccess(HumanEntity entity) {
+		Player player = (Player)entity;
 		for(ItemStack item : player.getInventory().getContents()) {
 			if(item == null) { return; }
 			if(item.getItemMeta() == null) { return; }
@@ -71,5 +74,5 @@ public class CloneListener implements Listener{
 				}
 			}
         }
-    }
+	}
 }
