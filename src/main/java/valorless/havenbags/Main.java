@@ -100,7 +100,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("bag-inventory-title", "");
 		
 		// BagItem Lang
-		Lang.lang.AddValidationEntry("bag-bound-name", "&a%s''s Bag");
+		Lang.lang.AddValidationEntry("bag-bound-name", "&a%player%''s Bag");
 		Lang.lang.AddValidationEntry("bag-unbound-name", "&aUnbound Bag");
 		Lang.lang.AddValidationEntry("bag-ownerless-unused", "&aUnused Bag");
 		Lang.lang.AddValidationEntry("bag-ownerless-used", "&aBag");
@@ -142,6 +142,8 @@ public final class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new BagDamagePrevention(), this);
 		Log.Debug(plugin, "Registering BagListener");
 		getServer().getPluginManager().registerEvents(new BagListener(), this);
+		Log.Debug(plugin, "Registering CloneListener");
+		getServer().getPluginManager().registerEvents(new CloneListener(), this);
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
 				

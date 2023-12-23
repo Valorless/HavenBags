@@ -89,8 +89,8 @@ bag-inventory-title: ''
 
 # When an unbound bag gets bound.
 # The player can rename this.
-# %s - Player's name.
-bag-bound-name: '&a%s''s Bag'
+# %player% - Player's name.
+bag-bound-name: '&a%player%''s Bag'
 
 # Name of the unbound bag item.
 bag-unbound-name: '&aUnbound Bag'

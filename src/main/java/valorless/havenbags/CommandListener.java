@@ -652,9 +652,9 @@ public class CommandListener implements CommandExecutor {
 							
 							UUID uuid = UUID.fromString(owner);
 							try {
-								meta.setDisplayName(Lang.Get("bag-bound-name", Bukkit.getPlayer(uuid).getName()));
+								meta.setDisplayName(Lang.Parse(Lang.Get("bag-bound-name"), Bukkit.getPlayer(uuid).getName()));
 							} catch (Exception e) {
-								meta.setDisplayName(Lang.Get("bag-bound-name", UUIDFetcher.getName(uuid)));
+								meta.setDisplayName(Lang.Parse(Lang.Get("bag-bound-name"), UUIDFetcher.getName(uuid)));
 							}
 							hand.setItemMeta(meta);
 							sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-rename-reset"));
@@ -665,6 +665,9 @@ public class CommandListener implements CommandExecutor {
 				}
 			} catch(Exception e) {
 				sender.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
+				Log.Error(Main.plugin, e.getMessage());
+				//Log.Error(Main.plugin, e.printStackTrace());
+				e.printStackTrace();
 			}
 		}
         return false;

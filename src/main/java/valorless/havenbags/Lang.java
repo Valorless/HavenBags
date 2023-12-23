@@ -23,12 +23,31 @@ public class Lang {
 	
 	public static String Parse(String text, Player... player) {
 		if(!Utils.IsStringNullOrEmpty(text)) {
+
 			if(player.length != 0) {
 				text = ParsePlaceholders(text, player[0]);
 			}
+		
 			text = hex(text);
 			text = text.replace("&", "§");
 			text = text.replace("\\n", "\n");
+			if(player.length != 0) {
+				text = text.replace("%player%", player[0].getName());
+				text = text.replace("%s", player[0].getName());
+			}
+		}
+		return text;
+	}
+	
+	public static String Parse(String text, String player) {
+		if(!Utils.IsStringNullOrEmpty(text)) {		
+			text = hex(text);
+			text = text.replace("&", "§");
+			text = text.replace("\\n", "\n");
+			if(!Utils.IsStringNullOrEmpty(player)) {
+				text = text.replace("%player%", player);
+				text = text.replace("%s", player);
+			}
 		}
 		return text;
 	}
