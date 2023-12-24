@@ -31,7 +31,7 @@ public class CloneListener implements Listener{
 			
 			if(NBT.Has(item, "bag-uuid")) {
 				while(item.getAmount() > 1) {
-					Log.Debug(Main.plugin, "Cloned bag found!");
+					Log.Debug(Main.plugin, "Stacked bag found!");
 					
 					ItemStack clone = item.clone();
 					clone.setAmount(1);
@@ -44,7 +44,6 @@ public class CloneListener implements Listener{
 						for (String l : Lang.lang.GetStringList("bag-lore")) {
 							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)player));
 						}
-						//lore.add(Lang.Get("bag-size", size*9));
 						for (String l : Lang.lang.GetStringList("bag-size")) {
 							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, NBT.GetInt(clone, "bag-size")), (Player)player));
 						}
@@ -56,7 +55,6 @@ public class CloneListener implements Listener{
 						for (String l : Lang.lang.GetStringList("bag-lore")) {
 							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)player));
 						}
-						//lore.add(Lang.Get("bag-size", size*9));
 						for (String l : Lang.lang.GetStringList("bag-size")) {
 							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, NBT.GetInt(clone, "bag-size")), (Player)player));
 						}

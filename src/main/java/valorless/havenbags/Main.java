@@ -51,7 +51,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Log.Debug(plugin, "HavenBags Debugging Enabled!");
 		
 		config.AddValidationEntry("debug", false);
-		config.AddValidationEntry("config-version", 1);
+		config.AddValidationEntry("config-version", 2);
 		config.AddValidationEntry("check-updates", true);
 		config.AddValidationEntry("language", "en_us");
 		config.AddValidationEntry("bag-type", "HEAD");
