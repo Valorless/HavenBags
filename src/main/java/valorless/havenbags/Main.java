@@ -3,6 +3,7 @@ package valorless.havenbags;
 import valorless.havenbags.hooks.PlaceholderAPIHook;
 import valorless.valorlessutils.ValorlessUtils.*;
 import valorless.valorlessutils.config.Config;
+import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.translate.Translator;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
@@ -20,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin implements Listener {
@@ -68,6 +70,8 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("inventory-full-volume", 1);
 		config.AddValidationEntry("inventory-full-pitch", 1);
 		config.AddValidationEntry("protect-bags", true);
+		config.AddValidationEntry("bags-in-bags", true);
+		config.AddValidationEntry("bags-in-shulkers", true);
 		config.AddValidationEntry("blacklist", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L;
 
@@ -84,6 +88,8 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("bag-cannot-use", "&cYou cannot use this bag.");
 		Lang.lang.AddValidationEntry("bag-does-not-exist", "&cThis bag does not exist.");
 		Lang.lang.AddValidationEntry("inventory-full", "&cInventory full, dropping bag on the ground!");
+		Lang.lang.AddValidationEntry("bag-in-bag-error", "&cBags cannot be put inside other bags.");
+		Lang.lang.AddValidationEntry("bag-in-shulker-error", "&cBags cannot be put inside shulker boxes.");
 		
 		// Admin Lang
 		//Lang.lang.AddValidationEntry("bag-create", ""); //unsure wtf this was for
@@ -144,6 +150,10 @@ public final class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new BagListener(), this);
 		Log.Debug(plugin, "Registering CloneListener");
 		getServer().getPluginManager().registerEvents(new CloneListener(), this);
+		Log.Debug(plugin, "Registering InventoryListener");
+		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+		Log.Debug(plugin, "Registering PickupPrevention");
+		getServer().getPluginManager().registerEvents(new PickupPrevention(), this);
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
 				
@@ -225,6 +235,15 @@ public final class Main extends JavaPlugin implements Listener {
 		    }
 		}, 5L);
 		
+	}
+	
+	public static Boolean IsBag(ItemStack item) {
+		if(item.hasItemMeta()) {
+			if(NBT.Has(item, "bag-uuid")) {
+				return true;
+			}
+		}
+		return false;
 	}
     
     void BagConversion() {

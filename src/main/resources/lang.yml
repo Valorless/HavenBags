@@ -72,6 +72,12 @@ player-no-bags: '&cPlayer ''%s'' has no bags.'
 # %s - Name of the player specified.
 bags-of: 'Bags of %s:'
 
+# Message sent if clicking on a bag item, while inside another bag.
+bag-in-bag-error: '&cBags cannot be put inside other bags.'
+
+# Message sent if clicking on a bag item, while inside a shulker box.
+bag-in-shulker-error: '&cBags cannot be put inside shulker boxes.'
+
 ############################################################
 # +------------------------------------------------------+ #
 # |                      Bag GUI                         | #

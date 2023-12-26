@@ -40,16 +40,7 @@ public class BagListener implements Listener{
     		}
     		
     		//player.sendMessage("Right click");
-    		List<String> blacklist = Main.config.GetStringList("blacklist");
-    		if(blacklist != null) {
-    			if(blacklist.size() != 0) {
-					Log.Debug(plugin, "Player World: " + player.getWorld().getName());
-    				for(String world : blacklist) {
-    					Log.Debug(plugin, "Blacklist: " + world);
-    					if(player.getWorld().getName().equalsIgnoreCase(world)) return;
-    				}
-    			}
-    		}
+    		
     		
     		if(!player.hasPermission("havenbags.use")) {
     			return;
@@ -67,7 +58,18 @@ public class BagListener implements Listener{
     			}
     			
     			//if(Tags.Get(plugin, item.getPersistentDataContainer(), "uuid", PersistentDataType.STRING) != null || NBT.Has(hand, "bag-uuid")) {
-        		if(NBT.Has(hand, "bag-uuid")) {
+        		if(Main.IsBag(hand)) {
+        			List<String> blacklist = Main.config.GetStringList("blacklist");
+            		if(blacklist != null) {
+            			if(blacklist.size() != 0) {
+        					Log.Debug(plugin, "Player World: " + player.getWorld().getName());
+            				for(String world : blacklist) {
+            					Log.Debug(plugin, "Blacklist: " + world);
+            					if(player.getWorld().getName().equalsIgnoreCase(world)) return;
+            				}
+            			}
+            		}
+            		
         			Log.Debug(plugin, player.getName() + " is attempting to open a bag");
     				//player.sendMessage("has uuid: true");
     				//String owner = Tags.Get(plugin, item.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();

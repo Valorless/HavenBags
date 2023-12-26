@@ -203,16 +203,18 @@ public class BagGUI implements Listener {
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
         if (!e.getInventory().equals(inv)) return;
+        
+        if (Main.config.GetBool("bags-in-bags") == true) return;
 
         ItemStack clickedItem = e.getCurrentItem();
         if(clickedItem == null) return;
         
-        /*if(NBT.Has(clickedItem, "bag-uuid")) {
+        if(Main.IsBag(clickedItem)) {
         	//e.getWhoClicked().closeInventory();
         	//e.getWhoClicked().sendMessage(Name + "§c Bags cannot be placed inside bags.");
         	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
         	e.setCancelled(true);
-        }*/
+        }
     }
 
     @EventHandler

@@ -1,15 +1,10 @@
 package valorless.havenbags;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import valorless.valorlessutils.ValorlessUtils.Tags;
 
 public class PickupPrevention implements Listener {
 	public static JavaPlugin plugin;
@@ -17,6 +12,7 @@ public class PickupPrevention implements Listener {
 
 	// NOT IN USE!
 	
+	/*
     @EventHandler
     public void onEntityPickupItem(EntityPickupItemEvent event) {
     	ItemStack bag = event.getItem().getItemStack();
@@ -27,5 +23,20 @@ public class PickupPrevention implements Listener {
 			event.setCancelled(true);
 		}
     }
+	*/
 	
+	@EventHandler
+	public void onHopperPickup(InventoryMoveItemEvent e) {	
+		if(Main.config.GetBool("bags-in-shulkers") == false) {		
+			if(Main.IsBag(e.getItem())){
+				if(e.getDestination().getType() == InventoryType.HOPPER) {
+					e.setCancelled(true);
+				}
+		
+				if(e.getSource().getType() == InventoryType.HOPPER) {
+					e.setCancelled(true);
+				}
+			}
+		}
+	}
 }

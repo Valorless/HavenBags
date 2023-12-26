@@ -63,6 +63,13 @@ inventory-full-pitch: 1
 # Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?
 protect-bags: true
 
+# Can bags be put inside other bags?
+bags-in-bags: true
+
+# Can bags be put inside shulkers?
+# if 'false', hoppers cannot move bags.
+bags-in-shulkers: true
+
 # Specify if bags should not work in specific worlds.
 # Worlds do not include _nether or _the_end.
 # You have to manually add those.
