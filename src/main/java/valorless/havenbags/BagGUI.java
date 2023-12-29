@@ -135,7 +135,7 @@ public class BagGUI implements Listener {
 				//Log.Error(plugin, String.format("Failed to load content of bag '%s'. Is the file empty?", bag));
 				String errorMessage = 
 						ChatColor.RED + "\n################################\n" +
-						"THIS IS A CUSTOM ERROR THROWN BY THE PLUGIN, NO THE SERVER\n" +
+						"THIS IS A CUSTOM ERROR THROWN BY THE PLUGIN, NOT THE SERVER\n" +
 						"\n" +
 						"Failed to load content of bag\n" +
 						ChatColor.GOLD + "'%s.json'\n" +

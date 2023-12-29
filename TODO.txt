@@ -1,3 +1,11 @@
+- Add an inactivity removal option, to remove inactive bags.
+ # Create time-table of all bags, resetting when bag or inventory is opened. (Have a config-version upgrade to add existing bags on servers already using HB)
+ # Add config variables such as enabled, inactivity time, lang entry, and so forth.
+
+- Potentiall create an index list of all bags created; listing who created the bag, regardless of bound or unbound.
+ # Perhaps make this optional.
+ # To help locate bags ownerless bags created by a duper, or other means.
+
 - Remove the ability to clone bags in creative using Middle-mouse.
  # Inventory events not triggering when inside the creative inventory..
 
