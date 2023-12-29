@@ -57,7 +57,11 @@ public class Lang {
 			Log.Error(Main.plugin, String.format("Lang.yml is missing the key '%s'!", key));
 			return "§4error";
 		}
-		return Parse(lang.GetString(key));
+		if(lang.GetString(key).contains("%player%")) {
+			return lang.GetString(key);
+		}else {
+			return Parse(lang.GetString(key));
+		}
 	}
 	
 	public static String Get(String key, Object arg) {
@@ -65,7 +69,11 @@ public class Lang {
 			Log.Error(Main.plugin, String.format("Lang.yml is missing the key '%s'!", key));
 			return "§4error";
 		}
-		return Parse(String.format(lang.GetString(key), arg.toString()));
+		if(lang.GetString(key).contains("%player%")) {
+			return Parse(lang.GetString(key), arg.toString());
+		}else {
+			return Parse(String.format(lang.GetString(key), arg.toString()));
+		}
 	}
 	
 	public static String Get(String key, Object arg1, Object arg2) {

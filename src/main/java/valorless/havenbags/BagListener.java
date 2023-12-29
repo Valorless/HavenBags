@@ -73,6 +73,7 @@ public class BagListener implements Listener{
         			Log.Debug(plugin, player.getName() + " is attempting to open a bag");
     				//player.sendMessage("has uuid: true");
     				//String owner = Tags.Get(plugin, item.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
+    				String uuid = NBT.GetString(hand, "bag-uuid");
     				String owner = NBT.GetString(hand, "bag-owner");
     				//String canbind = Tags.Get(plugin, item.getPersistentDataContainer(), "canbind", PersistentDataType.STRING).toString();
     				boolean canbind = NBT.GetBool(hand, "bag-canBind");
@@ -96,10 +97,16 @@ public class BagListener implements Listener{
     					//Tags.Set(plugin, item.getPersistentDataContainer(), "owner", "ownerless", PersistentDataType.STRING);
     					hand.setItemMeta(item);
     					NBT.SetString(hand, "bag-owner", "ownerless");
+    					NBT.SetString(hand, "bag-creator", player.getUniqueId().toString());
 						//NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
     					//WriteToServer(player, item, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER));
     					WriteToServer(player, hand, NBT.GetInt(hand, "bag-size"));
     	    			Log.Debug(plugin, "Ownerless bag created.");
+    	    			Log.Debug(plugin, "Creating timestamp for " + uuid);
+    	    	    	Main.timeTable.Set(
+    	    	    		String.format("%s/%s", "ownerless", uuid),
+    	    	    			Long.toString(System.currentTimeMillis() / 1000L));
+    	    	    	Main.timeTable.SaveConfig();
     					return;
     				}
 				
@@ -132,9 +139,15 @@ public class BagListener implements Listener{
     					//Tags.Set(plugin, item.getPersistentDataContainer(), "content", JsonUtils.toJson(content), PersistentDataType.STRING);
     					hand.setItemMeta(item);
     					NBT.SetString(hand, "bag-owner", player.getUniqueId().toString());
+    					NBT.SetString(hand, "bag-creator", player.getUniqueId().toString());
 						//NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
     					WriteToServer(player, hand, NBT.GetInt(hand, "bag-size"));
     	    			Log.Debug(plugin, "Bound new bag to: " + player.getName());
+    	    			Log.Debug(plugin, "Creating timestamp for " + uuid);
+    	    	    	Main.timeTable.Set(
+    	    	    		String.format("%s/%s", player.getUniqueId().toString(), uuid),
+    	    	    			System.currentTimeMillis() / 1000L);
+    	    	    	Main.timeTable.SaveConfig();
     					return;
     				}
     				

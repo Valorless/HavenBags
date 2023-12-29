@@ -5,7 +5,7 @@
 ############################################################
 
 # DO NOT EDIT
-config-version: 2
+config-version: 3
 
 # Additional messages used for debugging.
 debug: false

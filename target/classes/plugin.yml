@@ -24,6 +24,7 @@ permissions:
       havenbags.restore: true
       havenbags.bypass: true
       havenbags.preview: true
+      havenbags.info: true
   havenbags.reload:
     description: Allows you to reload the configuration.
     default: op
@@ -47,5 +48,8 @@ permissions:
     default: op
   havenbags.preview:
     description: Allows you to bypass preview bags.
+    default: op
+  havenbags.info:
+    description: Allows you to view information regarding the currently held-in-hand bag.
     default: op
   

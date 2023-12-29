@@ -27,6 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class Main extends JavaPlugin implements Listener {
 	public static JavaPlugin plugin;
 	public static Config config;
+	public static Config timeTable;
 	public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
 	int newupdate = 9999999;
@@ -44,6 +45,8 @@ public final class Main extends JavaPlugin implements Listener {
 		BagListener.plugin = this;
 		
 		Lang.lang = new Config(this, "lang.yml");
+
+		timeTable = new Config(this, "timetable.yml");
 	}
 	
 	@Override
@@ -51,6 +54,8 @@ public final class Main extends JavaPlugin implements Listener {
 		PlaceholderAPIHook.Hook();
 		
 		Log.Debug(plugin, "HavenBags Debugging Enabled!");
+		
+		Log.Debug(plugin, Long.toString(System.currentTimeMillis() / 1000L));
 		
 		config.AddValidationEntry("debug", false);
 		config.AddValidationEntry("config-version", 2);
@@ -194,7 +199,9 @@ public final class Main extends JavaPlugin implements Listener {
         // Optional: Add custom charts
         metrics.addCustomChart(new Metrics.SimplePie("language", () -> config.GetString("language")));
         
+        // Config-Version checks
         BagConversion();
+        TimeTable();
     }
     
     @Override
@@ -274,6 +281,50 @@ public final class Main extends JavaPlugin implements Listener {
 					Log.Error(plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s", folder)));
 				}
 			}
+    	}
+    }
+    
+    void TimeTable() {
+    	if(config.GetInt("config-version") < 3) {
+    		Log.Warning(plugin, "Old configuration found, updating time table!");
+    		config.Set("config-version", 3);
+    		config.SaveConfig();
+    		
+    		File directory = new File(String.format("%s/bags", plugin.getDataFolder()));
+    		String[] directories = directory.list(new FilenameFilter() {
+    		  @Override
+    		  public boolean accept(File current, String name) {
+    		    return new File(current, name).isDirectory();
+    		  }
+    		});
+			
+			for(String folder : directories) {
+				try {
+					File file = new File(String.format("%s/bags/%s", plugin.getDataFolder(), folder));
+					String[] files = file.list();
+					for(String f : files) {
+						try {
+							f = f.replace(".json", "");
+							timeTable.Set(folder + "/" + f, System.currentTimeMillis() / 1000L);
+							//timeTable.AddValidationEntry(folder + "/" + f, Long.toString(System.currentTimeMillis() / 1000L));
+						} catch(Exception e) {
+							Log.Error(plugin, String.format("Failed to add %s", String.format("/bags/%s/%s", folder, f)));
+						}
+					}
+					//File f = new File(String.format("%s/bags/%s", plugin.getDataFolder(), folder));
+					//f.renameTo(to);
+					//Log.Warning(plugin, String.format("%s => %s", 
+					//	String.format("/bags/%s", folder), 
+					//	String.format("/bags/%s", UUIDFetcher.getUUID(folder))
+					//));
+				} catch(Exception e) {
+					Log.Error(plugin, String.format("Failed to add %s", String.format("/bags/%s", folder)));
+					e.printStackTrace();
+					//Log.Error(plugin, e.printStackTrace())
+				}
+			}
+			timeTable.SaveConfig();
+			//timeTable.Validate();
     	}
     }
 }

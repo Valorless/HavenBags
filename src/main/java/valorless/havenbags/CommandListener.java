@@ -302,13 +302,14 @@ public class CommandListener implements CommandExecutor {
 				
 				if(args[0].equalsIgnoreCase("restore") && sender.hasPermission("havenbags.restore")) {
 					if (args.length >= 2){ // Player Name
-						String puuid = args[1]; //Player username as fallback
+						String owner = args[1];
+						/*String puuid = args[1]; //Player username as fallback
 						try {
 							puuid = UUIDFetcher.getUUID(args[1]).toString();
 						}catch(Exception e) {
 							sender.sendMessage(Lang.Get("player-no-exist", args[1]));
-						}
-						String dirPath = String.format("%s/bags/%s/", plugin.getDataFolder(), puuid);
+						}*/
+						String dirPath = String.format("%s/bags/%s/", plugin.getDataFolder(), owner);
 						File dir = new File(dirPath);
 						if(!dir.exists()) {
 							//sender.sendMessage(Name + "§c Player '" + args[2] + "' has no bags.");
@@ -317,176 +318,8 @@ public class CommandListener implements CommandExecutor {
 						}
 						if (args.length >= 3){ // Bag UUID
 							String uuid = args[2];
-							String owner = args[1];
-							String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), puuid, uuid);
-							//plugin.getDataFolder() + "/bags/", args[2] + "/" + args[3] + ".json"
-							File bagData;
-							try {
-								bagData = new File(path);
-							} catch(Exception e) {
-								sender.sendMessage(e.toString());
-								e.printStackTrace();
-								return false;
-								//sender.sendMessage(Name + "§c Something went wrong! §fPlayer tell the owner this: '§eHavenBags:CommandListener:ProcessCommand():Restore§f'. Thank you! §4❤§r");
-							}
-							if(!bagData.exists()) {
-								sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-not-found"));
-								return false;
-							}
-							String content = "";
-							try {
-								Path filePath = Path.of(path);
-								content = Files.readString(filePath);
-							} catch (IOException e) {
-								sender.sendMessage(Name + "§c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:WriteToServer()§f'. \nThank you! §4❤§r");
-								e.printStackTrace();
-							}
-							List<ItemStack> contSize = new ArrayList<ItemStack>();
-							contSize = JsonUtils.fromJson(content);
-							//final Bag bag = new Bag(uuid, null, number, true);
-							if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-								bagItem = SkullCreator.itemFromBase64(bagTexture);
-							} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-								bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
-							} else {
-								sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
-								return false;
-							}
-							NBT.SetInt(bagItem, "bag-size", contSize.size());
-							if(owner.equalsIgnoreCase("ownerless")) {
-								NBT.SetString(bagItem, "bag-owner", owner);
-								NBT.SetBool(bagItem, "bag-canBind", false);
-							}else {
-								NBT.SetString(bagItem, "bag-owner", puuid);
-								NBT.SetBool(bagItem, "bag-canBind", true);
-							}
-							ItemMeta bagMeta = bagItem.getItemMeta();
-							if(Main.config.GetInt("bag-custom-model-data") != 0) {
-								bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
-							}
-							//bagMeta.setDisplayName("§aUnbound Bag");
-							//Player owner = Bukkit.getPlayer(args[2]);
-							//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "uuid", uuid, PersistentDataType.STRING);
-							
-							
-							//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "size", contSize.size(), PersistentDataType.INTEGER);
-							if(owner.equalsIgnoreCase("ownerless")) {
-								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "false", PersistentDataType.STRING);
-								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "owner", owner, PersistentDataType.STRING);
-								//bagMeta.setDisplayName("§aBag");
-								bagMeta.setDisplayName(Lang.Get("bag-ownerless-used"));
-							}else {
-								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "true", PersistentDataType.STRING);
-								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "owner", Bukkit.getPlayer(owner).getUniqueId().toString(), PersistentDataType.STRING);
-								//bagMeta.setDisplayName("§a" + owner + "'s Bag");
-								bagMeta.setDisplayName(Lang.Get("bag-bound-name", owner));
-							}
-							//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "content", content, PersistentDataType.STRING);
-	
-							int a = 0;
-								List<String> items = new ArrayList<String>();
-								List<ItemStack> cont = new ArrayList<ItemStack>();
-								for(int i = 0; i < contSize.size(); i++) {
-									cont.add(contSize.get(i));
-									if(contSize.get(i) != null) {
-										if(contSize.get(i).getItemMeta().hasDisplayName()) {
-											if(contSize.get(i).getAmount() != 1) {
-												//items.add("§7" + contSize.get(i).getItemMeta().getDisplayName() + " §7x" + contSize.get(i).getAmount());
-												items.add(Lang.Get("bag-content-item-amount", contSize.get(i).getItemMeta().getDisplayName(), contSize.get(i).getAmount()));
-											} else {
-												//items.add("§7" + contSize.get(i).getItemMeta().getDisplayName());
-												items.add(Lang.Get("bag-content-item", contSize.get(i).getItemMeta().getDisplayName()));
-											}
-										}else {
-											if(contSize.get(i).getAmount() != 1) {
-												//items.add("§7" + FixMaterialName(contSize.get(i).getType().name()) + " §7x" + contSize.get(i).getAmount());
-												items.add(Lang.Get("bag-content-item-amount", FixMaterialName(contSize.get(i).getType().name()), contSize.get(i).getAmount()));
-											} else {
-												//items.add("§7" + FixMaterialName(contSize.get(i).getType().name()));
-												items.add(Lang.Get("bag-content-item", FixMaterialName(contSize.get(i).getType().name())));
-											}
-										}
-										a++;
-									}
-								}
-								List<String> lore = new ArrayList<String>();
-								for (String l : Lang.lang.GetStringList("bag-lore")) {
-									if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer()));
-								}
-								if(NBT.GetBool(bagItem, "bag-canBind")) {
-									//lore.add(Lang.Get("bound-to", owner));
-									for (String l : Lang.lang.GetStringList("bound-to")) {
-										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, owner), Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer()));
-									}
-								}
-								//lore.add("§7Size: " + contSize.size());
-								//lore.add(Lang.Get("bag-size", contSize.size()));
-								for (String l : Lang.lang.GetStringList("bag-size")) {
-									if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, contSize.size()), Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer()));
-								}
-								if(a > 0) {
-									//lore.add("§7Content:");
-									lore.add(Lang.Get("bag-content-title"));
-									for(int k = 0; k < items.size(); k++) {
-										if(k < 5) {
-											lore.add("  " + items.get(k));
-										}
-									}
-									if(a > 5) {
-										//lore.add("  §7And more..");
-										lore.add(Lang.Get("bag-content-and-more"));
-									}
-								}
-								bagMeta.setLore(lore);
-							
-							if(owner.equalsIgnoreCase("ownerless")) {
-								bagMeta.setDisplayName(Lang.Get("bag-ownerless-used"));
-							}else {
-								bagMeta.setDisplayName(Lang.Get("bag-bound-name", owner));
-							}
-	
-							bagItem.setItemMeta(bagMeta);
-							Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
-							Log.Debug(plugin, String.format("%s restored bag: %s/%s size: %s", sender.getName(), owner, uuid, contSize.size()));
-							//content = 
-						}else {
-							// No uuid
-							String owner = args[1];
-							String path = String.format("%s/bags/%s/", plugin.getDataFolder(), puuid);
-							Set<String> files = listFilesUsingJavaIO(path);
-							String fileString = Lang.Get("prefix") + Lang.Get("bags-of", owner);
-							List<String> fileNames = new ArrayList<String>();
-							fileNames.addAll(files);
-							for(int i = 0; i < files.size(); i++) {
-								String f = fileNames.get(i).replace(".json", "");
-								fileString = fileString + "\n" + f;
-							}
-							sender.sendMessage(fileString);
-						}
-					}else {
-						sender.sendMessage(Name + "§c /havenbags restore <player> <bag-uuid>");
-					}
-				}
-				
-				if(args[0].equalsIgnoreCase("preview") && sender.hasPermission("havenbags.preview")) {
-					if (args.length >= 2){ // Player Name
-						String puuid = args[1]; //Player username as fallback
-						try {
-							puuid = UUIDFetcher.getUUID(args[1]).toString();
-						}catch(Exception e) {
-							sender.sendMessage(Lang.Get("player-no-exist", args[1]));
-						}
-						String dirPath = String.format("%s/bags/%s/", plugin.getDataFolder(), puuid);
-						File dir = new File(dirPath);
-						if(!dir.exists()) {
-							//sender.sendMessage(Name + "§c Player '" + args[2] + "' has no bags.");
-							sender.sendMessage(Lang.Get("player-no-bags", args[1]));
-							return false;
-						}
-						if (args.length >= 3){ // Bag UUID
-							String uuid = args[2];
-							String owner = args[1];
-							String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), puuid, uuid);
+							//String owner = args[1];
+							String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, uuid);
 							//plugin.getDataFolder() + "/bags/", args[2] + "/" + args[3] + ".json"
 							File bagData;
 							try {
@@ -526,7 +359,193 @@ public class CommandListener implements CommandExecutor {
 								NBT.SetString(bagItem, "bag-owner", owner);
 								NBT.SetBool(bagItem, "bag-canBind", false);
 							}else {
-								NBT.SetString(bagItem, "bag-owner", puuid);
+								NBT.SetString(bagItem, "bag-owner", owner);
+								NBT.SetBool(bagItem, "bag-canBind", true);
+							}
+							ItemMeta bagMeta = bagItem.getItemMeta();
+							if(Main.config.GetInt("bag-custom-model-data") != 0) {
+								bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+							}
+							//bagMeta.setDisplayName("§aUnbound Bag");
+							//Player owner = Bukkit.getPlayer(args[2]);
+							//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "uuid", uuid, PersistentDataType.STRING);
+							
+							
+							//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "size", contSize.size(), PersistentDataType.INTEGER);
+							if(owner.equalsIgnoreCase("ownerless")) {
+								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "false", PersistentDataType.STRING);
+								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "owner", owner, PersistentDataType.STRING);
+								//bagMeta.setDisplayName("§aBag");
+								bagMeta.setDisplayName(Lang.Get("bag-ownerless-used"));
+							}else {
+								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "true", PersistentDataType.STRING);
+								//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "owner", Bukkit.getPlayer(owner).getUniqueId().toString(), PersistentDataType.STRING);
+								//bagMeta.setDisplayName("§a" + owner + "'s Bag");
+								try {
+									bagMeta.setDisplayName(Lang.Get("bag-bound-name", Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()));
+								} catch (Exception e) {
+									bagMeta.setDisplayName(Lang.Get("bag-bound-name", UUIDFetcher.getName(UUID.fromString(owner))));
+								}
+							}
+							//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "content", content, PersistentDataType.STRING);
+	
+							int a = 0;
+								List<String> items = new ArrayList<String>();
+								List<ItemStack> cont = new ArrayList<ItemStack>();
+								for(int i = 0; i < contSize.size(); i++) {
+									cont.add(contSize.get(i));
+									if(contSize.get(i) != null) {
+										if(contSize.get(i).getItemMeta().hasDisplayName()) {
+											if(contSize.get(i).getAmount() != 1) {
+												//items.add("§7" + contSize.get(i).getItemMeta().getDisplayName() + " §7x" + contSize.get(i).getAmount());
+												items.add(Lang.Get("bag-content-item-amount", contSize.get(i).getItemMeta().getDisplayName(), contSize.get(i).getAmount()));
+											} else {
+												//items.add("§7" + contSize.get(i).getItemMeta().getDisplayName());
+												items.add(Lang.Get("bag-content-item", contSize.get(i).getItemMeta().getDisplayName()));
+											}
+										}else {
+											if(contSize.get(i).getAmount() != 1) {
+												//items.add("§7" + FixMaterialName(contSize.get(i).getType().name()) + " §7x" + contSize.get(i).getAmount());
+												items.add(Lang.Get("bag-content-item-amount", FixMaterialName(contSize.get(i).getType().name()), contSize.get(i).getAmount()));
+											} else {
+												//items.add("§7" + FixMaterialName(contSize.get(i).getType().name()));
+												items.add(Lang.Get("bag-content-item", FixMaterialName(contSize.get(i).getType().name())));
+											}
+										}
+										a++;
+									}
+								}
+								List<String> lore = new ArrayList<String>();
+								for (String l : Lang.lang.GetStringList("bag-lore")) {
+									if(!Utils.IsStringNullOrEmpty(l)) {
+										try {
+											lore.add(Lang.Parse(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer()));
+										} catch(Exception e) {
+											lore.add(Lang.Parse(l));
+										}
+									}
+								}
+								if(NBT.GetBool(bagItem, "bag-canBind")) {
+									//lore.add(Lang.Get("bound-to", owner));
+									for (String l : Lang.lang.GetStringList("bound-to")) {
+										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer().getName())));
+									}
+								}
+								//lore.add("§7Size: " + contSize.size());
+								//lore.add(Lang.Get("bag-size", contSize.size()));
+								for (String l : Lang.lang.GetStringList("bag-size")) {
+									if(!Utils.IsStringNullOrEmpty(l)) {
+										try {
+											lore.add(Lang.Parse(String.format(l, contSize.size()), Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer()));
+										} catch(Exception e) {
+											lore.add(Lang.Parse(String.format(l, contSize.size())));
+										}
+									}
+								}
+								if(a > 0) {
+									//lore.add("§7Content:");
+									lore.add(Lang.Get("bag-content-title"));
+									for(int k = 0; k < items.size(); k++) {
+										if(k < 5) {
+											lore.add("  " + items.get(k));
+										}
+									}
+									if(a > 5) {
+										//lore.add("  §7And more..");
+										lore.add(Lang.Get("bag-content-and-more"));
+									}
+								}
+								bagMeta.setLore(lore);
+							
+							if(owner.equalsIgnoreCase("ownerless")) {
+								bagMeta.setDisplayName(Lang.Get("bag-ownerless-used"));
+							}else {
+								bagMeta.setDisplayName(Lang.Get("bag-bound-name", Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer().getName()));
+							}
+	
+							bagItem.setItemMeta(bagMeta);
+							Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
+							Log.Debug(plugin, String.format("%s restored bag: %s/%s size: %s", sender.getName(), owner, uuid, contSize.size()));
+							//content = 
+						}else {
+							// No uuid
+							//String owner = args[1];
+							String path = String.format("%s/bags/%s/", plugin.getDataFolder(), owner);
+							Set<String> files = listFilesUsingJavaIO(path);
+							String fileString = Lang.Get("prefix") + Lang.Get("bags-of", owner);
+							List<String> fileNames = new ArrayList<String>();
+							fileNames.addAll(files);
+							for(int i = 0; i < files.size(); i++) {
+								String f = fileNames.get(i).replace(".json", "");
+								fileString = fileString + "\n" + f;
+							}
+							sender.sendMessage(fileString);
+						}
+					}else {
+						sender.sendMessage(Name + "§c /havenbags restore <player> <bag-uuid>");
+					}
+				}
+				
+				if(args[0].equalsIgnoreCase("preview") && sender.hasPermission("havenbags.preview")) {
+					if (args.length >= 2){ // Player Name
+						String owner = args[1];
+						/*String player;
+						//String puuid = args[1]; //Player username as fallback
+						try {
+							player = UUIDFetcher.getName(UUID.fromString(owner)).toString();
+						}catch(Exception e) {
+							sender.sendMessage(Lang.Get("player-no-exist", args[1]));
+						}*/
+						String dirPath = String.format("%s/bags/%s/", plugin.getDataFolder(), owner);
+						File dir = new File(dirPath);
+						if(!dir.exists()) {
+							//sender.sendMessage(Name + "§c Player '" + args[2] + "' has no bags.");
+							sender.sendMessage(Lang.Get("player-no-bags", args[1]));
+							return false;
+						}
+						if (args.length >= 3){ // Bag UUID
+							String uuid = args[2];
+							String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, uuid);
+							//plugin.getDataFolder() + "/bags/", args[2] + "/" + args[3] + ".json"
+							File bagData;
+							try {
+								bagData = new File(path);
+							} catch(Exception e) {
+								sender.sendMessage(e.toString());
+								e.printStackTrace();
+								return false;
+								//sender.sendMessage(Name + "§c Something went wrong! §fPlayer tell the owner this: '§eHavenBags:CommandListener:ProcessCommand():Restore§f'. Thank you! §4❤§r");
+							}
+							if(!bagData.exists()) {
+								sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-not-found"));
+								return false;
+							}
+							String content = "";
+							try {
+								Path filePath = Path.of(path);
+								content = Files.readString(filePath);
+							} catch (IOException e) {
+								sender.sendMessage(Name + "§c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:WriteToServer()§f'. \nThank you! §4❤§r");
+								e.printStackTrace();
+							}
+							List<ItemStack> contSize = new ArrayList<ItemStack>();
+							contSize = JsonUtils.fromJson(content);
+							//final Bag bag = new Bag(uuid, null, number, true);
+							if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+								bagItem = SkullCreator.itemFromBase64(bagTexture);
+							} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
+								bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+							} else {
+								sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
+								return false;
+							}
+							NBT.SetString(bagItem, "bag-uuid", uuid);
+							NBT.SetInt(bagItem, "bag-size", contSize.size());
+							if(owner.equalsIgnoreCase("ownerless")) {
+								NBT.SetString(bagItem, "bag-owner", owner);
+								NBT.SetBool(bagItem, "bag-canBind", false);
+							}else {
+								NBT.SetString(bagItem, "bag-owner", owner);
 								NBT.SetBool(bagItem, "bag-canBind", true);
 							}
 							ItemMeta bagMeta = bagItem.getItemMeta();
@@ -594,8 +613,8 @@ public class CommandListener implements CommandExecutor {
 							//content = 
 						}else {
 							// No uuid
-							String owner = args[1];
-							String path = String.format("%s/bags/%s/", plugin.getDataFolder(), puuid);
+							//String owner = args[1];
+							String path = String.format("%s/bags/%s/", plugin.getDataFolder(), owner);
 							Set<String> files = listFilesUsingJavaIO(path);
 							String fileString = Lang.Get("prefix") + Lang.Get("bags-of", owner);
 							List<String> fileNames = new ArrayList<String>();
@@ -661,6 +680,44 @@ public class CommandListener implements CommandExecutor {
 						} else {
 							sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-rename"));
 						}
+					}
+				}
+				if(args[0].equalsIgnoreCase("info") && sender.hasPermission("havenbags.info")) {
+					ItemStack hand = Bukkit.getPlayer(sender.getName()).getInventory().getItemInMainHand();
+					ItemMeta meta = Bukkit.getPlayer(sender.getName()).getInventory().getItemInMainHand().getItemMeta();
+						
+					if(Main.IsBag(hand)) {
+						String uuid = NBT.GetString(hand, "bag-uuid");
+						String owner = NBT.GetString(hand, "bag-owner");
+						String creator = NBT.GetString(hand, "bag-creator");
+						Boolean canBind = NBT.GetBool(hand, "bag-canBind");
+						Integer size = NBT.GetInt(hand, "bag-size");
+						List<String> lore = meta.getLore();
+						
+						String _lore = "";
+						for(int i = 0; i < lore.size(); i++) { _lore = _lore + "\n    " + lore.get(i); }
+						
+						String info = "§6## HavenBag Bag Information ##";
+						
+						if(!Utils.IsStringNullOrEmpty(uuid)) { info = info + "\n  §fUUID: §e" + uuid; }
+						if(!Utils.IsStringNullOrEmpty(owner)) { 
+							if (!owner.equalsIgnoreCase("ownerless") && !owner.equalsIgnoreCase("null")) {
+								info = info + String.format("\n  §fOwner: §e%s (%s)", owner, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()); 
+							}else {
+								info = info + "\n  §fOwner: §e" + owner;
+							}
+						}
+						if(!Utils.IsStringNullOrEmpty(creator)) {
+							info = info + String.format("\n  §fCreator: §e%s (%s)", creator, Bukkit.getOfflinePlayer(UUID.fromString(creator)).getName());
+						}else {
+							info = info + "\n  §fCreator: §enull";
+						}
+						if(canBind != null) { info = info + "\n  §fCanBind: §e" + canBind.toString(); }
+						if(size != null) { info = info + "\n  §fSize: §e" + size.toString(); }
+						if(lore != null) { info = info + "\n  §fLore:§r" + _lore; }
+						
+						sender.sendMessage(info);
+						return false;
 					}
 				}
 			} catch(Exception e) {

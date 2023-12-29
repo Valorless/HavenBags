@@ -361,6 +361,16 @@ public class BagGUI implements Listener {
 		} catch(Exception e) {}
 		
 		Log.Debug(plugin, "Remaining Open Bags: " + Main.activeBags.size());
+		
+		UpdateTimestamp();
+    }
+    
+    void UpdateTimestamp() {
+    	Log.Debug(plugin, "Updating timestamp for " + bag);
+    	Main.timeTable.Set(
+    		String.format("%s/%s", NBT.GetString(bagItem, "bag-owner"), NBT.GetString(bagItem, "bag-uuid")),
+    			System.currentTimeMillis() / 1000L);
+    	Main.timeTable.SaveConfig();
     }
     
     void GivePlayerBagBack() {

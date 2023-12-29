@@ -43,6 +43,9 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.rename")) {
 				subCommands.add("rename");
 			}
+			if (sender.hasPermission("havenbags.info")) {
+				subCommands.add("info");
+			}
 
 			StringUtil.copyPartialMatches(args[0], subCommands, completions);
 		}
