@@ -19,8 +19,8 @@ public class PlacementBlocker implements Listener {
 		Block block = event.getBlockPlaced();
 		ItemStack item = event.getItemInHand();
 		ItemMeta nbt = item.getItemMeta();
-		ItemStack offItem = event.getPlayer().getInventory().getItemInOffHand();
-		ItemMeta offMeta = offItem.getItemMeta();
+		//ItemStack offItem = event.getPlayer().getInventory().getItemInOffHand();
+		//ItemMeta offMeta = offItem.getItemMeta();
 		Log.Debug(Main.plugin, "Block Placed: " + block.getType().toString());
 		Log.Debug(Main.plugin, "Player Holding: " + item.getType().toString());
 	 

@@ -17,7 +17,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BlockIterator;
 
@@ -58,7 +57,7 @@ public class BagListener implements Listener{
     			}
     			
     			//if(Tags.Get(plugin, item.getPersistentDataContainer(), "uuid", PersistentDataType.STRING) != null || NBT.Has(hand, "bag-uuid")) {
-        		if(Main.IsBag(hand)) {
+        		if(HavenBags.IsBag(hand)) {
         			List<String> blacklist = Main.config.GetStringList("blacklist");
             		if(blacklist != null) {
             			if(blacklist.size() != 0) {

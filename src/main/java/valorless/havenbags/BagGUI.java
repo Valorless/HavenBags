@@ -11,7 +11,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -29,7 +28,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
-import valorless.valorlessutils.uuid.UUIDFetcher;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.ValorlessUtils.Utils;
 
@@ -102,6 +100,8 @@ public class BagGUI implements Listener {
         
         InitializeItems();
         //LoadContent();
+        
+        HavenBags.BagHashes.Add(inv.hashCode());
     }
     
     void CheckInstances() {
@@ -209,7 +209,7 @@ public class BagGUI implements Listener {
         ItemStack clickedItem = e.getCurrentItem();
         if(clickedItem == null) return;
         
-        if(Main.IsBag(clickedItem)) {
+        if(HavenBags.IsBag(clickedItem)) {
         	//e.getWhoClicked().closeInventory();
         	//e.getWhoClicked().sendMessage(Name + "§c Bags cannot be placed inside bags.");
         	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
@@ -374,24 +374,7 @@ public class BagGUI implements Listener {
     }
     
     void GivePlayerBagBack() {
-    	if(player.getInventory().getItemInMainHand() != null) {
-    		if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
-    			player.getInventory().setItemInMainHand(bagItem);
-    			return;
-    		}
-    	}
-    	if(player.getInventory().firstEmpty() != -1) {
-    		player.getInventory().addItem(bagItem);
-			SFX.Play(Main.config.GetString("close-sound"), 
-					Main.config.GetFloat("close-volume").floatValue(), 
-					Main.config.GetFloat("close-pitch").floatValue(), player);
-    	} else {
-    		player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
-			SFX.Play(Main.config.GetString("inventory-full-sound"), 
-					Main.config.GetFloat("inventory-full-volume").floatValue(), 
-					Main.config.GetFloat("inventory-full-pitch").floatValue(), player);
-    		player.getWorld().dropItem(player.getLocation(), bagItem);
-    	}
+    	HavenBags.ReturnBag(bagItem, player);
     }
     
     String FixMaterialName(String string) {

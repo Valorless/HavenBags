@@ -28,7 +28,7 @@ public class PickupPrevention implements Listener {
 	@EventHandler
 	public void onHopperPickup(InventoryMoveItemEvent e) {	
 		if(Main.config.GetBool("bags-in-shulkers") == false) {		
-			if(Main.IsBag(e.getItem())){
+			if(HavenBags.IsBag(e.getItem())){
 				if(e.getDestination().getType() == InventoryType.HOPPER) {
 					e.setCancelled(true);
 				}

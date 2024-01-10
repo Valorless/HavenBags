@@ -19,7 +19,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -686,7 +685,7 @@ public class CommandListener implements CommandExecutor {
 					ItemStack hand = Bukkit.getPlayer(sender.getName()).getInventory().getItemInMainHand();
 					ItemMeta meta = Bukkit.getPlayer(sender.getName()).getInventory().getItemInMainHand().getItemMeta();
 						
-					if(Main.IsBag(hand)) {
+					if(HavenBags.IsBag(hand)) {
 						String uuid = NBT.GetString(hand, "bag-uuid");
 						String owner = NBT.GetString(hand, "bag-owner");
 						String creator = NBT.GetString(hand, "bag-creator");

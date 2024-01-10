@@ -3,7 +3,6 @@ package valorless.havenbags;
 import valorless.havenbags.hooks.PlaceholderAPIHook;
 import valorless.valorlessutils.ValorlessUtils.*;
 import valorless.valorlessutils.config.Config;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.translate.Translator;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
@@ -11,17 +10,11 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin implements Listener {
@@ -243,15 +236,6 @@ public final class Main extends JavaPlugin implements Listener {
 		}, 5L);
 		
 	}
-	
-	public static Boolean IsBag(ItemStack item) {
-		if(item.hasItemMeta()) {
-			if(NBT.Has(item, "bag-uuid")) {
-				return true;
-			}
-		}
-		return false;
-	}
     
     void BagConversion() {
     	if(config.GetInt("config-version") < 2) {
@@ -306,25 +290,16 @@ public final class Main extends JavaPlugin implements Listener {
 						try {
 							f = f.replace(".json", "");
 							timeTable.Set(folder + "/" + f, System.currentTimeMillis() / 1000L);
-							//timeTable.AddValidationEntry(folder + "/" + f, Long.toString(System.currentTimeMillis() / 1000L));
 						} catch(Exception e) {
 							Log.Error(plugin, String.format("Failed to add %s", String.format("/bags/%s/%s", folder, f)));
 						}
 					}
-					//File f = new File(String.format("%s/bags/%s", plugin.getDataFolder(), folder));
-					//f.renameTo(to);
-					//Log.Warning(plugin, String.format("%s => %s", 
-					//	String.format("/bags/%s", folder), 
-					//	String.format("/bags/%s", UUIDFetcher.getUUID(folder))
-					//));
 				} catch(Exception e) {
 					Log.Error(plugin, String.format("Failed to add %s", String.format("/bags/%s", folder)));
 					e.printStackTrace();
-					//Log.Error(plugin, e.printStackTrace())
 				}
 			}
 			timeTable.SaveConfig();
-			//timeTable.Validate();
     	}
     }
 }

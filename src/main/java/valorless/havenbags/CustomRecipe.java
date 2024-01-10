@@ -11,13 +11,11 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.permissions.Permission;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -166,7 +164,7 @@ public class CustomRecipe implements Listener {
 			ShapedRecipe r = (ShapedRecipe)event.getRecipe();
 			if(r == null) return;
 			if(r.getKey() == null) return;
-			String recipe = r.getKey().getKey();
+			//String recipe = r.getKey().getKey();
 			if(!Recipes.contains(r.getKey())) return;
 			//if(!event.isLeftClick()) event.setCancelled(true);
 			if(event.isShiftClick()) event.setCancelled(true);
