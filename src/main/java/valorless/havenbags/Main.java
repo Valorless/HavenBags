@@ -1,6 +1,6 @@
 package valorless.havenbags;
 
-import valorless.havenbags.hooks.PlaceholderAPIHook;
+import valorless.havenbags.hooks.*;
 import valorless.valorlessutils.ValorlessUtils.*;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.translate.Translator;
@@ -45,6 +45,7 @@ public final class Main extends JavaPlugin implements Listener {
 	@Override
     public void onEnable() {
 		PlaceholderAPIHook.Hook();
+		ChestSortHook.Hook();
 		
 		Log.Debug(plugin, "HavenBags Debugging Enabled!");
 		

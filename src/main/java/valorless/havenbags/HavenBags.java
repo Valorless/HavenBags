@@ -12,11 +12,9 @@ public class HavenBags {
 	public static class BagHashes {
 		
 		// Static list of HashCodes from bags.
-		//private static Config hashes = new Config(Main.plugin, "BagHashes.bags");
 		private static ArrayList<Integer> hashes = new ArrayList<Integer>();
 		
 		public static void Add(Integer hash) {
-			//List<Integer> m_hashes = hashes.GetIntList("hashes");
 			if(!hashes.contains(hash)) {
 				hashes.add(hash);
 			}

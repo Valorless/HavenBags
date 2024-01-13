@@ -33,8 +33,8 @@ public class BagListener implements Listener{
     	if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
     		Player player = event.getPlayer();
     		
-    		if(getTargetBlock(player, 5).getType().toString().contains("SIGN")) { // Since 1.20 players can now edit signs. Block bag interaction if a sign is clicked.
-    			//event.setCancelled(true); 
+    		// Since 1.20 players can now edit signs. Block bag interaction if a sign is clicked.
+    		if(getTargetBlock(player, 5).getType().toString().contains("SIGN")) { 
     			return; 
     		}
     		

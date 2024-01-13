@@ -41,6 +41,7 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (sender.hasPermission("havenbags.info")) {
 				subCommands.add("info");
+				subCommands.add("rawinfo");
 			}
 
 			StringUtil.copyPartialMatches(args[0], subCommands, completions);

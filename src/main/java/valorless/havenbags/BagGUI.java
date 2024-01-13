@@ -21,9 +21,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-//import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-
 
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
@@ -42,14 +40,6 @@ public class BagGUI implements Listener {
 	public Player player;
 	public String bagOwner;
 	String bag = "";
-	
-	public class Items {
-		public String name = "";
-		public String item = "";
-		public List<String> lore = new ArrayList<String>();
-		public Boolean interactable = false;
-		public String tag;
-	}
 
     public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, ItemMeta bagMeta) {
     	Main.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid")));
@@ -90,8 +80,13 @@ public class BagGUI implements Listener {
     	} else {
     		inv = Bukkit.createInventory(player, size, bagMeta.getDisplayName());
     	}
+    	
         if(Bukkit.getPluginManager().getPlugin("ChestSort") != null) {
-            de.jeff_media.chestsort.api.ChestSortAPI.setSortable(inv);   
+        	try {
+        		de.jeff_media.chestsort.api.ChestSortAPI.setSortable(inv);   
+        	}catch (Exception e) {
+        		Log.Error(plugin, "Failed to get ChestSort's API. Is it up to date?)");
+        	}
         }
         //this.content = JsonUtils.fromJson(Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "content", PersistentDataType.STRING).toString());
 		//player.sendMessage(content.toString());
@@ -221,64 +216,6 @@ public class BagGUI implements Listener {
     public void onInventoryClose(final InventoryCloseEvent e) {
         if (!e.getInventory().equals(inv)) return;
         Close(false);
-        /*
-        GivePlayerBagBack();
-        List<ItemStack> cont = new ArrayList<ItemStack>();
-        int a = 0;
-        List<String> items = new ArrayList<String>();
-        for(int i = 0; i < inv.getSize(); i++) {
-    		cont.add(inv.getItem(i));
-    		if(inv.getItem(i) != null) {
-    			if(inv.getItem(i).getItemMeta().hasDisplayName()) {
-    				if(inv.getItem(i).getAmount() != 1) {
-    					//items.add("§7" + inv.getItem(i).getItemMeta().getDisplayName() + " §7x" + inv.getItem(i).getAmount());
-    					items.add(Lang.Get("bag-content-item-amount", inv.getItem(i).getItemMeta().getDisplayName(), inv.getItem(i).getAmount()));
-    				} else {
-    					//items.add("§7" + inv.getItem(i).getItemMeta().getDisplayName());
-    					items.add(Lang.Get("bag-content-item", inv.getItem(i).getItemMeta().getDisplayName()));
-    				}
-    			}else {
-    				if(inv.getItem(i).getAmount() != 1) {
-    					//items.add("§7" + FixMaterialName(inv.getItem(i).getType().name()) + " §7x" + inv.getItem(i).getAmount());
-    					items.add(Lang.Get("bag-content-item-amount", FixMaterialName(inv.getItem(i).getType().name()), inv.getItem(i).getAmount()));
-    				} else {
-    					//items.add("§7" + FixMaterialName(inv.getItem(i).getType().name()));
-    					items.add(Lang.Get("bag-content-item", FixMaterialName(inv.getItem(i).getType().name())));
-    				}
-    			}
-    			a++;
-    		}
-    	}
-        List<String> lore = new ArrayList<String>();
-        if(Tags.Get(HavenBags.plugin, bagMeta.getPersistentDataContainer(), "canbind", PersistentDataType.STRING).toString() != "false") {
-        	//lore.add(String.format("§7Bound to %s", e.getPlayer().getName()));
-        	lore.add(Lang.Get("bound-to", bagOwner));
-        }
-        //lore.add("§7Size: " + inv.getSize());
-        lore.add(Lang.Get("bag-size", inv.getSize()));
-        if(a > 0) {
-        	//lore.add("§7Content:");
-        	lore.add(Lang.Get("bag-content-title"));
-        	for(int k = 0; k < items.size(); k++) {
-        		if(k < 5) {
-        			lore.add("  " + items.get(k));
-        		}
-        	}
-        	if(a > 5) {
-        		//lore.add("  §7And more..");
-        		lore.add(Lang.Get("bag-content-and-more"));
-        	}
-        }
-        bagMeta.setLore(lore);
-        
-		//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "content", JsonUtils.toJson(cont), PersistentDataType.STRING);
-		//bagMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		//bagMeta.addEnchant(Enchantment.LUCK, 1, true);
-		bagItem.setItemMeta(bagMeta);
-		WriteToServer();
-
-    	HavenBags.activeBags.remove(this);
-    	*/
     }
     
     public void Close(boolean forced) {
@@ -358,7 +295,9 @@ public class BagGUI implements Listener {
     			Main.activeBags.remove(openBag);
     		}
     	}
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		
 		Log.Debug(plugin, "Remaining Open Bags: " + Main.activeBags.size());
 		

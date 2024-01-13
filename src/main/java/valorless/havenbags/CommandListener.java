@@ -719,6 +719,17 @@ public class CommandListener implements CommandExecutor {
 						return false;
 					}
 				}
+				if(args[0].equalsIgnoreCase("rawinfo") && sender.hasPermission("havenbags.info")) {
+					ItemStack hand = Bukkit.getPlayer(sender.getName()).getInventory().getItemInMainHand();
+					ItemMeta meta = Bukkit.getPlayer(sender.getName()).getInventory().getItemInMainHand().getItemMeta();
+						
+					if(HavenBags.IsBag(hand)) {
+						String info = "§6## HavenBag Bag Raw Information ##";
+						info = info + "\n  §f" + meta.toString();
+						sender.sendMessage(info);
+						return false;
+					}
+				}
 			} catch(Exception e) {
 				sender.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
 				Log.Error(Main.plugin, e.getMessage());
