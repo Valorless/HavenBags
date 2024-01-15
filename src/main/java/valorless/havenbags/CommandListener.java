@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -63,6 +64,7 @@ public class CommandListener implements CommandExecutor {
 					return true;
 				}
 				ItemStack bagItem = new ItemStack(Material.AIR);
+				bagTexture = Main.config.GetString("bag-texture");
 				if(args[0].equalsIgnoreCase("create") && sender.hasPermission("havenbags.create")) {
 					if (args.length >= 2){
 						String[] allowedSizes = {"1","2","3","4","5","6"};
@@ -729,6 +731,39 @@ public class CommandListener implements CommandExecutor {
 						sender.sendMessage(info);
 						return false;
 					}
+				}
+				if(args[0].equalsIgnoreCase("gui") && sender.hasPermission("havenbags.gui")) {
+					if (args.length == 1) {
+						AdminGUI gui = new AdminGUI(AdminGUI.GUIType.Main, (Player)sender);
+						gui.OpenInventory((Player)sender);
+						return false;
+					}
+					else if (args.length == 2){
+						if(args[1].equalsIgnoreCase("create")) {
+							AdminGUI gui = new AdminGUI(AdminGUI.GUIType.Creation, (Player)sender);
+							gui.OpenInventory((Player)sender);
+							return false;
+						}
+						if(args[1].equalsIgnoreCase("restore")) {
+							AdminGUI gui = new AdminGUI(AdminGUI.GUIType.Restoration, (Player)sender);
+							gui.OpenInventory((Player)sender);
+							return false;
+						}
+					}
+					else if (args.length >= 3) {
+						if(args[1].equalsIgnoreCase("restore")) {
+							OfflinePlayer target;
+							try {
+								target = Bukkit.getOfflinePlayer(UUIDFetcher.getUUID(args[2]));
+							} catch(Exception e) {
+								return false;
+							}
+							AdminGUI gui = new AdminGUI(AdminGUI.GUIType.Player, (Player)sender, target);
+							gui.OpenInventory((Player)sender);
+							return false;
+						}
+					}
+					
 				}
 			} catch(Exception e) {
 				sender.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));

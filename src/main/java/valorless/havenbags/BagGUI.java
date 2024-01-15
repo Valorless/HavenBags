@@ -289,12 +289,19 @@ public class BagGUI implements Listener {
 		GivePlayerBagBack();
 		WriteToServer();
 		try {
-		for (ActiveBag openBag : Main.activeBags) {
-    		Log.Debug(plugin, "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
-    		if(openBag.uuid == NBT.GetString(bagItem, "bag-uuid")) {
-    			Main.activeBags.remove(openBag);
+			/*for (ActiveBag openBag : Main.activeBags) {
+    			Log.Debug(plugin, "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
+    			if(openBag.uuid == NBT.GetString(bagItem, "bag-uuid")) {
+    				Main.activeBags.remove(openBag);
+    			}
+    		}*/
+			
+			for (int i = 0; i < Main.activeBags.size(); i++) {
+    			Log.Debug(plugin, "Open Bag: " + Main.activeBags.get(i).uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
+    			if(Main.activeBags.get(i).uuid == NBT.GetString(bagItem, "bag-uuid")) {
+    				Main.activeBags.remove(i);
+    			}
     		}
-    	}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

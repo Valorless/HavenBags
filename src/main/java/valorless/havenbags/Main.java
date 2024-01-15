@@ -44,10 +44,9 @@ public final class Main extends JavaPlugin implements Listener {
 	
 	@Override
     public void onEnable() {
+		Log.Debug(plugin, "HavenBags Debugging Enabled!");
 		PlaceholderAPIHook.Hook();
 		ChestSortHook.Hook();
-		
-		Log.Debug(plugin, "HavenBags Debugging Enabled!");
 		
 		Log.Debug(plugin, Long.toString(System.currentTimeMillis() / 1000L));
 		

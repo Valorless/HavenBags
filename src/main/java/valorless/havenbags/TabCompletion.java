@@ -43,6 +43,9 @@ public class TabCompletion implements TabCompleter {
 				subCommands.add("info");
 				subCommands.add("rawinfo");
 			}
+			if (sender.hasPermission("havenbags.gui")) {
+				subCommands.add("gui");
+			}
 
 			StringUtil.copyPartialMatches(args[0], subCommands, completions);
 		}
@@ -79,6 +82,12 @@ public class TabCompletion implements TabCompleter {
 				List<String> playerNames = GetBagOwners();
 				StringUtil.copyPartialMatches(cmd, playerNames, completions);
 			}
+			if (args[0].equalsIgnoreCase("gui") && sender.hasPermission("havenbags.gui")) {
+				List<String> cmds = new ArrayList<String>();
+				cmds.add("create");
+				cmds.add("restore");
+				StringUtil.copyPartialMatches(cmd, cmds, completions);
+			}
 		}
 		else if(args.length == 3) {
 			String cmd = args[2];
@@ -114,6 +123,10 @@ public class TabCompletion implements TabCompleter {
 				// /bags restore <player> <uuid>
 				List<String> bags = GetBags(args[1]);
 				StringUtil.copyPartialMatches(cmd, bags, completions);
+			}
+			if (args[0].equalsIgnoreCase("gui") && args[1].equalsIgnoreCase("restore") && sender.hasPermission("havenbags.gui")) {
+				List<String> playerNames = getOnlinePlayerNames();
+				StringUtil.copyPartialMatches(cmd, playerNames, completions);
 			}
 		} 
 		else if(args.length == 4) {

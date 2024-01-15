@@ -25,6 +25,7 @@ permissions:
       havenbags.bypass: true
       havenbags.preview: true
       havenbags.info: true
+      havenbags.gui: true
   havenbags.reload:
     description: Allows you to reload the configuration.
     default: op
@@ -51,5 +52,8 @@ permissions:
     default: op
   havenbags.info:
     description: Allows you to view information regarding the currently held-in-hand bag.
+    default: op
+  havenbags.gui:
+    description: Allows you to open the Admin GUI.
     default: op
   
