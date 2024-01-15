@@ -1,3 +1,6 @@
+- GUI menus for commands 'create', 'restore', and 'preview'.
+ # Should make bag creation and restoration easier.
+
 - Add an inactivity removal option, to remove inactive bags.
  # Create time-table of all bags, resetting when bag or inventory is opened. (Have a config-version upgrade to add existing bags on servers already using HB)
  # Add config variables such as enabled, inactivity time, lang entry, and so forth.
