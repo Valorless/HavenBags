@@ -95,7 +95,7 @@ public class AdminGUI implements Listener {
 			try {
 				content = PreparePlayerBags(target);
 			} catch (Exception e) {
-				player.sendMessage(Lang.Get("prefix") + "§cThis player has over 54 bags.\nPlease restore their bags through §e/bags restore§c!");
+				player.sendMessage(Lang.Get("prefix") + "§cThis player has over 53 bags.\nPlease restore their bags through §e/bags restore§c!");
 				player.closeInventory();
 				e.printStackTrace();
 				return;

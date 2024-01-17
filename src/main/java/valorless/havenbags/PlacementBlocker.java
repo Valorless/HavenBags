@@ -23,7 +23,23 @@ public class PlacementBlocker implements Listener {
 		//ItemMeta offMeta = offItem.getItemMeta();
 		Log.Debug(Main.plugin, "Block Placed: " + block.getType().toString());
 		Log.Debug(Main.plugin, "Player Holding: " + item.getType().toString());
-	 
+		
+		if(nbt != null) {
+			Log.Debug(Main.plugin, "Block has ItemMeta.");
+			if(HavenBags.IsBag(item)) {
+				Log.Debug(Main.plugin, "Block was bag!");
+				block.setType(Material.AIR);
+				event.setCancelled(true);
+			}
+		}
+		if(item.getType() == Material.AIR) {
+			block.setType(Material.AIR);
+			event.setCancelled(true);
+			Log.Debug(Main.plugin, "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
+			Log.Debug(Main.plugin, "Block was likely bag, removing.");
+		}
+		
+		/*
 		if(block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
 			Log.Debug(Main.plugin, "Block was head.");
 			if(nbt != null) {
@@ -32,31 +48,14 @@ public class PlacementBlocker implements Listener {
 					Log.Debug(Main.plugin, "Block was bag!");
 					block.setType(Material.AIR);
 					event.setCancelled(true);
-					//Log.Warning(HavenBags.plugin, "Oops.. This shouldnt happen... Please tell the developer 'PlacementBlocker:onBlockPlace()' :)");
-					//Log.Warning(HavenBags.plugin, "This warning was tested quite a lot and was never triggered.");
-					//Log.Warning(HavenBags.plugin, "I left this in on purpose, should it work as intended.");
-					//Log.Warning(HavenBags.plugin, "No additional code is run, so you're good!");
-					/*Player player = event.getPlayer();
-					block.setType(Material.AIR);
-					
-					if(player.getGameMode() != GameMode.CREATIVE) { //Dont give Creative a replacement.
-						Integer amount = player.getInventory().getItemInMainHand().getAmount();
-						item.setAmount(amount -1);
-			
-						ItemStack replacement = new ItemStack(Material.PLAYER_HEAD, 1);
-						replacement.setItemMeta(nbt);
-			
-						player.getInventory().addItem(replacement);
-					}
-					
-					player.closeInventory();
-					event.setCancelled(true);*/
 				}
-			}else {
-				Log.Debug(Main.plugin, "Block has no ItemMeta.");
-				Log.Debug(Main.plugin, "Block was likely bag, removing.");
+			}
+			
+			if(item.getType() == Material.AIR) {
 				block.setType(Material.AIR);
 				event.setCancelled(true);
+				Log.Debug(Main.plugin, "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
+				Log.Debug(Main.plugin, "Block was likely bag, removing.");
 			}
 		} else {
 			if(nbt != null) {
@@ -73,5 +72,6 @@ public class PlacementBlocker implements Listener {
 				Log.Debug(Main.plugin, "Block was likely bag, removing.");
 			}
 		}
+		*/
 	}
 }
