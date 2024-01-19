@@ -1,4 +1,4 @@
-package valorless.havenbags;
+package valorless.havenbags.prevention;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import valorless.havenbags.Lang;
+import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.ValorlessUtils.Utils;
 import valorless.valorlessutils.nbt.NBT;

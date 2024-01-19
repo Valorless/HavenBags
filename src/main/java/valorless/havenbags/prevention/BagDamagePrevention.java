@@ -1,4 +1,4 @@
-package valorless.havenbags;
+package valorless.havenbags.prevention;
 
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import valorless.havenbags.Main;
 import valorless.valorlessutils.nbt.NBT;
 
 public class BagDamagePrevention implements Listener{

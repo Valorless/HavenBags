@@ -3,9 +3,12 @@ package valorless.havenbags;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -371,9 +374,10 @@ public class BagGUI implements Listener {
             }
     	}
         
-        FileWriter fw;
+        /*FileWriter fw;
 		try {
 			fw = new FileWriter(bagData);
+			//fw.
 	        fw.write(JsonUtils.toPrettyJson(cont));
 	        fw.flush();
 	        fw.close();
@@ -381,5 +385,16 @@ public class BagGUI implements Listener {
 			player.sendMessage(Name + "§c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:WriteToServer()§f'. \nThank you! §4❤§r");
 			e.printStackTrace();
 		}
+		*/
+    	
+    	Path path = Paths.get(plugin.getDataFolder() + "/bags/", bagOwner + "/" + uuid + ".json");
+    	List<String> lines = Arrays.asList(JsonUtils.toPrettyJson(cont));
+    	try {
+    		Files.write(path, lines, StandardCharsets.UTF_8);
+    	}catch(IOException e){
+			player.sendMessage(Name + "§c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:WriteToServer()§f'. \nThank you! §4❤§r");
+			e.printStackTrace();
+    	}
+    	
     }
 }

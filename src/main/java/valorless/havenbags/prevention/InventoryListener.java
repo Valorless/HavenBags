@@ -1,4 +1,4 @@
-package valorless.havenbags;
+package valorless.havenbags.prevention;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,6 +7,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
+
+import valorless.havenbags.HavenBags;
+import valorless.havenbags.Lang;
+import valorless.havenbags.Main;
+import valorless.havenbags.HavenBags.BagHashes;
 
 public class InventoryListener implements Listener {
 

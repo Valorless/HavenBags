@@ -1,6 +1,7 @@
 package valorless.havenbags;
 
 import valorless.havenbags.hooks.*;
+import valorless.havenbags.prevention.*;
 import valorless.valorlessutils.ValorlessUtils.*;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.translate.Translator;
@@ -140,20 +141,7 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		translator = new Translator(config.GetString("language"));
 
-		Log.Debug(plugin, "Registering PlacementListener");
-		getServer().getPluginManager().registerEvents(new PlacementBlocker(), this);
-		Log.Debug(plugin, "Registering BagDamagePrevention");
-		getServer().getPluginManager().registerEvents(new BagDamagePrevention(), this);
-		Log.Debug(plugin, "Registering BagListener");
-		getServer().getPluginManager().registerEvents(new BagListener(), this);
-		Log.Debug(plugin, "Registering CloneListener");
-		getServer().getPluginManager().registerEvents(new CloneListener(), this);
-		Log.Debug(plugin, "Registering InventoryListener");
-		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
-		Log.Debug(plugin, "Registering PickupPrevention");
-		getServer().getPluginManager().registerEvents(new PickupPrevention(), this);
-		
-		Bukkit.getPluginManager().registerEvents(this, this);
+		RegisterListeners();
 				
 		RegisterCommands();
 
@@ -219,6 +207,25 @@ public final class Main extends JavaPlugin implements Listener {
     		getCommand(commands[i]).setExecutor(new CommandListener());
     		getCommand(commands[i]).setTabCompleter(new TabCompletion());
     	}
+    }
+    
+    public void RegisterListeners() {
+    	Log.Debug(plugin, "Registering PlacementListener");
+		getServer().getPluginManager().registerEvents(new PlacementBlocker(), this);
+		Log.Debug(plugin, "Registering BagDamagePrevention");
+		getServer().getPluginManager().registerEvents(new BagDamagePrevention(), this);
+		Log.Debug(plugin, "Registering BagListener");
+		getServer().getPluginManager().registerEvents(new BagListener(), this);
+		Log.Debug(plugin, "Registering CloneListener");
+		getServer().getPluginManager().registerEvents(new CloneListener(), this);
+		Log.Debug(plugin, "Registering InventoryListener");
+		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+		Log.Debug(plugin, "Registering PickupPrevention");
+		getServer().getPluginManager().registerEvents(new PickupPrevention(), this);
+		Log.Debug(plugin, "Registering CraftPrevention");
+		getServer().getPluginManager().registerEvents(new CraftPrevention(), this);
+		
+		Bukkit.getPluginManager().registerEvents(this, this);
     }
 
 

@@ -1,5 +1,7 @@
-package valorless.havenbags;
+package valorless.havenbags.prevention;
 
+import valorless.havenbags.HavenBags;
+import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.*;
 import valorless.valorlessutils.nbt.NBT;
 

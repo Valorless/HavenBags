@@ -1,10 +1,12 @@
-package valorless.havenbags;
+package valorless.havenbags.prevention;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import valorless.havenbags.*;
 
 public class PickupPrevention implements Listener {
 	public static JavaPlugin plugin;
