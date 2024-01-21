@@ -1,5 +1,8 @@
 package valorless.havenbags.prevention;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,12 +14,43 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.HavenBags.BagHashes;
 
 public class InventoryListener implements Listener {
+	
+	final private List<InventoryType> allowedContainers = new ArrayList<InventoryType>() {
+			private static final long serialVersionUID = 1L;
+		{ 
+			add(InventoryType.CHEST);
+			add(InventoryType.ENDER_CHEST);
+			add(InventoryType.BARREL);
+			add(InventoryType.CREATIVE);
+			add(InventoryType.PLAYER);
+			add(InventoryType.SHULKER_BOX);
+			add(InventoryType.MERCHANT);
+			add(InventoryType.CRAFTING);
+			add(InventoryType.HOPPER);
+			}
+		};
 
 	@EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
+		Shulkers(e);
+		Containers(e);
+    }
+	
+	void Containers(final InventoryClickEvent e) {
+		ItemStack clickedItem = e.getCurrentItem();
+        if(clickedItem == null) return;
+        
+        if(HavenBags.IsBag(clickedItem)) {
+        	// Cancel click event if the inventory type isn't allowed.
+        	if(allowedContainers.contains(e.getInventory().getType()) == false) {
+        		e.setCancelled(true);
+        	}
+        }
+	}
+	
+	void Shulkers(final InventoryClickEvent e) {
         if (Main.config.GetBool("bags-in-shulkers") == true) return;
 
         ItemStack clickedItem = e.getCurrentItem();
@@ -28,7 +62,7 @@ public class InventoryListener implements Listener {
         	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-shulker-error"));
         	e.setCancelled(true);
         }
-    }
+	}
 	
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event){
