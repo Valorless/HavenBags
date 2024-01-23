@@ -5,6 +5,7 @@ import valorless.havenbags.prevention.*;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.translate.Translator;
+import valorless.valorlessutils.types.Vector3;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
 import java.io.File;
@@ -43,7 +44,7 @@ public final class Main extends JavaPlugin implements Listener {
 	boolean ValorlessUtils() {
 		Log.Debug(plugin, "Checking ValorlessUtils");
 		
-		int requiresBuild = 167;
+		int requiresBuild = 173;
 		
 		String ver = Bukkit.getPluginManager().getPlugin("ValorlessUtils").getDescription().getVersion();
 		//Log.Debug(plugin, ver);
