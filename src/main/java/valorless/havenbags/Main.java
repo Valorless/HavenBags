@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -73,8 +74,10 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("bags-in-shulkers", true);
 		config.AddValidationEntry("blacklist", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L;
-
 		{ add("world_name"); add("world_name_nether"); add("another_world"); }} );
+		config.AddValidationEntry("allowed-containers", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L;
+		{ add("CHEST"); add("ENDER_CHEST"); add("BARREL"); add("SHULKER_BOX"); add("MERCHANT"); }} );
 		Log.Debug(plugin, "Validating config.yml");
 		config.Validate();
 		

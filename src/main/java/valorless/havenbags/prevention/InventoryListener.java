@@ -14,10 +14,11 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class InventoryListener implements Listener {
 	
-	final private List<InventoryType> allowedContainers = new ArrayList<InventoryType>() {
+	/*final private List<InventoryType> allowedContainers = new ArrayList<InventoryType>() {
 			private static final long serialVersionUID = 1L;
 		{ 
 			add(InventoryType.CHEST);
@@ -30,7 +31,27 @@ public class InventoryListener implements Listener {
 			add(InventoryType.CRAFTING);
 			add(InventoryType.HOPPER);
 			}
-		};
+		};*/
+		
+	final private List<InventoryType> allowedContainers = PrepareAllowedContainers();
+		
+	List<InventoryType> PrepareAllowedContainers() {
+		Log.Debug(Main.plugin, "Preparing Allowed Containers");
+		List<InventoryType> cont = new ArrayList<InventoryType>();
+		cont.add(InventoryType.CRAFTING);
+		cont.add(InventoryType.HOPPER);
+		cont.add(InventoryType.PLAYER);
+		cont.add(InventoryType.CREATIVE);
+		for(String container : Main.config.GetStringList("allowed-containers")) {
+			cont.add(GetInventoryType(container));
+		}
+		Log.Debug(Main.plugin, "Allowed Containers:");
+		for(InventoryType type : cont) {
+			Log.Debug(Main.plugin, "- " + type.toString());
+		}
+		Log.Debug(Main.plugin, "To update this list, you have to restart or reload the server, not /bags reload.");
+		return cont;
+	}
 
 	@EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
@@ -98,5 +119,15 @@ public class InventoryListener implements Listener {
         	}
         }
     }
+	
+	public InventoryType GetInventoryType(String string) {
+		for(InventoryType type : InventoryType.values()) {
+			if(string.equalsIgnoreCase(type.toString())) {
+				return type;
+			}
+		}
+		Log.Error(Main.plugin, String.format("InventoryType does not contain '%s'.", string));
+		return null;
+	}
 	
 }

@@ -9,6 +9,8 @@ config-version: 3
 
 # Additional messages used for debugging.
 debug: false
+
+# Should we check for plugin updates?
 check-updates: true
 
 # Language used when translating material and item names.
@@ -69,6 +71,17 @@ bags-in-bags: true
 # Can bags be put inside shulkers?
 # if 'false', hoppers cannot move bags.
 bags-in-shulkers: true
+
+# Which containers are the player allowed to interact with bags?
+# Use this to prevent the player using bags in unintended ways, such as crafting.
+# Full list of InventoryTypes: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/inventory/InventoryType.html
+# Default: CRAFTING, HOPPER, PLAYER, CREATIVE
+allowed-containers:
+- CHEST
+- ENDER_CHEST
+- BARREL
+- SHULKER_BOX
+- MERCHANT
 
 # Specify if bags should not work in specific worlds.
 # Worlds do not include _nether or _the_end.

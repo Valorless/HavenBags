@@ -59,8 +59,12 @@ public class CommandListener implements CommandExecutor {
 					CustomRecipe.RemoveRecipes();
 					CustomRecipe.PrepareRecipes();
 					Main.translator = new Translator(Main.config.GetString("language"));
-					sender.sendMessage(Name +" §aReloaded.");
-					if(!(sender instanceof Player)) { Log.Info(plugin, " §aReloaded!"); }
+					if(!(sender instanceof Player)) { 
+						Log.Info(plugin, "Reloaded!");
+					}else {
+						sender.sendMessage(Name +" §aReloaded.");
+					}
+					Log.Warning(plugin, "It is possible that not everything was reloaded, to ensure everything has reloaded, it is recommended to restart or reload the server.");
 					return true;
 				}
 				ItemStack bagItem = new ItemStack(Material.AIR);
