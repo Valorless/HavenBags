@@ -69,7 +69,6 @@ protect-bags: true
 bags-in-bags: true
 
 # Can bags be put inside shulkers?
-# if 'false', hoppers cannot move bags.
 bags-in-shulkers: true
 
 # Which containers are the player allowed to interact with bags?
