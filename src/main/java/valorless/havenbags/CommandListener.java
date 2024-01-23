@@ -20,7 +20,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.json.JsonUtils;
@@ -32,17 +31,16 @@ import valorless.valorlessutils.uuid.UUIDFetcher;
 
 public class CommandListener implements CommandExecutor {
 	
-	public static JavaPlugin plugin;
 	String Name = "§7[§aHaven§bBags§7]§r";
 	String bagTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    	Log.Debug(plugin, "Sender: " + sender.getName());
-    	Log.Debug(plugin, "Command: " + command.toString());
-    	Log.Debug(plugin, "Label: " + label);
+    	Log.Debug(Main.plugin, "Sender: " + sender.getName());
+    	Log.Debug(Main.plugin, "Command: " + command.toString());
+    	Log.Debug(Main.plugin, "Label: " + label);
     	for(String a : args) {
-    		Log.Debug(plugin, "Argument: " + a);
+    		Log.Debug(Main.plugin, "Argument: " + a);
     	}
     	
     	bagTexture = Main.config.GetString("bag-texture");
@@ -60,11 +58,11 @@ public class CommandListener implements CommandExecutor {
 					CustomRecipe.PrepareRecipes();
 					Main.translator = new Translator(Main.config.GetString("language"));
 					if(!(sender instanceof Player)) { 
-						Log.Info(plugin, "Reloaded!");
+						Log.Info(Main.plugin, "Reloaded!");
 					}else {
 						sender.sendMessage(Name +" §aReloaded.");
 					}
-					Log.Warning(plugin, "It is possible that not everything was reloaded, to ensure everything has reloaded, it is recommended to restart or reload the server.");
+					Log.Warning(Main.plugin, "It is possible that not everything was reloaded, to ensure everything has reloaded, it is recommended to restart or reload the server.");
 					return true;
 				}
 				ItemStack bagItem = new ItemStack(Material.AIR);
@@ -101,7 +99,7 @@ public class CommandListener implements CommandExecutor {
 								NBT.SetInt(bagItem, "bag-size", size*9);
 								NBT.SetBool(bagItem, "bag-canBind", false);
 								Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
-								Log.Debug(plugin, String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size*9, "false"));
+								Log.Debug(Main.plugin, String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size*9, "false"));
 								//sender.sendMessage(JsonUtils.toJson(bagItem));
 							}else {
 								sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-ownerless-no-size"));
@@ -137,7 +135,7 @@ public class CommandListener implements CommandExecutor {
 								NBT.SetInt(bagItem, "bag-size", size*9);
 								NBT.SetBool(bagItem, "bag-canBind", true);
 								Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
-								Log.Debug(plugin, String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
+								Log.Debug(Main.plugin, String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
 							}
 							catch (NumberFormatException ex){
 								ex.printStackTrace();
@@ -152,15 +150,10 @@ public class CommandListener implements CommandExecutor {
 				if(args[0].equalsIgnoreCase("give") && sender.hasPermission("havenbags.give")) {
 					if (args.length >= 3){
 						Player receiver = Bukkit.getPlayer(args[1]);
-						String[] allowedSizes = {"1","2","3","4","5","6"};
 						if(args[2].equalsIgnoreCase("ownerless")) {
 							if (args.length >= 3){
-								boolean ok = false;
-								for(String size : allowedSizes) {
-									if(args[3].equalsIgnoreCase(size)) { ok = true; }
-								}
-								if(ok) {
-									int size = Integer.parseInt(args[3]);
+								int size = Utils.Clamp(Integer.parseInt(args[3]), 1, 6);
+
 									//String uuid = UUID.randomUUID().toString();
 									//final Bag bag = new Bag(uuid, null, number*9, true);
 									if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
@@ -197,24 +190,15 @@ public class CommandListener implements CommandExecutor {
 									NBT.SetBool(bagItem, "bag-canBind", false);
 									receiver.getInventory().addItem(bagItem);
 									receiver.sendMessage(String.format(Lang.Get("prefix") + Lang.Get("bag-given", Lang.Get("bag-ownerless-unused"))));
-									Log.Debug(plugin, String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size*9, "false"));
+									Log.Debug(Main.plugin, String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size*9, "false"));
 									//sender.sendMessage(JsonUtils.toJson(bagItem));
-								}
-								else {
-									sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-size-error"));
-								}
 							}else {
 								sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-ownerless-no-size"));
 							}
 						}
 						else {
 							try{
-								boolean ok = false;
-								for(String size : allowedSizes) {
-									if(args[2].equalsIgnoreCase(size)) { ok = true; }
-								}
-								if(ok) {
-									int size = Integer.parseInt(args[2]);
+								int size = Utils.Clamp(Integer.parseInt(args[2]), 1, 6);
 									//String uuid = UUID.randomUUID().toString();
 									//final Bag bag = new Bag(uuid, null, number*9, true); //<-- Remove this & Bag.java
 									if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
@@ -253,11 +237,7 @@ public class CommandListener implements CommandExecutor {
 									receiver.getInventory().addItem(bagItem);
 									receiver.sendMessage(Lang.Get("prefix") + Lang.Get("bag-given", Lang.Get("bag-unbound-name")));
 									//sender.sendMessage(JsonUtils.toJson(bagItem));
-									Log.Debug(plugin, String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
-								}
-								else {
-									sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-size-error"));
-								}
+									Log.Debug(Main.plugin, String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
 							}
 							catch (NumberFormatException ex){
 								ex.printStackTrace();
@@ -278,7 +258,7 @@ public class CommandListener implements CommandExecutor {
 						}catch(Exception e) {
 							sender.sendMessage(Lang.Get("player-no-exist", args[1]));
 						}*/
-						String dirPath = String.format("%s/bags/%s/", plugin.getDataFolder(), owner);
+						String dirPath = String.format("%s/bags/%s/", Main.plugin.getDataFolder(), owner);
 						File dir = new File(dirPath);
 						if(!dir.exists()) {
 							//sender.sendMessage(Name + "§c Player '" + args[2] + "' has no bags.");
@@ -288,7 +268,7 @@ public class CommandListener implements CommandExecutor {
 						if (args.length >= 3){ // Bag UUID
 							String uuid = args[2];
 							//String owner = args[1];
-							String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, uuid);
+							String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
 							//plugin.getDataFolder() + "/bags/", args[2] + "/" + args[3] + ".json"
 							File bagData;
 							try {
@@ -434,12 +414,12 @@ public class CommandListener implements CommandExecutor {
 	
 							bagItem.setItemMeta(bagMeta);
 							Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
-							Log.Debug(plugin, String.format("%s restored bag: %s/%s size: %s", sender.getName(), owner, uuid, contSize.size()));
+							Log.Debug(Main.plugin, String.format("%s restored bag: %s/%s size: %s", sender.getName(), owner, uuid, contSize.size()));
 							//content = 
 						}else {
 							// No uuid
 							//String owner = args[1];
-							String path = String.format("%s/bags/%s/", plugin.getDataFolder(), owner);
+							String path = String.format("%s/bags/%s/", Main.plugin.getDataFolder(), owner);
 							Set<String> files = listFilesUsingJavaIO(path);
 							String fileString = Lang.Get("prefix") + Lang.Get("bags-of", owner);
 							List<String> fileNames = new ArrayList<String>();
@@ -465,7 +445,7 @@ public class CommandListener implements CommandExecutor {
 						}catch(Exception e) {
 							sender.sendMessage(Lang.Get("player-no-exist", args[1]));
 						}*/
-						String dirPath = String.format("%s/bags/%s/", plugin.getDataFolder(), owner);
+						String dirPath = String.format("%s/bags/%s/", Main.plugin.getDataFolder(), owner);
 						File dir = new File(dirPath);
 						if(!dir.exists()) {
 							//sender.sendMessage(Name + "§c Player '" + args[2] + "' has no bags.");
@@ -474,7 +454,7 @@ public class CommandListener implements CommandExecutor {
 						}
 						if (args.length >= 3){ // Bag UUID
 							String uuid = args[2];
-							String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, uuid);
+							String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
 							//plugin.getDataFolder() + "/bags/", args[2] + "/" + args[3] + ".json"
 							File bagData;
 							try {
@@ -572,18 +552,18 @@ public class CommandListener implements CommandExecutor {
 							}
 							bagItem.setItemMeta(bagMeta);
 	
-							BagGUI gui = new BagGUI(plugin, NBT.GetInt(bagItem, "bag-size"), Bukkit.getPlayer(sender.getName()), bagItem, bagItem.getItemMeta());
+							BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(bagItem, "bag-size"), Bukkit.getPlayer(sender.getName()), bagItem, bagItem.getItemMeta());
 							//Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
 							gui.OpenInventory(Bukkit.getPlayer(sender.getName()));
 							//HavenBags.activeBags.remove(gui);
 							
-							Log.Debug(plugin, "Attempting to preview bag");
-							Log.Debug(plugin, String.format("%s previwing bag: %s/%s size: %s", sender.getName(), owner, uuid, contSize.size()));
+							Log.Debug(Main.plugin, "Attempting to preview bag");
+							Log.Debug(Main.plugin, String.format("%s previwing bag: %s/%s size: %s", sender.getName(), owner, uuid, contSize.size()));
 							//content = 
 						}else {
 							// No uuid
 							//String owner = args[1];
-							String path = String.format("%s/bags/%s/", plugin.getDataFolder(), owner);
+							String path = String.format("%s/bags/%s/", Main.plugin.getDataFolder(), owner);
 							Set<String> files = listFilesUsingJavaIO(path);
 							String fileString = Lang.Get("prefix") + Lang.Get("bags-of", owner);
 							List<String> fileNames = new ArrayList<String>();

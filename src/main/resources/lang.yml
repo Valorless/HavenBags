@@ -48,11 +48,6 @@ player-no-exist: "&cNo bags found for this player."
 # Message sent when '/bags restore' fails to locate bag of specific UUID.
 bag-not-found: '&cNo bag found with that UUID.'
 
-# If a size provided is not within the allowed range.
-# 1, 2, 3, 4, 5, 6.
-# (Rows of slots. Row*9 = slots)
-bag-size-error: '&cSize cannot be over 6 rows.'
-
 # If no size is given.
 bag-ownerless-no-size: '&cOwnerless bag must have a size.'
 

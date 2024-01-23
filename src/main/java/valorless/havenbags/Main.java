@@ -35,11 +35,7 @@ public final class Main extends JavaPlugin implements Listener {
 	public void onLoad() {
 		plugin = this;
 		config = new Config(this, "config.yml");
-		CommandListener.plugin = this;
-		BagListener.plugin = this;
-		
 		Lang.lang = new Config(this, "lang.yml");
-
 		timeTable = new Config(this, "timetable.yml");
 	}
 	
@@ -126,7 +122,6 @@ public final class Main extends JavaPlugin implements Listener {
 		//Lang.lang.AddValidationEntry("bag-create", ""); //unsure wtf this was for
 		Lang.lang.AddValidationEntry("player-no-exist", "&cNo bags found for this player.");
 		Lang.lang.AddValidationEntry("bag-not-found", "&cNo bag found with that UUID.");
-		Lang.lang.AddValidationEntry("bag-size-error", "&cSize cannot be over 6 rows.");
 		Lang.lang.AddValidationEntry("bag-ownerless-no-size", "&cOwnerless bag must have a size.");
 		Lang.lang.AddValidationEntry("bag-given", "&aYou''ve been given an %s!");
 		Lang.lang.AddValidationEntry("number-conversion-error", "&cCannot convert ''%s'' to a number!");

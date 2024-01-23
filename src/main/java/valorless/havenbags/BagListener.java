@@ -17,7 +17,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BlockIterator;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -26,7 +25,6 @@ import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
 
 public class BagListener implements Listener{
-	public static JavaPlugin plugin;
 	String Name = "§7[§aHaven§bBags§7]§r";
 
     @EventHandler
@@ -62,15 +60,15 @@ public class BagListener implements Listener{
         			List<String> blacklist = Main.config.GetStringList("blacklist");
             		if(blacklist != null) {
             			if(blacklist.size() != 0) {
-        					Log.Debug(plugin, "Player World: " + player.getWorld().getName());
+        					Log.Debug(Main.plugin, "Player World: " + player.getWorld().getName());
             				for(String world : blacklist) {
-            					Log.Debug(plugin, "Blacklist: " + world);
+            					Log.Debug(Main.plugin, "Blacklist: " + world);
             					if(player.getWorld().getName().equalsIgnoreCase(world)) return;
             				}
             			}
             		}
             		
-        			Log.Debug(plugin, player.getName() + " is attempting to open a bag");
+        			Log.Debug(Main.plugin, player.getName() + " is attempting to open a bag");
     				//player.sendMessage("has uuid: true");
     				//String owner = Tags.Get(plugin, item.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
     				String uuid = NBT.GetString(hand, "bag-uuid");
@@ -101,8 +99,8 @@ public class BagListener implements Listener{
 						//NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
     					//WriteToServer(player, item, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER));
     					WriteToServer(player, hand, NBT.GetInt(hand, "bag-size"));
-    	    			Log.Debug(plugin, "Ownerless bag created.");
-    	    			Log.Debug(plugin, "Creating timestamp for " + uuid);
+    	    			Log.Debug(Main.plugin, "Ownerless bag created.");
+    	    			Log.Debug(Main.plugin, "Creating timestamp for " + uuid);
     	    	    	Main.timeTable.Set(
     	    	    		String.format("%s/%s", "ownerless", uuid),
     	    	    			Long.toString(System.currentTimeMillis() / 1000L));
@@ -142,8 +140,8 @@ public class BagListener implements Listener{
     					NBT.SetString(hand, "bag-creator", player.getUniqueId().toString());
 						//NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
     					WriteToServer(player, hand, NBT.GetInt(hand, "bag-size"));
-    	    			Log.Debug(plugin, "Bound new bag to: " + player.getName());
-    	    			Log.Debug(plugin, "Creating timestamp for " + uuid);
+    	    			Log.Debug(Main.plugin, "Bound new bag to: " + player.getName());
+    	    			Log.Debug(Main.plugin, "Creating timestamp for " + uuid);
     	    	    	Main.timeTable.Set(
     	    	    		String.format("%s/%s", player.getUniqueId().toString(), uuid),
     	    	    			System.currentTimeMillis() / 1000L);
@@ -156,37 +154,37 @@ public class BagListener implements Listener{
 				
     				if(!canbind) {
     					//player.sendMessage("Ownerless Bag");
-    					BagGUI gui = new BagGUI(plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
-    					Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
+    					BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
+    					Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
     			    	player.getInventory().remove(hand);
     					gui.OpenInventory(player);
     					SFX.Play(Main.config.GetString("open-sound"), 
     							Main.config.GetFloat("open-volume").floatValue(), 
     							Main.config.GetFloat("open-pitch").floatValue(), player);
-    	    			Log.Debug(plugin, "Attempting to open ownerless bag");
+    	    			Log.Debug(Main.plugin, "Attempting to open ownerless bag");
     					return;
     				}
     				if(canbind) {
     					//player.sendMessage("Bound Bag");
     					if(owner.equalsIgnoreCase(player.getUniqueId().toString())) {
-    						BagGUI gui = new BagGUI(plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
-    						Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
+    						BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
+    						Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
         			    	player.getInventory().remove(hand);
     						gui.OpenInventory(player);
         					SFX.Play(Main.config.GetString("open-sound"), 
         							Main.config.GetFloat("open-volume").floatValue(), 
         							Main.config.GetFloat("open-pitch").floatValue(), player);
-    		    			Log.Debug(plugin, "Attempting to open bag");
+    		    			Log.Debug(Main.plugin, "Attempting to open bag");
     						return;
     					} else if (player.hasPermission("havenbags.bypass")) {
-    						BagGUI gui = new BagGUI(plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
-    						Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
+    						BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
+    						Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
         			    	player.getInventory().remove(hand);
     						gui.OpenInventory(player);
         					SFX.Play(Main.config.GetString("open-sound"), 
         							Main.config.GetFloat("open-volume").floatValue(), 
         							Main.config.GetFloat("open-pitch").floatValue(), player);
-    		    			Log.Debug(plugin, player + "has attempted to open a bag, bypassing the lock");
+    		    			Log.Debug(Main.plugin, player + "has attempted to open a bag, bypassing the lock");
     						return;
     					}
     					else {
@@ -245,7 +243,7 @@ public class BagListener implements Listener{
     void WriteToServer(Player player, ItemStack bagMeta, int size) {
     	String uuid = NBT.GetString(bagMeta, "bag-uuid");
     	String owner = NBT.GetString(bagMeta, "bag-owner");
-    	Log.Debug(plugin, "Attempting to write bag " + owner + "/" + uuid + " onto server");
+    	Log.Debug(Main.plugin, "Attempting to write bag " + owner + "/" + uuid + " onto server");
     	if(owner != "ownerless") {
     		player = Bukkit.getPlayer(UUID.fromString(owner));
     	}
@@ -255,16 +253,16 @@ public class BagListener implements Listener{
     		cont.add(null);
     	}
     	if(owner != "ownerless") {
-    		bagData = new File(plugin.getDataFolder() + "/bags/", owner + "/" + uuid + ".json");
+    		bagData = new File(Main.plugin.getDataFolder() + "/bags/", owner + "/" + uuid + ".json");
     		if(!bagData.exists()) {
             	bagData.getParentFile().mkdirs();
-                Log.Info(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
+                Log.Info(Main.plugin, String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
             }
     	}else {
-    		bagData = new File(plugin.getDataFolder() + "/bags/ownerless/" + uuid + ".json");
+    		bagData = new File(Main.plugin.getDataFolder() + "/bags/ownerless/" + uuid + ".json");
     		if(!bagData.exists()) {
             	bagData.getParentFile().mkdirs();
-                Log.Info(plugin, String.format("Bag data for (ownerless) %s does not exist, creating new.", uuid));
+                Log.Info(Main.plugin, String.format("Bag data for (ownerless) %s does not exist, creating new.", uuid));
             }
     	}
         
