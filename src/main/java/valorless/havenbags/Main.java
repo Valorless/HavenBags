@@ -2,7 +2,7 @@ package valorless.havenbags;
 
 import valorless.havenbags.hooks.*;
 import valorless.havenbags.prevention.*;
-import valorless.valorlessutils.ValorlessUtils.*;
+import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.translate.Translator;
 import valorless.valorlessutils.uuid.UUIDFetcher;
@@ -41,6 +41,7 @@ public final class Main extends JavaPlugin implements Listener {
 	
 	@SuppressWarnings("unused")
 	boolean ValorlessUtils() {
+		Log.Debug(plugin, "Checking ValorlessUtils");
 		
 		int requiresBuild = 167;
 		

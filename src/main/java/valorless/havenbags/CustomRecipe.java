@@ -48,7 +48,7 @@ public class CustomRecipe implements Listener {
 				}else {
 					bagTexture = Main.config.GetString("bag-texture");
 				}
-				int size = config.GetInt("recipes." + recipe + ".bag-size");
+				int size = Utils.Clamp(config.GetInt("recipes." + recipe + ".bag-size"), 1, 6);
 				if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
 					bagItem = SkullCreator.itemFromBase64(bagTexture);
 				} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {

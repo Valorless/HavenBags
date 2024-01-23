@@ -47,9 +47,6 @@ public class HavenBags {
     	}
     	if(player.getInventory().firstEmpty() != -1) {
     		player.getInventory().addItem(bag);
-			SFX.Play(Main.config.GetString("close-sound"), 
-					Main.config.GetFloat("close-volume").floatValue(), 
-					Main.config.GetFloat("close-pitch").floatValue(), player);
     	} else {
     		player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
 			SFX.Play(Main.config.GetString("inventory-full-sound"), 
