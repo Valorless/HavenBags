@@ -19,7 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.Permission;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.ValorlessUtils.Utils;
+import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.skulls.SkullCreator;

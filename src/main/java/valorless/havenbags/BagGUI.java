@@ -1,7 +1,6 @@
 package valorless.havenbags;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -29,8 +28,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
+import valorless.valorlessutils.sound.SFX;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.ValorlessUtils.Utils;
+import valorless.valorlessutils.utils.Utils;
 
 public class BagGUI implements Listener {
 	public JavaPlugin plugin;
@@ -226,6 +226,11 @@ public class BagGUI implements Listener {
     		Log.Warning(plugin, String.format("%s forcefully closed! Attempting to save it and return it to %s!", bag, player.getName()));
     		player.closeInventory();
     	}
+
+		SFX.Play(Main.config.GetString("close-sound"), 
+				Main.config.GetFloat("close-volume").floatValue(), 
+				Main.config.GetFloat("close-pitch").floatValue(), player);
+    	
         Log.Debug(plugin, "Bag closed, attempting to save bag. (" + bag + ")");
     	
         List<ItemStack> cont = new ArrayList<ItemStack>();

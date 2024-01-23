@@ -26,11 +26,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.ValorlessUtils.Utils;
+import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.skulls.SkullCreator;
-import valorless.valorlessutils.uuid.UUIDFetcher;
 
 public class AdminGUI implements Listener {
 	public enum GUIType { Main, Creation, Restoration, Player }

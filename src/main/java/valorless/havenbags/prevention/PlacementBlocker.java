@@ -3,8 +3,6 @@ package valorless.havenbags.prevention;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.*;
-import valorless.valorlessutils.nbt.NBT;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;

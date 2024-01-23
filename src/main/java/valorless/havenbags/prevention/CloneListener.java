@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.ValorlessUtils.Utils;
+import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.nbt.NBT;
 
 public class CloneListener implements Listener{

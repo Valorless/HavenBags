@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import me.clip.placeholderapi.PlaceholderAPI;
 import valorless.havenbags.hooks.PlaceholderAPIHook;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.ValorlessUtils.Utils;
+import valorless.valorlessutils.utils.Utils;
 
 public class Lang {
 	

@@ -23,11 +23,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.ValorlessUtils.Utils;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.skulls.SkullCreator;
 import valorless.valorlessutils.translate.Translator;
+import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
 public class CommandListener implements CommandExecutor {
@@ -71,109 +71,73 @@ public class CommandListener implements CommandExecutor {
 				bagTexture = Main.config.GetString("bag-texture");
 				if(args[0].equalsIgnoreCase("create") && sender.hasPermission("havenbags.create")) {
 					if (args.length >= 2){
-						String[] allowedSizes = {"1","2","3","4","5","6"};
 						if(args[1].equalsIgnoreCase("ownerless")) {
 							if (args.length >= 3){
-								boolean ok = false;
-								for(String size : allowedSizes) {
-									if(args[2].equalsIgnoreCase(size)) { ok = true; }
+								int size = Utils.Clamp(Integer.parseInt(args[2]), 1, 6);
+								if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+									bagItem = SkullCreator.itemFromBase64(bagTexture);
+								} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
+									bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+								} else {
+									sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
+									return false;
 								}
-								if(ok) {
-									int size = Integer.parseInt(args[2]);
-									//String uuid = UUID.randomUUID().toString();
-									//final Bag bag = new Bag(uuid, null, number*9, true);
-									if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-										bagItem = SkullCreator.itemFromBase64(bagTexture);
-									} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-										bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
-									} else {
-										sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
-										return false;
-									}
-									ItemMeta bagMeta = bagItem.getItemMeta();
-									if(Main.config.GetInt("bag-custom-model-data") != 0) {
-										bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
-									}
-									//bagMeta.setDisplayName("§aUnused Bag");
-									bagMeta.setDisplayName(Lang.Get("bag-ownerless-unused"));
-									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "uuid", uuid, PersistentDataType.STRING);
-									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "owner", "null", PersistentDataType.STRING);
-									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "size", bag.size, PersistentDataType.INTEGER);
-									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "false", PersistentDataType.STRING);
-									List<String> lore = new ArrayList<String>();
-									for (String l : Lang.lang.GetStringList("bag-lore")) {
-										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)sender));
-									}
-									//lore.add(Lang.Get("bag-size", size*9));
-									for (String l : Lang.lang.GetStringList("bag-size")) {
-										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), (Player)sender));
-									}
-									bagMeta.setLore(lore);
-									bagItem.setItemMeta(bagMeta);
-									NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
-									NBT.SetString(bagItem, "bag-owner", "null");
-									NBT.SetInt(bagItem, "bag-size", size*9);
-									NBT.SetBool(bagItem, "bag-canBind", false);
-									Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
-									Log.Debug(plugin, String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size*9, "false"));
-									//sender.sendMessage(JsonUtils.toJson(bagItem));
+								ItemMeta bagMeta = bagItem.getItemMeta();
+								if(Main.config.GetInt("bag-custom-model-data") != 0) {
+									bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
 								}
-								else {
-									sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-size-error"));
+								bagMeta.setDisplayName(Lang.Get("bag-ownerless-unused"));
+								List<String> lore = new ArrayList<String>();
+								for (String l : Lang.lang.GetStringList("bag-lore")) {
+									if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)sender));
 								}
+								for (String l : Lang.lang.GetStringList("bag-size")) {
+									if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), (Player)sender));
+								}
+								bagMeta.setLore(lore);
+								bagItem.setItemMeta(bagMeta);
+								NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+								NBT.SetString(bagItem, "bag-owner", "null");
+								NBT.SetInt(bagItem, "bag-size", size*9);
+								NBT.SetBool(bagItem, "bag-canBind", false);
+								Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
+								Log.Debug(plugin, String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size*9, "false"));
+								//sender.sendMessage(JsonUtils.toJson(bagItem));
 							}else {
 								sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-ownerless-no-size"));
 							}
 						}
 						else {
 							try{
-								boolean ok = false;
-								for(String size : allowedSizes) {
-									if(args[1].equalsIgnoreCase(size)) { ok = true; }
+								int size = Utils.Clamp(Integer.parseInt(args[1]), 1, 6);
+								if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+									bagItem = SkullCreator.itemFromBase64(bagTexture);
+								} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
+									bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+								} else {
+									sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
+									return false;
 								}
-								if(ok) {
-									int size = Integer.parseInt(args[1]);
-									//String uuid = UUID.randomUUID().toString();
-									//final Bag bag = new Bag(uuid, null, number*9, true); //<-- Remove this & Bag.java
-									if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-										bagItem = SkullCreator.itemFromBase64(bagTexture);
-									} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-										bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
-									} else {
-										sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
-										return false;
-									}
-									ItemMeta bagMeta = bagItem.getItemMeta();
-									if(Main.config.GetInt("bag-custom-model-data") != 0) {
-										bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
-									}
-									//bagMeta.setDisplayName("§aUnbound Bag");
-									bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
-									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "uuid", uuid, PersistentDataType.STRING);
-									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "owner", "null", PersistentDataType.STRING);
-									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "size", bag.size, PersistentDataType.INTEGER);
-									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "canBind", "true", PersistentDataType.STRING);
-									List<String> lore = new ArrayList<String>();
-									for (String l : Lang.lang.GetStringList("bag-lore")) {
-										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)sender));
-									}
-									//lore.add(Lang.Get("bag-size", size*9));
-									for (String l : Lang.lang.GetStringList("bag-size")) {
-										if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), (Player)sender));
-									}
-									bagMeta.setLore(lore);
-									bagItem.setItemMeta(bagMeta);
-									NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
-									NBT.SetString(bagItem, "bag-owner", "null");
-									NBT.SetInt(bagItem, "bag-size", size*9);
-									NBT.SetBool(bagItem, "bag-canBind", true);
-									Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
-									//sender.sendMessage(JsonUtils.toJson(bagItem));
-									Log.Debug(plugin, String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
+								ItemMeta bagMeta = bagItem.getItemMeta();
+								if(Main.config.GetInt("bag-custom-model-data") != 0) {
+									bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
 								}
-								else {
-									sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-size-error"));
+								bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
+								List<String> lore = new ArrayList<String>();
+								for (String l : Lang.lang.GetStringList("bag-lore")) {
+									if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)sender));
 								}
+								for (String l : Lang.lang.GetStringList("bag-size")) {
+									if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), (Player)sender));
+								}
+								bagMeta.setLore(lore);
+								bagItem.setItemMeta(bagMeta);
+								NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+								NBT.SetString(bagItem, "bag-owner", "null");
+								NBT.SetInt(bagItem, "bag-size", size*9);
+								NBT.SetBool(bagItem, "bag-canBind", true);
+								Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
+								Log.Debug(plugin, String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
 							}
 							catch (NumberFormatException ex){
 								ex.printStackTrace();

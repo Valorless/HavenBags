@@ -15,7 +15,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -44,9 +43,39 @@ public final class Main extends JavaPlugin implements Listener {
 		timeTable = new Config(this, "timetable.yml");
 	}
 	
+	@SuppressWarnings("unused")
+	boolean ValorlessUtils() {
+		
+		int requiresBuild = 167;
+		
+		String ver = Bukkit.getPluginManager().getPlugin("ValorlessUtils").getDescription().getVersion();
+		//Log.Debug(plugin, ver);
+		String[] split = ver.split("[.]");
+		int major = Integer.valueOf(split[0]);
+		int minor = Integer.valueOf(split[1]);
+		int hotfix = Integer.valueOf(split[2]);
+		int build = Integer.valueOf(split[3]);
+		
+		if(build < requiresBuild) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        		public void run() {
+        			Log.Error(plugin, String.format("HavenBags requires ValorlessUtils build %s or newer, found %s. (%s)", requiresBuild, build, ver));
+        			Log.Error(plugin, "https://www.spigotmc.org/resources/valorlessutils.109586/");
+        			Bukkit.getPluginManager().disablePlugin(plugin);
+        		}
+    		}, 10);
+			return false;
+		}
+		else return true;
+	}
+	
 	@Override
     public void onEnable() {
 		Log.Debug(plugin, "HavenBags Debugging Enabled!");
+		
+		// Check if a correct version of ValorlessUtils is in use, otherwise don't run the rest of the code.
+		if(!ValorlessUtils()) return;
+		
 		PlaceholderAPIHook.Hook();
 		ChestSortHook.Hook();
 		
