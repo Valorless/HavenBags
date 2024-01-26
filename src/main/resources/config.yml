@@ -43,8 +43,8 @@ bag-custom-model-data: 0
 # Texture of the bag. Must be Base64 format.
 # You can get textures from https://minecraft-heads.com/
 # The texture by default: https://minecraft-heads.com/custom-heads/decoration/1906-bag
-# At the bottom of the page there's a section called "Other".
-# Inside "Other" is a value based off of a large amount of random letters, numbers and symbols. That is the Base64 texture.
+# At the bottom of the page there's a section called "For Developers".
+# Inside "For Developers" is a value based off of a large amount of random letters, numbers and symbols. That is the Base64 texture.
 bag-texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0='
 
 # Sound played when opening a bag.
