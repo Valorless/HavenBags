@@ -5,7 +5,6 @@ import valorless.havenbags.prevention.*;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.translate.Translator;
-import valorless.valorlessutils.types.Vector3;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
 import java.io.File;

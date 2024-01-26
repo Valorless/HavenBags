@@ -43,9 +43,11 @@ public class BagGUI implements Listener {
 	public Player player;
 	public String bagOwner;
 	String bag = "";
+	boolean preview;
 
-    public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, ItemMeta bagMeta) {
-    	Main.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid")));
+    public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, ItemMeta bagMeta, boolean... preview) {
+    	if(preview.length != 0) this.preview = preview[0];
+    	if(!this.preview) Main.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid")));
     	
     	try {
     		// Try get owner's name on the server.
@@ -76,7 +78,7 @@ public class BagGUI implements Listener {
     	}
     	
 
-    	CheckInstances(); // Check for multiple of the same bags
+    	if(!this.preview) CheckInstances(); // Check for multiple of the same bags
     	
     	if(!Utils.IsStringNullOrEmpty(Lang.Get("bag-inventory-title"))) {
     		inv = Bukkit.createInventory(player, size, Lang.Get("bag-inventory-title"));
@@ -99,7 +101,7 @@ public class BagGUI implements Listener {
         InitializeItems();
         //LoadContent();
         
-        HavenBags.BagHashes.Add(inv.hashCode());
+        if(!this.preview) HavenBags.BagHashes.Add(inv.hashCode());
     }
     
     void CheckInstances() {
@@ -218,7 +220,7 @@ public class BagGUI implements Listener {
     @EventHandler
     public void onInventoryClose(final InventoryCloseEvent e) {
         if (!e.getInventory().equals(inv)) return;
-        Close(false);
+        if(!preview) Close(false);
     }
     
     public void Close(boolean forced) {

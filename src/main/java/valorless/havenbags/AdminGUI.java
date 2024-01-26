@@ -32,7 +32,7 @@ import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.skulls.SkullCreator;
 
 public class AdminGUI implements Listener {
-	public enum GUIType { Main, Creation, Restoration, Player }
+	public enum GUIType { Main, Creation, Restoration, Player, Preview, PreviewPlayer }
 	
 	public JavaPlugin plugin;
 	String Name = "§7[§aHaven§bBags§7]§r";
@@ -86,11 +86,11 @@ public class AdminGUI implements Listener {
 			content = PrepareTemplates();
 			Open();
 		} 
-		else if(type == GUIType.Restoration) {
+		else if(type == GUIType.Restoration || type == GUIType.Preview) {
 			content = PrepareBags();
 			Open();
 		}
-		else if(type == GUIType.Player) {
+		else if(type == GUIType.Player || type == GUIType.PreviewPlayer) {
 			try {
 				content = PreparePlayerBags(target);
 			} catch (Exception e) {
@@ -127,7 +127,14 @@ public class AdminGUI implements Listener {
     		}
 			player.openInventory(inv);
 		}
-		else if(type == GUIType.Player) {
+		else if(type == GUIType.Preview) {
+			inv = Bukkit.createInventory(player, 54, "§aHaven§bBags §rPreview GUI");
+			for(int i = 0; i < content.size(); i++) {
+    			inv.setItem(i, content.get(i));
+    		}
+			player.openInventory(inv);
+		}
+		else if(type == GUIType.Player || type == GUIType.PreviewPlayer) {
 			inv = Bukkit.createInventory(player, 54, Lang.Get("bags-of", targetPlayer.getName()));
 			for(int i = 0; i < content.size(); i++) {
     			inv.setItem(i, content.get(i));
@@ -161,6 +168,10 @@ public class AdminGUI implements Listener {
         	}
         	else if(action.equalsIgnoreCase("restore")){
         		type = GUIType.Restoration;
+            	Reload();
+        	}
+        	else if(action.equalsIgnoreCase("preview")){
+        		type = GUIType.Preview;
             	Reload();
         	}
         	else if(action.equalsIgnoreCase("return")){
@@ -204,6 +215,23 @@ public class AdminGUI implements Listener {
         	return;
         }
         
+        if (type == GUIType.Preview) {
+        	String action = NBT.GetString(clickedItem, "bag-action");
+        	if(action.equalsIgnoreCase("return")){
+        		type = GUIType.Main;
+            	Reload();
+            	return;
+        	}
+        	
+        	String owner = clickedItem.getItemMeta().getDisplayName();
+        	Log.Debug(plugin, "Changing Admin target to " + owner);
+        	target = Bukkit.getPlayer(owner).getUniqueId().toString();
+        	type = GUIType.PreviewPlayer;
+        	Reload();
+        	e.setCancelled(true);
+        	return;
+        }
+        
         if (type == GUIType.Player) {
         	String action = NBT.GetString(clickedItem, "bag-action");
         	if(action.equalsIgnoreCase("return")){
@@ -214,6 +242,40 @@ public class AdminGUI implements Listener {
         	
         	ItemStack giveItem = clickedItem.clone();
         	player.getInventory().addItem(giveItem);
+        	e.setCancelled(true);
+        	return;
+        }
+        
+        if (type == GUIType.PreviewPlayer) {
+        	String action = NBT.GetString(clickedItem, "bag-action");
+        	if(action.equalsIgnoreCase("return")){
+        		type = GUIType.Restoration;
+            	Reload();
+            	return;
+        	}
+        	
+        	String owner = NBT.GetString(clickedItem, "bag-owner");
+        	String uuid = NBT.GetString(clickedItem, "bag-uuid");
+        	int size = NBT.GetInt(clickedItem, "bag-size");
+
+			String dirPath = String.format("%s/bags/%s/", Main.plugin.getDataFolder(), owner);
+			File dir = new File(dirPath);
+			if(!dir.exists()) {
+				return;
+			}
+			String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
+			File bagData;
+			try {
+				bagData = new File(path);
+			} catch(Exception ex) {
+				ex.printStackTrace();
+				return;
+			}
+			if(!bagData.exists()) {
+				return;
+			}
+			BagGUI gui = new BagGUI(Main.plugin, size, player, clickedItem, clickedItem.getItemMeta(), true);
+			gui.OpenInventory(player);
         	e.setCancelled(true);
         	return;
         }
@@ -234,7 +296,7 @@ public class AdminGUI implements Listener {
 		
 		buttons.add(new ItemStack(Material.AIR));
 		buttons.add(new ItemStack(Material.AIR));
-		buttons.add(new ItemStack(Material.AIR));
+		//buttons.add(new ItemStack(Material.AIR));
 		
 		//Create
 		String cresteTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjA1NmJjMTI0NGZjZmY5OTM0NGYxMmFiYTQyYWMyM2ZlZTZlZjZlMzM1MWQyN2QyNzNjMTU3MjUzMWYifX19";
@@ -261,8 +323,23 @@ public class AdminGUI implements Listener {
 		restoreItem.setItemMeta(restoreMeta);
 		NBT.SetString(restoreItem, "bag-action", "restore");
 		buttons.add(restoreItem);
-
+		
 		buttons.add(new ItemStack(Material.AIR));
+		
+		//Preview
+		String previewTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWZlM2JjYmE1N2M3YjdmOGQ0NjJiMzAwNTQzZDEzMmVjZWE5YmYyZWQ1ODdjYzlkOTk0YTM5NWFjOTU5MmVhYSJ9fX0=";
+		ItemStack previewItem = SkullCreator.itemFromBase64(previewTexture);
+		ItemMeta previewMeta = previewItem.getItemMeta();
+		previewMeta.setDisplayName("§dBag Preview");
+		List<String> p_lore = new ArrayList<String>();
+		p_lore.add("§7Preview bags of online players.");
+		p_lore.add("§7You can take items from the preview,");
+		p_lore.add("§7without affecting the real bag.");
+		previewMeta.setLore(p_lore);
+		previewItem.setItemMeta(previewMeta);
+		NBT.SetString(previewItem, "bag-action", "preview");
+		buttons.add(previewItem);
+
 		buttons.add(new ItemStack(Material.AIR));
 		
 		//Info

@@ -552,7 +552,7 @@ public class CommandListener implements CommandExecutor {
 							}
 							bagItem.setItemMeta(bagMeta);
 	
-							BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(bagItem, "bag-size"), Bukkit.getPlayer(sender.getName()), bagItem, bagItem.getItemMeta());
+							BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(bagItem, "bag-size"), Bukkit.getPlayer(sender.getName()), bagItem, bagItem.getItemMeta(), true);
 							//Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
 							gui.OpenInventory(Bukkit.getPlayer(sender.getName()));
 							//HavenBags.activeBags.remove(gui);
