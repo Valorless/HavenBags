@@ -1,6 +1,6 @@
 name: Bug Report
 description: File a bug report to help us improve!
-labels: ["bug", "unconfirmed"]
+labels: ["Bug", "Unconfirmed"]
 assignees:
   - Valorless
 body:
