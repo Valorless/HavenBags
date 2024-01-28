@@ -37,6 +37,15 @@ public class HavenBags {
 		}
 		return false;
 	}
+	
+	public static Boolean IsBagOpen(ItemStack item) {
+	    for (ActiveBag openBag : Main.activeBags) {
+	    	if(openBag.uuid.equalsIgnoreCase(NBT.GetString(item, "bag-uuid"))) {
+	    		return true;
+	    	}
+	    }
+	    return false;
+	}
 
 	public static void ReturnBag(ItemStack bag, Player player) {
     	if(player.getInventory().getItemInMainHand() != null) {

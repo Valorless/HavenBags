@@ -17,7 +17,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -240,7 +239,7 @@ public class BagGUI implements Listener {
     		player.closeInventory();
     	}
     	
-    	if(!IsOpen()) return;
+    	if(!HavenBags.IsBagOpen(bagItem)) return;
 
 		SFX.Play(Main.config.GetString("close-sound"), 
 				Main.config.GetFloat("close-volume").floatValue(), 
