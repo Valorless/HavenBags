@@ -17,6 +17,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -223,11 +224,23 @@ public class BagGUI implements Listener {
         if(!preview) Close(false);
     }
     
+    // Move into HavenBags.java to make it public and specific.
+    public boolean IsOpen() {
+    	for (ActiveBag openBag : Main.activeBags) {
+    		if(openBag.uuid.equalsIgnoreCase(NBT.GetString(bagItem, "bag-uuid"))) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     public void Close(boolean forced) {
     	if(forced) {
     		Log.Warning(plugin, String.format("%s forcefully closed! Attempting to save it and return it to %s!", bag, player.getName()));
     		player.closeInventory();
     	}
+    	
+    	if(!IsOpen()) return;
 
 		SFX.Play(Main.config.GetString("close-sound"), 
 				Main.config.GetFloat("close-volume").floatValue(), 
