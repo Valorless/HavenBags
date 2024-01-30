@@ -4,6 +4,11 @@ labels: ["Bug", "Unconfirmed"]
 assignees:
   - Valorless
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+        Please write the report in english, as I don't speak other languages. :)
   - type: textarea
     id: what-happened
     attributes:
