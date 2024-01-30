@@ -168,13 +168,17 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.Validate();
 		
 		translator = new Translator(config.GetString("language"));
+		
+
+		//Log.Debug(plugin, "Registering CustomRecipe");
+		//getServer().getPluginManager().registerEvents(new CustomRecipe(), this);
+		//CustomRecipe.PrepareRecipes();
 
 		RegisterListeners();
 				
 		RegisterCommands();
 
-		getServer().getPluginManager().registerEvents(new CustomRecipe(), this);
-		CustomRecipe.PrepareRecipes();
+		
 		
 		if(config.GetBool("check-updates") == true) {
 			Log.Info(plugin, "Checking for updates..");
@@ -227,6 +231,7 @@ public final class Main extends JavaPlugin implements Listener {
     	}
     	
     	CustomRecipe.RemoveRecipes();
+    	Crafting.RemoveRecipes();
     }
     
     public void RegisterCommands() {
@@ -252,6 +257,9 @@ public final class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new PickupPrevention(), this);
 		Log.Debug(plugin, "Registering CraftPrevention");
 		getServer().getPluginManager().registerEvents(new CraftPrevention(), this);
+		Log.Debug(plugin, "Registering Crafting");
+		getServer().getPluginManager().registerEvents(new Crafting(), this);
+		Crafting.PrepareRecipes();
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
     }
