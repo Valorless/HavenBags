@@ -94,7 +94,7 @@ public class AdminGUI implements Listener {
 			try {
 				content = PreparePlayerBags(target);
 			} catch (Exception e) {
-				player.sendMessage(Lang.Get("prefix") + "§cThis player has over 53 bags.\nPlease restore their bags through §e/bags restore§c!");
+				player.sendMessage(Lang.Get("prefix") + Lang.Get("too-many-bags"));
 				player.closeInventory();
 				e.printStackTrace();
 				return;
@@ -107,28 +107,28 @@ public class AdminGUI implements Listener {
 		//Log.Debug(plugin, type.toString());
 		
 		if(type == GUIType.Main) {
-			inv = Bukkit.createInventory(player, 9, "§aHaven§bBags §rGUI");
+			inv = Bukkit.createInventory(player, 9, Lang.Get("gui-main"));
 			for(int i = 0; i < content.size(); i++) {
     			inv.setItem(i, content.get(i));
     		}
 			player.openInventory(inv);
 		}
 		else if(type == GUIType.Creation) {
-			inv = Bukkit.createInventory(player, 18, "§aHaven§bBags §rCreation GUI");
+			inv = Bukkit.createInventory(player, 18, Lang.Get("gui-create"));
 			for(int i = 0; i < content.size(); i++) {
     			inv.setItem(i, content.get(i));
     		}
 			player.openInventory(inv);
 		}
 		else if(type == GUIType.Restoration) {
-			inv = Bukkit.createInventory(player, 54, "§aHaven§bBags §rRestoration GUI");
+			inv = Bukkit.createInventory(player, 54, Lang.Get("gui-restore"));
 			for(int i = 0; i < content.size(); i++) {
     			inv.setItem(i, content.get(i));
     		}
 			player.openInventory(inv);
 		}
 		else if(type == GUIType.Preview) {
-			inv = Bukkit.createInventory(player, 54, "§aHaven§bBags §rPreview GUI");
+			inv = Bukkit.createInventory(player, 54, Lang.Get("gui-preview"));
 			for(int i = 0; i < content.size(); i++) {
     			inv.setItem(i, content.get(i));
     		}
@@ -302,9 +302,12 @@ public class AdminGUI implements Listener {
 		String cresteTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjA1NmJjMTI0NGZjZmY5OTM0NGYxMmFiYTQyYWMyM2ZlZTZlZjZlMzM1MWQyN2QyNzNjMTU3MjUzMWYifX19";
 		ItemStack createItem = SkullCreator.itemFromBase64(cresteTexture);
 		ItemMeta createMeta = createItem.getItemMeta();
-		createMeta.setDisplayName("§aBag Creation");
+		createMeta.setDisplayName(Lang.Get("main-create"));
 		List<String> c_lore = new ArrayList<String>();
-		c_lore.add("§7Create bags easy.");
+		for(String line : Lang.lang.GetStringList("main-create-lore")) {
+			c_lore.add(Lang.Parse(line, targetPlayer));
+		}
+		//c_lore.add("§7Create bags easy.");
 		createMeta.setLore(c_lore);
 		createItem.setItemMeta(createMeta);
 		NBT.SetString(createItem, "bag-action", "create");
@@ -316,9 +319,12 @@ public class AdminGUI implements Listener {
 		String restoreTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
 		ItemStack restoreItem = SkullCreator.itemFromBase64(restoreTexture);
 		ItemMeta restoreMeta = restoreItem.getItemMeta();
-		restoreMeta.setDisplayName("§bBag Restoration");
+		restoreMeta.setDisplayName(Lang.Get("main-restore"));
 		List<String> r_lore = new ArrayList<String>();
-		r_lore.add("§7Restore bags of online players.");
+		for(String line : Lang.lang.GetStringList("main-restore-lore")) {
+			r_lore.add(Lang.Parse(line, targetPlayer));
+		}
+		//r_lore.add("§7Restore bags of online players.");
 		restoreMeta.setLore(r_lore);
 		restoreItem.setItemMeta(restoreMeta);
 		NBT.SetString(restoreItem, "bag-action", "restore");
@@ -330,11 +336,14 @@ public class AdminGUI implements Listener {
 		String previewTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWZlM2JjYmE1N2M3YjdmOGQ0NjJiMzAwNTQzZDEzMmVjZWE5YmYyZWQ1ODdjYzlkOTk0YTM5NWFjOTU5MmVhYSJ9fX0=";
 		ItemStack previewItem = SkullCreator.itemFromBase64(previewTexture);
 		ItemMeta previewMeta = previewItem.getItemMeta();
-		previewMeta.setDisplayName("§dBag Preview");
+		previewMeta.setDisplayName(Lang.Get("main-preview"));
 		List<String> p_lore = new ArrayList<String>();
-		p_lore.add("§7Preview bags of online players.");
+		for(String line : Lang.lang.GetStringList("main-preview-lore")) {
+			p_lore.add(Lang.Parse(line, targetPlayer));
+		}
+		/*p_lore.add("§7Preview bags of online players.");
 		p_lore.add("§7You can take items from the preview,");
-		p_lore.add("§7without affecting the real bag.");
+		p_lore.add("§7without affecting the real bag.");*/
 		previewMeta.setLore(p_lore);
 		previewItem.setItemMeta(previewMeta);
 		NBT.SetString(previewItem, "bag-action", "preview");
@@ -346,16 +355,19 @@ public class AdminGUI implements Listener {
 		String infoTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjcwNWZkOTRhMGM0MzE5MjdmYjRlNjM5YjBmY2ZiNDk3MTdlNDEyMjg1YTAyYjQzOWUwMTEyZGEyMmIyZTJlYyJ9fX0=";
 		ItemStack infoItem = SkullCreator.itemFromBase64(infoTexture);
 		ItemMeta infoMeta = infoItem.getItemMeta();
-		infoMeta.setDisplayName("§eInformation");
+		infoMeta.setDisplayName(Lang.Get("main-info"));
 		List<String> I_lore = new ArrayList<String>();
-		I_lore.add("§7The admin GUI does not allow restoration of ownerless bags,");
+		for(String line : Lang.lang.GetStringList("main-info-lore")) {
+			I_lore.add(Lang.Parse(line, targetPlayer));
+		}
+		/*I_lore.add("§7The Admin GUI does not allow restoration of ownerless bags,");
 		I_lore.add("§7you have to do those manually with §e/bags restore§7.");
 		I_lore.add("");
 		I_lore.add("§7If a player has over 53 bags,");
 		I_lore.add("§7you also have to manually restore them.");
 		I_lore.add("");
 		I_lore.add("§7You can also restore bags of offline players,");
-		I_lore.add("§7by using §e/bags gui restore <username>§7.");
+		I_lore.add("§7by using §e/bags gui restore <username>§7.");*/
 		infoMeta.setLore(I_lore);
 		infoItem.setItemMeta(infoMeta);
 		buttons.add(infoItem);
@@ -447,9 +459,12 @@ public class AdminGUI implements Listener {
 		String returnTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTY5NjFhZDFmNWM3NmU5NzM1OGM0NDRmZTBlODNhMzk1NjRlNmI0ODEwOTE3MDk4NGE4NGVjYTVkY2NkNDI0In19fQ==";
 		ItemStack returnItem = SkullCreator.itemFromBase64(returnTexture);
 		ItemMeta returnMeta = returnItem.getItemMeta();
-		returnMeta.setDisplayName("§eReturn");
+		returnMeta.setDisplayName(Lang.Get("return"));
 		List<String> r_lore = new ArrayList<String>();
-		r_lore.add("§7Go back.");
+		for(String line : Lang.lang.GetStringList("return-lore")) {
+			r_lore.add(Lang.Parse(line, targetPlayer));
+		}
+		//r_lore.add("§7Go back.");
 		returnMeta.setLore(r_lore);
 		returnItem.setItemMeta(returnMeta);
 		NBT.SetString(returnItem, "bag-action", "return");
@@ -492,9 +507,12 @@ public class AdminGUI implements Listener {
 		String returnTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTY5NjFhZDFmNWM3NmU5NzM1OGM0NDRmZTBlODNhMzk1NjRlNmI0ODEwOTE3MDk4NGE4NGVjYTVkY2NkNDI0In19fQ==";
 		ItemStack returnItem = SkullCreator.itemFromBase64(returnTexture);
 		ItemMeta returnMeta = returnItem.getItemMeta();
-		returnMeta.setDisplayName("§eReturn");
+		returnMeta.setDisplayName(Lang.Get("return"));
 		List<String> r_lore = new ArrayList<String>();
-		r_lore.add("§7Go back.");
+		for(String line : Lang.lang.GetStringList("return-lore")) {
+			r_lore.add(Lang.Parse(line, targetPlayer));
+		}
+		//r_lore.add("§7Go back.");
 		returnMeta.setLore(r_lore);
 		returnItem.setItemMeta(returnMeta);
 		NBT.SetString(returnItem, "bag-action", "return");
@@ -612,9 +630,12 @@ public class AdminGUI implements Listener {
 		String returnTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTY5NjFhZDFmNWM3NmU5NzM1OGM0NDRmZTBlODNhMzk1NjRlNmI0ODEwOTE3MDk4NGE4NGVjYTVkY2NkNDI0In19fQ==";
 		ItemStack returnItem = SkullCreator.itemFromBase64(returnTexture);
 		ItemMeta returnMeta = returnItem.getItemMeta();
-		returnMeta.setDisplayName("§eReturn");
+		returnMeta.setDisplayName(Lang.Get("return"));
 		List<String> r_lore = new ArrayList<String>();
-		r_lore.add("§7Go back.");
+		for(String line : Lang.lang.GetStringList("return-lore")) {
+			r_lore.add(Lang.Parse(line, targetPlayer));
+		}
+		//r_lore.add("§7Go back.");
 		returnMeta.setLore(r_lore);
 		returnItem.setItemMeta(returnMeta);
 		NBT.SetString(returnItem, "bag-action", "return");

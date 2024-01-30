@@ -51,19 +51,29 @@ public class CommandListener implements CommandExecutor {
 		if (args.length >= 1){
 			try {
 				if(args[0].equalsIgnoreCase("reload") && sender.hasPermission("havenbags.reload")) {
-					Main.config.Reload();
-					Lang.lang.Reload();
-					Crafting.config.Reload();
-					Crafting.RemoveRecipes();
-					Crafting.PrepareRecipes();
-					Main.translator = new Translator(Main.config.GetString("language"));
-					if(!(sender instanceof Player)) { 
-						Log.Info(Main.plugin, "Reloaded!");
-					}else {
-						sender.sendMessage(Name +" §aReloaded.");
+					try {
+						Main.config.Reload();
+						Lang.lang.Reload();
+						Crafting.config.Reload();
+						Crafting.RemoveRecipes();
+						Crafting.PrepareRecipes();
+						Main.translator = new Translator(Main.config.GetString("language"));
+						if(!(sender instanceof Player)) { 
+							Log.Info(Main.plugin, "Reloaded!");
+						}else {
+							sender.sendMessage(Name +" §aReloaded.");
+						}
+						Log.Warning(Main.plugin, "It is possible that not everything was reloaded, to ensure everything has reloaded, it is recommended to restart or reload the server.");
+						return true;
+					}catch(Exception e) {
+						if(!(sender instanceof Player)) { 
+							Log.Info(Main.plugin, "Reload Failed!");
+						}else {
+							sender.sendMessage(Name +" §4Reload Failed!\nCheck Console for more info.");
+						}
+						e.printStackTrace();
+						return false;
 					}
-					Log.Warning(Main.plugin, "It is possible that not everything was reloaded, to ensure everything has reloaded, it is recommended to restart or reload the server.");
-					return true;
 				}
 				ItemStack bagItem = new ItemStack(Material.AIR);
 				bagTexture = Main.config.GetString("bag-texture");

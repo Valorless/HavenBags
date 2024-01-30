@@ -139,3 +139,46 @@ bag-content-item-amount: '&7%s &7x%s'
 
 # If bag content exceeds the number of bag-content-preview-size.
 bag-content-and-more: '  &7And more..'
+
+############################################################
+# +------------------------------------------------------+ #
+# |                      Admin GUI                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Message when the player has too many bags.
+too-many-bags: '&cThis player has over 53 bags.\nPlease restore their bags through &e/bags restore&c!'
+
+# Page Titles
+# Title for viewing a player's bags, is the 'bags-of' value, located above.
+gui-main: '&aHaven&bBags &rGUI'
+gui-create: '&aHaven&bBags &rCreation GUI'
+gui-restore: '&aHaven&bBags &rRestoration GUI'
+gui-preview: '&aHaven&bBags &rPreview GUI'
+
+# GUI Button
+main-create: '&aBag Creation'
+main-create-lore:
+ - '&7Create bags easy.'
+main-restore: '&bBag Restoration'
+main-restore-lore: 
+ - '&7Restore bags of online players.'
+main-preview: '&dBag Preview'
+main-preview-lore: 
+ - '&7Preview bags of online players.'
+ - '&7You can take items from the preview,'
+ - '&7without affecting the real bag.'
+main-info: '&eInformation'
+main-info-lore: 
+ - '&7The Admin GUI does not allow restoration of ownerless bags,'
+ - '&7you have to do those manually with &e/bags restore&7.'
+ - ''
+ - '&7If a player has over 53 bags,'
+ - '&7you also have to manually restore them.'
+ - ''
+ - '&7You can also restore bags of offline players,'
+ - '&7by using &e/bags gui restore <username>&7.'
+return: '&eReturn'
+return-lore:
+ - '&7Go back.'
+ 

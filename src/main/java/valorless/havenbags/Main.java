@@ -164,15 +164,62 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("bag-content-item-amount", "&7%s &7x%s");
 		Lang.lang.AddValidationEntry("bag-content-and-more", "&7And more..");
 		
+		// Admin GUI
+		Lang.lang.AddValidationEntry("too-many-bags", "&cThis player has over 53 bags.\\nPlease restore their bags through &e/bags restore&c!");
+		Lang.lang.AddValidationEntry("gui-main", "&aHaven&bBags &rGUI");
+		Lang.lang.AddValidationEntry("gui-create", "&aHaven&bBags &rCreation GUI");
+		Lang.lang.AddValidationEntry("gui-restore", "&aHaven&bBags &rRestoration GUI");
+		Lang.lang.AddValidationEntry("gui-preview", "&aHaven&bBags &rPreview GUI");
+		Lang.lang.AddValidationEntry("main-create", "&aBag Creation");
+		Lang.lang.AddValidationEntry("main-create-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Create bags easy."); 
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("main-restore", "&bBag Restoration");
+		Lang.lang.AddValidationEntry("main-restore-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Restore bags of online players."); 
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("main-preview", "&dBag Preview");
+		Lang.lang.AddValidationEntry("main-preview-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Preview bags of online players."); 
+				add("&7You can take items from the preview,"); 
+				add("&7without affecting the real bag."); 
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("main-info", "&eInformation");
+		Lang.lang.AddValidationEntry("main-info-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				 add("&7The Admin GUI does not allow restoration of ownerless bags,");
+				 add("&7you have to do those manually with &e/bags restore&7.");
+				 add("");
+				 add("&7If a player has over 53 bags,");
+				 add("&7you also have to manually restore them.");
+				 add("");
+				 add("&7You can also restore bags of offline players,");
+				 add("&7by using &e/bags gui restore <username>&7.");
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("return", "&eReturn");
+		Lang.lang.AddValidationEntry("return-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Go back."); 
+				}
+			} 
+		);
+		
 		Log.Debug(plugin, "Validating lang.yml");
 		Lang.lang.Validate();
 		
 		translator = new Translator(config.GetString("language"));
 		
-
-		//Log.Debug(plugin, "Registering CustomRecipe");
-		//getServer().getPluginManager().registerEvents(new CustomRecipe(), this);
-		//CustomRecipe.PrepareRecipes();
 
 		RegisterListeners();
 				
@@ -230,7 +277,6 @@ public final class Main extends JavaPlugin implements Listener {
     		}
     	}
     	
-    	CustomRecipe.RemoveRecipes();
     	Crafting.RemoveRecipes();
     }
     

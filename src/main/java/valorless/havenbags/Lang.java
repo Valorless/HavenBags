@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import valorless.havenbags.hooks.PlaceholderAPIHook;
@@ -21,7 +21,7 @@ public class Lang {
 		public static String plugin = "§7[§aHaven§bBags§7]§r";
 	}
 	
-	public static String Parse(String text, Player... player) {
+	public static String Parse(String text, OfflinePlayer... player) {
 		if(!Utils.IsStringNullOrEmpty(text)) {
 
 			if(player.length != 0) {
@@ -103,7 +103,7 @@ public class Lang {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 	
-	public static String ParsePlaceholders(String text, Player player) {
+	public static String ParsePlaceholders(String text, OfflinePlayer player) {
 		if(PlaceholderAPIHook.isHooked()) {
 			text = text.replace("{", "%");
 			text = text.replace("}", "%");

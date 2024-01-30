@@ -52,8 +52,8 @@ public class Crafting implements Listener {
 					Bukkit.getPluginManager().addPermission(perm);
 				}
 				Recipes.add(key);
-				Log.Info(Main.plugin, String.format("Recipe '%s' added.", key.toString()));
 				Bukkit.addRecipe(shapedRecipe);
+				Log.Info(Main.plugin, String.format("Recipe '%s' added.", key.toString()));
 			}
 		}
 	}
@@ -134,10 +134,11 @@ public class Crafting implements Listener {
 	}
 	
 	public static void RemoveRecipes() {
-		if(CustomRecipe.Recipes.size() != 0) {
-    		for(NamespacedKey recipe : CustomRecipe.Recipes) {
+		if(Recipes.size() != 0) {
+    		for(NamespacedKey recipe : Recipes) {
     			Bukkit.removeRecipe(recipe);
     		}
+    		Recipes.clear();
     	}
 	}
 	
