@@ -156,18 +156,25 @@ gui-create: '&aHaven&bBags &rCreation GUI'
 gui-restore: '&aHaven&bBags &rRestoration GUI'
 gui-preview: '&aHaven&bBags &rPreview GUI'
 
-# GUI Button
+### GUI Buttons ###
+# Creation
 main-create: '&aBag Creation'
 main-create-lore:
  - '&7Create bags easy.'
+ 
+# Restoration
 main-restore: '&bBag Restoration'
 main-restore-lore: 
  - '&7Restore bags of online players.'
+ 
+# Preview
 main-preview: '&dBag Preview'
 main-preview-lore: 
  - '&7Preview bags of online players.'
  - '&7You can take items from the preview,'
  - '&7without affecting the real bag.'
+ 
+# Information
 main-info: '&eInformation'
 main-info-lore: 
  - '&7The Admin GUI does not allow restoration of ownerless bags,'
@@ -178,6 +185,8 @@ main-info-lore:
  - ''
  - '&7You can also restore bags of offline players,'
  - '&7by using &e/bags gui restore <username>&7.'
+ 
+# Return
 return: '&eReturn'
 return-lore:
  - '&7Go back.'
