@@ -26,6 +26,8 @@ permissions:
       havenbags.preview: true
       havenbags.info: true
       havenbags.gui: true
+      havenbags.empty: true
+      havenbags.help: true
   havenbags.reload:
     description: Allows you to reload the configuration.
     default: op
@@ -55,5 +57,11 @@ permissions:
     default: op
   havenbags.gui:
     description: Allows you to open the Admin GUI.
+    default: op
+  havenbags.empty:
+    description: Allows you to empty bags onto the ground.
+    default: op
+  havenbags.empty:
+    description: Allows you to use '/havenbags help'.
     default: op
   

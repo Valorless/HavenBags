@@ -598,11 +598,11 @@ public class CommandListener implements CommandExecutor {
 						
 						if(NBT.Has(hand, "bag-uuid")) {
 							String owner = NBT.GetString(hand, "bag-owner");
-							if (!owner.equalsIgnoreCase(Bukkit.getPlayer(sender.getName()).getUniqueId().toString())) {
+							if (sender.hasPermission("havenbags.bypass")) {
+								//Continue.
+							} else if (!owner.equalsIgnoreCase(Bukkit.getPlayer(sender.getName()).getUniqueId().toString())) {
 								sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
 								return false;
-							} else if (sender.hasPermission("havenbags.bypass")) {
-								//Continue.
 							}
 							String rename = "";
 							for(int i = 1; i < args.length; i++) { rename = rename + " " + args[i]; }
@@ -621,11 +621,11 @@ public class CommandListener implements CommandExecutor {
 						
 						if(NBT.Has(hand, "bag-uuid")) {
 							String owner = NBT.GetString(hand, "bag-owner");
-							if (!owner.equalsIgnoreCase(Bukkit.getPlayer(sender.getName()).getUniqueId().toString())) {
+							if (sender.hasPermission("havenbags.bypass")) {
+								//Continue.
+							} else if (!owner.equalsIgnoreCase(Bukkit.getPlayer(sender.getName()).getUniqueId().toString())) {
 								sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
 								return false;
-							} else if (sender.hasPermission("havenbags.bypass")) {
-								//Continue.
 							}
 							
 							UUID uuid = UUID.fromString(owner);
@@ -722,6 +722,82 @@ public class CommandListener implements CommandExecutor {
 						}
 					}
 					
+				}
+
+				if(args[0].equalsIgnoreCase("empty") && sender.hasPermission("havenbags.empty")) {
+					Player player = (Player)sender;
+					ItemStack item = player.getInventory().getItemInMainHand();
+					if(HavenBags.IsBag(item)) {
+						if(HavenBags.IsOwner(item, player)) {
+							HavenBags.EmptyBag(item, player);
+						}else {
+							player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+						}
+					}
+				}
+
+				if(args[0].equalsIgnoreCase("help")) {
+					Player player = (Player)sender;
+					List<String> help = new ArrayList<String>();
+					help.add("&a&lHaven&b&lBags &8- &fHelp\n&7Optional: [] - Required: <>");
+					help.add("");
+					if(sender.hasPermission("havenbags.rename") || sender.hasPermission("havenbags.help")) {
+						help.add("&e/bags rename");
+						help.add("&7&o Rename the bag in your hand");
+						help.add("&7&o You cannot rename any bags you aren't bound to");
+						help.add("&7&o (Supports Hex. Leave value empty to reset.)");
+					}
+					if(sender.hasPermission("havenbags.empty") || sender.hasPermission("havenbags.help")) {
+						help.add("&e/bags empty");
+						help.add("&7&o Empty the content of the bag in your hand, onto the ground");
+					}
+					if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {
+						help.add("&e/bags gui");
+						help.add("&7&o Opens Admin GUI");
+					}
+					if(sender.hasPermission("havenbags.create") || sender.hasPermission("havenbags.help")) {
+						help.add("&e/bags create [ownerless] <size>");
+						help.add("&7&o Create a new bag");
+						help.add("&8 (Also in GUI)");
+					}
+					if(sender.hasPermission("havenbags.give") || sender.hasPermission("havenbags.help")) {
+						help.add("&e/bags give <player> [ownerless] <size>");
+						help.add("&7&o Give player a bag");
+					}
+					if(sender.hasPermission("havenbags.restore") || sender.hasPermission("havenbags.help")) {
+						help.add("&e/bags restore <player>");
+						help.add("&7&o Shows a list of bags by that player");
+						help.add("&8 (Also in GUI)");
+						help.add("&e/bags restore <player> <bag-uuid>");
+						help.add("&7&o Gives a copy of the bag stored on the server");
+						help.add("&8 (Also in GUI)");
+					}
+					if(sender.hasPermission("havenbags.preview") || sender.hasPermission("havenbags.help")) {
+						help.add("&e/bags preview <player>");
+						help.add("&7&o Shows a list of bags by that player");
+						help.add("&8 (Also in GUI)");
+						help.add("&e/bags preview <player> <bag-uuid>");
+						help.add("&7&o Preview a copy of the bag stored on the server");
+						help.add("&8 (Also in GUI)");
+					}
+					if(sender.hasPermission("havenbags.info") || sender.hasPermission("havenbags.help")) {
+						help.add("&e/bags info");
+						help.add("&7&o Shows information about the bag you're currently holding");
+						help.add("&e/bags rawinfo");
+						help.add("&7&o Shows raw metadata about the bag you're currently holding");
+					}
+					if(sender.hasPermission("havenbags.reload") || sender.hasPermission("havenbags.help")) {
+						help.add("&e/bags reload");
+						help.add("&7&o Reloads config files");
+					}
+					help.add("&e/bags help");
+					help.add("&7&o You are here");
+					
+					String helpString = "";
+					for(String i : help) {
+						helpString = helpString + Lang.Parse(i, player) + "\n ";
+					}
+					sender.sendMessage(helpString);
 				}
 			} catch(Exception e) {
 				sender.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));

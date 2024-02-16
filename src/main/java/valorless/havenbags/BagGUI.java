@@ -1,16 +1,7 @@
 package valorless.havenbags;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -26,7 +17,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.valorlessutils.config.Config;
-import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -161,39 +151,11 @@ public class BagGUI implements Listener {
 
     	String uuid = NBT.GetString(this.bagItem, "bag-uuid");
     	String owner = NBT.GetString(this.bagItem, "bag-owner");
-		//String uuid = Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "uuid", PersistentDataType.STRING).toString();
-		//String owner = Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
 		if(owner != "ownerless") {
-			//owner = Bukkit.getPlayer(UUID.fromString(owner)).getName();
 			owner = bagOwner;
     	}
-		//owner = Bukkit.getPlayer(UUID.fromString(owner)).getName();
-		String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, uuid);
 		
-		File bagData;
-		try {
-			bagData = new File(path);
-		} catch(Exception e) {
-			player.sendMessage(e.toString());
-			e.printStackTrace();
-			return null;
-		}
-        if(!bagData.exists()) {
-        	//player.sendMessage(Name + "§c No bag found with that UUID.");
-        	player.sendMessage(Lang.Get("bag-does-not-exist"));
-        	return null;
-        }
-        String content = "";
-		try {
-			Path filePath = Path.of(path);
-			content = Files.readString(filePath);
-			return JsonUtils.fromJson(content);
-		} catch (IOException e) {
-			player.sendMessage(Name + "§c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:LoadContent()§f'. \nThank you! §4❤§r");
-			e.printStackTrace();
-			return null;
-		}
-		//return JsonUtils.fromJson(content);
+		return HavenBags.LoadBagContentFromServer(uuid, owner, player);
 	}
 
     public void OpenInventory(final HumanEntity ent) {
@@ -248,76 +210,13 @@ public class BagGUI implements Listener {
         Log.Debug(plugin, "Bag closed, attempting to save bag. (" + bag + ")");
     	
         List<ItemStack> cont = new ArrayList<ItemStack>();
-        int a = 0;
-        List<String> items = new ArrayList<String>();
         for(int i = 0; i < inv.getSize(); i++) {
     		cont.add(inv.getItem(i));
-    		if(inv.getItem(i) != null) {
-    			if(inv.getItem(i).getItemMeta().hasDisplayName()) {
-    				if(inv.getItem(i).getAmount() != 1) {
-    					//items.add("§7" + inv.getItem(i).getItemMeta().getDisplayName() + " §7x" + inv.getItem(i).getAmount());
-    					items.add(Lang.Get("bag-content-item-amount", inv.getItem(i).getItemMeta().getDisplayName(), inv.getItem(i).getAmount()));
-    				} else {
-    					//items.add("§7" + inv.getItem(i).getItemMeta().getDisplayName());
-    					items.add(Lang.Get("bag-content-item", inv.getItem(i).getItemMeta().getDisplayName()));
-    				}
-    			}else {
-    				if(inv.getItem(i).getAmount() != 1) {
-    					//items.add("§7" + FixMaterialName(inv.getItem(i).getType().name()) + " §7x" + inv.getItem(i).getAmount());
-    					items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(inv.getItem(i).getType().getTranslationKey()), inv.getItem(i).getAmount()));
-    				} else {
-    					//items.add("§7" + FixMaterialName(inv.getItem(i).getType().name()));
-    					items.add(Lang.Get("bag-content-item", Main.translator.Translate(inv.getItem(i).getType().getTranslationKey())));
-    				}
-    			}
-    			a++;
-    		}
     	}
-        List<String> lore = new ArrayList<String>();
-        for (String l : Lang.lang.GetStringList("bag-lore")) {
-        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
-        }
-        if(NBT.GetBool(bagItem, "bag-canBind")) {
-        	//lore.add(String.format("§7Bound to %s", e.getPlayer().getName()));
-        	//lore.add(Lang.Get("bound-to", bagOwner));
-            for (String l : Lang.lang.GetStringList("bound-to")) {
-            	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(bagOwner)).getName()), player));
-            }
-        }
-        //lore.add("§7Size: " + inv.getSize());
-        //lore.add(Lang.Get("bag-size", inv.getSize()));
-        for (String l : Lang.lang.GetStringList("bag-size")) {
-        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inv.getSize()), player));
-        }
-        if(a > 0 && Lang.lang.GetBool("show-bag-content")) {
-        	//lore.add("§7Content:");
-        	lore.add(Lang.Get("bag-content-title"));
-        	for(int k = 0; k < items.size(); k++) {
-        		if(k < Lang.lang.GetInt("bag-content-preview-size")) {
-        			lore.add("  " + items.get(k));
-        		}
-        	}
-        	if(a > Lang.lang.GetInt("bag-content-preview-size")) {
-        		//lore.add("  §7And more..");
-        		lore.add(Lang.Get("bag-content-and-more"));
-        	}
-        }
-        bagMeta.setLore(lore);
-        
-		//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "content", JsonUtils.toJson(cont), PersistentDataType.STRING);
-		//bagMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		//bagMeta.addEnchant(Enchantment.LUCK, 1, true);
-		bagItem.setItemMeta(bagMeta);
+        HavenBags.UpdateBagItem(bagItem, cont, player);
 		GivePlayerBagBack();
-		WriteToServer();
+		HavenBags.WriteBagToServer(bagItem, cont, player);
 		try {
-			/*for (ActiveBag openBag : Main.activeBags) {
-    			Log.Debug(plugin, "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
-    			if(openBag.uuid == NBT.GetString(bagItem, "bag-uuid")) {
-    				Main.activeBags.remove(openBag);
-    			}
-    		}*/
-			
 			for (int i = 0; i < Main.activeBags.size(); i++) {
     			Log.Debug(plugin, "Open Bag: " + Main.activeBags.get(i).uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
     			if(Main.activeBags.get(i).uuid == NBT.GetString(bagItem, "bag-uuid")) {
@@ -365,6 +264,7 @@ public class BagGUI implements Listener {
     	return string;
     }
     
+    /*
     void WriteToServer() {
     	String uuid = NBT.GetString(bagItem, "bag-uuid");
     	String owner = NBT.GetString(bagItem, "bag-owner");
@@ -392,19 +292,6 @@ public class BagGUI implements Listener {
                 Log.Debug(plugin, String.format("Bag data for (%s) %s does not exist, creating new.", bagOwner, uuid));
             }
     	}
-        
-        /*FileWriter fw;
-		try {
-			fw = new FileWriter(bagData);
-			//fw.
-	        fw.write(JsonUtils.toPrettyJson(cont));
-	        fw.flush();
-	        fw.close();
-		} catch (IOException e) {
-			player.sendMessage(Name + "§c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:WriteToServer()§f'. \nThank you! §4❤§r");
-			e.printStackTrace();
-		}
-		*/
     	
     	Path path = Paths.get(plugin.getDataFolder() + "/bags/", bagOwner + "/" + uuid + ".json");
     	List<String> lines = Arrays.asList(JsonUtils.toPrettyJson(cont));
@@ -416,4 +303,5 @@ public class BagGUI implements Listener {
     	}
     	
     }
+    */
 }

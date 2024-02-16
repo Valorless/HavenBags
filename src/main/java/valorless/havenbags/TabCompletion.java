@@ -21,6 +21,7 @@ public class TabCompletion implements TabCompleter {
 
 		if (args.length == 1) {
 			List<String> subCommands = new ArrayList<>();
+			subCommands.add("help");
 			if (sender.hasPermission("havenbags.reload")) {
 				subCommands.add("reload");
 			}
@@ -45,6 +46,9 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (sender.hasPermission("havenbags.gui")) {
 				subCommands.add("gui");
+			}
+			if (sender.hasPermission("havenbags.empty")) {
+				subCommands.add("empty");
 			}
 
 			StringUtil.copyPartialMatches(args[0], subCommands, completions);
