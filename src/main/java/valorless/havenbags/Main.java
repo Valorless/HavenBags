@@ -167,9 +167,11 @@ public final class Main extends JavaPlugin implements Listener {
 		// Admin GUI
 		Lang.lang.AddValidationEntry("too-many-bags", "&cThis player has over 53 bags.\\nPlease restore their bags through &e/bags restore&c!");
 		Lang.lang.AddValidationEntry("gui-main", "&aHaven&bBags &rGUI");
-		Lang.lang.AddValidationEntry("gui-create", "&aHaven&bBags &rCreation GUI");
-		Lang.lang.AddValidationEntry("gui-restore", "&aHaven&bBags &rRestoration GUI");
-		Lang.lang.AddValidationEntry("gui-preview", "&aHaven&bBags &rPreview GUI");
+		Lang.lang.AddValidationEntry("gui-create", "&aHaven&bBags &eCreation GUI");
+		Lang.lang.AddValidationEntry("gui-restore", "&aHaven&bBags &bRestoration GUI");
+		Lang.lang.AddValidationEntry("gui-preview", "&aHaven&bBags &dPreview GUI");
+		Lang.lang.AddValidationEntry("gui-delete", "&aHaven&bBags &cDeletion GUI");
+		Lang.lang.AddValidationEntry("gui-confirm", "&aHaven&bBags &4&lDELETE&r this bag?");
 		Lang.lang.AddValidationEntry("main-create", "&aBag Creation");
 		Lang.lang.AddValidationEntry("main-create-lore", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L; { 
@@ -190,6 +192,29 @@ public final class Main extends JavaPlugin implements Listener {
 				add("&7Preview bags of online players."); 
 				add("&7You can take items from the preview,"); 
 				add("&7without affecting the real bag."); 
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("main-delete", "&4Bag Deletion");
+		Lang.lang.AddValidationEntry("main-delete-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Delete bags of online players."); 
+				add("&c&oDeleted bags cannot be restored!"); 
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("confirm-cancel", "&4Cancel");
+		Lang.lang.AddValidationEntry("confirm-cancel-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Cancel deletion of this bag."); 
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("confirm-confirm", "&aConfirm");
+		Lang.lang.AddValidationEntry("confirm-confirm-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Confirm deletion of this bag."); 
+				add("&7This cannot be undone."); 
 				}
 			} 
 		);

@@ -25,7 +25,7 @@ import valorless.valorlessutils.utils.Utils;
 public class BagGUI implements Listener {
 	public JavaPlugin plugin;
 	String Name = "§7[§aHaven§bBags§7]§r";
-	private final Inventory inv;
+	private Inventory inv;
 	public ItemStack bagItem;
 	public ItemMeta bagMeta;
 	public List<ItemStack> content;
@@ -34,7 +34,7 @@ public class BagGUI implements Listener {
 	public String bagOwner;
 	String bag = "";
 	boolean preview;
-
+	
     public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, ItemMeta bagMeta, boolean... preview) {
     	if(preview.length != 0) this.preview = preview[0];
     	if(!this.preview) Main.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid")));
@@ -67,6 +67,7 @@ public class BagGUI implements Listener {
     		}
     	}
     	
+    	if(HavenBags.DoesBagExist(NBT.GetString(bagItem, "bag-uuid"), NBT.GetString(bagItem, "bag-owner"), player) == false) return;
 
     	if(!this.preview) CheckInstances(); // Check for multiple of the same bags
     	
@@ -154,12 +155,16 @@ public class BagGUI implements Listener {
 		if(owner != "ownerless") {
 			owner = bagOwner;
     	}
-		
+				
 		return HavenBags.LoadBagContentFromServer(uuid, owner, player);
 	}
 
     public void OpenInventory(final HumanEntity ent) {
-        ent.openInventory(inv);
+    	try {
+    		ent.openInventory(inv);
+    	} catch (Exception e) {
+    		
+    	}
     }
     
     @EventHandler

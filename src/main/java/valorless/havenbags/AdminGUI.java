@@ -32,7 +32,7 @@ import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.skulls.SkullCreator;
 
 public class AdminGUI implements Listener {
-	public enum GUIType { Main, Creation, Restoration, Player, Preview, PreviewPlayer }
+	public enum GUIType { Main, Creation, Restoration, Player, Preview, PreviewPlayer, Deletion, DeletionPlayer, Confirmation }
 	
 	public JavaPlugin plugin;
 	String Name = "§7[§aHaven§bBags§7]§r";
@@ -42,6 +42,7 @@ public class AdminGUI implements Listener {
 	private OfflinePlayer targetPlayer;
 	private GUIType type;
 	private List<ItemStack> content = new ArrayList<ItemStack>();
+	private ItemStack selectedBag;
 	
 	public AdminGUI(GUIType type, Player player) {
 		Bukkit.getServer().getPluginManager().registerEvents(this, Main.plugin);
@@ -86,11 +87,11 @@ public class AdminGUI implements Listener {
 			content = PrepareTemplates();
 			Open();
 		} 
-		else if(type == GUIType.Restoration || type == GUIType.Preview) {
+		else if(type == GUIType.Restoration || type == GUIType.Preview || type == GUIType.Deletion) {
 			content = PrepareBags();
 			Open();
 		}
-		else if(type == GUIType.Player || type == GUIType.PreviewPlayer) {
+		else if(type == GUIType.Player || type == GUIType.PreviewPlayer || type == GUIType.DeletionPlayer) {
 			try {
 				content = PreparePlayerBags(target);
 			} catch (Exception e) {
@@ -99,6 +100,9 @@ public class AdminGUI implements Listener {
 				e.printStackTrace();
 				return;
 			}
+			Open();
+		}else if(type == GUIType.Confirmation) {
+			content = PrepareConfirmation();
 			Open();
 		}
 	}
@@ -134,8 +138,22 @@ public class AdminGUI implements Listener {
     		}
 			player.openInventory(inv);
 		}
-		else if(type == GUIType.Player || type == GUIType.PreviewPlayer) {
+		else if(type == GUIType.Deletion) {
+			inv = Bukkit.createInventory(player, 54, Lang.Get("gui-delete"));
+			for(int i = 0; i < content.size(); i++) {
+    			inv.setItem(i, content.get(i));
+    		}
+			player.openInventory(inv);
+		}
+		else if(type == GUIType.Player || type == GUIType.PreviewPlayer || type == GUIType.DeletionPlayer) {
 			inv = Bukkit.createInventory(player, 54, Lang.Get("bags-of", targetPlayer.getName()));
+			for(int i = 0; i < content.size(); i++) {
+    			inv.setItem(i, content.get(i));
+    		}
+			player.openInventory(inv);
+		}
+		else if(type == GUIType.Confirmation) {
+			inv = Bukkit.createInventory(player, 9, Lang.Get("gui-confirm"));
 			for(int i = 0; i < content.size(); i++) {
     			inv.setItem(i, content.get(i));
     		}
@@ -172,6 +190,10 @@ public class AdminGUI implements Listener {
         	}
         	else if(action.equalsIgnoreCase("preview")){
         		type = GUIType.Preview;
+            	Reload();
+        	}
+        	else if(action.equalsIgnoreCase("delete")){
+        		type = GUIType.Deletion;
             	Reload();
         	}
         	else if(action.equalsIgnoreCase("return")){
@@ -232,6 +254,23 @@ public class AdminGUI implements Listener {
         	return;
         }
         
+        if (type == GUIType.Deletion) {
+        	String action = NBT.GetString(clickedItem, "bag-action");
+        	if(action.equalsIgnoreCase("return")){
+        		type = GUIType.Main;
+            	Reload();
+            	return;
+        	}
+        	
+        	String owner = clickedItem.getItemMeta().getDisplayName();
+        	Log.Debug(plugin, "Changing Admin target to " + owner);
+        	target = Bukkit.getPlayer(owner).getUniqueId().toString();
+        	type = GUIType.DeletionPlayer;
+        	Reload();
+        	e.setCancelled(true);
+        	return;
+        }
+        
         if (type == GUIType.Player) {
         	String action = NBT.GetString(clickedItem, "bag-action");
         	if(action.equalsIgnoreCase("return")){
@@ -279,6 +318,63 @@ public class AdminGUI implements Listener {
         	e.setCancelled(true);
         	return;
         }
+        
+        if (type == GUIType.DeletionPlayer) {
+        	String action = NBT.GetString(clickedItem, "bag-action");
+        	if(action.equalsIgnoreCase("return")){
+        		type = GUIType.Deletion;
+            	Reload();
+            	return;
+        	}
+        	selectedBag = clickedItem;
+    		type = GUIType.Confirmation;
+        	Reload();
+        	e.setCancelled(true);
+        	return;
+        }
+        if (type == GUIType.Confirmation) {
+        	String action = NBT.GetString(clickedItem, "bag-action");
+        	if(action.equalsIgnoreCase("cancel")){
+        		type = GUIType.DeletionPlayer;
+            	Reload();
+            	return;
+        	}
+        	
+        	if(action.equalsIgnoreCase("confirm")){
+        		String owner = NBT.GetString(selectedBag, "bag-owner");
+            	String uuid = NBT.GetString(selectedBag, "bag-uuid");
+
+    			String dirPath = String.format("%s/bags/%s/", Main.plugin.getDataFolder(), owner);
+    			File dir = new File(dirPath);
+    			if(!dir.exists()) {
+    				return;
+    			}
+    			String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
+    			File bagData;
+    			try {
+    				bagData = new File(path);
+    			} catch(Exception ex) {
+    				ex.printStackTrace();
+    				return;
+    			}
+    			if(!bagData.exists()) {
+    				return;
+    			}
+    			
+    			if(bagData.delete()) {
+    				Log.Info(plugin, String.format("Bag '%s/%s' successfully deleted.", owner, uuid));
+    			}else {
+    				Log.Info(plugin, String.format("Could not delete bag '%s/%s'.", owner, uuid));
+    			}
+        		
+        		type = GUIType.DeletionPlayer;
+            	Reload();
+            	return;
+        	}
+        	        	
+        	e.setCancelled(true);
+        	return;
+        }
     }
     
     void Reload() {
@@ -293,10 +389,6 @@ public class AdminGUI implements Listener {
     
     ArrayList<ItemStack> PrepareMain() {
 		ArrayList<ItemStack> buttons = new ArrayList<ItemStack>();
-		
-		buttons.add(new ItemStack(Material.AIR));
-		buttons.add(new ItemStack(Material.AIR));
-		//buttons.add(new ItemStack(Material.AIR));
 		
 		//Create
 		String cresteTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjA1NmJjMTI0NGZjZmY5OTM0NGYxMmFiYTQyYWMyM2ZlZTZlZjZlMzM1MWQyN2QyNzNjMTU3MjUzMWYifX19";
@@ -348,6 +440,22 @@ public class AdminGUI implements Listener {
 		previewItem.setItemMeta(previewMeta);
 		NBT.SetString(previewItem, "bag-action", "preview");
 		buttons.add(previewItem);
+
+		buttons.add(new ItemStack(Material.AIR));
+		
+		//Deletion
+		String deleteTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0=";
+		ItemStack deleteItem = SkullCreator.itemFromBase64(deleteTexture);
+		ItemMeta deleteMeta = deleteItem.getItemMeta();
+		deleteMeta.setDisplayName(Lang.Get("main-delete"));
+		List<String> d_lore = new ArrayList<String>();
+		for(String line : Lang.lang.GetStringList("main-delete-lore")) {
+			d_lore.add(Lang.Parse(line, targetPlayer));
+		}
+		deleteMeta.setLore(d_lore);
+		deleteItem.setItemMeta(deleteMeta);
+		NBT.SetString(deleteItem, "bag-action", "delete");
+		buttons.add(deleteItem);
 
 		buttons.add(new ItemStack(Material.AIR));
 		
@@ -642,6 +750,50 @@ public class AdminGUI implements Listener {
 		bags.set(53, returnItem);
 		
 		return bags;
+	}
+	
+	ArrayList<ItemStack> PrepareConfirmation() {
+		ArrayList<ItemStack> buttons = new ArrayList<ItemStack>();
+		
+		//Cancel
+		String cancelTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1NDgzNjJhMjRjMGZhODQ1M2U0ZDkzZTY4YzU5NjlkZGJkZTU3YmY2NjY2YzAzMTljMWVkMWU4NGQ4OTA2NSJ9fX0=";
+		ItemStack cancelItem = SkullCreator.itemFromBase64(cancelTexture);
+		ItemMeta cancelMeta = cancelItem.getItemMeta();
+		cancelMeta.setDisplayName(Lang.Get("confirm-cancel"));
+		List<String> c_lore = new ArrayList<String>();
+		for(String line : Lang.lang.GetStringList("confirm-cancel-lore")) {
+			c_lore.add(Lang.Parse(line, targetPlayer));
+		}
+		cancelMeta.setLore(c_lore);
+		cancelItem.setItemMeta(cancelMeta);
+		NBT.SetString(cancelItem, "bag-action", "cancel");
+		buttons.add(cancelItem);
+		
+		buttons.add(new ItemStack(Material.AIR));
+		buttons.add(new ItemStack(Material.AIR));
+		buttons.add(new ItemStack(Material.AIR));
+
+		buttons.add(selectedBag);
+		
+		buttons.add(new ItemStack(Material.AIR));
+		buttons.add(new ItemStack(Material.AIR));
+		buttons.add(new ItemStack(Material.AIR));
+
+		//Confirm
+		String comfirmTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTc5YTVjOTVlZTE3YWJmZWY0NWM4ZGMyMjQxODk5NjQ5NDRkNTYwZjE5YTQ0ZjE5ZjhhNDZhZWYzZmVlNDc1NiJ9fX0=";
+		ItemStack confirmItem = SkullCreator.itemFromBase64(comfirmTexture);
+		ItemMeta confirmMeta = confirmItem.getItemMeta();
+		confirmMeta.setDisplayName(Lang.Get("confirm-confirm"));
+		List<String> co_lore = new ArrayList<String>();
+		for(String line : Lang.lang.GetStringList("confirm-confirm-lore")) {
+			co_lore.add(Lang.Parse(line, targetPlayer));
+		}
+		confirmMeta.setLore(co_lore);
+		confirmItem.setItemMeta(confirmMeta);
+		NBT.SetString(confirmItem, "bag-action", "confirm");
+		buttons.add(confirmItem);
+		
+		return buttons;
 	}
 	
 	List<String> GetBagOwners(){

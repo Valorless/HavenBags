@@ -143,6 +143,25 @@ public class HavenBags {
 		}
 	}
 	
+	public static boolean DoesBagExist(String uuid, String owner, Player player) {
+String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
+		
+		File bagData;
+		try {
+			bagData = new File(path);
+		} catch(Exception e) {
+			player.sendMessage(e.toString());
+			return false;
+		}
+        if(!bagData.exists()) {
+        	//player.sendMessage(Name + "§c No bag found with that UUID.");
+        	player.sendMessage(Lang.Get("bag-does-not-exist"));
+        	Log.Debug(Main.plugin, "This bag does not exist.");
+        	return false;
+        }
+        return true;
+	}
+	
 	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, Player player) {
     	String owner = NBT.GetString(bag, "bag-owner");
     	ItemMeta bagMeta = bag.getItemMeta();

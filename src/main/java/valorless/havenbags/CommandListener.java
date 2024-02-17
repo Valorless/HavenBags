@@ -46,6 +46,7 @@ public class CommandListener implements CommandExecutor {
     	bagTexture = Main.config.GetString("bag-texture");
 		if(args.length == 0) {
 			sender.sendMessage(Name + " HavenBags by Valorless.");
+			return false;
 		}
 		else 
 		if (args.length >= 1){
@@ -155,6 +156,7 @@ public class CommandListener implements CommandExecutor {
 					}else {
 						sender.sendMessage(Name + "§c /havenbags create <size>\n/havenbags create ownerless <size>");
 					}
+					return false;
 				}
 				
 				if(args[0].equalsIgnoreCase("give") && sender.hasPermission("havenbags.give")) {
@@ -257,6 +259,7 @@ public class CommandListener implements CommandExecutor {
 					}else {
 						sender.sendMessage(Name + "§c /havenbags give <player> <size>\n/havenbags give <player> ownerless <size>");
 					}
+					return false;
 				}
 				
 				if(args[0].equalsIgnoreCase("restore") && sender.hasPermission("havenbags.restore")) {
@@ -443,6 +446,7 @@ public class CommandListener implements CommandExecutor {
 					}else {
 						sender.sendMessage(Name + "§c /havenbags restore <player> <bag-uuid>");
 					}
+					return false;
 				}
 				
 				if(args[0].equalsIgnoreCase("preview") && sender.hasPermission("havenbags.preview")) {
@@ -587,6 +591,7 @@ public class CommandListener implements CommandExecutor {
 					}else {
 						sender.sendMessage(Name + "§c /havenbags restore <player> <bag-uuid>");
 					}
+					return false;
 				}
 				
 				if(args[0].equalsIgnoreCase("rename") && sender.hasPermission("havenbags.rename")) {
@@ -640,6 +645,7 @@ public class CommandListener implements CommandExecutor {
 							sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-rename"));
 						}
 					}
+					return false;
 				}
 				if(args[0].equalsIgnoreCase("info") && sender.hasPermission("havenbags.info")) {
 					ItemStack hand = Bukkit.getPlayer(sender.getName()).getInventory().getItemInMainHand();
@@ -676,8 +682,9 @@ public class CommandListener implements CommandExecutor {
 						if(lore != null) { info = info + "\n  §fLore:§r" + _lore; }
 						
 						sender.sendMessage(info);
-						return false;
+						return true;
 					}
+					return false;
 				}
 				if(args[0].equalsIgnoreCase("rawinfo") && sender.hasPermission("havenbags.info")) {
 					ItemStack hand = Bukkit.getPlayer(sender.getName()).getInventory().getItemInMainHand();
@@ -687,25 +694,26 @@ public class CommandListener implements CommandExecutor {
 						String info = "§6## HavenBag Bag Raw Information ##";
 						info = info + "\n  §f" + meta.toString();
 						sender.sendMessage(info);
-						return false;
+						return true;
 					}
+					return false;
 				}
 				if(args[0].equalsIgnoreCase("gui") && sender.hasPermission("havenbags.gui")) {
 					if (args.length == 1) {
 						AdminGUI gui = new AdminGUI(AdminGUI.GUIType.Main, (Player)sender);
 						gui.OpenInventory((Player)sender);
-						return false;
+						return true;
 					}
 					else if (args.length == 2){
 						if(args[1].equalsIgnoreCase("create")) {
 							AdminGUI gui = new AdminGUI(AdminGUI.GUIType.Creation, (Player)sender);
 							gui.OpenInventory((Player)sender);
-							return false;
+							return true;
 						}
 						if(args[1].equalsIgnoreCase("restore")) {
 							AdminGUI gui = new AdminGUI(AdminGUI.GUIType.Restoration, (Player)sender);
 							gui.OpenInventory((Player)sender);
-							return false;
+							return true;
 						}
 					}
 					else if (args.length >= 3) {
@@ -714,13 +722,14 @@ public class CommandListener implements CommandExecutor {
 							try {
 								target = Bukkit.getOfflinePlayer(UUIDFetcher.getUUID(args[2]));
 							} catch(Exception e) {
-								return false;
+								return true;
 							}
 							AdminGUI gui = new AdminGUI(AdminGUI.GUIType.Player, (Player)sender, target);
 							gui.OpenInventory((Player)sender);
-							return false;
+							return true;
 						}
 					}
+					return false;
 					
 				}
 
@@ -734,6 +743,7 @@ public class CommandListener implements CommandExecutor {
 							player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
 						}
 					}
+					return true;
 				}
 
 				if(args[0].equalsIgnoreCase("help")) {
@@ -798,6 +808,7 @@ public class CommandListener implements CommandExecutor {
 						helpString = helpString + Lang.Parse(i, player) + "\n ";
 					}
 					sender.sendMessage(helpString);
+					return true;
 				}
 			} catch(Exception e) {
 				sender.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
@@ -806,6 +817,7 @@ public class CommandListener implements CommandExecutor {
 				e.printStackTrace();
 			}
 		}
+		sender.sendMessage("Unknown command.");
         return false;
     }
 	

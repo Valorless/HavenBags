@@ -155,6 +155,8 @@ gui-main: '&aHaven&bBags &rGUI'
 gui-create: '&aHaven&bBags &rCreation GUI'
 gui-restore: '&aHaven&bBags &rRestoration GUI'
 gui-preview: '&aHaven&bBags &rPreview GUI'
+gui-delete: '&aHaven&bBags &cDeletion GUI'
+gui-confirm: '&aHaven&bBags &4&lDELETE&r this bag?'
 
 ### GUI Buttons ###
 # Creation
@@ -173,6 +175,23 @@ main-preview-lore:
  - '&7Preview bags of online players.'
  - '&7You can take items from the preview,'
  - '&7without affecting the real bag.'
+ 
+# Deletion
+main-delete: '&4Bag Deletion'
+main-delete-lore: 
+ - '&7Delete bags of online players.'
+ - '&c&oDeleted bags cannot be restored!'
+ 
+# Cancel
+confirm-cancel: '&4Cancel'
+confirm-cancel-lore: 
+ - '&7Cancel deletion of this bag.'
+ 
+# confirm
+confirm-confirm: '&aConfirm'
+confirm-confirm-lore: 
+ - '&7Confirm deletion of this bag.'
+ - '&7This cannot be undone.'
  
 # Information
 main-info: '&eInformation'
