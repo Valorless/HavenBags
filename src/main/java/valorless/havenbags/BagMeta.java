@@ -26,13 +26,19 @@ public class BagMeta {
 		else return false;
 	}
 	
+	public boolean Has(String key) {
+		return meta.HasKey(key);
+	}
+	
 	public Object Get(String key) throws Exception{
-		if(HasBagMeta() == false) throw new Exception(String.format("%s does not contain BagMeta.", uuid));
+		if(HasBagMeta() == false) throw new NullPointerException(String.format("%s does not contain BagMeta.", uuid));
+		if(Has(key) == false) throw new NullPointerException(String.format("%s BagMeta does not contain '%s'", uuid, key));
 		return meta.Get(key);
 	}
 	
 	public <T> void Set(String key, T value) throws Exception {
-		if(HasBagMeta() == false) throw new Exception(String.format("%s does not contain BagMeta.", uuid));
+		if(value == null) throw new NullPointerException("Value cannot be null!");
+		if(HasBagMeta() == false) throw new NullPointerException(String.format("%s does not contain BagMeta.", uuid));
 		meta.Set(key, value);
 		meta.SaveConfig();
 	}
