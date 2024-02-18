@@ -7,6 +7,7 @@
 
 - Add command to open bags, and to rename bag's "identifier" (i.e. 'bag1' 'coolbag').
  # Requires BagMeta stated above, to read and store this info.
+ # In addition, create a map file of uuids -> identifiers and reverse.
 
 - Add an inactivity removal option, to remove inactive bags.
  # Create time-table of all bags, resetting when bag or inventory is opened. (Have a config-version upgrade to add existing bags on servers already using HB)
