@@ -305,7 +305,7 @@ public final class Main extends JavaPlugin implements Listener {
     	Crafting.RemoveRecipes();
     }
     
-    public void RegisterCommands() {
+    protected void RegisterCommands() {
     	for (int i = 0; i < commands.length; i++) {
     		Log.Debug(plugin, "Registering Command: " + commands[i]);
     		getCommand(commands[i]).setExecutor(new CommandListener());
@@ -313,7 +313,7 @@ public final class Main extends JavaPlugin implements Listener {
     	}
     }
     
-    public void RegisterListeners() {
+    protected void RegisterListeners() {
     	Log.Debug(plugin, "Registering PlacementListener");
 		getServer().getPluginManager().registerEvents(new PlacementBlocker(), this);
 		Log.Debug(plugin, "Registering BagDamagePrevention");
