@@ -1,13 +1,16 @@
-- GUI menus for commands 'create', 'restore', and 'preview'.
- # Should make bag creation and restoration easier.
+- Add filtering & auto-pickup function.
+
+- Add bag meta data alongside bag data.
+ ## Potentially 'Bag.HasMeta()', 'BagMeta.Get()', 'BagMeta.Set()'.
+ # Containing the bag's information, including creator and more.
+ # This can also help reduce NBT tags on the bag item, so that only bag-uuid is needed.
+
+- Add command to open bags, and to rename bag's "identifier" (i.e. 'bag1' 'coolbag').
+ # Requires BagMeta stated above, to read and store this info.
 
 - Add an inactivity removal option, to remove inactive bags.
  # Create time-table of all bags, resetting when bag or inventory is opened. (Have a config-version upgrade to add existing bags on servers already using HB)
  # Add config variables such as enabled, inactivity time, lang entry, and so forth.
-
-- Potentiall create an index list of all bags created; listing who created the bag, regardless of bound or unbound.
- # Perhaps make this optional.
- # To help locate bags ownerless bags created by a duper, or other means.
 
 - Remove the ability to clone bags in creative using Middle-mouse.
  # Inventory events not triggering when inside the creative inventory..
