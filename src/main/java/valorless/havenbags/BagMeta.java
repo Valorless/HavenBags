@@ -14,7 +14,7 @@ public class BagMeta {
 	
 	public BagMeta(ItemStack bag) {
 		this.uuid = NBT.GetString(bag, "bag-uuid");
-		String path = String.format("/bags/%s/%s.meta", NBT.GetString(bag, "bag-owner"), uuid);
+		String path = String.format("bags/%s/%s.meta", NBT.GetString(bag, "bag-owner"), uuid);
 		this.meta = new Config(Main.plugin, path);
 		this.meta.SaveConfig();
 		this.metaFile = meta.GetFile();
