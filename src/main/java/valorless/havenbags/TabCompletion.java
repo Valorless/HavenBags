@@ -13,6 +13,8 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
+import valorless.havenbags.AutoPickup.Filter;
+
 public class TabCompletion implements TabCompleter {
 
 	@Override
@@ -22,6 +24,9 @@ public class TabCompletion implements TabCompleter {
 		if (args.length == 1) {
 			List<String> subCommands = new ArrayList<>();
 			subCommands.add("help");
+			/*if (sender.hasPermission("havenbags.open")) {
+				subCommands.add("open");
+			}*/
 			if (sender.hasPermission("havenbags.reload")) {
 				subCommands.add("reload");
 			}
@@ -49,6 +54,9 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (sender.hasPermission("havenbags.empty")) {
 				subCommands.add("empty");
+			}
+			if (sender.hasPermission("havenbags.autopickup")) {
+				subCommands.add("autopickup");
 			}
 
 			StringUtil.copyPartialMatches(args[0], subCommands, completions);
@@ -92,6 +100,18 @@ public class TabCompletion implements TabCompleter {
 				cmds.add("restore");
 				StringUtil.copyPartialMatches(cmd, cmds, completions);
 			}
+			if (args[0].equalsIgnoreCase("autopickup") && sender.hasPermission("havenbags.autopickup")) {
+				List<String> filters = AutoPickup.GetFilterNames();
+				StringUtil.copyPartialMatches(cmd, filters, completions);
+			}
+			/*
+			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.open")) {
+				Player player = (Player)sender;
+				String owner = player.getUniqueId().toString();
+				List<String> bags = GetBags(owner);
+				StringUtil.copyPartialMatches(cmd, bags, completions);
+			}
+			*/
 		}
 		else if(args.length == 3) {
 			String cmd = args[2];

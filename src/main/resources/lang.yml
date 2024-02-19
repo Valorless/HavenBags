@@ -15,6 +15,10 @@ prefix: '&7[&aHaven&bBags&7] &r'
 # Some commands have their own messages.
 malformed-command: '&cUnknown command, are you missing some parameters?'
 
+# Message sent if the specific command feature is disabled.
+# i.e auto-pickup.
+feature-disabled: '&cSorry, this feature is disabled.'
+
 ### Player ###
 
 # Message sent to player should their bag's content fail to load.
@@ -139,6 +143,10 @@ bag-content-item-amount: '&7%s &7x%s'
 
 # If bag content exceeds the number of bag-content-preview-size.
 bag-content-and-more: '  &7And more..'
+
+# If bag has auto-pickup enabled.
+# 1. %s - filter displayname.
+bag-auto-pickup: '&7Auto Loot: %s'
 
 ############################################################
 # +------------------------------------------------------+ #

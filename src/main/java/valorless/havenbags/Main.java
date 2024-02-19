@@ -37,6 +37,7 @@ public final class Main extends JavaPlugin implements Listener {
 		config = new Config(this, "config.yml");
 		Lang.lang = new Config(this, "lang.yml");
 		timeTable = new Config(this, "timetable.yml");
+		AutoPickup.filter = new Config(this, "filtering.yml");
 	}
 	
 	@SuppressWarnings("unused")
@@ -98,6 +99,11 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("protect-bags", true);
 		config.AddValidationEntry("bags-in-bags", true);
 		config.AddValidationEntry("bags-in-shulkers", true);
+		config.AddValidationEntry("auto-pickup", true);
+		config.AddValidationEntry("auto-pickup-sound", "ENTITY_ITEM_PICKUP");
+		config.AddValidationEntry("auto-pickup-volume", 0.8);
+		config.AddValidationEntry("auto-pickup-pitch-min", 1.05);
+		config.AddValidationEntry("auto-pickup-pitch-max", 1.25);
 		config.AddValidationEntry("blacklist", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L;
 		{ add("world_name"); add("world_name_nether"); add("another_world"); }} );
@@ -109,6 +115,7 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		Lang.lang.AddValidationEntry("prefix", "&7[&aHaven&bBags&7] &r");
 		Lang.lang.AddValidationEntry("malformed-command", "&cUnknown command, are you missing some parameters?");
+		Lang.lang.AddValidationEntry("feature-disabled", "&cSorry, this feature is disabled.");
 		Lang.lang.AddValidationEntry("bag-load-error", "&cBag failed to load.\nPlease notify staff.");
 		Lang.lang.AddValidationEntry("bag-rename", "&fRenamed bag to %s.");
 		Lang.lang.AddValidationEntry("bag-rename-reset", "&fReset bag''s name.");
@@ -163,6 +170,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("bag-content-item", "&7%s");
 		Lang.lang.AddValidationEntry("bag-content-item-amount", "&7%s &7x%s");
 		Lang.lang.AddValidationEntry("bag-content-and-more", "&7And more..");
+		Lang.lang.AddValidationEntry("bag-auto-pickup", "&7Auto Loot: %s");
 		
 		// Admin GUI
 		Lang.lang.AddValidationEntry("too-many-bags", "&cThis player has over 53 bags.\\nPlease restore their bags through &e/bags restore&c!");
@@ -245,6 +253,7 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		translator = new Translator(config.GetString("language"));
 		
+		AutoPickup.Initiate();
 
 		RegisterListeners();
 				
@@ -331,6 +340,9 @@ public final class Main extends JavaPlugin implements Listener {
 		Log.Debug(plugin, "Registering Crafting");
 		getServer().getPluginManager().registerEvents(new Crafting(), this);
 		Crafting.PrepareRecipes();
+
+		Log.Debug(plugin, "Registering AutoPickup");
+		getServer().getPluginManager().registerEvents(new AutoPickup(), this);
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
     }

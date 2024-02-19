@@ -1,5 +1,3 @@
-- Add filtering & auto-pickup function.
-
 - Add bag meta data alongside bag data.
  ## Potentially 'Bag.HasMeta()', 'BagMeta.Get()', 'BagMeta.Set()'.
  # Containing the bag's information, including creator and more.

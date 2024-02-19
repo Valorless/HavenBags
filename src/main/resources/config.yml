@@ -71,6 +71,13 @@ bags-in-bags: true
 # Can bags be put inside shulkers?
 bags-in-shulkers: true
 
+# Can bags automatically pick up drops?
+auto-pickup: true
+auto-pickup-sound: 'ENTITY_ITEM_PICKUP'
+auto-pickup-volume: 0.8
+auto-pickup-pitch-min: 1.05
+auto-pickup-pitch-max: 1.25
+
 # Which containers are the player allowed to interact with bags?
 # Use this to prevent the player using bags in unintended ways, such as crafting.
 # Full list of InventoryTypes: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/inventory/InventoryType.html

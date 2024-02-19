@@ -10,6 +10,7 @@ C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\prevention\BagD
 C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\TabCompletion.java
 C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\AdminGUI.java
 C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\ActiveBag.java
+C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\AutoPickup.java
 C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\CommandListener.java
 C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\prevention\InventoryListener.java
 C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\BagGUI.java
@@ -18,3 +19,4 @@ C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\prevention\Pick
 C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\Metrics.java
 C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\prevention\CloneListener.java
 C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\HavenBags.java
+C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\BagMeta.java

@@ -53,6 +53,19 @@ public class HavenBags {
 		return false;
 	}
 	
+	public enum BagState { Null, New, Used }
+	public static BagState BagState(ItemStack item) {
+		if(item == null) return BagState.Null;
+		if(IsBag(item)) {
+			if(NBT.GetString(item, "bag-owner").equalsIgnoreCase("null")) {
+				return BagState.New;
+			}else {
+				return BagState.Used;
+			}
+		}
+		return BagState.Null;
+	}
+	
 	public static Boolean IsBagOpen(ItemStack item) {
 	    for (ActiveBag openBag : Main.activeBags) {
 	    	if(openBag.uuid.equalsIgnoreCase(NBT.GetString(item, "bag-uuid"))) {
@@ -128,7 +141,7 @@ public class HavenBags {
 		}
         if(!bagData.exists()) {
         	//player.sendMessage(Name + "§c No bag found with that UUID.");
-        	player.sendMessage(Lang.Get("bag-does-not-exist"));
+        	if(player != null) player.sendMessage(Lang.Get("bag-does-not-exist"));
         	return null;
         }
         String content = "";
@@ -137,10 +150,16 @@ public class HavenBags {
 			content = Files.readString(filePath);
 			return JsonUtils.fromJson(content);
 		} catch (IOException e) {
-			player.sendMessage("§7[§aHaven§bBags§7]§r §c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:LoadContent()§f'. \nThank you! §4❤§r");
+			if(player != null) player.sendMessage("§7[§aHaven§bBags§7]§r §c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:LoadContent()§f'. \nThank you! §4❤§r");
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public static List<ItemStack> LoadBagContentFromServer(ItemStack bag, Player player){
+    	String uuid = NBT.GetString(bag, "bag-uuid");
+    	String owner = NBT.GetString(bag, "bag-owner");
+		return LoadBagContentFromServer(uuid, owner, player);
 	}
 	
 	public static boolean DoesBagExist(String uuid, String owner, Player player) {
@@ -199,6 +218,12 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
         for (String l : Lang.lang.GetStringList("bag-size")) {
         	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
         }
+        
+        if(NBT.Has(bag, "bag-filter")) {
+        	lore.add(Lang.Parse(Lang.Parse(String.format(Lang.Get("bag-auto-pickup"), AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))), player)));
+        	//lore.add(Lang.Parse("&7Auto Loot: " + AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter")), player));
+        }
+        
         if(a > 0 && Lang.lang.GetBool("show-bag-content")) {
         	lore.add(Lang.Get("bag-content-title"));
         	for(int k = 0; k < items.size(); k++) {
@@ -212,6 +237,10 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
         }
         bagMeta.setLore(lore);
 		bag.setItemMeta(bagMeta);
+	}
+	
+	public static void UpdateBagLore(ItemStack bag, Player player) {
+		UpdateBagItem(bag, LoadBagContentFromServer(bag, player), player);
 	}
 	
 	public static void EmptyBag(ItemStack bag, Player player) {
