@@ -71,6 +71,9 @@ bags-in-bags: true
 # Can bags be put inside shulkers?
 bags-in-shulkers: true
 
+# Should /havenbags help, show commands without mouseover text, and the information below each command?
+old-help-menu: false
+
 # Can bags automatically pick up drops?
 auto-pickup: true
 auto-pickup-sound: 'ENTITY_ITEM_PICKUP'

@@ -99,6 +99,7 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("protect-bags", true);
 		config.AddValidationEntry("bags-in-bags", true);
 		config.AddValidationEntry("bags-in-shulkers", true);
+		config.AddValidationEntry("old-help-menu", false);
 		config.AddValidationEntry("auto-pickup", true);
 		config.AddValidationEntry("auto-pickup-sound", "ENTITY_ITEM_PICKUP");
 		config.AddValidationEntry("auto-pickup-volume", 0.8);

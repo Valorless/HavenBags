@@ -871,70 +871,151 @@ public class CommandListener implements CommandExecutor {
 
 				if(args[0].equalsIgnoreCase("help")) {
 					Player player = (Player)sender;
-					List<String> help = new ArrayList<String>();
-					help.add("&a&lHaven&b&lBags &8- &fHelp\n&7Optional: [] - Required: <>");
-					help.add("");
-					if(sender.hasPermission("havenbags.rename") || sender.hasPermission("havenbags.help")) {
-						help.add("&e/bags rename");
-						help.add("&7&o Rename the bag in your hand");
-						help.add("&7&o You cannot rename any bags you aren't bound to");
-						help.add("&7&o (Supports Hex. Leave value empty to reset.)");
+					if(Main.config.GetBool("old-help-menu") == false) {
+						Message message = new Message("&a&lHaven&b&lBags &8- &fHelp Menu\n"
+								+ "&7Optional: [] - Required: <>\n"
+								+ "&8(Mouseover commands for information)");
+						message.AddNewLine("");
+						if(sender.hasPermission("havenbags.rename") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags rename",
+									"&eRename the bag in your hand\n"
+									+ "&eYou cannot rename any bags you aren't bound to.\n"
+									+ "&7&o(Supports Hex. Leave value empty to reset)"
+									);
+						}
+						if(sender.hasPermission("havenbags.empty") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags empty",
+									"&eEmpty the content of the bag\n"
+									+ " in your hand, onto the ground.");
+						}
+						if(sender.hasPermission("havenbags.autopickup") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags pickup <filter>",
+									"&eAutomatically put items inside the bag.");
+						}
+						if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags gui",
+									"&eOpens Admin GUI.");
+						}
+						if(sender.hasPermission("havenbags.create") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags create [ownerless] <size>",
+									"&eCreate a new bag.\n"
+									+ "&7(Also in GUI)");
+						}
+						if(sender.hasPermission("havenbags.give") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags give <player> [ownerless] <size>",
+									"&eGive player a bag.");
+						}
+						if(sender.hasPermission("havenbags.restore") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags restore <player>",
+									"&eShows a list of bags by that player.\n"
+									+ "&7(Also in GUI)");
+							
+							message.AddNewLine(" &e/bags restore <player> <bag-uuid>",
+									"&eGives a copy of the bag stored on the server.\n"
+									+ "&7(Also in GUI)");
+						}
+						if(sender.hasPermission("havenbags.preview") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags preview <player>",
+									"&eShows a list of bags by that player.\n"
+									+ "&7(Also in GUI)");
+
+							message.AddNewLine(" &e/bags preview <player>",
+									"&ePreview a copy of the bag stored on the server.\n"
+									+ "&7(Also in GUI)");
+						}
+						if(sender.hasPermission("havenbags.info") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags info",
+									"&eShows information about the bag"
+									+ " you're currently holding.");
+							
+							message.AddNewLine(" &e/bags rawinfo",
+									"&eShows raw metadata about the bag"
+									+ " you're currently holding.");
+						}
+						if(sender.hasPermission("havenbags.reload") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags reload",
+									"&eReloads config files.");
+						}
+						message.AddNewLine(" &e/bags help",
+								"&eYou are here.");
+						message.Send(player);
+						if(!(sender instanceof Player)) { 
+							Log.Info(Main.plugin, "Sorry, but only players can view this menu.");
+							Log.Info(Main.plugin, "Set 'old-help-menu' to true, if you want to use this command.");
+						}
 					}
-					if(sender.hasPermission("havenbags.empty") || sender.hasPermission("havenbags.help")) {
-						help.add("&e/bags empty");
-						help.add("&7&o Empty the content of the bag in your hand, onto the ground");
+					else {
+						List<String> help = new ArrayList<String>();
+						help.add("&a&lHaven&b&lBags &8- &fHelp Menu\n"
+								+ "&7Optional: [] - Required: <>\n"
+								+ "&8(Mouseover commands for information)");
+						help.add("");
+						if(sender.hasPermission("havenbags.rename") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags rename");
+							help.add("&7&o Rename the bag in your hand");
+							help.add("&7&o You cannot rename any bags you aren't bound to");
+							help.add("&7&o (Supports Hex. Leave value empty to reset.)");
+						}
+						if(sender.hasPermission("havenbags.empty") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags empty");
+							help.add("&7&o Empty the content of the bag in your hand, onto the ground");
+						}
+						if(sender.hasPermission("havenbags.autopickup") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags pickup <filter>");
+							help.add("&7&o Automatically put items inside the bag.");
+						}
+						if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags gui");
+							help.add("&7&o Opens Admin GUI");
+						}
+						if(sender.hasPermission("havenbags.create") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags create [ownerless] <size>");
+							help.add("&7&o Create a new bag");
+							help.add("&8 (Also in GUI)");
+						}
+						if(sender.hasPermission("havenbags.give") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags give <player> [ownerless] <size>");
+							help.add("&7&o Give player a bag");
+						}
+						if(sender.hasPermission("havenbags.restore") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags restore <player>");
+							help.add("&7&o Shows a list of bags by that player");
+							help.add("&8 (Also in GUI)");
+										
+							help.add("&e/bags restore <player> <bag-uuid>");
+							help.add("&7&o Gives a copy of the bag stored on the server");
+							help.add("&8 (Also in GUI)");
+						}
+						if(sender.hasPermission("havenbags.preview") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags preview <player>");
+							help.add("&7&o Shows a list of bags by that player");
+							help.add("&8 (Also in GUI)");
+
+							help.add("&e/bags preview <player> <bag-uuid>");
+							help.add("&7&o Preview a copy of the bag stored on the server");
+							help.add("&8 (Also in GUI)");
+						}
+						if(sender.hasPermission("havenbags.info") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags info");
+							help.add("&7&o Shows information about the bag you're currently holding");
+							
+							help.add("&e/bags rawinfo");
+							help.add("&7&o Shows raw metadata about the bag you're currently holding");
+						}
+						if(sender.hasPermission("havenbags.reload") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags reload");
+							help.add("&7&o Reloads config files");
+						}
+						help.add("&e/bags help");
+						help.add("&7&o You are here");
+						
+						String helpString = "";
+						for(String i : help) {
+							helpString = helpString + Lang.Parse(i, player) + "\n ";
+						}
+						sender.sendMessage(helpString);
 					}
-					if(sender.hasPermission("havenbags.autopickup") || sender.hasPermission("havenbags.help")) {
-						help.add("&e/bags pickup <filter>");
-						help.add("&7&o Automatically put items inside the bag.");
-					}
-					if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {
-						help.add("&e/bags gui");
-						help.add("&7&o Opens Admin GUI");
-					}
-					if(sender.hasPermission("havenbags.create") || sender.hasPermission("havenbags.help")) {
-						help.add("&e/bags create [ownerless] <size>");
-						help.add("&7&o Create a new bag");
-						help.add("&8 (Also in GUI)");
-					}
-					if(sender.hasPermission("havenbags.give") || sender.hasPermission("havenbags.help")) {
-						help.add("&e/bags give <player> [ownerless] <size>");
-						help.add("&7&o Give player a bag");
-					}
-					if(sender.hasPermission("havenbags.restore") || sender.hasPermission("havenbags.help")) {
-						help.add("&e/bags restore <player>");
-						help.add("&7&o Shows a list of bags by that player");
-						help.add("&8 (Also in GUI)");
-						help.add("&e/bags restore <player> <bag-uuid>");
-						help.add("&7&o Gives a copy of the bag stored on the server");
-						help.add("&8 (Also in GUI)");
-					}
-					if(sender.hasPermission("havenbags.preview") || sender.hasPermission("havenbags.help")) {
-						help.add("&e/bags preview <player>");
-						help.add("&7&o Shows a list of bags by that player");
-						help.add("&8 (Also in GUI)");
-						help.add("&e/bags preview <player> <bag-uuid>");
-						help.add("&7&o Preview a copy of the bag stored on the server");
-						help.add("&8 (Also in GUI)");
-					}
-					if(sender.hasPermission("havenbags.info") || sender.hasPermission("havenbags.help")) {
-						help.add("&e/bags info");
-						help.add("&7&o Shows information about the bag you're currently holding");
-						help.add("&e/bags rawinfo");
-						help.add("&7&o Shows raw metadata about the bag you're currently holding");
-					}
-					if(sender.hasPermission("havenbags.reload") || sender.hasPermission("havenbags.help")) {
-						help.add("&e/bags reload");
-						help.add("&7&o Reloads config files");
-					}
-					help.add("&e/bags help");
-					help.add("&7&o You are here");
 					
-					String helpString = "";
-					for(String i : help) {
-						helpString = helpString + Lang.Parse(i, player) + "\n ";
-					}
-					sender.sendMessage(helpString);
 					return true;
 				}
 			} catch(Exception e) {
