@@ -60,6 +60,7 @@ public class CommandListener implements CommandExecutor {
 						Crafting.PrepareRecipes();
 						AutoPickup.filter.Reload();
 						AutoPickup.Initiate();
+						Main.weight.Reload();
 						Main.translator = new Translator(Main.config.GetString("language"));
 						if(!(sender instanceof Player)) { 
 							Log.Info(Main.plugin, "Reloaded!");
@@ -766,6 +767,26 @@ public class CommandListener implements CommandExecutor {
 					return true;
 				}
 				
+				if(args[0].equalsIgnoreCase("weight") && sender.hasPermission("havenbags.weight")) {
+					Player player = (Player)sender;
+					ItemStack item = player.getInventory().getItemInMainHand();
+					if(HavenBags.IsBag(item)) {
+						if(HavenBags.IsOwner(item, player)) {
+							try {
+								//Integer value = Integer.valueOf(args[1]);
+								Double value = Double.valueOf(args[1]);
+								NBT.SetDouble(item, "bag-weight-limit", value);
+							} catch (Exception e) {
+								//e.printStackTrace();
+								player.sendMessage("§cValue must be a number.");
+								return false;
+							}
+							HavenBags.UpdateBagLore(item, player);
+						}
+					}
+					return true;
+				}
+				
 				// Work on this later, bags are being returned.
 				/*if(args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.open")) {
 					Player player = (Player)sender;
@@ -932,6 +953,11 @@ public class CommandListener implements CommandExecutor {
 									"&eShows raw metadata about the bag"
 									+ " you're currently holding.");
 						}
+						if(sender.hasPermission("havenbags.weight") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags weight <number>",
+									"&eSet the weight limit of the bag"
+									+ " you're currently holding.");
+						}
 						if(sender.hasPermission("havenbags.reload") || sender.hasPermission("havenbags.help")) {
 							message.AddNewLine(" &e/bags reload",
 									"&eReloads config files.");
@@ -1001,6 +1027,10 @@ public class CommandListener implements CommandExecutor {
 							
 							help.add("&e/bags rawinfo");
 							help.add("&7&o Shows raw metadata about the bag you're currently holding");
+						}
+						if(sender.hasPermission("havenbags.weight") || sender.hasPermission("havenbags.help")) {
+							help.add(" &e/bags weight <number>");
+							help.add("&eSet the weight limit of the bag you're currently holding.");
 						}
 						if(sender.hasPermission("havenbags.reload") || sender.hasPermission("havenbags.help")) {
 							help.add("&e/bags reload");

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -170,18 +171,72 @@ public class BagGUI implements Listener {
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
         if (!e.getInventory().equals(inv)) return;
+        if(e.getRawSlot() == -999) return;
+        Log.Debug(Main.plugin, e.getRawSlot() + "");
         
-        if (Main.config.GetBool("bags-in-bags") == true) return;
-
         ItemStack clickedItem = e.getCurrentItem();
+        ItemStack cursorItem = e.getCursor();
+        Log.Debug(plugin, "clicked: " + e.getCurrentItem());
+        Log.Debug(plugin, "cursor: " + e.getCursor());
+        
+      //Check Weight When cursor isnt air, clicked item is null. Therefore we run this before the null check.
+        if(cursorItem != null) {
+        if(e.getRawSlot() < inv.getSize() && !cursorItem.getType().equals(Material.AIR)) {
+            Log.Debug(Main.plugin, "within");
+        	if(Main.weight.GetBool("enabled") == false) return;
+            Log.Debug(Main.plugin, "enabled");
+            List<ItemStack> cont = new ArrayList<ItemStack>();
+            for(int i = 0; i < inv.getSize(); i++) {
+        		cont.add(inv.getItem(i));
+        	}
+            //Log.Debug(Main.plugin, HavenBags.CanCarry(clickedItem, bagItem, cont) + "");
+        	if(!HavenBags.CanCarry(cursorItem, bagItem, cont)) { 
+        		e.setCancelled(true);
+            	//e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Main.weight.GetString("bag-cant-carry")));
+            	List<Placeholder> placeholders = new ArrayList<Placeholder>();
+            	placeholders.add(new Placeholder("%item%", Main.translator.Translate(cursorItem.getTranslationKey())));
+            	placeholders.add(new Placeholder("%weight%",  HavenBags.ItemWeight(cursorItem) + ""));
+            	placeholders.add(new Placeholder("%remaining%", (NBT.GetDouble(bagItem, "bag-weight-limit") - HavenBags.GetWeight(cont)) + ""));
+            	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.ParseCustomPlaceholders(Main.weight.GetString("bag-cant-carry"), placeholders));
+        		return;
+        	}
+        }
+        }
+        
         if(clickedItem == null) return;
         
-        if(HavenBags.IsBag(clickedItem)) {
+        //if (Main.config.GetBool("bags-in-bags") == true) return;
+        
+        if(HavenBags.IsBag(clickedItem) && !Main.config.GetBool("bags-in-bags")) {
         	//e.getWhoClicked().closeInventory();
         	//e.getWhoClicked().sendMessage(Name + "§c Bags cannot be placed inside bags.");
         	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
         	e.setCancelled(true);
         }
+        
+        if(e.getRawSlot() > inv.getSize() && e.isShiftClick()) {
+            Log.Debug(Main.plugin, "within");
+        	if(Main.weight.GetBool("enabled") == false) return;
+            Log.Debug(Main.plugin, "enabled");
+            List<ItemStack> cont = new ArrayList<ItemStack>();
+            for(int i = 0; i < inv.getSize(); i++) {
+        		cont.add(inv.getItem(i));
+        	}
+            //Log.Debug(Main.plugin, HavenBags.CanCarry(clickedItem, bagItem, cont) + "");
+        	if(!HavenBags.CanCarry(clickedItem, bagItem, cont)) { 
+        		e.setCancelled(true);
+            	//e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Main.weight.GetString("bag-cant-carry")));
+            	List<Placeholder> placeholders = new ArrayList<Placeholder>();
+            	placeholders.add(new Placeholder("%item%", Main.translator.Translate(clickedItem.getTranslationKey())));
+            	placeholders.add(new Placeholder("%weight%",  HavenBags.ItemWeight(clickedItem) + ""));
+            	placeholders.add(new Placeholder("%remaining%", (NBT.GetDouble(bagItem, "bag-weight-limit") - HavenBags.GetWeight(cont)) + ""));
+            	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.ParseCustomPlaceholders(Main.weight.GetString("bag-cant-carry"), placeholders));
+        		return;
+        	}
+        }
+        
+        
+        
     }
 
     @EventHandler
@@ -218,6 +273,12 @@ public class BagGUI implements Listener {
         for(int i = 0; i < inv.getSize(); i++) {
     		cont.add(inv.getItem(i));
     	}
+        
+        if(Main.weight.GetBool("enabled")) {
+        	HavenBags.HasWeightLimit(bagItem);
+        	NBT.SetDouble(bagItem, "bag-weight", HavenBags.GetWeight(cont));
+        }
+        
         HavenBags.UpdateBagItem(bagItem, cont, player);
 		GivePlayerBagBack();
 		HavenBags.WriteBagToServer(bagItem, cont, player);
@@ -234,16 +295,16 @@ public class BagGUI implements Listener {
 		
 		Log.Debug(plugin, "Remaining Open Bags: " + Main.activeBags.size());
 		
-		UpdateTimestamp();
+		//UpdateTimestamp();
     }
     
-    void UpdateTimestamp() {
+    /*void UpdateTimestamp() {
     	Log.Debug(plugin, "Updating timestamp for " + bag);
     	Main.timeTable.Set(
     		String.format("%s/%s", NBT.GetString(bagItem, "bag-owner"), NBT.GetString(bagItem, "bag-uuid")),
     			System.currentTimeMillis() / 1000L);
     	Main.timeTable.SaveConfig();
-    }
+    }*/
     
     void GivePlayerBagBack() {
     	HavenBags.ReturnBag(bagItem, player);

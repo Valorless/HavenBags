@@ -56,6 +56,9 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.autopickup")) {
 				subCommands.add("autopickup");
 			}
+			if (sender.hasPermission("havenbags.weight")) {
+				subCommands.add("weight");
+			}
 
 			StringUtil.copyPartialMatches(args[0], subCommands, completions);
 		}

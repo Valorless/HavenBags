@@ -21,7 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class Main extends JavaPlugin implements Listener {
 	public static JavaPlugin plugin;
 	public static Config config;
-	public static Config timeTable;
+	//public static Config timeTable;
+	public static Config weight;
 	public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
 	int newupdate = 9999999;
@@ -36,8 +37,9 @@ public final class Main extends JavaPlugin implements Listener {
 		plugin = this;
 		config = new Config(this, "config.yml");
 		Lang.lang = new Config(this, "lang.yml");
-		timeTable = new Config(this, "timetable.yml");
+		//timeTable = new Config(this, "timetable.yml");
 		AutoPickup.filter = new Config(this, "filtering.yml");
+		weight = new Config(this, "weight.yml");
 	}
 	
 	@SuppressWarnings("unused")
@@ -296,7 +298,7 @@ public final class Main extends JavaPlugin implements Listener {
         
         // Config-Version checks
         BagConversion();
-        TimeTable();
+        //TimeTable();
     }
     
     @Override
@@ -395,7 +397,7 @@ public final class Main extends JavaPlugin implements Listener {
     	}
     }
     
-    void TimeTable() {
+    /*void TimeTable() {
     	if(config.GetInt("config-version") < 3) {
     		Log.Warning(plugin, "Old configuration found, updating time table!");
     		config.Set("config-version", 3);
@@ -428,5 +430,5 @@ public final class Main extends JavaPlugin implements Listener {
 			}
 			timeTable.SaveConfig();
     	}
-    }
+    }*/
 }

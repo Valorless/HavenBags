@@ -2,6 +2,7 @@ package valorless.havenbags;
 
 import valorless.valorlessutils.config.Config;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -103,6 +104,12 @@ public class Lang {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 	
+	/***
+	 * PlaceholderAPI
+	 * @param text
+	 * @param player
+	 * @return
+	 */
 	public static String ParsePlaceholders(String text, OfflinePlayer player) {
 		if(PlaceholderAPIHook.isHooked()) {
 			text = text.replace("{", "%");
@@ -111,5 +118,13 @@ public class Lang {
 		}else {
 			return text;
 		}
+	}
+	
+	public static String ParseCustomPlaceholders(String text, List<Placeholder> placeholders) {
+		for(Placeholder ph : placeholders) {
+			text = text.replace(ph.key, ph.value);
+			text = Parse(text);
+		}
+		return text;
 	}
 }

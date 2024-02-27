@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -128,7 +130,7 @@ public class HavenBags {
     	
     }
 	
-	public static List<ItemStack> LoadBagContentFromServer(String uuid, String owner, Player player){
+	public static List<ItemStack> LoadBagContentFromServer(String uuid, String owner, @Nullable Player player){
 		String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
 		
 		File bagData;
@@ -156,13 +158,13 @@ public class HavenBags {
 		}
 	}
 	
-	public static List<ItemStack> LoadBagContentFromServer(ItemStack bag, Player player){
+	public static List<ItemStack> LoadBagContentFromServer(ItemStack bag, @Nullable Player player){
     	String uuid = NBT.GetString(bag, "bag-uuid");
     	String owner = NBT.GetString(bag, "bag-owner");
 		return LoadBagContentFromServer(uuid, owner, player);
 	}
 	
-	public static boolean DoesBagExist(String uuid, String owner, Player player) {
+	public static boolean DoesBagExist(String uuid, String owner, @Nullable Player player) {
 String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
 		
 		File bagData;
@@ -174,7 +176,7 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 		}
         if(!bagData.exists()) {
         	//player.sendMessage(Name + "§c No bag found with that UUID.");
-        	player.sendMessage(Lang.Get("bag-does-not-exist"));
+        	if(player != null) player.sendMessage(Lang.Get("bag-does-not-exist"));
         	Log.Debug(Main.plugin, "This bag does not exist.");
         	return false;
         }
@@ -224,6 +226,15 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
         	//lore.add(Lang.Parse("&7Auto Loot: " + AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter")), player));
         }
         
+        if(NBT.Has(bag, "bag-weight") && NBT.Has(bag, "bag-weight-limit") && Main.weight.GetBool("enabled")) {
+        	List<Placeholder> placeholders = new ArrayList<Placeholder>();
+        	placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(GetWeight(bag), NBT.GetDouble(bag, "bag-weight-limit"), Main.weight.GetInt("bar-length"))));
+        	placeholders.add(new Placeholder("%weight%", TextFeatures.LimitDecimal(String.valueOf(GetWeight(bag)),2)));
+        	placeholders.add(new Placeholder("%limit%", String.valueOf(NBT.GetDouble(bag, "bag-weight-limit").intValue())));
+        	placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(GetWeight(bag), NBT.GetDouble(bag, "bag-weight-limit"))), 2) + "%"));
+        	lore.add(Lang.ParseCustomPlaceholders(Main.weight.GetString("weight-lore"), placeholders));
+        }
+        
         if(a > 0 && Lang.lang.GetBool("show-bag-content")) {
         	lore.add(Lang.Get("bag-content-title"));
         	for(int k = 0; k < items.size(); k++) {
@@ -235,6 +246,7 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
         		lore.add(Lang.Get("bag-content-and-more"));
         	}
         }
+        
         bagMeta.setLore(lore);
 		bag.setItemMeta(bagMeta);
 	}
@@ -283,7 +295,7 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 		return false;
 	}
 	
-	public static ItemStack GetBasicBagItem() {
+	public static ItemStack GetDisplayBagItem() {
 		ItemStack bagItem;
 		String bagTexture = Main.config.GetString("bag-texture");
 		if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
@@ -295,5 +307,84 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 			return null;
 		}
 		return bagItem;
+	}
+	
+	public static Double GetWeight(ItemStack bag) {
+		if(NBT.Has(bag, "bag-weight")) {
+			return NBT.GetDouble(bag, "bag-weight");
+		}else {
+			Double weight = 0.0;
+			String uuid = NBT.GetString(bag, "bag-uuid");
+    		String owner = NBT.GetString(bag, "bag-owner");
+			List<ItemStack> content = LoadBagContentFromServer(uuid, owner, null);
+			for(ItemStack item : content) {
+				weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
+			}
+			NBT.SetDouble(bag, "bag-weight", weight);
+			return weight;
+		}
+	}
+	
+	public static Double GetWeight(List<ItemStack> content) {
+		Double weight = 0.0;
+		for(ItemStack item : content) {
+			try {
+				weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
+			} catch(Exception e) {
+				continue;
+			}
+		}
+		return weight;
+	}
+	
+	public static Double ItemWeight(ItemStack item) {
+		return (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
+	}
+	
+	public static boolean CanCarry(ItemStack item, ItemStack bag) {
+		Log.Debug(Main.plugin, "Can carry?");
+		HasWeightLimit(bag);
+		double maxWeight = NBT.GetDouble(bag, "bag-weight-limit");
+		double weight = GetWeight(bag);
+		double itemWeight = ItemWeight(item);
+		
+		Log.Debug(Main.plugin, (weight + itemWeight) + "");
+		if(weight + itemWeight <= maxWeight) {
+			Log.Debug(Main.plugin, "true");
+			return true;
+		}else {
+			Log.Debug(Main.plugin, "false");
+			return false;
+		}
+	}
+	
+	public static boolean CanCarry(ItemStack item, ItemStack bag, List<ItemStack> content) {
+		Log.Debug(Main.plugin, "Can carry?");
+		HasWeightLimit(bag);
+		double maxWeight = NBT.GetDouble(bag, "bag-weight-limit");
+		double weight = GetWeight(content);
+		double itemWeight = ItemWeight(item);
+		
+		Log.Debug(Main.plugin, (weight + itemWeight) + "");
+		if(weight + itemWeight <= maxWeight) {
+			Log.Debug(Main.plugin, "true");
+			return true;
+		}else {
+			Log.Debug(Main.plugin, "false");
+			return false;
+		}
+	}
+	
+	public static boolean HasWeightLimit(ItemStack bag) {
+		if(NBT.Has(bag, "bag-weight-limit")) {
+			return true;
+		}else {
+			if(Main.weight.GetBool("weight-per-size")) {
+				NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat("weight-size-" + NBT.GetInt(bag, "bag-size")));
+			}else {
+				NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat("weight-limit"));
+			}
+		}
+		return false;
 	}
 }

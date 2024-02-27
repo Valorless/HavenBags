@@ -30,6 +30,7 @@ permissions:
       havenbags.empty: true
       havenbags.help: true
       havenbags.autoloot: true
+      havenbags.weight: true
   havenbags.reload:
     description: Allows you to reload the configuration.
     default: op
@@ -71,5 +72,8 @@ permissions:
     default: op
   havenbags.autopickup:
     description: Allows you to use the auto-pickup feature.
+    default: op
+  havenbags.weight:
+    description: Allows you to set the weight limit of bags.
     default: op
   

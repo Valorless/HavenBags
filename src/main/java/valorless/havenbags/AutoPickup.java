@@ -147,18 +147,25 @@ public class AutoPickup implements Listener {
 					continue;
 				}
 			}
+			
+			if(HavenBags.CanCarry(item, bag.item) == false) return false;
+			
 			Log.Debug(Main.plugin, "contsize:" + contSize);
 			Log.Debug(Main.plugin, "size:" + maxContent);
 			if(Contains(bag.content, item)) {
 				Log.Debug(Main.plugin, "Contains");
 				for(ItemStack i : bag.content) {
 					if(i == null) continue;
+					if(i.getAmount() == i.getMaxStackSize()) continue;
 					if(StackHasSpace(i, item)) {
 						Log.Debug(Main.plugin, "stack Has Space");
 						if(item.getType().equals(i.getType())){
 							if(i.getAmount() != i.getMaxStackSize()) {
 								i.setAmount(i.getAmount() + item.getAmount());
 								Log.Debug(Main.plugin, bag.content.toString());
+								if(Main.weight.GetBool("enabled")) {
+						        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+						        }
 								HavenBags.UpdateBagItem(bag.item, bag.content, player);
 								HavenBags.WriteBagToServer(bag.item, bag.content, player);
 								PickupSound(player);
@@ -174,6 +181,9 @@ public class AutoPickup implements Listener {
 							if(bag.content.get(is) == null) {
 								bag.content.set(is, item);
 								Log.Debug(Main.plugin, bag.content.toString());
+								if(Main.weight.GetBool("enabled")) {
+						        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+						        }
 								HavenBags.UpdateBagItem(bag.item, bag.content, player);
 								HavenBags.WriteBagToServer(bag.item, bag.content, player);
 								PickupSound(player);
