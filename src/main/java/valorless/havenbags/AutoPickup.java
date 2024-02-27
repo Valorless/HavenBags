@@ -191,10 +191,11 @@ public class AutoPickup implements Listener {
 								//break;
 							}
 						}
+						
 					}
 				}
 			}
-			else if(contSize < maxContent) {
+			if(contSize < maxContent) {
 				Log.Debug(Main.plugin, "Has Space");
 				for(int i = 0; i < bag.content.size(); i++) {
 					if(bag.content.get(i) == null) {
@@ -217,9 +218,6 @@ public class AutoPickup implements Listener {
 				HavenBags.WriteBagToServer(bag.item, bag.content, player);
 				PickupSound(player);
 				return true;
-			}else {
-
-				Log.Debug(Main.plugin, "else");
 			}
 		}
 		Log.Debug(Main.plugin, "Item was not put in bag.");
