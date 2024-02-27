@@ -101,10 +101,10 @@ public class BagListener implements Listener{
     					WriteToServer(player, hand, NBT.GetInt(hand, "bag-size"));
     	    			Log.Debug(Main.plugin, "Ownerless bag created.");
     	    			Log.Debug(Main.plugin, "Creating timestamp for " + uuid);
-    	    	    	Main.timeTable.Set(
-    	    	    		String.format("%s/%s", "ownerless", uuid),
-    	    	    			Long.toString(System.currentTimeMillis() / 1000L));
-    	    	    	Main.timeTable.SaveConfig();
+    	    	    	//Main.timeTable.Set(
+    	    	    	//	String.format("%s/%s", "ownerless", uuid),
+    	    	    	//		Long.toString(System.currentTimeMillis() / 1000L));
+    	    	    	//Main.timeTable.SaveConfig();
     					return;
     				}
 				
@@ -142,10 +142,10 @@ public class BagListener implements Listener{
     					WriteToServer(player, hand, NBT.GetInt(hand, "bag-size"));
     	    			Log.Debug(Main.plugin, "Bound new bag to: " + player.getName());
     	    			Log.Debug(Main.plugin, "Creating timestamp for " + uuid);
-    	    	    	Main.timeTable.Set(
-    	    	    		String.format("%s/%s", player.getUniqueId().toString(), uuid),
-    	    	    			System.currentTimeMillis() / 1000L);
-    	    	    	Main.timeTable.SaveConfig();
+    	    	    	//Main.timeTable.Set(
+    	    	    	//	String.format("%s/%s", player.getUniqueId().toString(), uuid),
+    	    	    	//		System.currentTimeMillis() / 1000L);
+    	    	    	//Main.timeTable.SaveConfig();
     					return;
     				}
     				

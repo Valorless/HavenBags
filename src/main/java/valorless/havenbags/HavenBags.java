@@ -387,4 +387,57 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 		}
 		return false;
 	}
+	
+	/***
+	 * Not in use
+	 * @param content
+	 * @return
+	 */
+	public static ItemStack[] ShowWeight(ItemStack[] content) {
+		for(ItemStack item : content) {
+			if(item == null) continue;
+			if(IsBag(item)) continue;
+			if(item.getItemMeta() == null) continue;
+			ItemMeta meta = item.getItemMeta();
+			List<String> lore = meta.getLore();
+			if(meta.getLore() == null) lore = new ArrayList<String>();
+			List<Placeholder> placeholders = new ArrayList<Placeholder>();
+        	placeholders.add(new Placeholder("%weight%", ItemWeight(item).toString()));
+        	lore.add(Lang.ParseCustomPlaceholders(Main.weight.GetString("item-weight"), placeholders));
+			meta.setLore(lore);
+			item.setItemMeta(meta);
+		}
+		return content;
+	}
+	
+	/***
+	 * Not in use
+	 * @param content
+	 * @return
+	 */
+	public static ItemStack[] HideWeight(ItemStack[] content) {
+		String target = Lang.Parse(Main.weight.GetString("item-weight").replace("%weight%", ""));
+		for(ItemStack item : content) {
+			if(item == null) continue;
+			if(IsBag(item)) continue;
+			if(item.getItemMeta() == null) continue;
+			ItemMeta meta = item.getItemMeta();
+			List<String> lore = meta.getLore();
+			if(lore == null) continue;
+			try {
+				lore.removeIf(i -> i == target);
+				if(lore.size() > 1) {
+					lore.remove(lore.size()-1);
+				}else {
+					lore.clear();
+				}
+				meta.setLore(lore);
+				if(lore.size() == 0) meta.setLore(null);
+				item.setItemMeta(meta);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return content;
+	}
 }

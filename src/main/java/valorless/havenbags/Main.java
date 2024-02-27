@@ -254,6 +254,28 @@ public final class Main extends JavaPlugin implements Listener {
 		Log.Debug(plugin, "Validating lang.yml");
 		Lang.lang.Validate();
 		
+		weight.AddValidationEntry("enabled", false);
+		weight.AddValidationEntry("weight-limit", 3500);
+		weight.AddValidationEntry("weight-per-size", true);
+		weight.AddValidationEntry("weight-size-9", 1300);
+		weight.AddValidationEntry("weight-size-18", 2400);
+		weight.AddValidationEntry("weight-size-27", 3500);
+		weight.AddValidationEntry("weight-size-36", 4600);
+		weight.AddValidationEntry("weight-size-45", 5700);
+		weight.AddValidationEntry("weight-size-54", 6800);
+		weight.AddValidationEntry("weight-lore", "&7Weight: %bar% &7%percent% (%weight%/%limit%)");
+		weight.AddValidationEntry("bar-length", 10);
+		weight.AddValidationEntry("bar-style", "⬜");
+		weight.AddValidationEntry("fill-style", "⬛");
+		weight.AddValidationEntry("bar-start", "[");
+		weight.AddValidationEntry("bar-end", "]");
+		weight.AddValidationEntry("bar-color", "&7");
+		weight.AddValidationEntry("fill-color", "&e");
+		weight.AddValidationEntry("bag-cant-carry", "&cCannot carry any more items.\n%item% weighs %weight%, but you can only carry %remaining%.");
+		weight.AddValidationEntry("enabled", false);
+		Log.Debug(plugin, "Validating weight.yml");
+		weight.Validate();
+		
 		translator = new Translator(config.GetString("language"));
 		
 		AutoPickup.Initiate();
@@ -262,8 +284,6 @@ public final class Main extends JavaPlugin implements Listener {
 				
 		RegisterCommands();
 
-		
-		
 		if(config.GetBool("check-updates") == true) {
 			Log.Info(plugin, "Checking for updates..");
 			new UpdateChecker(this, 110420).getVersion(version -> {

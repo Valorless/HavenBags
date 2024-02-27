@@ -121,6 +121,10 @@ public class BagGUI implements Listener {
     		for(int i = 0; i < content.size(); i++) {
     			inv.setItem(i, content.get(i));
     		}
+    		//if(Main.weight.GetBool("enabled")) {
+    		//	inv.setContents(HavenBags.ShowWeight(inv.getContents()));
+    		//	player.getInventory().setContents(HavenBags.ShowWeight(player.getInventory().getContents()));
+    		//}
 		} catch (Exception e) {
 			if(e.toString().contains("because \"this.content\" is null")) {
 				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
@@ -268,6 +272,11 @@ public class BagGUI implements Listener {
 				Main.config.GetFloat("close-pitch").floatValue(), player);
     	
         Log.Debug(plugin, "Bag closed, attempting to save bag. (" + bag + ")");
+
+		//if(Main.weight.GetBool("enabled")) {
+		//	inv.setContents(HavenBags.HideWeight(inv.getContents()));
+        //	player.getInventory().setContents(HavenBags.HideWeight(player.getInventory().getContents()));
+		//}
     	
         List<ItemStack> cont = new ArrayList<ItemStack>();
         for(int i = 0; i < inv.getSize(); i++) {
