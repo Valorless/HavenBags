@@ -13,8 +13,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-import valorless.havenbags.AutoPickup.Filter;
-
 public class TabCompletion implements TabCompleter {
 
 	@Override

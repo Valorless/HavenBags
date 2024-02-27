@@ -16,10 +16,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
+import valorless.valorlessutils.skulls.SkullCreator;
 import valorless.valorlessutils.sound.SFX;
 import valorless.valorlessutils.utils.Utils;
 
@@ -274,5 +274,26 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 		} else {
 			return false;
 		}
+	}
+	
+	public static boolean InventoryContainsBag(Player player) {
+		for(ItemStack item : player.getInventory().getContents()) {
+			if(IsBag(item)) return true;
+		}
+		return false;
+	}
+	
+	public static ItemStack GetBasicBagItem() {
+		ItemStack bagItem;
+		String bagTexture = Main.config.GetString("bag-texture");
+		if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+			bagItem = SkullCreator.itemFromBase64(bagTexture);
+		} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
+			bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+		} else {
+			Log.Error(Main.plugin, (Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM."));
+			return null;
+		}
+		return bagItem;
 	}
 }

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
-
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
@@ -82,6 +82,16 @@ public class AutoPickup implements Listener {
 		Log.Debug(Main.plugin, item.getType().toString());
 		event.setCancelled(PutItemInBag(item, player));
 		if(event.isCancelled()) {
+			int count = 10;
+			double force = 0.1;
+			try {
+				//player.spawnParticle(Particle.BLOCK_DUST, event.getItem().getLocation(), 10, item.getType().createBlockData());
+				player.spawnParticle(Particle.BLOCK_DUST, event.getItem().getLocation(), count, 0, 0.1, 0, force, item.getType().createBlockData());
+			} catch (Exception e) {
+				//player.spawnParticle(Particle.ITEM_CRACK, event.getItem().getLocation(), 10, item);
+				player.spawnParticle(Particle.ITEM_CRACK, event.getItem().getLocation(), count, 0, 0.1, 0, force, item);
+			}
+			player.spawnParticle(Particle.SMOKE_NORMAL, event.getItem().getLocation(), 5, 0, 0.1, 0, 0.02);
 			event.getItem().remove();
 		}
 
