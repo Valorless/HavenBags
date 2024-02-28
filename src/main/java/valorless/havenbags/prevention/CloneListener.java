@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.Placeholder;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.nbt.NBT;
@@ -39,15 +40,18 @@ public class CloneListener implements Listener{
 					clone.setAmount(1);
 					ItemMeta meta = clone.getItemMeta();
 					
+					List<Placeholder> placeholders = new ArrayList<Placeholder>();
+	            	placeholders.add(new Placeholder("%size%", NBT.GetInt(clone, "bag-size")));
+					
 					boolean canbind = NBT.GetBool(clone, "bag-canBind");
 					if(canbind) {
 						meta.setDisplayName(Lang.Get("bag-unbound-name"));
 						List<String> lore = new ArrayList<String>();
 						for (String l : Lang.lang.GetStringList("bag-lore")) {
-							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)player));
+							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 						}
 						for (String l : Lang.lang.GetStringList("bag-size")) {
-							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, NBT.GetInt(clone, "bag-size")), (Player)player));
+							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, placeholders, player));
 						}
 						meta.setLore(lore);
 						clone.setItemMeta(meta);
@@ -55,10 +59,10 @@ public class CloneListener implements Listener{
 						meta.setDisplayName(Lang.Get("bag-ownerless-unused"));
 						List<String> lore = new ArrayList<String>();
 						for (String l : Lang.lang.GetStringList("bag-lore")) {
-							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)player));
+							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 						}
 						for (String l : Lang.lang.GetStringList("bag-size")) {
-							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, NBT.GetInt(clone, "bag-size")), (Player)player));
+							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, placeholders, player));
 						}
 						meta.setLore(lore);
 						clone.setItemMeta(meta);

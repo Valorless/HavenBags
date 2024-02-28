@@ -120,7 +120,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("malformed-command", "&cUnknown command, are you missing some parameters?");
 		Lang.lang.AddValidationEntry("feature-disabled", "&cSorry, this feature is disabled.");
 		Lang.lang.AddValidationEntry("bag-load-error", "&cBag failed to load.\nPlease notify staff.");
-		Lang.lang.AddValidationEntry("bag-rename", "&fRenamed bag to %s.");
+		Lang.lang.AddValidationEntry("bag-rename", "&fRenamed bag to %name%.");
 		Lang.lang.AddValidationEntry("bag-rename-reset", "&fReset bag''s name.");
 		Lang.lang.AddValidationEntry("bag-cannot-rename", "&cYou can only rename bags.");
 		Lang.lang.AddValidationEntry("bag-cannot-use", "&cYou cannot use this bag.");
@@ -134,10 +134,10 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("player-no-exist", "&cNo bags found for this player.");
 		Lang.lang.AddValidationEntry("bag-not-found", "&cNo bag found with that UUID.");
 		Lang.lang.AddValidationEntry("bag-ownerless-no-size", "&cOwnerless bag must have a size.");
-		Lang.lang.AddValidationEntry("bag-given", "&aYou''ve been given an %s!");
-		Lang.lang.AddValidationEntry("number-conversion-error", "&cCannot convert ''%s'' to a number!");
-		Lang.lang.AddValidationEntry("player-no-bags", "&cPlayer ''%s'' has no bags.");
-		Lang.lang.AddValidationEntry("bags-of", "Bags of %s:");
+		Lang.lang.AddValidationEntry("bag-given", "&aYou''ve been given an %name%!");
+		Lang.lang.AddValidationEntry("number-conversion-error", "&cCannot convert ''%value%'' to a number!");
+		Lang.lang.AddValidationEntry("player-no-bags", "&cPlayer ''%player%'' has no bags.");
+		Lang.lang.AddValidationEntry("bags-of", "Bags of %player%:");
 		
 		// Bag GUI
 		Lang.lang.AddValidationEntry("bag-inventory-title", "");
@@ -153,27 +153,24 @@ public final class Main extends JavaPlugin implements Listener {
 				}
 			} 
 		);
-		//Lang.lang.AddValidationEntry("bound-to", "&7Bound to %s");
-		Lang.lang.AddValidationEntry("bound-to", new ArrayList<String>() {
+		Lang.lang.AddValidationEntry("bag-lore-add", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L; { 
-				add("&7Bound to %s"); 
+				add("%bound-to%"); 
+				add("%bag-size%"); 
+				add("%bag-auto-pickup%"); 
+				add("%bag-weight%"); 
 				}
 			} 
 		);
-		//Lang.lang.AddValidationEntry("bag-size", "&7Size: %s");
-		Lang.lang.AddValidationEntry("bag-size", new ArrayList<String>() {
-			private static final long serialVersionUID = 1L; { 
-				add("&7Size: %s"); 
-				}
-			} 
-		);
+		Lang.lang.AddValidationEntry("bound-to", "&7Bound to %owner%");
+		Lang.lang.AddValidationEntry("bag-size", "&7Size: %size%");
 		Lang.lang.AddValidationEntry("show-bag-content", true);
 		Lang.lang.AddValidationEntry("bag-content-title", "&7Content:");
 		Lang.lang.AddValidationEntry("bag-content-preview-size", 5);
-		Lang.lang.AddValidationEntry("bag-content-item", "&7%s");
-		Lang.lang.AddValidationEntry("bag-content-item-amount", "&7%s &7x%s");
+		Lang.lang.AddValidationEntry("bag-content-item", "&7%item%");
+		Lang.lang.AddValidationEntry("bag-content-item-amount", "&7%item% &7x%amount%");
 		Lang.lang.AddValidationEntry("bag-content-and-more", "&7And more..");
-		Lang.lang.AddValidationEntry("bag-auto-pickup", "&7Auto Loot: %s");
+		Lang.lang.AddValidationEntry("bag-auto-pickup", "&7Auto Loot: %filter%");
 		
 		// Admin GUI
 		Lang.lang.AddValidationEntry("too-many-bags", "&cThis player has over 53 bags.\\nPlease restore their bags through &e/bags restore&c!");

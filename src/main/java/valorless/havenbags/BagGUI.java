@@ -201,7 +201,7 @@ public class BagGUI implements Listener {
             	placeholders.add(new Placeholder("%item%", Main.translator.Translate(cursorItem.getTranslationKey())));
             	placeholders.add(new Placeholder("%weight%",  HavenBags.ItemWeight(cursorItem) + ""));
             	placeholders.add(new Placeholder("%remaining%", (NBT.GetDouble(bagItem, "bag-weight-limit") - HavenBags.GetWeight(cont)) + ""));
-            	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.ParseCustomPlaceholders(Main.weight.GetString("bag-cant-carry"), placeholders));
+            	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Main.weight.GetString("bag-cant-carry"), placeholders, player));
         		return;
         	}
         }
@@ -234,7 +234,7 @@ public class BagGUI implements Listener {
             	placeholders.add(new Placeholder("%item%", Main.translator.Translate(clickedItem.getTranslationKey())));
             	placeholders.add(new Placeholder("%weight%",  HavenBags.ItemWeight(clickedItem) + ""));
             	placeholders.add(new Placeholder("%remaining%", (NBT.GetDouble(bagItem, "bag-weight-limit") - HavenBags.GetWeight(cont)) + ""));
-            	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.ParseCustomPlaceholders(Main.weight.GetString("bag-cant-carry"), placeholders));
+            	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Main.weight.GetString("bag-cant-carry"), placeholders, player));
         		return;
         	}
         }

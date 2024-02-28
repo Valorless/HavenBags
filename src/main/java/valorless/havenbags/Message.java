@@ -12,11 +12,11 @@ public class Message {
 	public TextComponent message;
 	
 	public Message(String message) {
-		this.message = new TextComponent(Lang.Parse(message));
+		this.message = new TextComponent(Lang.Parse(message, null));
 	}
 	
 	public Message(String message, ChatColor color) {
-		this.message = new TextComponent(Lang.Parse(message));
+		this.message = new TextComponent(Lang.Parse(message, null));
 		this.message.setColor(color);
 	}
 	
@@ -30,27 +30,27 @@ public class Message {
 	
 	@SuppressWarnings("deprecation")
 	TextComponent SetHoverText(TextComponent comp, String message) {
-		comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Lang.Parse(message)).create()));
+		comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Lang.Parse(message, null)).create()));
 		return comp;
 	}
 	
 	public void AddTextPart(String message) {
-		this.message.addExtra(new TextComponent(Lang.Parse(message)));
+		this.message.addExtra(new TextComponent(Lang.Parse(message, null)));
 	}
 	
 	public void AddTextPart(String message, String hover) {
 		this.message.addExtra(
-				SetHoverText(new TextComponent(Lang.Parse(message)), hover)
+				SetHoverText(new TextComponent(Lang.Parse(message, null)), hover)
 				);
 	}
 	
 	public void AddNewLine(String message) {
-		this.message.addExtra(new TextComponent("\n" + Lang.Parse(message)));
+		this.message.addExtra(new TextComponent("\n" + Lang.Parse(message, null)));
 	}
 	
 	public void AddNewLine(String message, String hover) {
 		this.message.addExtra(
-				SetHoverText(new TextComponent("\n" + Lang.Parse(message)), hover)
+				SetHoverText(new TextComponent("\n" + Lang.Parse(message, null)), hover)
 				);
 	}
 

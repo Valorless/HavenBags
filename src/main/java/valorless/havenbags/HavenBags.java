@@ -185,24 +185,52 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 	
 	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, Player player) {
     	String owner = NBT.GetString(bag, "bag-owner");
+    	
+    	List<Placeholder> placeholders = new ArrayList<Placeholder>();
+
     	ItemMeta bagMeta = bag.getItemMeta();
+    	
 		List<ItemStack> cont = new ArrayList<ItemStack>();
         int a = 0;
         List<String> items = new ArrayList<String>();
         for(int i = 0; i < inventory.size(); i++) {
     		cont.add(inventory.get(i));
-    		if(inventory.get(i) != null) {
-    			if(inventory.get(i).getItemMeta().hasDisplayName()) {
-    				if(inventory.get(i).getAmount() != 1) {
-    					items.add(Lang.Get("bag-content-item-amount", inventory.get(i).getItemMeta().getDisplayName(), inventory.get(i).getAmount()));
-    				} else {
-    					items.add(Lang.Get("bag-content-item", inventory.get(i).getItemMeta().getDisplayName()));
-    				}
+    		if(inventory.get(i) != null && inventory.get(i).getType() != Material.AIR) {
+    			List<Placeholder> itemph = new ArrayList<Placeholder>();
+    			if(inventory.get(i).hasItemMeta()) {
+    				if(inventory.get(i).getItemMeta().hasDisplayName()) {
+    					itemph.add(new Placeholder("%item%", inventory.get(i).getItemMeta().getDisplayName()));
+    					itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
+        			
+    					if(inventory.get(i).getAmount() != 1) {
+    						items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+    						//items.add(Lang.Get("bag-content-item-amount", inventory.get(i).getItemMeta().getDisplayName(), inventory.get(i).getAmount()));
+    					} else {
+    						items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+    						//items.add(Lang.Get("bag-content-item", inventory.get(i).getItemMeta().getDisplayName()));
+    					}
+    				}else {
+    	    			itemph.add(new Placeholder("%item%", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
+    	    			itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
+    	    			
+        				if(inventory.get(i).getAmount() != 1) {
+        					items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+        					//items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(inventory.get(i).getType().getTranslationKey()), inventory.get(i).getAmount()));
+        				} else {
+        					items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+        					//items.add(Lang.Get("bag-content-item", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
+        				}
+        			}
     			}else {
+	    			itemph.add(new Placeholder("%item%", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
+	    			itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
+	    			
     				if(inventory.get(i).getAmount() != 1) {
-    					items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(inventory.get(i).getType().getTranslationKey()), inventory.get(i).getAmount()));
+    					items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+    					//items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(inventory.get(i).getType().getTranslationKey()), inventory.get(i).getAmount()));
     				} else {
-    					items.add(Lang.Get("bag-content-item", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
+    					items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+    					//items.add(Lang.Get("bag-content-item", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
     				}
     			}
     			a++;
@@ -213,36 +241,57 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
         	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
         }
         if(NBT.GetBool(bag, "bag-canBind")) {
-            for (String l : Lang.lang.GetStringList("bound-to")) {
-            	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()), player));
-            }
+            placeholders.add(new Placeholder("%owner%", Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()));
+            placeholders.add(new Placeholder("%bound-to%", Lang.Parse(Lang.Get("bound-to"), placeholders, player)));
+            //if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()), player));
         }
-        for (String l : Lang.lang.GetStringList("bag-size")) {
-        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
+        if(NBT.Has(bag, "bag-size")) {
+        	placeholders.add(new Placeholder("%size%", inventory.size()));
+        	placeholders.add(new Placeholder("%bag-size%", Lang.Parse(Lang.Get("bag-size"), placeholders, player)));
+        	//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
         }
         
         if(NBT.Has(bag, "bag-filter")) {
-        	lore.add(Lang.Parse(Lang.Parse(String.format(Lang.Get("bag-auto-pickup"), AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))), player)));
+        	placeholders.add(new Placeholder("%filter%", AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))));
+        	placeholders.add(new Placeholder("%bag-auto-pickup%", Lang.Parse(Lang.Get("bag-auto-pickup"), placeholders, player)));
+        	//lore.add(Lang.Parse(Lang.Parse(String.format(Lang.Get("bag-auto-pickup"), AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))), player)));
         	//lore.add(Lang.Parse("&7Auto Loot: " + AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter")), player));
         }
         
         if(NBT.Has(bag, "bag-weight") && NBT.Has(bag, "bag-weight-limit") && Main.weight.GetBool("enabled")) {
-        	List<Placeholder> placeholders = new ArrayList<Placeholder>();
         	placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(GetWeight(bag), NBT.GetDouble(bag, "bag-weight-limit"), Main.weight.GetInt("bar-length"))));
         	placeholders.add(new Placeholder("%weight%", TextFeatures.LimitDecimal(String.valueOf(GetWeight(bag)),2)));
         	placeholders.add(new Placeholder("%limit%", String.valueOf(NBT.GetDouble(bag, "bag-weight-limit").intValue())));
         	placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(GetWeight(bag), NBT.GetDouble(bag, "bag-weight-limit"))), 2) + "%"));
-        	lore.add(Lang.ParseCustomPlaceholders(Main.weight.GetString("weight-lore"), placeholders));
+        	placeholders.add(new Placeholder("%bag-weight%", Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)));
+        	//lore.add(Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player));
+        }
+        
+        for(String line : Lang.lang.GetStringList("bag-lore-add")) {
+        	if(line.contains("%bound-to%") && !NBT.GetBool(bag, "bag-canbind")) continue;
+        	if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
+        	if(line.contains("%bag-weight%") && !Main.weight.GetBool("enabled")) continue;
+        	lore.add(Lang.Parse(line, placeholders, player));
         }
         
         if(a > 0 && Lang.lang.GetBool("show-bag-content")) {
-        	lore.add(Lang.Get("bag-content-title"));
+        	//placeholders.add(new Placeholder("%bag-content-title%", Lang.Parse(Lang.Get("bag-content-title"), player)));
+        	lore.add(Lang.Parse(Lang.Get("bag-content-title"), player));
+        	//Log.Debug(Main.plugin, items.size() + "");
+        	/*for(int k = 1; k < items.size(); k++) {
+        		if(k < Lang.lang.GetInt("bag-content-preview-size")) {
+        			content = content + "\n  " + items.get(k);
+        			//lore.add("  " + items.get(i));
+        		}
+        	}*/
         	for(int k = 0; k < items.size(); k++) {
         		if(k < Lang.lang.GetInt("bag-content-preview-size")) {
         			lore.add("  " + items.get(k));
         		}
+
         	}
         	if(a > Lang.lang.GetInt("bag-content-preview-size")) {
+    			//content = content + "\n" + Lang.Parse(Lang.Get("bag-content-and-more"), player);
         		lore.add(Lang.Get("bag-content-and-more"));
         	}
         }
@@ -403,7 +452,7 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 			if(meta.getLore() == null) lore = new ArrayList<String>();
 			List<Placeholder> placeholders = new ArrayList<Placeholder>();
         	placeholders.add(new Placeholder("%weight%", ItemWeight(item).toString()));
-        	lore.add(Lang.ParseCustomPlaceholders(Main.weight.GetString("item-weight"), placeholders));
+        	lore.add(Lang.Parse(Main.weight.GetString("item-weight"), placeholders));
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 		}
@@ -416,7 +465,7 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 	 * @return
 	 */
 	public static ItemStack[] HideWeight(ItemStack[] content) {
-		String target = Lang.Parse(Main.weight.GetString("item-weight").replace("%weight%", ""));
+		String target = Lang.Parse(Main.weight.GetString("item-weight").replace("%weight%", ""), null);
 		for(ItemStack item : content) {
 			if(item == null) continue;
 			if(IsBag(item)) continue;

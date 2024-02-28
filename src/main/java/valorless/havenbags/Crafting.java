@@ -60,6 +60,7 @@ public class Crafting implements Listener {
 	
 	static ItemStack PrepareResult(String recipe) {
 		ItemStack bagItem = new ItemStack(Material.AIR);
+		List<Placeholder> placeholders = new ArrayList<Placeholder>();
 		
 		String bagTexture = "";
 		if(!Utils.IsStringNullOrEmpty(config.GetString("recipes." + recipe + ".bag-texture"))) {
@@ -87,12 +88,14 @@ public class Crafting implements Listener {
 		}
 		List<String> lore = new ArrayList<String>();
         for (String l : Lang.lang.GetStringList("bag-lore")) {
-        	lore.add(Lang.Parse(l));
+        	lore.add(Lang.Parse(l, null));
         }
 		//lore.add(Lang.Get("bag-size", size*9));
-		for (String l : Lang.lang.GetStringList("bag-size")) {
-			lore.add(Lang.Parse(String.format(l, size*9)));
-		}
+        placeholders.add(new Placeholder("%size%", size*9));
+        lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders));
+		//for (String l : Lang.lang.GetStringList("bag-size")) {
+		//	lore.add(Lang.Parse(String.format(l, size*9)));
+		//}
 		bagMeta.setLore(lore);
 		bagItem.setItemMeta(bagMeta);
 		//NBT.SetString(bagItem, "bag-uuid", "null");

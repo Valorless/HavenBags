@@ -57,6 +57,7 @@ public class BagListener implements Listener{
     			
     			//if(Tags.Get(plugin, item.getPersistentDataContainer(), "uuid", PersistentDataType.STRING) != null || NBT.Has(hand, "bag-uuid")) {
         		if(HavenBags.IsBag(hand)) {
+					List<Placeholder> placeholders = new ArrayList<Placeholder>();
         			List<String> blacklist = Main.config.GetStringList("blacklist");
             		if(blacklist != null) {
             			if(blacklist.size() != 0) {
@@ -86,10 +87,12 @@ public class BagListener implements Listener{
 						//lore.add(Lang.Get("bag-size", Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER)));
 						//lore.add(Lang.Get("bag-size", NBT.GetInt(hand, "bag-size")));
     	    	        for (String l : Lang.lang.GetStringList("bag-lore")) {
-    	    	        	lore.add(Lang.Parse(l));
+    	    	        	lore.add(Lang.Parse(l, player));
     	    	        }
-			            for (String l : Lang.lang.GetStringList("bag-size")) {
-			            	lore.add(Lang.Parse(String.format(l, NBT.GetInt(hand, "bag-size"))));
+    	    	        if(NBT.Has(hand, "bag-size")) {
+			            	placeholders.add(new Placeholder("%size%", NBT.GetInt(hand, "bag-size")));
+			            	lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
+			            	//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
 			            }
     					item.setLore(lore);
     					//Tags.Set(plugin, item.getPersistentDataContainer(), "owner", "ownerless", PersistentDataType.STRING);
@@ -112,6 +115,7 @@ public class BagListener implements Listener{
     				if(owner.equalsIgnoreCase("null") && canbind)
     				{
     					//item.setDisplayName("§a" + player.getName() +"'s Bag");
+    					
     					item.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), player));
     					List<String> lore = new ArrayList<String>();
     			        for (String l : Lang.lang.GetStringList("bag-lore")) {
@@ -119,15 +123,24 @@ public class BagListener implements Listener{
     			        }
     					//lore.add("§7Bound to " + player.getName());
     					//lore.add(Lang.Get("bound-to", player.getName()));
-			            for (String l : Lang.lang.GetStringList("bound-to")) {
-			            	lore.add(Lang.Parse(String.format(l, player.getName()), player));
-			            }
+    		            placeholders.add(new Placeholder("%owner%", player.getName()));
+    		            lore.add(Lang.Parse(Lang.Get("bound-to"), placeholders, player));
+    		            //if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()), player));
+    		            
+			            //for (String l : Lang.lang.GetStringList("bound-to")) {
+			            //	lore.add(Lang.Parse(String.format(l, player.getName()), player));
+			            //}
 						//lore.add("§7Size: " + Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER));
 						//lore.add(Lang.Get("bag-size", Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER)));
 						//lore.add(Lang.Get("bag-size", NBT.GetInt(hand, "bag-size")));
-			            for (String l : Lang.lang.GetStringList("bag-size")) {
-			            	lore.add(Lang.Parse(String.format(l, NBT.GetInt(hand, "bag-size")), player));
+			            if(NBT.Has(hand, "bag-size")) {
+			            	placeholders.add(new Placeholder("%size%", NBT.GetInt(hand, "bag-size")));
+			            	lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
+			            	//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
 			            }
+			            //for (String l : Lang.lang.GetStringList("bag-size")) {
+			            //	lore.add(Lang.Parse(String.format(l, NBT.GetInt(hand, "bag-size")), player));
+			            //}
     					item.setLore(lore);
     					//List<ItemStack> content = new ArrayList<ItemStack>();
     					//for(int i = 0; i < (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER); i++) {

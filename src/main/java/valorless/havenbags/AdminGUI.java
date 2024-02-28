@@ -146,7 +146,9 @@ public class AdminGUI implements Listener {
 			player.openInventory(inv);
 		}
 		else if(type == GUIType.Player || type == GUIType.PreviewPlayer || type == GUIType.DeletionPlayer) {
-			inv = Bukkit.createInventory(player, 54, Lang.Get("bags-of", targetPlayer.getName()));
+			List<Placeholder> placeholders = new ArrayList<Placeholder>();
+			placeholders.add(new Placeholder("%player%", targetPlayer.getName()));
+			inv = Bukkit.createInventory(player, 54, Lang.Parse(Lang.Get("bags-of"), placeholders, targetPlayer.getPlayer()));
 			for(int i = 0; i < content.size(); i++) {
     			inv.setItem(i, content.get(i));
     		}
@@ -488,6 +490,7 @@ public class AdminGUI implements Listener {
 		
 		//Bound
 		for(int i = 1; i <= 6; i++) {
+			List<Placeholder> placeholders = new ArrayList<Placeholder>();
 			String bagTexture = Main.config.GetString("bag-texture");
 			ItemStack bagItem = new ItemStack(Material.AIR);
 			int size = i*9;
@@ -509,9 +512,11 @@ public class AdminGUI implements Listener {
 			for (String l : Lang.lang.GetStringList("bag-lore")) {
 				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 			}
-			for (String l : Lang.lang.GetStringList("bag-size")) {
-				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size), player));
-			}
+			placeholders.add(new Placeholder("%size%", size));
+        	lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
+			//for (String l : Lang.lang.GetStringList("bag-size")) {
+			//	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size), player));
+			//}
 			bagMeta.setLore(lore);
 			bagItem.setItemMeta(bagMeta);
 			NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
@@ -528,6 +533,7 @@ public class AdminGUI implements Listener {
 		
 		//Ownerless
 		for(int i = 1; i <= 6; i++) {
+			List<Placeholder> placeholders = new ArrayList<Placeholder>();
 			String bagTexture = Main.config.GetString("bag-texture");
 			ItemStack bagItem = new ItemStack(Material.AIR);
 			int size = i*9;
@@ -549,9 +555,11 @@ public class AdminGUI implements Listener {
 			for (String l : Lang.lang.GetStringList("bag-lore")) {
 				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 			}
-			for (String l : Lang.lang.GetStringList("bag-size")) {
-				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size), player));
-			}
+			placeholders.add(new Placeholder("%size%", size));
+        	lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
+			//for (String l : Lang.lang.GetStringList("bag-size")) {
+			///	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size), player));
+			//}
 			bagMeta.setLore(lore);
 			bagItem.setItemMeta(bagMeta);
 			NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
@@ -655,6 +663,7 @@ public class AdminGUI implements Listener {
 		for(String bagUUID : bagfiles){
 			List<ItemStack> Content  = LoadContent(playeruuid, bagUUID);
 			if (Content == null) continue;
+			List<Placeholder> placeholders = new ArrayList<Placeholder>();
 			
 			String bagTexture = Main.config.GetString("bag-texture");
 			ItemStack bagItem = new ItemStack(Material.AIR);
@@ -676,20 +685,18 @@ public class AdminGUI implements Listener {
 				bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
 			}
 			
-			bagMeta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), targetPlayer.getName()));
+			bagMeta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), targetPlayer));
 			List<String> lore = new ArrayList<String>();
 			for (String l : Lang.lang.GetStringList("bag-lore")) {
-				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, target));
+				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, targetPlayer));
 			}
 			if(NBT.GetBool(bagItem, "bag-canBind")) {
-	            for (String l : Lang.lang.GetStringList("bound-to")) {
-	            	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, targetPlayer.getName())));
-	            }
+				placeholders.add(new Placeholder("%owner%", player.getName()));
+	            lore.add(Lang.Parse(Lang.Get("bound-to"), placeholders, player));
 	        }
-	        //l
-			for (String l : Lang.lang.GetStringList("bag-size")) {
-				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size), targetPlayer.getName()));
-			}
+			
+            placeholders.add(new Placeholder("%size%", size));
+            lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, targetPlayer));
 			
 			List<ItemStack> cont = new ArrayList<ItemStack>();
 	        int a = 0;
@@ -697,18 +704,23 @@ public class AdminGUI implements Listener {
 	        for(int i = 0; i < Content.size(); i++) {
 	    		cont.add(Content.get(i));
 	    		if(Content.get(i) != null) {
+	    			List<Placeholder> itemph = new ArrayList<Placeholder>();
 	    			if(Content.get(i).getItemMeta().hasDisplayName()) {
-	    				if(Content.get(i).getAmount() != 1) {
-	    					items.add(Lang.Get("bag-content-item-amount", Content.get(i).getItemMeta().getDisplayName(), Content.get(i).getAmount()));
-	    				} else {
-	    					items.add(Lang.Get("bag-content-item", Content.get(i).getItemMeta().getDisplayName()));
-	    				}
+    					itemph.add(new Placeholder("%item%", Content.get(i).getItemMeta().getDisplayName()));
+    					itemph.add(new Placeholder("%amount%", Content.get(i).getAmount()));
+    					if(Content.get(i).getAmount() != 1) {
+    						items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+    					} else {
+    						items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+    					}
 	    			}else {
-	    				if(Content.get(i).getAmount() != 1) {
-	    					items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(Content.get(i).getType().getTranslationKey()), Content.get(i).getAmount()));
-	    				} else {
-	    					items.add(Lang.Get("bag-content-item", Main.translator.Translate(Content.get(i).getType().getTranslationKey())));
-	    				}
+    	    			itemph.add(new Placeholder("%item%", Main.translator.Translate(Content.get(i).getType().getTranslationKey())));
+    	    			itemph.add(new Placeholder("%amount%", Content.get(i).getAmount()));
+    	    			if(Content.get(i).getAmount() != 1) {
+        					items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+        				} else {
+        					items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+        				}
 	    			}
 	    			a++;
 	    		}

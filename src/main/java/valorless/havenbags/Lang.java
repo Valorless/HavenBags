@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 
@@ -17,29 +18,42 @@ import valorless.valorlessutils.utils.Utils;
 public class Lang {
 	
 	public static Config lang;
-		
-	public static class Placeholders{
-		public static String plugin = "§7[§aHaven§bBags§7]§r";
-	}
+	public static String plugin = "§7[§aHaven§bBags§7]§r";
 	
-	public static String Parse(String text, OfflinePlayer... player) {
+	public static String Parse(String text, OfflinePlayer player) {
 		if(!Utils.IsStringNullOrEmpty(text)) {
 
-			if(player.length != 0) {
-				text = ParsePlaceholders(text, player[0]);
+			if(player != null) {
+				text = ParsePlaceholderAPI(text, player);
+			} else {
+				OfflinePlayer[] offp = Bukkit.getOfflinePlayers();
+				// Choose random player as placeholder to parse strings, without a defined player.
+				text = ParsePlaceholderAPI(text, offp[0]);
 			}
 		
 			text = hex(text);
 			text = text.replace("&", "§");
 			text = text.replace("\\n", "\n");
-			if(player.length != 0) {
-				text = text.replace("%player%", player[0].getName());
-				text = text.replace("%s", player[0].getName());
+			if(player != null) {
+				text = text.replace("%player%", player.getName());
 			}
 		}
 		return text;
 	}
 	
+	public static String Parse(String text, List<Placeholder> placeholders, OfflinePlayer... player) {
+		for(Placeholder ph : placeholders) {
+			text = text.replace(ph.key, ph.value);
+			if(player.length != 0) {
+				text = Parse(text, player[0]);
+			}else {
+				text = Parse(text, null);
+			}
+		}
+		return text;
+	}
+	
+	/* Old Code
 	public static String Parse(String text, String player) {
 		if(!Utils.IsStringNullOrEmpty(text)) {		
 			text = hex(text);
@@ -52,7 +66,17 @@ public class Lang {
 		}
 		return text;
 	}
+	*/
+	
+	public static String Get(String key) {
+		if(lang.Get(key) == null) {
+			Log.Error(Main.plugin, String.format("Lang.yml is missing the key '%s'!", key));
+			return "§4error";
+		}
+		return hex(lang.GetString(key));
+	}
 
+	/* Old Code
 	public static String Get(String key) {
 		if(lang.Get(key) == null) {
 			Log.Error(Main.plugin, String.format("Lang.yml is missing the key '%s'!", key));
@@ -84,6 +108,7 @@ public class Lang {
 		}
 		return Parse(String.format(lang.GetString(key), arg1.toString(), arg2.toString()));
 	}
+	*/
 	
 	public static String hex(String message) {
         Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
@@ -110,21 +135,20 @@ public class Lang {
 	 * @param player
 	 * @return
 	 */
-	public static String ParsePlaceholders(String text, OfflinePlayer player) {
+	public static String ParsePlaceholderAPI(String text, OfflinePlayer player) {
 		if(PlaceholderAPIHook.isHooked()) {
+			String t = "";
 			text = text.replace("{", "%");
 			text = text.replace("}", "%");
-			return PlaceholderAPI.setPlaceholders(player, text);
+			try {
+				t =  PlaceholderAPI.setPlaceholders(player, text);  
+        	}catch (Exception e) {
+        		Log.Error(Main.plugin, "Failed to get PlaceholderAPI. Is it up to date?)");
+        		t = text;
+        	}
+			return t;
 		}else {
 			return text;
 		}
-	}
-	
-	public static String ParseCustomPlaceholders(String text, List<Placeholder> placeholders) {
-		for(Placeholder ph : placeholders) {
-			text = text.replace(ph.key, ph.value);
-			text = Parse(text);
-		}
-		return text;
 	}
 }

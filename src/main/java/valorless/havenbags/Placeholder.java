@@ -4,9 +4,9 @@ public class Placeholder {
 	String key;
 	String value;
 	
-	public Placeholder(String key, String value) {
+	public Placeholder(String key, Object value) {
 		this.key = key;
-		this.value = value;
+		this.value = String.valueOf(value);
 	}
 
 }
