@@ -27,6 +27,7 @@ check-updates: true
 # Korean --------------- ko_kr
 # Chinese (Simplified) - zh_cn
 # Russian -------------- ru_ru
+# Polish --------------- pl_pl
 language: 'en_us'
 
 # Should the bags use heads or items?

@@ -3,6 +3,7 @@ package valorless.havenbags;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.EntityType;
@@ -11,12 +12,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.ValorlessUtils.Tags;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
 import valorless.valorlessutils.utils.Utils;
 
+@SuppressWarnings("deprecation")
 public class AutoPickup implements Listener {
 	
 	private static boolean enabled = true;
@@ -75,33 +81,61 @@ public class AutoPickup implements Listener {
 	
 	@EventHandler
     public void onEntityPickupItem(EntityPickupItemEvent event) {
+		if(!enabled) return;
 		if(event.getEntityType() != EntityType.PLAYER) return;
-		ItemStack item = event.getItem().getItemStack();
-		if(HavenBags.IsBag(item))return;
+		Log.Debug(Main.plugin, "AutoPickup");
 		Player player = (Player)event.getEntity();
+		List<String> blacklist = Main.config.GetStringList("blacklist");
+		if(blacklist != null) {
+			if(blacklist.size() != 0) {
+				Log.Debug(Main.plugin, "Player World: " + player.getWorld().getName());
+				for(String world : blacklist) {
+					Log.Debug(Main.plugin, "Blacklist: " + world);
+					if(player.getWorld().getName().equalsIgnoreCase(world)) return;
+				}
+			}
+		}
+		if(HavenBags.InventoryContainsBag(player) == false) return;
+		ItemStack item = event.getItem().getItemStack();
+		
+		// For some reason handling ExecutableItems items, would duplicate the item.
+		if (Bukkit.getPluginManager().getPlugin("ExecutableItems") != null) {
+			if(Tags.Has((JavaPlugin)Bukkit.getPluginManager().getPlugin("ExecutableItems"), item.getItemMeta().getPersistentDataContainer(), "ei-id", PersistentDataType.STRING)) {
+				Log.Debug(Main.plugin, "Item is ExecutableItem, skipping.");
+				return;
+			}
+		}
+		
+		if(HavenBags.IsBag(item)) return;
 		Log.Debug(Main.plugin, item.getType().toString());
-		event.setCancelled(PutItemInBag(item, player));
-		if(event.isCancelled()) {
+		boolean cancel = PutItemInBag(item, player);
+		Log.Debug(Main.plugin, "Cancelled: " + cancel);
+		if(cancel) {
+			event.setCancelled(true);
 			int count = 10;
 			double force = 0.1;
 			try {
-				//player.spawnParticle(Particle.BLOCK_DUST, event.getItem().getLocation(), 10, item.getType().createBlockData());
 				player.spawnParticle(Particle.BLOCK_DUST, event.getItem().getLocation(), count, 0, 0.1, 0, force, item.getType().createBlockData());
 			} catch (Exception e) {
-				//player.spawnParticle(Particle.ITEM_CRACK, event.getItem().getLocation(), 10, item);
 				player.spawnParticle(Particle.ITEM_CRACK, event.getItem().getLocation(), count, 0, 0.1, 0, force, item);
 			}
 			player.spawnParticle(Particle.SMOKE_NORMAL, event.getItem().getLocation(), 5, 0, 0.1, 0, 0.02);
 			event.getItem().remove();
+		}else {
+			return;
 		}
-
-		Log.Debug(Main.plugin, "Cancelled: " + event.isCancelled());
     }
 	
 	boolean PutItemInBag(ItemStack item, Player player){
-		if(ItemFilter(item) == null) return false;
+		Log.Debug(Main.plugin, "PutItemInBag?");
 		
+		if(ItemFilter(item) == null) {
+			Log.Debug(Main.plugin, "false");
+			return false;
+		}
+	
 		List<Bag> bags = new ArrayList<Bag>();
+		Log.Debug(Main.plugin, "Checking for bags.");
 		for(ItemStack i : player.getInventory().getContents()) {
 			//Log.Debug(Main.plugin, HavenBags.BagState(i).toString());
 			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
@@ -111,20 +145,28 @@ public class AutoPickup implements Listener {
 			}
 		}
 		Log.Debug(Main.plugin, "bags:" + bags.size());
+		Log.Debug(Main.plugin, "Checking bag filters.");
 		for(Bag bag : bags) {
+			Log.Debug(Main.plugin, "bag: " + NBT.GetString(bag.item, "bag-uuid"));
 			boolean c = false;
 			for(Filter f : filters) {
-				Log.Debug(Main.plugin, "Filter: " + f.name);
-				Log.Debug(Main.plugin, "Bag Filter: " + NBT.GetString(bag.item, "bag-filter"));
+				//Log.Debug(Main.plugin, "Filter: " + f.name);
+				//Log.Debug(Main.plugin, "Bag Filter: " + NBT.GetString(bag.item, "bag-filter"));
 				if(f.name.equalsIgnoreCase(NBT.GetString(bag.item, "bag-filter"))) {
 					c = true;
 					break;
 				}
 			}
 			Log.Debug(Main.plugin, "c " + c);
-			if(!c) continue;
+			if(!c) {
+				Log.Debug(Main.plugin, "No filters, skipping.");
+				continue;
+			}
 			
-			if(!IsItemInFilter(NBT.GetString(bag.item, "bag-filter"), item)) continue;
+			if(!IsItemInFilter(NBT.GetString(bag.item, "bag-filter"), item)) {
+				Log.Debug(Main.plugin, "Item " + item.getType().toString() + " is not in the filter. Skipping.");
+				continue;
+			}
 			
 			int maxContent = NBT.GetInt(bag.item, "bag-size");
 			Log.Debug(Main.plugin, "cont:" + bag.content.size());
@@ -138,6 +180,7 @@ public class AutoPickup implements Listener {
 //					contSize++;
 //				}
 //			}
+			Log.Debug(Main.plugin, "Checking bag content.");
 			for(ItemStack i : bag.content) {
 				try {
 					if(i.getType() != Material.AIR) {
@@ -203,15 +246,7 @@ public class AutoPickup implements Listener {
 						break;
 					}
 				}
-				/*
-				for(ItemStack i : bag.content) {
-					if(i == null) {
-						i = item;
-						Log.Debug(Main.plugin, "Item Added");
-						break;
-					}
-				}
-				*/
+				
 				//bag.content.add(item);
 				Log.Debug(Main.plugin, bag.content.toString());
 				HavenBags.UpdateBagItem(bag.item, bag.content, player);
@@ -234,26 +269,33 @@ public class AutoPickup implements Listener {
 	}
 	
 	boolean IsItemInFilter(String filter, ItemStack item) {
+		Log.Debug(Main.plugin, "IsItemInFilter?");
 		for(Filter f : filters) {
 			if(f.name.equalsIgnoreCase(filter)) {
 				if(f.entries.contains(item.getType().toString())){
+					Log.Debug(Main.plugin, "IsItemInFilter true");
 					return true;
 				}
 			}
 		}
-		
-		
+
+		Log.Debug(Main.plugin, "IsItemInFilter false");
 		return false;
 	}
 	
 	boolean StackHasSpace(ItemStack stack, ItemStack pickup) {
+		Log.Debug(Main.plugin, "StackHasSpace?");
 		//int diff = (stack.getAmount() + pickup.getAmount()) - 64;
 		//diff = -diff;
 		int comb = stack.getAmount() + pickup.getAmount();
 		Log.Debug(Main.plugin, "comb: " + comb);
 		if((stack.getAmount() + pickup.getAmount()) <= stack.getMaxStackSize()) {
+			Log.Debug(Main.plugin, "StackHasSpace true");
 			return true;
-		}else return false;
+		}else {
+			Log.Debug(Main.plugin, "StackHasSpace false");
+			return false;
+		}
 	}
 	
 	boolean Contains(List<ItemStack> content, ItemStack item) {
