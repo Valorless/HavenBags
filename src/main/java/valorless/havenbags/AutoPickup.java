@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.md_5.bungee.api.ChatMessageType;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.ValorlessUtils.Tags;
 import valorless.valorlessutils.config.Config;
@@ -157,7 +158,7 @@ public class AutoPickup implements Listener {
 					break;
 				}
 			}
-			Log.Debug(Main.plugin, "c " + c);
+			Log.Debug(Main.plugin, "Filter " + c);
 			if(!c) {
 				Log.Debug(Main.plugin, "No filters, skipping.");
 				continue;
@@ -167,6 +168,17 @@ public class AutoPickup implements Listener {
 				Log.Debug(Main.plugin, "Item " + item.getType().toString() + " is not in the filter. Skipping.");
 				continue;
 			}
+			
+
+	    	List<Placeholder> placeholders = new ArrayList<Placeholder>();
+	        if(NBT.Has(bag.item, "bag-weight") && NBT.Has(bag.item, "bag-weight-limit") && Main.weight.GetBool("enabled")) {
+	        	placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(HavenBags.GetWeight(bag.item), NBT.GetDouble(bag.item, "bag-weight-limit"), Main.weight.GetInt("bar-length"))));
+	        	placeholders.add(new Placeholder("%weight%", TextFeatures.LimitDecimal(String.valueOf(HavenBags.GetWeight(bag.item)),2)));
+	        	placeholders.add(new Placeholder("%limit%", String.valueOf(NBT.GetDouble(bag.item, "bag-weight-limit").intValue())));
+	        	placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(HavenBags.GetWeight(bag.item), NBT.GetDouble(bag.item, "bag-weight-limit"))), 2) + "%"));
+	        	placeholders.add(new Placeholder("%bag-weight%", Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)));
+	        }
+			
 			
 			int maxContent = NBT.GetInt(bag.item, "bag-size");
 			Log.Debug(Main.plugin, "cont:" + bag.content.size());
@@ -208,6 +220,12 @@ public class AutoPickup implements Listener {
 								Log.Debug(Main.plugin, bag.content.toString());
 								if(Main.weight.GetBool("enabled")) {
 						        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+									if(Main.weight.GetBool("weight-text-pickup")) {
+										Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
+												Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
+											);
+										weightMessage.Send(player);
+									}
 						        }
 								HavenBags.UpdateBagItem(bag.item, bag.content, player);
 								HavenBags.WriteBagToServer(bag.item, bag.content, player);
@@ -226,6 +244,12 @@ public class AutoPickup implements Listener {
 								Log.Debug(Main.plugin, bag.content.toString());
 								if(Main.weight.GetBool("enabled")) {
 						        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+									if(Main.weight.GetBool("weight-text-pickup")) {
+										Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
+												Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
+											);
+										weightMessage.Send(player);
+									}
 						        }
 								HavenBags.UpdateBagItem(bag.item, bag.content, player);
 								HavenBags.WriteBagToServer(bag.item, bag.content, player);
@@ -252,6 +276,14 @@ public class AutoPickup implements Listener {
 				HavenBags.UpdateBagItem(bag.item, bag.content, player);
 				HavenBags.WriteBagToServer(bag.item, bag.content, player);
 				PickupSound(player);
+				if(Main.weight.GetBool("enabled")) {
+					if(Main.weight.GetBool("weight-text-pickup")) {
+						Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
+								Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
+								);
+						weightMessage.Send(player);
+					}
+				}
 				return true;
 			}
 		}

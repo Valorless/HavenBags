@@ -53,6 +53,9 @@ bar-end: ']'
 bar-color: '&7'
 fill-color: '&e'
 
+# Show 'weight-lore' above the player's action bar, when an item is picked up.
+weight-text-pickup: true
+
 # Message sent when the weight limit is reached, and no items can be added.
 # Placeholders:
 # %item% ------------- Item name.

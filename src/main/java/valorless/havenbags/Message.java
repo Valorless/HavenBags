@@ -3,6 +3,7 @@ package valorless.havenbags;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -10,22 +11,39 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class Message {
 	
 	public TextComponent message;
+	public ChatMessageType type = null;
 	
 	public Message(String message) {
 		this.message = new TextComponent(Lang.Parse(message, null));
 	}
 	
-	public Message(String message, ChatColor color) {
+	public Message(String message, String color) {
 		this.message = new TextComponent(Lang.Parse(message, null));
-		this.message.setColor(color);
+		SetColor(color);
+	}
+	
+	public Message(ChatMessageType type, String message) {
+		this.message = new TextComponent(Lang.Parse(message, null));
+		this.type = type;
+	}
+	
+	public Message(ChatMessageType type, String message, String color) {
+		this.message = new TextComponent(Lang.Parse(message, null));
+		SetColor(color);
+		this.type = type;
 	}
 	
 	public void Send(Player player) {
-		player.spigot().sendMessage(message);
+		if(type == null) {
+			player.spigot().sendMessage(message);
+		}
+		else {
+			player.spigot().sendMessage(type, message);
+		}
 	}
 	
 	public void SetColor(String color) {
-		ChatColor.getByChar(color.charAt(0));
+		message.setColor(ChatColor.getByChar(color.charAt(0)));
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -53,6 +71,7 @@ public class Message {
 				SetHoverText(new TextComponent("\n" + Lang.Parse(message, null)), hover)
 				);
 	}
+	
 
 }
 

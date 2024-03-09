@@ -190,7 +190,10 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("main-restore", "&bBag Restoration");
 		Lang.lang.AddValidationEntry("main-restore-lore", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L; { 
-				add("&7Restore bags of online players."); 
+				add("&7Restore bags of online players.");
+				add("");
+				add("&7Only the basic bag with it's content will be restored."); 
+				add("&7Things such as weight and auto-pickup filter, will not be restored."); 
 				}
 			} 
 		);
@@ -229,14 +232,8 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("main-info", "&eInformation");
 		Lang.lang.AddValidationEntry("main-info-lore", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L; { 
-				 add("&7The Admin GUI does not allow restoration of ownerless bags,");
-				 add("&7you have to do those manually with &e/bags restore&7.");
-				 add("");
-				 add("&7If a player has over 53 bags,");
-				 add("&7you also have to manually restore them.");
-				 add("");
 				 add("&7You can also restore bags of offline players,");
-				 add("&7by using &e/bags gui restore <username>&7.");
+				 add("&7by using &e/bags gui restore <player-uuid>&7.");
 				}
 			} 
 		);
@@ -247,7 +244,10 @@ public final class Main extends JavaPlugin implements Listener {
 				}
 			} 
 		);
-		
+		Lang.lang.AddValidationEntry("page", "&fPage: %page%");
+		Lang.lang.AddValidationEntry("next-page", "&aNext Page");
+		Lang.lang.AddValidationEntry("prev-page", "&cPrevious Page");
+
 		Log.Debug(plugin, "Validating lang.yml");
 		Lang.lang.Validate();
 		
@@ -268,6 +268,7 @@ public final class Main extends JavaPlugin implements Listener {
 		weight.AddValidationEntry("bar-end", "]");
 		weight.AddValidationEntry("bar-color", "&7");
 		weight.AddValidationEntry("fill-color", "&e");
+		weight.AddValidationEntry("weight-text-pickup", true);
 		weight.AddValidationEntry("bag-cant-carry", "&cCannot carry any more items.\n%item% weighs %weight%, but you can only carry %remaining%.");
 		weight.AddValidationEntry("enabled", false);
 		Log.Debug(plugin, "Validating weight.yml");

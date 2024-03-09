@@ -685,6 +685,9 @@ public class CommandListener implements CommandExecutor {
 						String creator = NBT.GetString(hand, "bag-creator");
 						Boolean canBind = NBT.GetBool(hand, "bag-canBind");
 						Integer size = NBT.GetInt(hand, "bag-size");
+						String filter = NBT.GetString(hand, "bag-filter");
+						String weight = TextFeatures.LimitDecimal(String.valueOf(HavenBags.GetWeight(hand)),2);
+						String limit = String.valueOf(NBT.GetDouble(hand, "bag-weight-limit").intValue());
 						List<String> lore = meta.getLore();
 						
 						String _lore = "";
@@ -707,6 +710,9 @@ public class CommandListener implements CommandExecutor {
 						}
 						if(canBind != null) { info = info + "\n  §fCanBind: §e" + canBind.toString(); }
 						if(size != null) { info = info + "\n  §fSize: §e" + size.toString(); }
+						if(filter != null) { info = info + "\n  §fFilter: §e" + filter; }
+						if(weight != null) { info = info + "\n  §fWeight: §e" + weight; }
+						if(limit != null) { info = info + "\n  §fWeight Limit: §e" + limit; }
 						if(lore != null) { info = info + "\n  §fLore:§r" + _lore; }
 						
 						sender.sendMessage(info);
@@ -923,7 +929,7 @@ public class CommandListener implements CommandExecutor {
 								+ "&8(Mouseover commands for information)");
 						message.AddNewLine("");
 						if(sender.hasPermission("havenbags.rename") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags rename",
+							message.AddNewLine(" &e/bags rename <name>",
 									"&eRename the bag in your hand\n"
 									+ "&eYou cannot rename any bags you aren't bound to.\n"
 									+ "&7&o(Supports Hex. Leave value empty to reset)"
@@ -965,7 +971,7 @@ public class CommandListener implements CommandExecutor {
 									"&eShows a list of bags by that player.\n"
 									+ "&7(Also in GUI)");
 
-							message.AddNewLine(" &e/bags preview <player>",
+							message.AddNewLine(" &e/bags preview <player> <bag-uuid>",
 									"&ePreview a copy of the bag stored on the server.\n"
 									+ "&7(Also in GUI)");
 						}
@@ -1002,7 +1008,7 @@ public class CommandListener implements CommandExecutor {
 								+ "&8(Mouseover commands for information)");
 						help.add("");
 						if(sender.hasPermission("havenbags.rename") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags rename");
+							help.add("&e/bags rename <name>");
 							help.add("&7&o Rename the bag in your hand");
 							help.add("&7&o You cannot rename any bags you aren't bound to");
 							help.add("&7&o (Supports Hex. Leave value empty to reset.)");

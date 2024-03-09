@@ -187,6 +187,9 @@ main-create-lore:
 main-restore: '&bBag Restoration'
 main-restore-lore: 
  - '&7Restore bags of online players.'
+ - ''
+ - '&7Only the basic bag with it''s content will be restored.'
+ - '&7Things such as weight and auto-pickup filter, will not be restored.'
  
 # Preview
 main-preview: '&dBag Preview'
@@ -206,7 +209,7 @@ confirm-cancel: '&4Cancel'
 confirm-cancel-lore: 
  - '&7Cancel deletion of this bag.'
  
-# confirm
+# Confirm
 confirm-confirm: '&aConfirm'
 confirm-confirm-lore: 
  - '&7Confirm deletion of this bag.'
@@ -214,18 +217,22 @@ confirm-confirm-lore:
  
 # Information
 main-info: '&eInformation'
-main-info-lore: 
- - '&7The Admin GUI does not allow restoration of ownerless bags,'
- - '&7you have to do those manually with &e/bags restore&7.'
- - ''
- - '&7If a player has over 53 bags,'
- - '&7you also have to manually restore them.'
- - ''
+main-info-lore:
  - '&7You can also restore bags of offline players,'
- - '&7by using &e/bags gui restore <username>&7.'
+ - '&7by using &e/bags gui restore <player-uuid>&7.'
  
 # Return
 return: '&eReturn'
 return-lore:
  - '&7Go back.'
+ 
+# Page Indicator
+# %page% - Current page number.
+page: '&fPage: %page%'
+
+# Next Page
+next-page: '&aNext Page'
+
+# Previous Page
+prev-page: '&cPrevious Page'
  
