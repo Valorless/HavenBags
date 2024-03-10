@@ -2,6 +2,7 @@ package valorless.havenbags;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -752,8 +753,25 @@ public class AdminGUI implements Listener {
 		
 		return buttons;
 	}
+    
+    public void modifyMaxStack(ItemStack item, int amount) {
+    	/*
+    	try {
+    		
+    		Field f = ItemStack.class.getDeclaredField("maxStackSize");
+    		f.setAccessible(true);
+    		f.setInt(item, amount);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return;
+    	}
+    	*/
+    }
 
 	ArrayList<ItemStack> PrepareTemplates() {
+    	for(Field f : ItemStack.class.getDeclaredFields()) {
+    		Log.Debug(plugin, f.getName() + " - " + f.getType());
+    	}
 		ArrayList<ItemStack> templates = new ArrayList<ItemStack>();
 		
 		//Bound
@@ -761,6 +779,9 @@ public class AdminGUI implements Listener {
 			List<Placeholder> placeholders = new ArrayList<Placeholder>();
 			String bagTexture = Main.config.GetString("bag-texture");
 			ItemStack bagItem = new ItemStack(Material.AIR);
+			
+			modifyMaxStack(bagItem, 1);
+			
 			int size = i*9;
 			
 			if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){

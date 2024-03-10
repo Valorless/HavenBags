@@ -121,7 +121,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("feature-disabled", "&cSorry, this feature is disabled.");
 		Lang.lang.AddValidationEntry("bag-load-error", "&cBag failed to load.\nPlease notify staff.");
 		Lang.lang.AddValidationEntry("bag-rename", "&fRenamed bag to %name%.");
-		Lang.lang.AddValidationEntry("bag-rename-reset", "&fReset bag''s name.");
+		Lang.lang.AddValidationEntry("bag-rename-reset", "&fReset bag's name.");
 		Lang.lang.AddValidationEntry("bag-cannot-rename", "&cYou can only rename bags.");
 		Lang.lang.AddValidationEntry("bag-cannot-use", "&cYou cannot use this bag.");
 		Lang.lang.AddValidationEntry("bag-does-not-exist", "&cThis bag does not exist.");
@@ -134,16 +134,16 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("player-no-exist", "&cNo bags found for this player.");
 		Lang.lang.AddValidationEntry("bag-not-found", "&cNo bag found with that UUID.");
 		Lang.lang.AddValidationEntry("bag-ownerless-no-size", "&cOwnerless bag must have a size.");
-		Lang.lang.AddValidationEntry("bag-given", "&aYou''ve been given an %name%!");
-		Lang.lang.AddValidationEntry("number-conversion-error", "&cCannot convert ''%value%'' to a number!");
-		Lang.lang.AddValidationEntry("player-no-bags", "&cPlayer ''%player%'' has no bags.");
+		Lang.lang.AddValidationEntry("bag-given", "&aYou've been given an %name%!");
+		Lang.lang.AddValidationEntry("number-conversion-error", "&cCannot convert '%value%' to a number!");
+		Lang.lang.AddValidationEntry("player-no-bags", "&cPlayer '%player%' has no bags.");
 		Lang.lang.AddValidationEntry("bags-of", "Bags of %player%:");
 		
 		// Bag GUI
 		Lang.lang.AddValidationEntry("bag-inventory-title", "");
 		
 		// BagItem Lang
-		Lang.lang.AddValidationEntry("bag-bound-name", "&a%player%''s Bag");
+		Lang.lang.AddValidationEntry("bag-bound-name", "&a%player%'s Bag");
 		Lang.lang.AddValidationEntry("bag-unbound-name", "&aUnbound Bag");
 		Lang.lang.AddValidationEntry("bag-ownerless-unused", "&aUnused Bag");
 		Lang.lang.AddValidationEntry("bag-ownerless-used", "&aBag");

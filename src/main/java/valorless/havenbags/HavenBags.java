@@ -240,7 +240,7 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
         for (String l : Lang.lang.GetStringList("bag-lore")) {
         	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
         }
-        if(NBT.GetBool(bag, "bag-canBind")) {
+        if(NBT.GetBool(bag, "bag-canBind") == true) {
             placeholders.add(new Placeholder("%owner%", Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()));
             placeholders.add(new Placeholder("%bound-to%", Lang.Parse(Lang.Get("bound-to"), placeholders, player)));
             //if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()), player));
@@ -268,7 +268,7 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
         }
         
         for(String line : Lang.lang.GetStringList("bag-lore-add")) {
-        	if(line.contains("%bound-to%") && !NBT.GetBool(bag, "bag-canbind")) continue;
+        	if(line.contains("%bound-to%") && !NBT.GetBool(bag, "bag-canBind")) continue;
         	if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
         	if(line.contains("%bag-weight%") && !Main.weight.GetBool("enabled")) continue;
         	lore.add(Lang.Parse(line, placeholders, player));

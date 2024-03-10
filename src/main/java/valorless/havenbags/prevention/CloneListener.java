@@ -8,6 +8,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,13 +24,29 @@ public class CloneListener implements Listener{
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event){
+		//Log.Debug(Main.plugin, event.getEventName());
+		//Log.Debug(Main.plugin, event.getView().getPlayer().getName());
+		//Log.Debug(Main.plugin, event.getPlayer().getName());
+		//Log.Debug(Main.plugin, event.getInventory().getType().name());
+		//for(ItemStack item : event.getPlayer().getInventory().getContents()) {
+		//	if(item == null) continue;
+		//	Log.Debug(Main.plugin, item.getType().name());
+		//}
 		Proccess(event.getPlayer());
     }
+	
+	@EventHandler
+	public void onInventoryClick(InventoryClickEvent event) {
+		//Log.Debug(Main.plugin, event.getEventName());
+		//Log.Debug(Main.plugin, event.getWhoClicked().getName());
+		//Log.Debug(Main.plugin, event.getInventory().getType().name());
+		Proccess(event.getWhoClicked());
+	}
 	
 	public void Proccess(HumanEntity entity) {
 		Player player = (Player)entity;
 		for(ItemStack item : player.getInventory().getContents()) {
-			if(item == null) { return; }
+			if(item == null) continue;
 			if(item.getItemMeta() == null) { return; }
 			
 			if(NBT.Has(item, "bag-uuid")) {
@@ -38,6 +55,7 @@ public class CloneListener implements Listener{
 					
 					ItemStack clone = item.clone();
 					clone.setAmount(1);
+					
 					ItemMeta meta = clone.getItemMeta();
 					
 					List<Placeholder> placeholders = new ArrayList<Placeholder>();
@@ -48,25 +66,26 @@ public class CloneListener implements Listener{
 						meta.setDisplayName(Lang.Get("bag-unbound-name"));
 						List<String> lore = new ArrayList<String>();
 						for (String l : Lang.lang.GetStringList("bag-lore")) {
-							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
-						}
-						for (String l : Lang.lang.GetStringList("bag-size")) {
-							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, placeholders, player));
-						}
+				        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
+				        }
+				        if(NBT.Has(clone, "bag-size")) {
+				        	lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
+				        }
 						meta.setLore(lore);
 						clone.setItemMeta(meta);
 					}else {
 						meta.setDisplayName(Lang.Get("bag-ownerless-unused"));
 						List<String> lore = new ArrayList<String>();
 						for (String l : Lang.lang.GetStringList("bag-lore")) {
-							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
-						}
-						for (String l : Lang.lang.GetStringList("bag-size")) {
-							if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, placeholders, player));
-						}
+				        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
+				        }
+				        if(NBT.Has(clone, "bag-size")) {
+				        	lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
+				        }
 						meta.setLore(lore);
 						clone.setItemMeta(meta);
 					}
+					
 					
 					Log.Debug(Main.plugin, "Giving cloned bag a new id");
 					NBT.SetString(clone, "bag-uuid", UUID.randomUUID().toString());
