@@ -193,6 +193,7 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 		List<ItemStack> cont = new ArrayList<ItemStack>();
         int a = 0;
         List<String> items = new ArrayList<String>();
+        if(inventory != null) {
         for(int i = 0; i < inventory.size(); i++) {
     		cont.add(inventory.get(i));
     		if(inventory.get(i) != null && inventory.get(i).getType() != Material.AIR) {
@@ -236,17 +237,22 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
     			a++;
     		}
     	}
+        }
         List<String> lore = new ArrayList<String>();
         for (String l : Lang.lang.GetStringList("bag-lore")) {
         	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
         }
-        if(NBT.GetBool(bag, "bag-canBind") == true) {
+        if(NBT.GetBool(bag, "bag-canBind") == true && owner.equalsIgnoreCase("null") == false) {
             placeholders.add(new Placeholder("%owner%", Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()));
             placeholders.add(new Placeholder("%bound-to%", Lang.Parse(Lang.Get("bound-to"), placeholders, player)));
             //if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()), player));
         }
         if(NBT.Has(bag, "bag-size")) {
-        	placeholders.add(new Placeholder("%size%", inventory.size()));
+        	if(inventory == null) {
+        		placeholders.add(new Placeholder("%size%", NBT.GetInt(bag, "bag-size")));
+        	}else {
+        		placeholders.add(new Placeholder("%size%", inventory.size()));
+        	}
         	placeholders.add(new Placeholder("%bag-size%", Lang.Parse(Lang.Get("bag-size"), placeholders, player)));
         	//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
         }
@@ -268,9 +274,15 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
         }
         
         for(String line : Lang.lang.GetStringList("bag-lore-add")) {
-        	if(line.contains("%bound-to%") && !NBT.GetBool(bag, "bag-canBind")) continue;
-        	if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
-        	if(line.contains("%bag-weight%") && !Main.weight.GetBool("enabled")) continue;
+        	if(owner.equalsIgnoreCase("null") == false) {
+        		if(line.contains("%bound-to%") && !NBT.GetBool(bag, "bag-canBind")) continue;
+        		if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
+        		if(line.contains("%bag-weight%") && !Main.weight.GetBool("enabled")) continue;
+        	}else {
+        		if(line.contains("%bound-to%")) continue;
+        		if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
+        		if(line.contains("%bag-weight%")) continue;
+        	}
         	lore.add(Lang.Parse(line, placeholders, player));
         }
         
@@ -362,15 +374,19 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 		if(NBT.Has(bag, "bag-weight")) {
 			return NBT.GetDouble(bag, "bag-weight");
 		}else {
-			Double weight = 0.0;
-			String uuid = NBT.GetString(bag, "bag-uuid");
-    		String owner = NBT.GetString(bag, "bag-owner");
-			List<ItemStack> content = LoadBagContentFromServer(uuid, owner, null);
-			for(ItemStack item : content) {
-				weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
+			try {
+				Double weight = 0.0;
+				String uuid = NBT.GetString(bag, "bag-uuid");
+    			String owner = NBT.GetString(bag, "bag-owner");
+				List<ItemStack> content = LoadBagContentFromServer(uuid, owner, null);
+				for(ItemStack item : content) {
+					weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
+				}
+				NBT.SetDouble(bag, "bag-weight", weight);
+				return weight;
+			} catch(Exception e) {
+				return (double) 0;
 			}
-			NBT.SetDouble(bag, "bag-weight", weight);
-			return weight;
 		}
 	}
 	

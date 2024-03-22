@@ -786,16 +786,30 @@ public class CommandListener implements CommandExecutor {
 						player.sendMessage(Lang.Get("prefix") + Lang.Get("feature-disabled"));
 						return false;
 					}
-					ItemStack item = player.getInventory().getItemInMainHand();
-					if(HavenBags.IsBag(item)) {
-						if(HavenBags.IsOwner(item, player)) {
-							NBT.SetString(item, "bag-filter", args[1]);
-							HavenBags.UpdateBagLore(item, player);
-						}else {
-							player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+					if(args.length >= 2) {
+						ItemStack item = player.getInventory().getItemInMainHand();
+						if(HavenBags.IsBag(item)) {
+							if(HavenBags.IsOwner(item, player)) {
+								boolean c = false;
+								for(String filter : AutoPickup.GetFilterNames()) {
+									if(filter.equalsIgnoreCase(args[1])) {
+										NBT.SetString(item, "bag-filter", args[1]);
+										HavenBags.UpdateBagLore(item, player);
+										c = true;
+										return true;
+									}
+								}
+								if(c == false) {
+									player.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
+								}
+								
+							}else {
+								player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+							}
 						}
+						return true;
 					}
-					return true;
+					return false;
 				}
 				
 				if(args[0].equalsIgnoreCase("weight") && sender.hasPermission("havenbags.weight")) {
