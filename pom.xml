@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
-  <version>1.10.4</version>
+  <version>1.10.5</version>
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -35,7 +35,7 @@
         </executions>
         <configuration>
 			<buildNumberPropertiesFileLocation>src/main/resources/buildNumber.properties</buildNumberPropertiesFileLocation>
-          <format>{0,number}</format>
+          <format>{0,number,integer}</format>
           <items>
             <item>buildNumber</item>
           </items>                    
@@ -65,6 +65,25 @@
                 </replacement>
             </replacements>
         </configuration>
+    </plugin>
+    <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+           <execution>
+            <id>regex-property</id>
+            <goals>
+              <goal>regex-property</goal>
+            </goals>
+            <configuration>
+              <name>buildNumber</name>
+              <value>${buildNumber}</value>
+              <regex>,</regex>
+              <failIfNoMatch>false</failIfNoMatch>
+            </configuration>
+          </execution>
+        </executions>
     </plugin>
     <plugin>
         <artifactId>maven-resources-plugin</artifactId>

@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BlockIterator;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.ValorlessUtils.Utils;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
@@ -73,6 +74,11 @@ public class BagListener implements Listener{
     				//player.sendMessage("has uuid: true");
     				//String owner = Tags.Get(plugin, item.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
     				String uuid = NBT.GetString(hand, "bag-uuid");
+    				if(uuid.equalsIgnoreCase("null")) {
+    					Log.Debug(Main.plugin, "bag-uuid null");
+    					NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
+    					return;
+    				}
     				String owner = NBT.GetString(hand, "bag-owner");
     				//String canbind = Tags.Get(plugin, item.getPersistentDataContainer(), "canbind", PersistentDataType.STRING).toString();
     				boolean canbind = NBT.GetBool(hand, "bag-canBind");

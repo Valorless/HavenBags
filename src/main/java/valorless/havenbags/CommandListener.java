@@ -111,7 +111,8 @@ public class CommandListener implements CommandExecutor {
 								//}
 								bagMeta.setLore(lore);
 								bagItem.setItemMeta(bagMeta);
-								NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+								//NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+								NBT.SetString(bagItem, "bag-uuid", "null");
 								NBT.SetString(bagItem, "bag-owner", "null");
 								NBT.SetInt(bagItem, "bag-size", size*9);
 								NBT.SetBool(bagItem, "bag-canBind", false);
@@ -149,7 +150,8 @@ public class CommandListener implements CommandExecutor {
 								//}
 								bagMeta.setLore(lore);
 								bagItem.setItemMeta(bagMeta);
-								NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+								//NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+								NBT.SetString(bagItem, "bag-uuid", "null");
 								NBT.SetString(bagItem, "bag-owner", "null");
 								NBT.SetInt(bagItem, "bag-size", size*9);
 								NBT.SetBool(bagItem, "bag-canBind", true);

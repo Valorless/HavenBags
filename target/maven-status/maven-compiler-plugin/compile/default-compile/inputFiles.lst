@@ -1,26 +1,26 @@
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\Lang.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\GUI.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\hooks\ChestSortHook.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\prevention\BagDamagePrevention.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\TabCompletion.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\ActiveBag.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\AutoPickup.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\CommandListener.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\prevention\InventoryListener.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\BagGUI.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\TextFeatures.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\prevention\CraftPrevention.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\prevention\PickupPrevention.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\prevention\CloneListener.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\Message.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\Main.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\hooks\PlaceholderAPIHook.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\prevention\PlacementBlocker.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\UpdateChecker.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\Crafting.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\BagListener.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\AdminGUI.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\Placeholder.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\Metrics.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\HavenBags.java
-C:\eclipse-workspace\HavenBags\src\main\java\valorless\havenbags\BagMeta.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Main.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\ActiveBag.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\InventoryListener.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagMeta.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagGUI.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\AutoPickup.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\CraftPrevention.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\TabCompletion.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\HavenBags.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Metrics.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\hooks\PlaceholderAPIHook.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\AdminGUI.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\CommandListener.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Message.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagListener.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Lang.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\CloneListener.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Placeholder.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\UpdateChecker.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\PlacementBlocker.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\TextFeatures.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\hooks\ChestSortHook.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Crafting.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\BagDamagePrevention.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\PickupPrevention.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\GUI.java

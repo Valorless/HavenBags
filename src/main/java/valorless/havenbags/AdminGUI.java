@@ -808,7 +808,8 @@ public class AdminGUI implements Listener {
 			//}
 			bagMeta.setLore(lore);
 			bagItem.setItemMeta(bagMeta);
-			NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+			//NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+			NBT.SetString(bagItem, "bag-uuid", "null");
 			NBT.SetString(bagItem, "bag-owner", "null");
 			NBT.SetInt(bagItem, "bag-size", size);
 			NBT.SetBool(bagItem, "bag-canBind", true);
