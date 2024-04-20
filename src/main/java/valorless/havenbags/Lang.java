@@ -28,7 +28,11 @@ public class Lang {
 			} else {
 				OfflinePlayer[] offp = Bukkit.getOfflinePlayers();
 				// Choose random player as placeholder to parse strings, without a defined player.
-				text = ParsePlaceholderAPI(text, offp[0]);
+				try {
+					text = ParsePlaceholderAPI(text, offp[0]);
+				}catch(Exception e) {
+					text = ParsePlaceholderAPI(text, null);
+				}
 			}
 		
 			text = hex(text);
@@ -143,7 +147,7 @@ public class Lang {
 			try {
 				t =  PlaceholderAPI.setPlaceholders(player, text);  
         	}catch (Exception e) {
-        		Log.Error(Main.plugin, "Failed to get PlaceholderAPI. Is it up to date?)");
+        		Log.Error(Main.plugin, "Failed to get PlaceholderAPI. Is it up to date?");
         		t = text;
         	}
 			return t;
