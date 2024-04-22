@@ -103,6 +103,7 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (args[0].equalsIgnoreCase("autopickup") && sender.hasPermission("havenbags.autopickup")) {
 				List<String> filters = AutoPickup.GetFilterNames();
+				filters.add("none");
 				StringUtil.copyPartialMatches(cmd, filters, completions);
 			}
 			/*

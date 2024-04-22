@@ -127,6 +127,7 @@ public class AutoPickup implements Listener {
 		}
     }
 	
+	/*
 	boolean PutItemInBag(ItemStack item, Player player){
 		Log.Debug(Main.plugin, "PutItemInBag?");
 		
@@ -286,6 +287,216 @@ public class AutoPickup implements Listener {
 				}
 				return true;
 			}
+		}
+		Log.Debug(Main.plugin, "Item was not put in bag.");
+		return false;
+	}
+	*/
+	
+	boolean PutItemInBag(ItemStack item, Player player){
+		Log.Debug(Main.plugin, "PutItemInBag?");
+		
+		if(ItemFilter(item) == null) {
+			Log.Debug(Main.plugin, "false");
+			return false;
+		}
+	
+		List<Bag> bags = new ArrayList<Bag>();
+		Log.Debug(Main.plugin, "Checking for bags.");
+		for(ItemStack i : player.getInventory().getContents()) {
+			//Log.Debug(Main.plugin, HavenBags.BagState(i).toString());
+			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
+				if(NBT.Has(i, "bag-filter")) {
+					bags.add(new Bag(i, HavenBags.LoadBagContentFromServer(i, null)));
+				}
+			}
+		}
+		Log.Debug(Main.plugin, "bags:" + bags.size());
+		Log.Debug(Main.plugin, "Checking bag filters.");
+		for(Bag bag : bags) {
+			Log.Debug(Main.plugin, "bag: " + NBT.GetString(bag.item, "bag-uuid"));
+			boolean c = false;
+			for(Filter f : filters) {
+				//Log.Debug(Main.plugin, "Filter: " + f.name);
+				//Log.Debug(Main.plugin, "Bag Filter: " + NBT.GetString(bag.item, "bag-filter"));
+				if(f.name.equalsIgnoreCase(NBT.GetString(bag.item, "bag-filter"))) {
+					c = true;
+					break;
+				}
+			}
+			Log.Debug(Main.plugin, "Filter " + c);
+			if(!c) {
+				Log.Debug(Main.plugin, "No filters, skipping.");
+				continue;
+			}
+			
+			if(!IsItemInFilter(NBT.GetString(bag.item, "bag-filter"), item)) {
+				Log.Debug(Main.plugin, "Item " + item.getType().toString() + " is not in the filter. Skipping.");
+				continue;
+			}
+			
+
+	    	List<Placeholder> placeholders = new ArrayList<Placeholder>();
+	        if(NBT.Has(bag.item, "bag-weight") && NBT.Has(bag.item, "bag-weight-limit") && Main.weight.GetBool("enabled")) {
+	        	placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(HavenBags.GetWeight(bag.item), NBT.GetDouble(bag.item, "bag-weight-limit"), Main.weight.GetInt("bar-length"))));
+	        	placeholders.add(new Placeholder("%weight%", TextFeatures.LimitDecimal(String.valueOf(HavenBags.GetWeight(bag.item)),2)));
+	        	placeholders.add(new Placeholder("%limit%", String.valueOf(NBT.GetDouble(bag.item, "bag-weight-limit").intValue())));
+	        	placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(HavenBags.GetWeight(bag.item), NBT.GetDouble(bag.item, "bag-weight-limit"))), 2) + "%"));
+	        	placeholders.add(new Placeholder("%bag-weight%", Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)));
+	        }
+			
+			
+			int maxContent = NBT.GetInt(bag.item, "bag-size");
+			Log.Debug(Main.plugin, "cont:" + bag.content.size());
+			int contSize = 0;
+//			for(int i = 0; i < bag.content.size(); i++) {
+//				if(bag.content.get(i) == null) {
+//					bag.content.remove(i);
+//					continue;
+//				}
+//				if(bag.content.get(i).getType() != Material.AIR) {
+//					contSize++;
+//				}
+//			}
+			Log.Debug(Main.plugin, "Checking bag content.");
+			for(ItemStack i : bag.content) {
+				try {
+					if(i.getType() != Material.AIR) {
+						contSize++;
+					}
+				} catch (Exception e) {
+					continue;
+				}
+			}
+			
+			
+			
+			if(HavenBags.CanCarry(item, bag.item) == false) return false;
+			
+			Log.Debug(Main.plugin, "maxContent:" + maxContent);
+			//if(contSize >= maxContent) return false;
+			Log.Debug(Main.plugin, "contSize:" + contSize);
+			if(contSize == 0) {
+				bag.content.set(0, item);
+				if(Main.weight.GetBool("enabled")) {
+		        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+					if(Main.weight.GetBool("weight-text-pickup")) {
+						Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
+								Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
+							);
+						weightMessage.Send(player);
+					}
+		        }
+				HavenBags.UpdateBagItem(bag.item, bag.content, player);
+				HavenBags.WriteBagToServer(bag.item, bag.content, player);
+				PickupSound(player);
+				return true;
+			}
+			
+			// Can't deal with empty bags.
+			if(HavenBags.AddItemToInventory(bag.content, NBT.GetInt(bag.item, "bag-size"), item, player)) {
+				if(Main.weight.GetBool("enabled")) {
+		        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+					if(Main.weight.GetBool("weight-text-pickup")) {
+						Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
+								Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
+							);
+						weightMessage.Send(player);
+					}
+		        }
+				HavenBags.UpdateBagItem(bag.item, bag.content, player);
+				HavenBags.WriteBagToServer(bag.item, bag.content, player);
+				PickupSound(player);
+				Log.Debug(Main.plugin, "Item put in bag.");
+				return true;
+			}else {
+				Log.Debug(Main.plugin, "Item was not put in bag.");
+				return false;
+			}
+			
+			/*
+			Log.Debug(Main.plugin, "contsize:" + contSize);
+			Log.Debug(Main.plugin, "size:" + maxContent);
+			if(Contains(bag.content, item)) {
+				Log.Debug(Main.plugin, "Contains");
+				for(ItemStack i : bag.content) {
+					if(i == null) continue;
+					if(i.getAmount() == i.getMaxStackSize()) continue;
+					if(StackHasSpace(i, item)) {
+						Log.Debug(Main.plugin, "stack Has Space");
+						if(item.getType().equals(i.getType())){
+							if(i.getAmount() != i.getMaxStackSize()) {
+								i.setAmount(i.getAmount() + item.getAmount());
+								Log.Debug(Main.plugin, bag.content.toString());
+								if(Main.weight.GetBool("enabled")) {
+						        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+									if(Main.weight.GetBool("weight-text-pickup")) {
+										Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
+												Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
+											);
+										weightMessage.Send(player);
+									}
+						        }
+								HavenBags.UpdateBagItem(bag.item, bag.content, player);
+								HavenBags.WriteBagToServer(bag.item, bag.content, player);
+								PickupSound(player);
+								return true; // Only do it to the first stack found.
+							}
+							else {
+								continue;
+							}
+						}
+					}else {
+						Log.Debug(Main.plugin, "stack overflow, adding new.");
+						for(int is = 0; is < bag.content.size(); is++) {
+							if(bag.content.get(is) == null) {
+								bag.content.set(is, item);
+								Log.Debug(Main.plugin, bag.content.toString());
+								if(Main.weight.GetBool("enabled")) {
+						        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+									if(Main.weight.GetBool("weight-text-pickup")) {
+										Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
+												Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
+											);
+										weightMessage.Send(player);
+									}
+						        }
+								HavenBags.UpdateBagItem(bag.item, bag.content, player);
+								HavenBags.WriteBagToServer(bag.item, bag.content, player);
+								PickupSound(player);
+								return true; // Only do it to the first stack found.
+								//break;
+							}
+						}
+						
+					}
+				}
+			}
+			if(contSize < maxContent) {
+				Log.Debug(Main.plugin, "Has Space");
+				for(int i = 0; i < bag.content.size(); i++) {
+					if(bag.content.get(i) == null) {
+						bag.content.set(i, item);
+						break;
+					}
+				}
+				
+				//bag.content.add(item);
+				Log.Debug(Main.plugin, bag.content.toString());
+				HavenBags.UpdateBagItem(bag.item, bag.content, player);
+				HavenBags.WriteBagToServer(bag.item, bag.content, player);
+				PickupSound(player);
+				if(Main.weight.GetBool("enabled")) {
+					if(Main.weight.GetBool("weight-text-pickup")) {
+						Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
+								Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
+								);
+						weightMessage.Send(player);
+					}
+				}
+				return true;
+			}
+		*/
 		}
 		Log.Debug(Main.plugin, "Item was not put in bag.");
 		return false;

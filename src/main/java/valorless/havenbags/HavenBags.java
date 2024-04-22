@@ -14,6 +14,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -504,5 +505,86 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 			}
 		}
 		return content;
+	}
+	
+	public static boolean AddItemToInventory(List<ItemStack> items, int inventorySlots, ItemStack itemToAdd, Player player) {
+		Log.Debug(Main.plugin, "Put item in bag?");	
+		
+		items = RemoveAir(items);
+		
+	    // Check if there is still space in the list for new items
+	    if (items.size() >= inventorySlots && allSlotsFull(items, itemToAdd)) {
+			Log.Debug(Main.plugin, "bag full!");	
+	        return false; // The bag is full and item is dropped
+	    }
+
+	    boolean added = false;
+		Log.Debug(Main.plugin, "checking bag.");	
+	    for (ItemStack stack : items) {
+	    	if(stack == null) continue;
+	        if (stack.isSimilar(itemToAdd)) {
+	            int maxStackSize = stack.getMaxStackSize();
+	            int totalAmount = stack.getAmount() + itemToAdd.getAmount();
+
+	            if (totalAmount <= maxStackSize) {
+	        		Log.Debug(Main.plugin, "stack has space.");	
+	                stack.setAmount(totalAmount); // Perfect fit or less
+	                return true;
+	            } else {
+	        		Log.Debug(Main.plugin, "stack overflow, adjusting.");	
+	                stack.setAmount(maxStackSize); // Max out the stack
+	                itemToAdd.setAmount(totalAmount - maxStackSize); // Adjust remaining
+	                added = true; // Partially added
+	            }
+	        }
+	    }
+
+	    // Try to add remaining part of itemToAdd in a new slot if not all added
+	    if (!added || itemToAdd.getAmount() > 0) {
+	        if (items.size() < inventorySlots) {
+	            items.add(itemToAdd.clone());
+	            itemToAdd.setAmount(0);
+        		Log.Debug(Main.plugin, "success.");	
+	            return true; // New stack added successfully
+	        } else {
+        		Log.Debug(Main.plugin, "no space.");	
+	            DropItem(player.getLocation(), itemToAdd); // No space left, drop the remaining items
+	            return false;
+	        }
+	    }
+		Log.Debug(Main.plugin, "failed.");	
+
+	    return true; // This line is theoretically unreachable
+	}
+	
+	private static boolean allSlotsFull(List<ItemStack> items, ItemStack add) {
+	    for (ItemStack item : items) {
+	    	if(item.getAmount() == item.getMaxStackSize()) continue;
+	    	if(item.isSimilar(add)) {
+	    		if(item.getMaxStackSize() >= item.getAmount() + add.getAmount()) {
+	    			return false;
+	    		}else {
+	    			return true;
+	    		}
+	    	}
+	    }
+	    return true; // All stacks are full
+	}
+	
+	private static List<ItemStack> RemoveAir(List<ItemStack> items){
+		Log.Debug(Main.plugin, "removing air, if any.");	
+		for(int i = 0; i < items.size(); i++) {
+			if(items.get(i) == null) {
+				items.remove(i);
+				continue;
+			}else {
+				if(items.get(i).getType() == Material.AIR) items.remove(i);
+			}
+		}
+		return items;
+	}
+
+	private static void DropItem(Location location, ItemStack itemStack) {
+	    location.getWorld().dropItemNaturally(location, itemStack);
 	}
 }

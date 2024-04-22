@@ -792,6 +792,11 @@ public class CommandListener implements CommandExecutor {
 						ItemStack item = player.getInventory().getItemInMainHand();
 						if(HavenBags.IsBag(item)) {
 							if(HavenBags.IsOwner(item, player)) {
+								if(args[1].equalsIgnoreCase("none")) {
+									NBT.SetString(item, "bag-filter", null);
+									HavenBags.UpdateBagLore(item, player);
+									return true;
+								}
 								boolean c = false;
 								for(String filter : AutoPickup.GetFilterNames()) {
 									if(filter.equalsIgnoreCase(args[1])) {
@@ -810,6 +815,17 @@ public class CommandListener implements CommandExecutor {
 							}
 						}
 						return true;
+					} else {
+						ItemStack item = player.getInventory().getItemInMainHand();
+						if(HavenBags.IsBag(item)) {
+							if(HavenBags.IsOwner(item, player)) {
+								NBT.SetString(item, "bag-filter", null);
+								HavenBags.UpdateBagLore(item, player);
+								return true;
+							}else {
+								player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+							}
+						}
 					}
 					return false;
 				}
