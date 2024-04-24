@@ -49,6 +49,8 @@ bag-custom-model-data: 0
 bag-texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0='
 
 # Sound played when opening a bag.
+# Sounds: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+# 1.17 Sounds: https://helpch.at/docs/1.17/org/bukkit/Sound.html
 open-sound: 'ITEM_BUNDLE_INSERT'
 open-volume: 1
 open-pitch: 1
@@ -81,6 +83,13 @@ auto-pickup-sound: 'ENTITY_ITEM_PICKUP'
 auto-pickup-volume: 0.8
 auto-pickup-pitch-min: 1.05
 auto-pickup-pitch-max: 1.25
+
+# Should Auto-Pickup put items from the inventory into the bag as well?
+auto-pickup-inventory:
+ enabled: false
+ events:
+  onBlockBreak: true # For effect like "Teleport Drops" from AdvancedEnchants or EliteEnchants.
+  onItemPickup: true # To add existing items in the inventory to the bag.
 
 # Which containers are the player allowed to interact with bags?
 # Use this to prevent the player using bags in unintended ways, such as crafting.

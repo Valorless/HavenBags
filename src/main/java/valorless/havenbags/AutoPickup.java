@@ -10,12 +10,15 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.md_5.bungee.api.ChatMessageType;
+import valorless.havenbags.Main.ServerVersion;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.ValorlessUtils.Tags;
 import valorless.valorlessutils.config.Config;
@@ -81,6 +84,19 @@ public class AutoPickup implements Listener {
 	}
 	
 	@EventHandler
+	public void onBlockBreak(BlockBreakEvent event) {
+		if(Main.config.GetBool("auto-pickup-inventory.enabled")) {
+			if(Main.config.GetBool("auto-pickup-inventory.events.onBlockBreak")) {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+				    public void run() {
+				    	FromInventory(event.getPlayer());
+				    }
+				}, 5L);
+			}
+		}
+	}
+	
+	@EventHandler
     public void onEntityPickupItem(EntityPickupItemEvent event) {
 		if(!enabled) return;
 		if(event.getEntityType() != EntityType.PLAYER) return;
@@ -122,8 +138,16 @@ public class AutoPickup implements Listener {
 			}
 			player.spawnParticle(Particle.SMOKE_NORMAL, event.getItem().getLocation(), 5, 0, 0.1, 0, 0.02);
 			event.getItem().remove();
-		}else {
-			return;
+		}
+
+		if(Main.config.GetBool("auto-pickup-inventory.enabled")) {
+			if(Main.config.GetBool("auto-pickup-inventory.events.onItemPickup")) {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+				    public void run() {
+				    	FromInventory(player);
+				    }
+				}, 5L);
+			}
 		}
     }
 	
@@ -550,7 +574,11 @@ public class AutoPickup implements Listener {
 	}
 	
 	void PickupSound(Player player) {
-		Double pitch = Utils.RandomRange(Main.config.GetFloat("auto-pickup-pitch-min"), Main.config.GetFloat("auto-pickup-pitch-max"));
+		Double pitch = 1.0;
+		if(Main.server != ServerVersion.v1_17 && Main.server != ServerVersion.v1_17_1) {
+			pitch = Utils.RandomRange(Main.config.GetFloat("auto-pickup-pitch-min"), Main.config.GetFloat("auto-pickup-pitch-max"));
+		}
+		
 		//SFX.Play("ENTITY_ITEM_PICKUP", 0.8f, pitch.floatValue(), player);
 		SFX.Play(Main.config.GetString("auto-pickup-sound"), 
 				Main.config.GetFloat("auto-pickup-volume").floatValue(), 
@@ -565,5 +593,18 @@ public class AutoPickup implements Listener {
 			}
 		}
 		return null;
+	}
+	
+	void FromInventory(Player player) {
+		Log.Debug(Main.plugin, "Checking for items in inventory, to put into bag.");
+		PlayerInventory inv = player.getInventory();
+		for(int i = 0; i < inv.getContents().length; i++) {
+			ItemStack item = inv.getItem(i);
+			if(item == null) continue;
+			if(item.getType() == Material.AIR) continue;
+			if(PutItemInBag(item, player)) {
+				inv.setItem(i, new ItemStack(Material.AIR));
+			}
+		}
 	}
 }

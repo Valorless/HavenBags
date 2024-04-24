@@ -33,13 +33,6 @@ public class CraftPrevention implements Listener {
 	}
 	
 	@EventHandler
-	public void onFurnaceStartSmelt (FurnaceStartSmeltEvent e) {
-		if(HavenBags.IsBag(e.getSource())){
-			//e.
-		}
-	}
-	
-	@EventHandler
 	public void onFurnaceBurn (FurnaceBurnEvent e) {
 		if(HavenBags.IsBag(e.getFuel())){
 			e.setCancelled(true);

@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin implements Listener {
+	public enum ServerVersion { NULL, v1_17, v1_17_1, v1_18, v1_18_1, v1_18_2, v1_19, v1_19_1, v1_19_2, v1_19_3, v1_19_4, v1_20, v1_20_1, v1_20_3, v1_20_4 }
 	public static JavaPlugin plugin;
 	public static Config config;
 	//public static Config timeTable;
@@ -28,6 +29,7 @@ public final class Main extends JavaPlugin implements Listener {
 	int newupdate = 9999999;
 	String newVersion = null;
 	public static Translator translator;
+	public static ServerVersion server;
 	
 	public String[] commands = {
     		"havenbags", "bags", "bag",
@@ -35,6 +37,9 @@ public final class Main extends JavaPlugin implements Listener {
 	
 	public void onLoad() {
 		plugin = this;
+		Log.Debug(plugin, Bukkit.getVersion());
+		Log.Debug(plugin, Bukkit.getBukkitVersion());
+		ResolveVersion();
 		config = new Config(this, "config.yml");
 		Lang.lang = new Config(this, "lang.yml");
 		//timeTable = new Config(this, "timetable.yml");
@@ -107,6 +112,9 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("auto-pickup-volume", 0.8);
 		config.AddValidationEntry("auto-pickup-pitch-min", 1.05);
 		config.AddValidationEntry("auto-pickup-pitch-max", 1.25);
+		config.AddValidationEntry("auto-pickup-inventory.enabled", false);
+		config.AddValidationEntry("auto-pickup-inventory.events.onBlockBreak", true);
+		config.AddValidationEntry("auto-pickup-inventory.events.onItemPickup", true);
 		config.AddValidationEntry("blacklist", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L;
 		{ add("world_name"); add("world_name_nether"); add("another_world"); }} );
@@ -449,4 +457,15 @@ public final class Main extends JavaPlugin implements Listener {
 			timeTable.SaveConfig();
     	}
     }*/
+    
+    void ResolveVersion() {
+    	try {
+    		String v = Bukkit.getBukkitVersion().split("-")[0];
+    		server = ServerVersion.valueOf("v" + v.replace(".", "_"));
+    		//Log.Debug(plugin, server.toString());
+    	} catch (Exception e) {
+    		server = ServerVersion.NULL;
+    		Log.Error(plugin, "Failed to resolve server version, some functions might not work correctly.");
+    	}
+    }
 }

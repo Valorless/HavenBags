@@ -2,7 +2,7 @@ name: HavenBags
 main: valorless.havenbags.Main
 version: version-number
 author: Valorless
-api-version: 1.18
+api-version: 1.17
 website: https://www.spigotmc.org/resources/110420/
 description: Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
 depend: [ValorlessUtils]
