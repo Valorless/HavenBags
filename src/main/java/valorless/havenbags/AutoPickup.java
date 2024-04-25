@@ -602,6 +602,16 @@ public class AutoPickup implements Listener {
 			ItemStack item = inv.getItem(i);
 			if(item == null) continue;
 			if(item.getType() == Material.AIR) continue;
+			
+			// Ignore equipped items
+			if(i == 36|| //Boots
+				i == 37 || //Leggings
+				i == 38 || //Chestplate
+				i == 39 || //Helmet
+				i == 40) { //Off-hand
+				continue;
+			}
+			
 			if(PutItemInBag(item, player)) {
 				inv.setItem(i, new ItemStack(Material.AIR));
 			}
