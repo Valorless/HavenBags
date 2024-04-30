@@ -96,7 +96,7 @@ public class HavenBags {
     	}
 	}
 	
-	public static void WriteBagToServer(ItemStack bag, List<ItemStack> inventory, Player player) {
+	/*public static void WriteBagToServer(ItemStack bag, List<ItemStack> inventory, Player player) {
 		String uuid = NBT.GetString(bag, "bag-uuid");
     	String owner = NBT.GetString(bag, "bag-owner");
     	Log.Debug(Main.plugin, "Attempting to write bag " + owner + "/" + uuid + " onto server");
@@ -157,16 +157,17 @@ public class HavenBags {
 			e.printStackTrace();
 			return null;
 		}
-	}
+	}*/
 	
 	public static List<ItemStack> LoadBagContentFromServer(ItemStack bag, @Nullable Player player){
     	String uuid = NBT.GetString(bag, "bag-uuid");
     	String owner = NBT.GetString(bag, "bag-owner");
-		return LoadBagContentFromServer(uuid, owner, player);
+		//return LoadBagContentFromServer(uuid, owner, player);
+		return BagData.GetBag(uuid, bag).getContent();
 	}
 	
-	public static boolean DoesBagExist(String uuid, String owner, @Nullable Player player) {
-String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
+	/*public static boolean DoesBagExist(String uuid, String owner, @Nullable Player player) {
+		String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
 		
 		File bagData;
 		try {
@@ -182,7 +183,7 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
         	return false;
         }
         return true;
-	}
+	}*/
 	
 	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, Player player) {
     	String owner = NBT.GetString(bag, "bag-owner");
@@ -321,7 +322,8 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 		String uuid = NBT.GetString(bag, "bag-uuid");
     	String owner = NBT.GetString(bag, "bag-owner");
 		Log.Debug(Main.plugin, "Attempting to initialize bag items");
-		List<ItemStack> content = LoadBagContentFromServer(uuid, owner, player);
+		//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, player);
+		List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
 		SFX.Play(Main.config.GetString("close-sound"), 
 				Main.config.GetFloat("close-volume").floatValue(), 
 				Main.config.GetFloat("close-pitch").floatValue(), player);
@@ -333,7 +335,8 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 				continue;
 			}
 		}
-		WriteBagToServer(bag, content, player);
+		//WriteBagToServer(bag, content, player);
+		BagData.UpdateBag(uuid, content);
 		UpdateBagItem(bag, content, player);
 	}
 	
@@ -379,7 +382,8 @@ String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), o
 				Double weight = 0.0;
 				String uuid = NBT.GetString(bag, "bag-uuid");
     			String owner = NBT.GetString(bag, "bag-owner");
-				List<ItemStack> content = LoadBagContentFromServer(uuid, owner, null);
+				//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, null);
+				List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
 				for(ItemStack item : content) {
 					weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
 				}

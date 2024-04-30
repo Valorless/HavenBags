@@ -30,7 +30,7 @@ public class BagGUI implements Listener {
 	public ItemStack bagItem;
 	public ItemMeta bagMeta;
 	public List<ItemStack> content;
-	public static Config config;
+	//public static Config config;
 	public Player player;
 	public String bagOwner;
 	String bag = "";
@@ -68,7 +68,7 @@ public class BagGUI implements Listener {
     		}
     	}
     	
-    	if(HavenBags.DoesBagExist(NBT.GetString(bagItem, "bag-uuid"), NBT.GetString(bagItem, "bag-owner"), player) == false) return;
+    	//if(BagData.Contains(NBT.GetString(bagItem, "bag-uuid"))) return;
 
     	if(!this.preview) CheckInstances(); // Check for multiple of the same bags
     	
@@ -88,7 +88,14 @@ public class BagGUI implements Listener {
         //this.content = JsonUtils.fromJson(Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "content", PersistentDataType.STRING).toString());
 		//player.sendMessage(content.toString());
 
-        this.content = LoadContent();
+        try {
+        	this.content = LoadContent();
+        }catch(Exception e) {
+        	inv = null;
+        	bagItem.setAmount(0);
+        	player.sendMessage(Lang.Parse(Lang.Get("bag-does-not-exist"), player));
+        	return;
+        }
         
         InitializeItems();
         //LoadContent();
@@ -161,7 +168,8 @@ public class BagGUI implements Listener {
 			owner = bagOwner;
     	}
 				
-		return HavenBags.LoadBagContentFromServer(uuid, owner, player);
+		//return HavenBags.LoadBagContentFromServer(uuid, owner, player);
+		return BagData.GetBag(uuid, this.bagItem).getContent();
 	}
 
     public void OpenInventory(final HumanEntity ent) {
@@ -290,7 +298,8 @@ public class BagGUI implements Listener {
         
         HavenBags.UpdateBagItem(bagItem, cont, player);
 		GivePlayerBagBack();
-		HavenBags.WriteBagToServer(bagItem, cont, player);
+		//HavenBags.WriteBagToServer(bagItem, cont, player);
+		BagData.UpdateBag(bagItem, cont);
 		try {
 			for (int i = 0; i < Main.activeBags.size(); i++) {
     			Log.Debug(plugin, "Open Bag: " + Main.activeBags.get(i).uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
@@ -316,7 +325,9 @@ public class BagGUI implements Listener {
     }*/
     
     void GivePlayerBagBack() {
-    	HavenBags.ReturnBag(bagItem, player);
+    	if(!Main.config.GetBool("keep-bags")){ 
+    		HavenBags.ReturnBag(bagItem, player);
+    	}
     }
     
     String FixMaterialName(String string) {

@@ -13,6 +13,14 @@ debug: false
 # Should we check for plugin updates?
 check-updates: true
 
+# How often should we save bags onto the server?
+# In seconds.
+# Default: 1200 = 20min
+auto-save-interval: 1200
+
+# Should HavenBags write in the console when saving?
+auto-save-message: true
+
 # Language used when translating material and item names.
 ## Supported languages:
 # English (US) --------- en_us
@@ -69,10 +77,15 @@ inventory-full-pitch: 1
 protect-bags: true
 
 # Can bags be put inside other bags?
-bags-in-bags: true
+bags-in-bags: false
 
 # Can bags be put inside shulkers?
 bags-in-shulkers: true
+
+# Should bag remain in the player's inventory when opened?
+# Keep this 'false' if bags-in-bags is 'true'.
+# Otherwise players can put the bag inside itself, and lose it.
+keep-bags: false
 
 # Should /havenbags help, show commands without mouseover text, and the information below each command?
 old-help-menu: false

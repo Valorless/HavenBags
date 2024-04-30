@@ -53,8 +53,15 @@ public class CommandListener implements CommandExecutor {
 			try {
 				if(args[0].equalsIgnoreCase("reload") && sender.hasPermission("havenbags.reload")) {
 					try {
+						Main.CloseBags();
 						Main.config.Reload();
 						Lang.lang.Reload();
+						BagData.Reload();
+						if (args.length >= 2){
+							if(args[1].equalsIgnoreCase("force")) {
+								BagData.ForceReload();
+							}
+						}
 						Crafting.config.Reload();
 						Crafting.RemoveRecipes();
 						Crafting.PrepareRecipes();
@@ -62,10 +69,19 @@ public class CommandListener implements CommandExecutor {
 						AutoPickup.Initiate();
 						Main.weight.Reload();
 						Main.translator = new Translator(Main.config.GetString("language"));
-						if(!(sender instanceof Player)) { 
-							Log.Info(Main.plugin, "Reloaded!");
+
+						if (args.length >= 2){
+							if(!(sender instanceof Player)) { 
+								Log.Info(Main.plugin, "Reload Forced!");
+							}else {
+								sender.sendMessage(Name +" §aReload Forced.");
+							}
 						}else {
-							sender.sendMessage(Name +" §aReloaded.");
+							if(!(sender instanceof Player)) { 
+								Log.Info(Main.plugin, "Reloaded!");
+							}else {
+								sender.sendMessage(Name +" §aReloaded.");
+							}
 						}
 						Log.Warning(Main.plugin, "It is possible that not everything was reloaded, to ensure everything has reloaded, it is recommended to restart or reload the server.");
 						return true;
@@ -78,6 +94,8 @@ public class CommandListener implements CommandExecutor {
 						e.printStackTrace();
 						return false;
 					}
+
+					
 				}
 				ItemStack bagItem = new ItemStack(Material.AIR);
 				bagTexture = Main.config.GetString("bag-texture");

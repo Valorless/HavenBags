@@ -412,7 +412,8 @@ public class AutoPickup implements Listener {
 					}
 		        }
 				HavenBags.UpdateBagItem(bag.item, bag.content, player);
-				HavenBags.WriteBagToServer(bag.item, bag.content, player);
+				//HavenBags.WriteBagToServer(bag.item, bag.content, player);
+				BagData.UpdateBag(bag.item, bag.content);
 				PickupSound(player);
 				return true;
 			}
@@ -429,7 +430,8 @@ public class AutoPickup implements Listener {
 					}
 		        }
 				HavenBags.UpdateBagItem(bag.item, bag.content, player);
-				HavenBags.WriteBagToServer(bag.item, bag.content, player);
+				//HavenBags.WriteBagToServer(bag.item, bag.content, player);
+				BagData.UpdateBag(bag.item, bag.content);
 				PickupSound(player);
 				Log.Debug(Main.plugin, "Item put in bag.");
 				return true;

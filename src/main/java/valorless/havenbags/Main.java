@@ -89,6 +89,8 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("debug", false);
 		config.AddValidationEntry("config-version", 2);
 		config.AddValidationEntry("check-updates", true);
+		config.AddValidationEntry("auto-save-interval", 1200);
+		config.AddValidationEntry("auto-save-message", true);
 		config.AddValidationEntry("language", "en_us");
 		config.AddValidationEntry("bag-type", "HEAD");
 		config.AddValidationEntry("bag-material", "ENDER_CHEST");
@@ -104,8 +106,9 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("inventory-full-volume", 1);
 		config.AddValidationEntry("inventory-full-pitch", 1);
 		config.AddValidationEntry("protect-bags", true);
-		config.AddValidationEntry("bags-in-bags", true);
+		config.AddValidationEntry("bags-in-bags", false);
 		config.AddValidationEntry("bags-in-shulkers", true);
+		config.AddValidationEntry("keep-bags", false);
 		config.AddValidationEntry("old-help-menu", false);
 		config.AddValidationEntry("auto-pickup", true);
 		config.AddValidationEntry("auto-pickup-sound", "ENTITY_ITEM_PICKUP");
@@ -284,6 +287,8 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		translator = new Translator(config.GetString("language"));
 		
+		BagData.Initiate();
+		
 		AutoPickup.Initiate();
 
 		RegisterListeners();
@@ -329,6 +334,12 @@ public final class Main extends JavaPlugin implements Listener {
     
     @Override
     public void onDisable() {
+    	CloseBags();
+    	BagData.SaveData();
+    	Crafting.RemoveRecipes();
+    }
+    
+    public static void CloseBags() {
     	if(activeBags.size() != 0) {
     		Log.Info(plugin, "Closing all open bags.");
     		try {
@@ -339,8 +350,6 @@ public final class Main extends JavaPlugin implements Listener {
     		
     		}
     	}
-    	
-    	Crafting.RemoveRecipes();
     }
     
     protected void RegisterCommands() {
