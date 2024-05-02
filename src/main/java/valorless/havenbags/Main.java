@@ -330,6 +330,7 @@ public final class Main extends JavaPlugin implements Listener {
         // Config-Version checks
         BagConversion();
         //TimeTable();
+    	activeBags.clear();
     }
     
     @Override
@@ -345,11 +346,13 @@ public final class Main extends JavaPlugin implements Listener {
     		try {
     			for(ActiveBag bag : activeBags) {
     				bag.gui.Close(true);
+    				activeBags.remove(bag);
     			}
     		} catch (Exception e) {
     		
     		}
     	}
+    	activeBags.clear();
     }
     
     protected void RegisterCommands() {

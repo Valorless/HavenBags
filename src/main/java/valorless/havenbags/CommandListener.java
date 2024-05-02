@@ -228,7 +228,7 @@ public class CommandListener implements CommandExecutor {
 									//}
 									bagMeta.setLore(lore);
 									bagItem.setItemMeta(bagMeta);
-									NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+									NBT.SetString(bagItem, "bag-uuid", "null");
 									NBT.SetString(bagItem, "bag-owner", "null");
 									NBT.SetInt(bagItem, "bag-size", size*9);
 									NBT.SetBool(bagItem, "bag-canBind", false);
@@ -275,7 +275,7 @@ public class CommandListener implements CommandExecutor {
 							        
 									bagMeta.setLore(lore);
 									bagItem.setItemMeta(bagMeta);
-									NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+									NBT.SetString(bagItem, "bag-uuid", "null");
 									NBT.SetString(bagItem, "bag-owner", "null");
 									NBT.SetInt(bagItem, "bag-size", size*9);
 									NBT.SetBool(bagItem, "bag-canBind", true);
@@ -812,14 +812,14 @@ public class CommandListener implements CommandExecutor {
 							if(HavenBags.IsOwner(item, player)) {
 								if(args[1].equalsIgnoreCase("none")) {
 									NBT.SetString(item, "bag-filter", null);
-									HavenBags.UpdateBagLore(item, player);
+									HavenBags.UpdateBagItem(item, null, player);
 									return true;
 								}
 								boolean c = false;
 								for(String filter : AutoPickup.GetFilterNames()) {
 									if(filter.equalsIgnoreCase(args[1])) {
 										NBT.SetString(item, "bag-filter", args[1]);
-										HavenBags.UpdateBagLore(item, player);
+										HavenBags.UpdateBagItem(item, null, player);
 										c = true;
 										return true;
 									}

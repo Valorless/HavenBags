@@ -34,9 +34,11 @@ public class BagListener implements Listener{
     		Player player = event.getPlayer();
     		
     		// Since 1.20 players can now edit signs. Block bag interaction if a sign is clicked.
-    		if(getTargetBlock(player, 5).getType().toString().contains("SIGN")) { 
-    			return; 
-    		}
+    		try {
+    			if(getTargetBlock(player, 5).getType().toString().contains("SIGN")) { 
+    				return; 
+    			}
+    		}catch(Exception e) {}
     		
     		//player.sendMessage("Right click");
     		
@@ -105,6 +107,9 @@ public class BagListener implements Listener{
     					hand.setItemMeta(item);
     					NBT.SetString(hand, "bag-owner", "ownerless");
     					NBT.SetString(hand, "bag-creator", player.getUniqueId().toString());
+    					NBT.SetDouble(hand, "bag-weight", 0.0);
+    					HavenBags.HasWeightLimit(hand);
+    					HavenBags.UpdateBagItem(hand, null, player);
 						//NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
     					//WriteToServer(player, item, (int)Tags.Get(plugin, item.getPersistentDataContainer(), "size", PersistentDataType.INTEGER));
     					//WriteToServer(player, hand, NBT.GetInt(hand, "bag-size"));
@@ -162,6 +167,9 @@ public class BagListener implements Listener{
     					hand.setItemMeta(item);
     					NBT.SetString(hand, "bag-owner", player.getUniqueId().toString());
     					NBT.SetString(hand, "bag-creator", player.getUniqueId().toString());
+    					NBT.SetDouble(hand, "bag-weight", 0.0);
+    					HavenBags.HasWeightLimit(hand);
+    					HavenBags.UpdateBagItem(hand, null, player);
 						//NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
     					//WriteToServer(player, hand, NBT.GetInt(hand, "bag-size"));
     			    	List<ItemStack> cont = new ArrayList<ItemStack>();

@@ -315,7 +315,11 @@ public class HavenBags {
 	}
 	
 	public static void UpdateBagLore(ItemStack bag, Player player) {
-		UpdateBagItem(bag, LoadBagContentFromServer(bag, player), player);
+		try {
+			UpdateBagItem(bag, LoadBagContentFromServer(bag, player), player);
+		} catch (Exception e) {
+			UpdateBagItem(bag, null, player);
+		}
 	}
 	
 	public static void EmptyBag(ItemStack bag, Player player) {

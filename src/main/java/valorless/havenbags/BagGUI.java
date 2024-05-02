@@ -38,7 +38,6 @@ public class BagGUI implements Listener {
 	
     public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, ItemMeta bagMeta, boolean... preview) {
     	if(preview.length != 0) this.preview = preview[0];
-    	if(!this.preview) Main.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid")));
     	
     	try {
     		// Try get owner's name on the server.
@@ -101,6 +100,7 @@ public class BagGUI implements Listener {
         //LoadContent();
         
         if(!this.preview) HavenBags.BagHashes.Add(inv.hashCode());
+    	if(!this.preview) Main.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid")));
     }
     
     void CheckInstances() {
@@ -116,9 +116,11 @@ public class BagGUI implements Listener {
     		Log.Warning(plugin, "Multiple instances of the same bag is opened by: " + thisUUID.get(0).player.getName() + " & " + thisUUID.get(1).player.getName());
     		Log.Warning(plugin, "They might be trying to dupe items. Forcing their bags to close.");
     		for (BagGUI openBag : thisUUID) {
-    			openBag.player.closeInventory();
+    			//openBag.player.closeInventory();
+    			openBag.Close(true);
         	}
-    		player.closeInventory();
+    		Close(true);
+    		//player.closeInventory();
     	}
     }
     
@@ -271,6 +273,7 @@ public class BagGUI implements Listener {
     	if(forced) {
     		Log.Warning(plugin, String.format("%s forcefully closed! Attempting to save it and return it to %s!", bag, player.getName()));
     		player.closeInventory();
+    		return;
     	}
     	
     	if(!HavenBags.IsBagOpen(bagItem)) return;
