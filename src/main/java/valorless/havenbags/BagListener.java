@@ -1,8 +1,5 @@
 package valorless.havenbags;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,9 +16,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BlockIterator;
 
+import me.NoChance.PvPManager.PvPManager;
+import me.NoChance.PvPManager.PvPlayer;
+import me.NoChance.PvPManager.Managers.PlayerHandler;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.ValorlessUtils.Utils;
-import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
 
@@ -42,10 +40,35 @@ public class BagListener implements Listener{
     		
     		//player.sendMessage("Right click");
     		
-    		
     		if(!player.hasPermission("havenbags.use")) {
     			return;
     		}else {
+    			
+    			if(Main.plugins.GetBool("plugins.PvPManager.enabled")) {
+    				if(Bukkit.getPluginManager().getPlugin("PvPManager") != null) {
+    	        		try {
+    	        			Log.Debug(Main.plugin, "Checking if player is pvp.");
+    	        			PlayerHandler playerHandler = PvPManager.getInstance() .getPlayerHandler();
+    	        			PvPlayer pvplayer = playerHandler.get(player);
+    	        			boolean pvp = pvplayer.hasPvPEnabled();
+    	        			boolean tagged = pvplayer.isInCombat();
+    	        			if(pvp && Main.plugins.GetBool("plugins.PvPManager.pvp") == false) {
+        	        			Log.Debug(Main.plugin, "Pvp.");
+        	        			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Main.plugins.GetString("plugins.PvPManager.message"), player));
+    	        				return;
+    	        			}
+    	        			if(tagged && Main.plugins.GetBool("plugins.PvPManager.tagged") == false) {
+        	        			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Main.plugins.GetString("plugins.PvPManager.message"), player));
+        	        			Log.Debug(Main.plugin, "Pvp.");
+    	        				return;
+    	        			}
+    	        			Log.Debug(Main.plugin, "No pvp.");
+    	        		}catch (Exception e) {
+    	        			Log.Error(Main.plugin, "Failed to get PvPManager's API. Is it up to date?");
+    	        		}
+    	        	}
+    			}
+    			
     			ItemStack hand = player.getInventory().getItemInMainHand();
     			ItemMeta item = player.getInventory().getItemInMainHand().getItemMeta();
     			//player.sendMessage("has meta: " + hand.hasItemMeta());
@@ -191,6 +214,15 @@ public class BagListener implements Listener{
 				
     				if(!canbind) {
     					//player.sendMessage("Ownerless Bag");
+    					int size = NBT.GetInt(hand, "bag-size");
+    					for(int i = 9; i <= 54; i += 9) {
+    						Log.Debug(Main.plugin, "havenbags.open." + String.valueOf(i) + ": "+ player.hasPermission("havenbags.open." + String.valueOf(i)));
+    						if(size != i) continue;
+    						if(!player.hasPermission("havenbags.open." + String.valueOf(i))) {
+    	    					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-cannot-use"), null));
+    							return;
+    						}
+    					}
     	    			Log.Debug(Main.plugin, "Attempting to open ownerless bag");
     					BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
     					Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
@@ -206,6 +238,15 @@ public class BagListener implements Listener{
     				if(canbind) {
     					//player.sendMessage("Bound Bag");
     					if(owner.equalsIgnoreCase(player.getUniqueId().toString())) {
+    						int size = NBT.GetInt(hand, "bag-size");
+        					for(int i = 9; i <= 54; i += 9) {
+        						Log.Debug(Main.plugin, "havenbags.open." + String.valueOf(i) + ": "+ player.hasPermission("havenbags.open." + String.valueOf(i)));
+        						if(size != i) continue;
+        						if(!player.hasPermission("havenbags.open." + String.valueOf(i))) {
+        	    					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-cannot-use"), null));
+        							return;
+        						}
+        					}
     		    			Log.Debug(Main.plugin, "Attempting to open bag");
     						BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
     						Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
@@ -232,7 +273,7 @@ public class BagListener implements Listener{
     					}
     					else {
     						//player.sendMessage(Name + "§c You cannot use this bag.");
-    						player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+    						player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-cannot-use"), null));
     						return;
     					}
     				}

@@ -71,19 +71,29 @@ public class BagGUI implements Listener {
 
     	if(!this.preview) CheckInstances(); // Check for multiple of the same bags
     	
-    	if(!Utils.IsStringNullOrEmpty(Lang.Get("bag-inventory-title"))) {
-    		inv = Bukkit.createInventory(player, size, Lang.Get("bag-inventory-title"));
-    	} else {
-    		inv = Bukkit.createInventory(player, size, bagMeta.getDisplayName());
+    	if(Lang.lang.GetBool("per-size-title")) {
+    		for(int i = 9; i <= 54; i += 9) {
+				if(size != i) continue;
+    			inv = Bukkit.createInventory(player, size, Lang.Get("bag-inventory-title-" + String.valueOf(i)));
+			}
+    	}else {
+    		if(!Utils.IsStringNullOrEmpty(Lang.Get("bag-inventory-title"))) {
+    			inv = Bukkit.createInventory(player, size, Lang.Get("bag-inventory-title"));
+    		} else {
+    			inv = Bukkit.createInventory(player, size, bagMeta.getDisplayName());
+    		}
     	}
     	
-        if(Bukkit.getPluginManager().getPlugin("ChestSort") != null) {
-        	try {
-        		de.jeff_media.chestsort.api.ChestSortAPI.setSortable(inv);   
-        	}catch (Exception e) {
-        		Log.Error(plugin, "Failed to get ChestSort's API. Is it up to date?)");
+
+		if(Main.plugins.GetBool("plugins.ChestSort.enabled")) {
+        	if(Bukkit.getPluginManager().getPlugin("ChestSort") != null) {
+        		try {
+        			de.jeff_media.chestsort.api.ChestSortAPI.setSortable(inv);   
+        		}catch (Exception e) {
+        			Log.Error(plugin, "Failed to get ChestSort's API. Is it up to date?");
+        		}
         	}
-        }
+		}
         //this.content = JsonUtils.fromJson(Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "content", PersistentDataType.STRING).toString());
 		//player.sendMessage(content.toString());
 
@@ -186,6 +196,11 @@ public class BagGUI implements Listener {
     public void onInventoryClick(final InventoryClickEvent e) {
         if (!e.getInventory().equals(inv)) return;
         if(e.getRawSlot() == -999) return;
+        if(e.getHotbarButton() != -1) {
+        	Log.Debug(plugin, "" + e.getHotbarButton());
+        	e.setCancelled(true);
+        	return;
+        }
         Log.Debug(Main.plugin, e.getRawSlot() + "");
         
         ItemStack clickedItem = e.getCurrentItem();
@@ -194,7 +209,7 @@ public class BagGUI implements Listener {
         Log.Debug(plugin, "cursor: " + e.getCursor());
         
       //Check Weight When cursor isnt air, clicked item is null. Therefore we run this before the null check.
-        if(cursorItem != null) {
+        if(cursorItem != null) {        	
         if(e.getRawSlot() < inv.getSize() && !cursorItem.getType().equals(Material.AIR)) {
             Log.Debug(Main.plugin, "within");
         	if(Main.weight.GetBool("enabled") == false) return;
@@ -220,6 +235,11 @@ public class BagGUI implements Listener {
         if(clickedItem == null) return;
         
         //if (Main.config.GetBool("bags-in-bags") == true) return;
+    	if(HavenBags.IsItemBlacklisted(clickedItem)) {
+        	e.setCancelled(true);
+    		e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("item-blacklisted"), player));
+    		return;
+    	}
         
         if(HavenBags.IsBag(clickedItem) && !Main.config.GetBool("bags-in-bags")) {
         	//e.getWhoClicked().closeInventory();
@@ -273,7 +293,7 @@ public class BagGUI implements Listener {
     	if(forced) {
     		Log.Warning(plugin, String.format("%s forcefully closed! Attempting to save it and return it to %s!", bag, player.getName()));
     		player.closeInventory();
-    		return;
+    		//return;
     	}
     	
     	if(!HavenBags.IsBagOpen(bagItem)) return;

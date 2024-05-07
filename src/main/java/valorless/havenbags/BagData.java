@@ -100,7 +100,7 @@ public class BagData {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				Log.Debug(Main.plugin, bag.uuid);
 				Log.Debug(Main.plugin, bag.owner);
-				Log.Debug(Main.plugin, bag.content.toString());
+				//Log.Debug(Main.plugin, bag.content.toString());
 				return bag;
 			}
 		}

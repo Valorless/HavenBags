@@ -19,11 +19,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin implements Listener {
-	public enum ServerVersion { NULL, v1_17, v1_17_1, v1_18, v1_18_1, v1_18_2, v1_19, v1_19_1, v1_19_2, v1_19_3, v1_19_4, v1_20, v1_20_1, v1_20_3, v1_20_4 }
+	public enum ServerVersion { NULL, v1_17, v1_17_1, v1_18, v1_18_1, v1_18_2, v1_19, v1_19_1, v1_19_2, v1_19_3, v1_19_4, v1_20, v1_20_1, v1_20_3, v1_20_4, v1_20_5, v1_20_6 }
 	public static JavaPlugin plugin;
 	public static Config config;
 	//public static Config timeTable;
 	public static Config weight;
+	public static Config blacklist;
+	public static Config plugins;
 	public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
 	int newupdate = 9999999;
@@ -45,6 +47,8 @@ public final class Main extends JavaPlugin implements Listener {
 		//timeTable = new Config(this, "timetable.yml");
 		AutoPickup.filter = new Config(this, "filtering.yml");
 		weight = new Config(this, "weight.yml");
+		blacklist = new Config(this, "blacklist.yml");;
+		plugins = new Config(this, "plugins.yml");
 	}
 	
 	@SuppressWarnings("unused")
@@ -83,6 +87,8 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		PlaceholderAPIHook.Hook();
 		ChestSortHook.Hook();
+		PvPManagerHook.Hook();
+		//OraxenHook.Hook();
 		
 		Log.Debug(plugin, Long.toString(System.currentTimeMillis() / 1000L));
 		
@@ -139,6 +145,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("inventory-full", "&cInventory full, dropping bag on the ground!");
 		Lang.lang.AddValidationEntry("bag-in-bag-error", "&cBags cannot be put inside other bags.");
 		Lang.lang.AddValidationEntry("bag-in-shulker-error", "&cBags cannot be put inside shulker boxes.");
+		Lang.lang.AddValidationEntry("item-blacklisted", "&cSorry, this item cannot go into bags.");
 		
 		// Admin Lang
 		//Lang.lang.AddValidationEntry("bag-create", ""); //unsure wtf this was for
@@ -152,6 +159,13 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		// Bag GUI
 		Lang.lang.AddValidationEntry("bag-inventory-title", "");
+		Lang.lang.AddValidationEntry("per-size-title", false);
+		Lang.lang.AddValidationEntry("bag-inventory-title-9", "");
+		Lang.lang.AddValidationEntry("bag-inventory-title-18", "");
+		Lang.lang.AddValidationEntry("bag-inventory-title-27", "");
+		Lang.lang.AddValidationEntry("bag-inventory-title-36", "");
+		Lang.lang.AddValidationEntry("bag-inventory-title-45", "");
+		Lang.lang.AddValidationEntry("bag-inventory-title-54", "");
 		
 		// BagItem Lang
 		Lang.lang.AddValidationEntry("bag-bound-name", "&a%player%'s Bag");
@@ -271,6 +285,16 @@ public final class Main extends JavaPlugin implements Listener {
 		weight.AddValidationEntry("weight-size-36", 4600);
 		weight.AddValidationEntry("weight-size-45", 5700);
 		weight.AddValidationEntry("weight-size-54", 6800);
+		weight.AddValidationEntry("over-encumber.enabled", false);
+		weight.AddValidationEntry("over-encumber.percent", 80);
+		weight.AddValidationEntry("over-encumber.effects", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("SLOWNESS:1"); 
+				}
+			} 
+		);
+		weight.AddValidationEntry("over-encumber.message", "&cYou feel over-encumbered.");
+		weight.AddValidationEntry("over-encumber.not", "&aYou feel lighter.");
 		weight.AddValidationEntry("weight-lore", "&7Weight: %bar% &7%percent% (%weight%/%limit%)");
 		weight.AddValidationEntry("bar-length", 10);
 		weight.AddValidationEntry("bar-style", "⬜");
@@ -284,6 +308,33 @@ public final class Main extends JavaPlugin implements Listener {
 		weight.AddValidationEntry("enabled", false);
 		Log.Debug(plugin, "Validating weight.yml");
 		weight.Validate();
+		
+		blacklist.AddValidationEntry("enabled", false);
+		Lang.lang.AddValidationEntry("blacklist.materials", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("DRAGON_EGG"); 
+				add("SPAWNER"); 
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("blacklist.displayname", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("Domination Sword"); 
+				add("Decapitation Shovel"); 
+				add("Anti-air Axe"); 
+				add("Cheese");
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("blacklist.nbt", new ArrayList<String>());
+		
+		plugins.AddValidationEntry("plugins.PlaceholderAPI.enabled", true);
+		plugins.AddValidationEntry("plugins.ChestSort.enabled", true);
+		plugins.AddValidationEntry("plugins.PvPManager.enabled", true);
+		plugins.AddValidationEntry("plugins.PvPManager.tagged", true);
+		plugins.AddValidationEntry("plugins.PvPManager.pvp", true);
+		plugins.AddValidationEntry("plugins.PvPManager.message", "&cYou cannot use this while in PvP.");
+		//plugins.AddValidationEntry("plugins.Oraxen.enabled", true);
 		
 		translator = new Translator(config.GetString("language"));
 		
@@ -384,6 +435,10 @@ public final class Main extends JavaPlugin implements Listener {
 
 		Log.Debug(plugin, "Registering AutoPickup");
 		getServer().getPluginManager().registerEvents(new AutoPickup(), this);
+
+		Log.Debug(plugin, "Registering Encumbering");
+		getServer().getPluginManager().registerEvents(new Encumbering(), this);
+		Encumbering.Reload();
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
     }

@@ -4,6 +4,7 @@ E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\preven
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagMeta.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagGUI.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\AutoPickup.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\hooks\PvPManagerHook.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\CraftPrevention.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\TabCompletion.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\HavenBags.java
@@ -16,6 +17,7 @@ E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagLis
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagData.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Lang.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\CloneListener.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Encumbering.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Placeholder.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\UpdateChecker.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\PlacementBlocker.java

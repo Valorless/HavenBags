@@ -1,0 +1,27 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                      Blacklist                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Should we blacklist specific items from going into the bag?
+# Works for both manual and auto-pickup.
+enabled: false
+
+# List of items unable to go into bags.
+blacklist:
+ # List of materials blacklisted.
+ materials:
+  - SPAWNER
+  - DRAGON_EGG
+ # List of item names blacklisted.
+ # Only checked if the item has a custom name.
+ displayname:
+  - 'Domination Sword'
+  - 'Decapitation Shovel'
+  - 'Anti-air Axe'
+  - 'Cheese'
+ # List of NBT blacklisted.
+ # Does not support PDC data yet.
+ nbt:
+  - 'bag-uuid'

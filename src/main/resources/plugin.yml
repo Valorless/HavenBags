@@ -6,20 +6,30 @@ api-version: 1.17
 website: https://www.spigotmc.org/resources/110420/
 description: Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
 depend: [ValorlessUtils]
-softdepend: [ChestSort, PlaceholderAPI]
+softdepend: [ChestSort, PlaceholderAPI, AngelChest, PvPManager]
 commands:
   havenbags:
     description: Main command.
     usage:
     aliases: [bags, bag]
 permissions:
-  havenbags.*:
-    description: Gives access to all HavenBags commands.
+  havenbags.player:
+    description: Gives access to all player commands.
+    children:
+      havenbags.use: true
+      havenbags.rename: true
+      havenbags.empty: true
+      havenbags.autoloot: true
+      havenbags.open.9: true
+      havenbags.open.18: true
+      havenbags.open.27: true
+      havenbags.open.36: true
+      havenbags.open.45: true
+      havenbags.open.54: true
+  havenbags.admin:
+    description: Gives access to all player commands.
     children:
       havenbags.reload: true
-      havenbags.use: true
-#      havenbags.open: true
-      havenbags.rename: true
       havenbags.create: true
       havenbags.give: true
       havenbags.restore: true
@@ -27,10 +37,8 @@ permissions:
       havenbags.preview: true
       havenbags.info: true
       havenbags.gui: true
-      havenbags.empty: true
-      havenbags.help: true
-      havenbags.autoloot: true
       havenbags.weight: true
+      havenbags.help: true
   havenbags.reload:
     description: Allows you to reload the configuration.
     default: op
@@ -67,7 +75,7 @@ permissions:
   havenbags.empty:
     description: Allows you to empty bags onto the ground.
     default: op
-  havenbags.empty:
+  havenbags.help:
     description: Allows you to use '/havenbags help'.
     default: op
   havenbags.autopickup:
@@ -75,5 +83,23 @@ permissions:
     default: op
   havenbags.weight:
     description: Allows you to set the weight limit of bags.
+    default: op
+  havenbags.open.9:
+    description: Allows you to open bags with a size of 9.
+    default: op
+  havenbags.open.18:
+    description: Allows you to open bags with a size of 18.
+    default: op
+  havenbags.open.27:
+    description: Allows you to open bags with a size of 27.
+    default: op
+  havenbags.open.36:
+    description: Allows you to open bags with a size of 36.
+    default: op
+  havenbags.open.45:
+    description: Allows you to open bags with a size of 45.
+    default: op
+  havenbags.open.54:
+    description: Allows you to open bags with a size of 54.
     default: op
   

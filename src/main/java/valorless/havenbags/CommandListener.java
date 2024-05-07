@@ -56,6 +56,7 @@ public class CommandListener implements CommandExecutor {
 						Main.CloseBags();
 						Main.config.Reload();
 						Lang.lang.Reload();
+						Main.blacklist.Reload();
 						BagData.Reload();
 						if (args.length >= 2){
 							if(args[1].equalsIgnoreCase("force")) {
@@ -68,6 +69,7 @@ public class CommandListener implements CommandExecutor {
 						AutoPickup.filter.Reload();
 						AutoPickup.Initiate();
 						Main.weight.Reload();
+						Encumbering.Reload();
 						Main.translator = new Translator(Main.config.GetString("language"));
 
 						if (args.length >= 2){
@@ -706,7 +708,12 @@ public class CommandListener implements CommandExecutor {
 						Boolean canBind = NBT.GetBool(hand, "bag-canBind");
 						Integer size = NBT.GetInt(hand, "bag-size");
 						String filter = NBT.GetString(hand, "bag-filter");
-						String weight = TextFeatures.LimitDecimal(String.valueOf(HavenBags.GetWeight(hand)),2);
+						String weight = "";
+						if(uuid.equalsIgnoreCase("null")) {
+							weight = "0.0";
+						}else {
+							weight = TextFeatures.LimitDecimal(String.valueOf(HavenBags.GetWeight(hand)),2);
+						}
 						String limit = String.valueOf(NBT.GetDouble(hand, "bag-weight-limit").intValue());
 						List<String> lore = meta.getLore();
 						
@@ -730,7 +737,12 @@ public class CommandListener implements CommandExecutor {
 						}
 						if(canBind != null) { info = info + "\n  §fCanBind: §e" + canBind.toString(); }
 						if(size != null) { info = info + "\n  §fSize: §e" + size.toString(); }
-						if(filter != null) { info = info + "\n  §fFilter: §e" + filter; }
+						//if(filter != null) { info = info + "\n  §fFilter: §e" + filter; }
+						if(!Utils.IsStringNullOrEmpty(filter)) {
+							info = info + "\n  §fFilter: §e" + filter;
+						}else {
+							info = info + "\n  §fFilter: §enone";
+						}
 						if(weight != null) { info = info + "\n  §fWeight: §e" + weight; }
 						if(limit != null) { info = info + "\n  §fWeight Limit: §e" + limit; }
 						if(lore != null) { info = info + "\n  §fLore:§r" + _lore; }
@@ -991,7 +1003,7 @@ public class CommandListener implements CommandExecutor {
 									+ " in your hand, onto the ground.");
 						}
 						if(sender.hasPermission("havenbags.autopickup") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags pickup <filter>",
+							message.AddNewLine(" &e/bags autopickup <filter>",
 									"&eAutomatically put items inside the bag.");
 						}
 						if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {
@@ -1068,7 +1080,7 @@ public class CommandListener implements CommandExecutor {
 							help.add("&7&o Empty the content of the bag in your hand, onto the ground");
 						}
 						if(sender.hasPermission("havenbags.autopickup") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags pickup <filter>");
+							help.add("&e/bags autopickup <filter>");
 							help.add("&7&o Automatically put items inside the bag.");
 						}
 						if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {

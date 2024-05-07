@@ -16,10 +16,13 @@ import javax.annotation.Nullable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.ValorlessUtils.Tags;
+import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.skulls.SkullCreator;
@@ -79,20 +82,50 @@ public class HavenBags {
 	}
 
 	public static void ReturnBag(ItemStack bag, Player player) {
-    	if(player.getInventory().getItemInMainHand() != null) {
-    		if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
-    			player.getInventory().setItemInMainHand(bag);
+		Log.Debug(Main.plugin, "Returning bag to " + player.getName());
+		Log.Debug(Main.plugin, "health " + player.getHealth());
+    	
+    	if(player.isDead()) {
+    		if (Bukkit.getPluginManager().getPlugin("AngelChest") == null) {
+    			Log.Debug(Main.plugin, "Player dead, dropping bag instead.");
+    			player.getWorld().dropItem(player.getLocation(), bag);
     			return;
+    		}else {
+    			if(player.getInventory().getItemInMainHand() != null) {
+        			if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
+    	   	 			Log.Debug(Main.plugin, "Hand Empty.");
+        				player.getInventory().setItemInMainHand(bag);
+        				return;
+        			}
+        		}
+        		if(player.getInventory().firstEmpty() != -1) {
+        			player.getInventory().addItem(bag);
+        		} else {
+        			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
+    				SFX.Play(Main.config.GetString("inventory-full-sound"), 
+    						Main.config.GetFloat("inventory-full-volume").floatValue(), 
+    						Main.config.GetFloat("inventory-full-pitch").floatValue(), player);
+        			player.getWorld().dropItem(player.getLocation(), bag);
+        		}
     		}
-    	}
-    	if(player.getInventory().firstEmpty() != -1) {
-    		player.getInventory().addItem(bag);
-    	} else {
-    		player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
-			SFX.Play(Main.config.GetString("inventory-full-sound"), 
-					Main.config.GetFloat("inventory-full-volume").floatValue(), 
-					Main.config.GetFloat("inventory-full-pitch").floatValue(), player);
-    		player.getWorld().dropItem(player.getLocation(), bag);
+    	}else {
+    		Log.Debug(Main.plugin, "Player alive.");
+    		if(player.getInventory().getItemInMainHand() != null) {
+    			if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
+	   	 			Log.Debug(Main.plugin, "Hand Empty.");
+    				player.getInventory().setItemInMainHand(bag);
+    				return;
+    			}
+    		}
+    		if(player.getInventory().firstEmpty() != -1) {
+    			player.getInventory().addItem(bag);
+    		} else {
+    			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
+				SFX.Play(Main.config.GetString("inventory-full-sound"), 
+						Main.config.GetFloat("inventory-full-volume").floatValue(), 
+						Main.config.GetFloat("inventory-full-pitch").floatValue(), player);
+    			player.getWorld().dropItem(player.getLocation(), bag);
+    		}
     	}
 	}
 	
@@ -250,11 +283,7 @@ public class HavenBags {
             //if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()), player));
         }
         if(NBT.Has(bag, "bag-size")) {
-        	if(inventory == null) {
-        		placeholders.add(new Placeholder("%size%", NBT.GetInt(bag, "bag-size")));
-        	}else {
-        		placeholders.add(new Placeholder("%size%", inventory.size()));
-        	}
+        	placeholders.add(new Placeholder("%size%", NBT.GetInt(bag, "bag-size")));
         	placeholders.add(new Placeholder("%bag-size%", Lang.Parse(Lang.Get("bag-size"), placeholders, player)));
         	//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
         }
@@ -594,5 +623,83 @@ public class HavenBags {
 
 	private static void DropItem(Location location, ItemStack itemStack) {
 	    location.getWorld().dropItemNaturally(location, itemStack);
+	}
+	
+	public static boolean IsItemBlacklisted(ItemStack item) {
+		if(item == null) return false;
+		Log.Debug(Main.plugin, "Is item blacklisted?");	
+		//Log.Debug(Main.plugin, item.toString());	
+		Config blacklist = Main.blacklist;
+		List<Material> materials = new ArrayList<Material>();
+		List<String> names = blacklist.GetStringList("blacklist.displayname");
+		List<BlacklistNBT> nbt = new ArrayList<BlacklistNBT>();
+		
+		for(String mat : blacklist.GetStringList("blacklist.materials")) {
+			//Log.Debug(Main.plugin, "Blacklisted Material: " + mat);	
+			materials.add(Material.valueOf(mat));
+		}
+		
+		for(String name : names) {
+			//Log.Debug(Main.plugin, "Blacklisted Name: " + name);	
+		}
+		
+		for(String n : blacklist.GetStringList("blacklist.nbt")) {
+			String[] split = n.split(":");
+			if(split.length != 1) {
+				//Log.Debug(Main.plugin, "Blacklisted NBT key: " + split[0]);
+				//Log.Debug(Main.plugin, "Blacklisted NBT value: " + split[1]);
+				nbt.add(new BlacklistNBT(split[0], split[1]));
+			}else {
+				//Log.Debug(Main.plugin, "Blacklisted NBT key: " + split[0]);
+				//Log.Debug(Main.plugin, "Blacklisted NBT value: " + "null");
+				nbt.add(new BlacklistNBT(split[0], null));
+			}
+		}
+		
+		if(materials.contains(item.getType())) {
+			Log.Debug(Main.plugin, "Material blacklisted!");	
+			return true;
+		}
+		
+		if(item.hasItemMeta()) {
+			for(String name : names) {
+				if(name.equalsIgnoreCase(Lang.RemoveColorFormatting(item.getItemMeta().getDisplayName()))) {
+					Log.Debug(Main.plugin, "Name blacklisted!");	
+					return true;
+				}
+			}
+		}
+		
+		for(BlacklistNBT nk : nbt) {
+			if(NBT.Has(item, nk.key)) {
+				Log.Debug(Main.plugin, "NBT blacklisted!");	
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public static class BlacklistNBT {
+		public String key;
+		public String value;
+		public BlacklistNBT(String key, String value) {
+			this.key = key; this.value = value;
+		}
+	}
+	
+	public static boolean CanCarryMoreBags(Player player) {
+		int max = Main.config.GetInt("bags-carry-max");
+		int invBags = 0;
+		
+		for(ItemStack item : player.getInventory().getContents()) {
+			if(IsBag(item)) invBags++;
+		}
+		
+		if(invBags >= max) {
+			return false;
+		}
+		
+		return true;
 	}
 }

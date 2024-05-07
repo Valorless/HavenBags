@@ -9,6 +9,7 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 public class PlaceholderAPIHook {
 	
 	public static void Hook() {
+		if(!Main.plugins.GetBool("plugins.PlaceholderAPI.enabled")) return;
 		JavaPlugin plugin = Main.plugin;
 		
 		Log.Debug(plugin, "Attempting to hook PlaceholderAPI.");

@@ -28,6 +28,21 @@ weight-size-36: 4600
 weight-size-45: 5700
 weight-size-54: 6800
 
+# Can players become over-encumbered?
+over-encumber:
+ enabled: false
+ # At what weight % should we encumber players?
+ percent: 80
+ # What effects should we give the player?
+ # Format: EFFECT:LEVEL
+ # https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
+ effects:
+  - SLOWNESS:1
+ # Message sent to the player when they become over-encumbered.
+ message: '&cYou feel over-encumbered.'
+ # Message sent to the player when they stop being over-encumbered.
+ not: '&aYou feel lighter.'
+
 # Show current and max weight on the bag's tooltip.
 # Placeholders:
 # %bar% ----- [⬛⬛⬛⬛⬛⬛⬜⬜⬜⬜] (Looks better in-game)

@@ -155,4 +155,50 @@ public class Lang {
 			return text;
 		}
 	}
+	
+	public static String RemoveColorFormatting(String text) {
+		if(!Utils.IsStringNullOrEmpty(text)) {
+			text = text.replace("§§", "§");
+			text = RemoveHex(text);
+			text = text.replace("§0", "");
+			text = text.replace("§1", "");
+			text = text.replace("§2", "");
+			text = text.replace("§3", "");
+			text = text.replace("§4", "");
+			text = text.replace("§5", "");
+			text = text.replace("§6", "");
+			text = text.replace("§7", "");
+			text = text.replace("§8", "");
+			text = text.replace("§9", "");
+			text = text.replace("§0", "");
+			text = text.replace("§a", "");
+			text = text.replace("§b", "");
+			text = text.replace("§c", "");
+			text = text.replace("§d", "");
+			text = text.replace("§e", "");
+			text = text.replace("§f", "");
+			text = text.replace("§o", "");
+			text = text.replace("§l", "");
+			text = text.replace("§k", "");
+			text = text.replace("§m", "");
+			text = text.replace("§n", "");
+			text = text.replace("§r", "");
+			text = text.replace("§A", "");
+			text = text.replace("§B", "");
+			text = text.replace("§C", "");
+			text = text.replace("§D", "");
+			text = text.replace("§E", "");
+			text = text.replace("§F", "");
+			text = text.replace("§x", "");
+			text = text.replace("§", "");
+		}
+		return text;
+	}
+	
+	public static String RemoveHex(String text) {
+        // Regex to match the pattern of hex color codes
+    	//Log.Info(Main.plugin, text);
+        String hexColorRegex = "§x(§[0-9A-Fa-f]){6}";
+        return text.replaceAll(hexColorRegex, "");
+    }
 }

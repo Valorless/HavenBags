@@ -17,6 +17,9 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.NoChance.PvPManager.PvPManager;
+import me.NoChance.PvPManager.PvPlayer;
+import me.NoChance.PvPManager.Managers.PlayerHandler;
 import net.md_5.bungee.api.ChatMessageType;
 import valorless.havenbags.Main.ServerVersion;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -57,6 +60,8 @@ public class AutoPickup implements Listener {
 	
 	private static List<Filter> filters = new ArrayList<Filter>();
 	
+	private static List<String> oraxenIDs = new ArrayList<String>();
+	
 	public static void Initiate() {
 		enabled = Main.config.GetBool("auto-pickup");
 		if(!enabled) return;
@@ -68,6 +73,17 @@ public class AutoPickup implements Listener {
 			filters.add(new Filter(filterName, filter.GetString(String.format("filters.%s.displayname", filterName)), filter.GetStringList(String.format("filters.%s.items", filterName))));
 
 			Log.Debug(Main.plugin, "Filter: " + filterName);
+		}
+		
+		if(Main.plugins.GetBool("plugins.Oraxen.enabled")) {
+			if(Bukkit.getPluginManager().getPlugin("Oraxen") != null) {
+        		try {
+        			Log.Debug(Main.plugin, "Adding Oraxen items to auto-pickup.");
+        			oraxenIDs = Main.plugins.GetStringList("plugins.Oraxen.items");
+        		}catch (Exception e) {
+        			Log.Error(Main.plugin, "Failed to get Oraxen API. Is it up to date?");
+        		}
+        	}
 		}
 	}
 	
@@ -114,6 +130,14 @@ public class AutoPickup implements Listener {
 		}
 		if(HavenBags.InventoryContainsBag(player) == false) return;
 		ItemStack item = event.getItem().getItemStack();
+		/*
+		if(HavenBags.IsBag(item)) {
+			if(!HavenBags.CanCarryMoreBags(player)) {
+				event.setCancelled(true);
+				return;
+			}
+		}
+		*/
 		
 		// For some reason handling ExecutableItems items, would duplicate the item.
 		if (Bukkit.getPluginManager().getPlugin("ExecutableItems") != null) {
@@ -324,6 +348,8 @@ public class AutoPickup implements Listener {
 			Log.Debug(Main.plugin, "false");
 			return false;
 		}
+		
+		if(HavenBags.IsItemBlacklisted(item)) return false;
 	
 		List<Bag> bags = new ArrayList<Bag>();
 		Log.Debug(Main.plugin, "Checking for bags.");
@@ -439,90 +465,6 @@ public class AutoPickup implements Listener {
 				Log.Debug(Main.plugin, "Item was not put in bag.");
 				return false;
 			}
-			
-			/*
-			Log.Debug(Main.plugin, "contsize:" + contSize);
-			Log.Debug(Main.plugin, "size:" + maxContent);
-			if(Contains(bag.content, item)) {
-				Log.Debug(Main.plugin, "Contains");
-				for(ItemStack i : bag.content) {
-					if(i == null) continue;
-					if(i.getAmount() == i.getMaxStackSize()) continue;
-					if(StackHasSpace(i, item)) {
-						Log.Debug(Main.plugin, "stack Has Space");
-						if(item.getType().equals(i.getType())){
-							if(i.getAmount() != i.getMaxStackSize()) {
-								i.setAmount(i.getAmount() + item.getAmount());
-								Log.Debug(Main.plugin, bag.content.toString());
-								if(Main.weight.GetBool("enabled")) {
-						        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
-									if(Main.weight.GetBool("weight-text-pickup")) {
-										Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
-												Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
-											);
-										weightMessage.Send(player);
-									}
-						        }
-								HavenBags.UpdateBagItem(bag.item, bag.content, player);
-								HavenBags.WriteBagToServer(bag.item, bag.content, player);
-								PickupSound(player);
-								return true; // Only do it to the first stack found.
-							}
-							else {
-								continue;
-							}
-						}
-					}else {
-						Log.Debug(Main.plugin, "stack overflow, adding new.");
-						for(int is = 0; is < bag.content.size(); is++) {
-							if(bag.content.get(is) == null) {
-								bag.content.set(is, item);
-								Log.Debug(Main.plugin, bag.content.toString());
-								if(Main.weight.GetBool("enabled")) {
-						        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
-									if(Main.weight.GetBool("weight-text-pickup")) {
-										Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
-												Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
-											);
-										weightMessage.Send(player);
-									}
-						        }
-								HavenBags.UpdateBagItem(bag.item, bag.content, player);
-								HavenBags.WriteBagToServer(bag.item, bag.content, player);
-								PickupSound(player);
-								return true; // Only do it to the first stack found.
-								//break;
-							}
-						}
-						
-					}
-				}
-			}
-			if(contSize < maxContent) {
-				Log.Debug(Main.plugin, "Has Space");
-				for(int i = 0; i < bag.content.size(); i++) {
-					if(bag.content.get(i) == null) {
-						bag.content.set(i, item);
-						break;
-					}
-				}
-				
-				//bag.content.add(item);
-				Log.Debug(Main.plugin, bag.content.toString());
-				HavenBags.UpdateBagItem(bag.item, bag.content, player);
-				HavenBags.WriteBagToServer(bag.item, bag.content, player);
-				PickupSound(player);
-				if(Main.weight.GetBool("enabled")) {
-					if(Main.weight.GetBool("weight-text-pickup")) {
-						Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
-								Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
-								);
-						weightMessage.Send(player);
-					}
-				}
-				return true;
-			}
-		*/
 		}
 		Log.Debug(Main.plugin, "Item was not put in bag.");
 		return false;
@@ -539,6 +481,19 @@ public class AutoPickup implements Listener {
 	
 	boolean IsItemInFilter(String filter, ItemStack item) {
 		Log.Debug(Main.plugin, "IsItemInFilter?");
+		if(Main.plugins.GetBool("plugins.Oraxen.enabled")) {
+			if(Bukkit.getPluginManager().getPlugin("Oraxen") != null) {
+				if(item.hasItemMeta()) {
+					JavaPlugin oraxen = (JavaPlugin)Bukkit.getPluginManager().getPlugin("Oraxen");
+					if(Tags.Has(oraxen, item.getItemMeta().getPersistentDataContainer(), "id", PersistentDataType.STRING)) {
+						if(oraxenIDs.contains(Tags.Get(oraxen, item.getItemMeta().getPersistentDataContainer(), "id", PersistentDataType.STRING))) {
+							//return true;
+							// Not ready yet.
+						}
+					}
+				}
+        	}
+		}
 		for(Filter f : filters) {
 			if(f.name.equalsIgnoreCase(filter)) {
 				if(f.entries.contains(item.getType().toString())){
@@ -554,8 +509,6 @@ public class AutoPickup implements Listener {
 	
 	boolean StackHasSpace(ItemStack stack, ItemStack pickup) {
 		Log.Debug(Main.plugin, "StackHasSpace?");
-		//int diff = (stack.getAmount() + pickup.getAmount()) - 64;
-		//diff = -diff;
 		int comb = stack.getAmount() + pickup.getAmount();
 		Log.Debug(Main.plugin, "comb: " + comb);
 		if((stack.getAmount() + pickup.getAmount()) <= stack.getMaxStackSize()) {
@@ -581,7 +534,6 @@ public class AutoPickup implements Listener {
 			pitch = Utils.RandomRange(Main.config.GetFloat("auto-pickup-pitch-min"), Main.config.GetFloat("auto-pickup-pitch-max"));
 		}
 		
-		//SFX.Play("ENTITY_ITEM_PICKUP", 0.8f, pitch.floatValue(), player);
 		SFX.Play(Main.config.GetString("auto-pickup-sound"), 
 				Main.config.GetFloat("auto-pickup-volume").floatValue(), 
 				pitch.floatValue(), player);

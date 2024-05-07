@@ -9,6 +9,7 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 public class ChestSortHook {
 	
 	public static void Hook() {
+		if(!Main.plugins.GetBool("plugins.ChestSort.enabled")) return;
 		JavaPlugin plugin = Main.plugin;
 		
 		Log.Debug(plugin, "Attempting to hook ChestSort.");
