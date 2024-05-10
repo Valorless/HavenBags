@@ -27,7 +27,7 @@ permissions:
       havenbags.open.45: true
       havenbags.open.54: true
   havenbags.admin:
-    description: Gives access to all player commands.
+    description: Gives access to all admin commands.
     children:
       havenbags.reload: true
       havenbags.create: true

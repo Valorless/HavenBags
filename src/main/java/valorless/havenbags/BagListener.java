@@ -42,33 +42,7 @@ public class BagListener implements Listener{
     		
     		if(!player.hasPermission("havenbags.use")) {
     			return;
-    		}else {
-    			
-    			if(Main.plugins.GetBool("plugins.PvPManager.enabled")) {
-    				if(Bukkit.getPluginManager().getPlugin("PvPManager") != null) {
-    	        		try {
-    	        			Log.Debug(Main.plugin, "Checking if player is pvp.");
-    	        			PlayerHandler playerHandler = PvPManager.getInstance() .getPlayerHandler();
-    	        			PvPlayer pvplayer = playerHandler.get(player);
-    	        			boolean pvp = pvplayer.hasPvPEnabled();
-    	        			boolean tagged = pvplayer.isInCombat();
-    	        			if(pvp && Main.plugins.GetBool("plugins.PvPManager.pvp") == false) {
-        	        			Log.Debug(Main.plugin, "Pvp.");
-        	        			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Main.plugins.GetString("plugins.PvPManager.message"), player));
-    	        				return;
-    	        			}
-    	        			if(tagged && Main.plugins.GetBool("plugins.PvPManager.tagged") == false) {
-        	        			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Main.plugins.GetString("plugins.PvPManager.message"), player));
-        	        			Log.Debug(Main.plugin, "Pvp.");
-    	        				return;
-    	        			}
-    	        			Log.Debug(Main.plugin, "No pvp.");
-    	        		}catch (Exception e) {
-    	        			Log.Error(Main.plugin, "Failed to get PvPManager's API. Is it up to date?");
-    	        		}
-    	        	}
-    			}
-    			
+    		}else {    			
     			ItemStack hand = player.getInventory().getItemInMainHand();
     			ItemMeta item = player.getInventory().getItemInMainHand().getItemMeta();
     			//player.sendMessage("has meta: " + hand.hasItemMeta());
@@ -83,6 +57,31 @@ public class BagListener implements Listener{
     			
     			//if(Tags.Get(plugin, item.getPersistentDataContainer(), "uuid", PersistentDataType.STRING) != null || NBT.Has(hand, "bag-uuid")) {
         		if(HavenBags.IsBag(hand)) {
+        			if(Main.plugins.GetBool("plugins.PvPManager.enabled")) {
+        				if(Bukkit.getPluginManager().getPlugin("PvPManager") != null) {
+        	        		try {
+        	        			Log.Debug(Main.plugin, "Checking if player is pvp.");
+        	        			PlayerHandler playerHandler = PvPManager.getInstance() .getPlayerHandler();
+        	        			PvPlayer pvplayer = playerHandler.get(player);
+        	        			boolean pvp = pvplayer.hasPvPEnabled();
+        	        			boolean tagged = pvplayer.isInCombat();
+        	        			if(pvp && Main.plugins.GetBool("plugins.PvPManager.pvp") == false) {
+            	        			Log.Debug(Main.plugin, "Pvp.");
+            	        			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Main.plugins.GetString("plugins.PvPManager.message"), player));
+        	        				return;
+        	        			}
+        	        			if(tagged && Main.plugins.GetBool("plugins.PvPManager.tagged") == false) {
+            	        			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Main.plugins.GetString("plugins.PvPManager.message"), player));
+            	        			Log.Debug(Main.plugin, "Pvp.");
+        	        				return;
+        	        			}
+        	        			Log.Debug(Main.plugin, "No pvp.");
+        	        		}catch (Exception e) {
+        	        			Log.Error(Main.plugin, "Failed to get PvPManager's API. Is it up to date?");
+        	        		}
+        	        	}
+        			}
+        			
 					List<Placeholder> placeholders = new ArrayList<Placeholder>();
         			List<String> blacklist = Main.config.GetStringList("blacklist");
             		if(blacklist != null) {

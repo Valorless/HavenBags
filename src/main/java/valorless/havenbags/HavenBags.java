@@ -627,9 +627,12 @@ public class HavenBags {
 	
 	public static boolean IsItemBlacklisted(ItemStack item) {
 		if(item == null) return false;
+		Config blacklist = Main.blacklist;
+		if(!blacklist.GetBool("enabled")) {
+			return false;
+		}
 		Log.Debug(Main.plugin, "Is item blacklisted?");	
 		//Log.Debug(Main.plugin, item.toString());	
-		Config blacklist = Main.blacklist;
 		List<Material> materials = new ArrayList<Material>();
 		List<String> names = blacklist.GetStringList("blacklist.displayname");
 		List<BlacklistNBT> nbt = new ArrayList<BlacklistNBT>();
