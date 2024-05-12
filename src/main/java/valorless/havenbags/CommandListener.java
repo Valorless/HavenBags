@@ -708,6 +708,8 @@ public class CommandListener implements CommandExecutor {
 						Boolean canBind = NBT.GetBool(hand, "bag-canBind");
 						Integer size = NBT.GetInt(hand, "bag-size");
 						String filter = NBT.GetString(hand, "bag-filter");
+						List<String> trust = new ArrayList<String>();
+						String trusted = "";
 						String weight = "";
 						if(uuid.equalsIgnoreCase("null")) {
 							weight = "0.0";
@@ -742,6 +744,22 @@ public class CommandListener implements CommandExecutor {
 							info = info + "\n  §fFilter: §e" + filter;
 						}else {
 							info = info + "\n  §fFilter: §enone";
+						}
+						
+						if(NBT.Has(hand, "bag-trust")) {
+							trust = NBT.GetStringList(hand, "bag-trust");
+						}
+						if(trust.size() != 0) {
+							for(int i = 0; i < trust.size(); i++) { 
+								if(i != 0) {
+									trusted = trusted + ", " + trust.get(i); 
+								}else {
+									trusted = trust.get(i); 
+								}
+							}
+							info = info + "\n  §fTrusted: §e" + trusted;
+						}else {
+							info = info + "\n  §fTrusted: §enone";
 						}
 						if(weight != null) { info = info + "\n  §fWeight: §e" + weight; }
 						if(limit != null) { info = info + "\n  §fWeight Limit: §e" + limit; }
@@ -1140,6 +1158,77 @@ public class CommandListener implements CommandExecutor {
 					}
 					
 					return true;
+				}
+				
+				if(args[0].equalsIgnoreCase("trust") && sender.hasPermission("havenbags.trust")) {
+					Player player = (Player)sender;
+					if(!Main.config.GetBool("trusting")) {
+						player.sendMessage(Lang.Get("prefix") + Lang.Get("feature-disabled"));
+						return false;
+					}
+					if(args.length >= 2) {
+						ItemStack item = player.getInventory().getItemInMainHand();
+						if(HavenBags.IsBag(item)) {
+							if(HavenBags.IsOwner(item, player)) {
+								if(HavenBags.IsPlayerTrusted(item, args[1])) {
+									return false;
+								}
+								try {
+									List<String> list = new ArrayList<String>();
+									if(NBT.Has(item, "bag-trust")) {
+										list = NBT.GetStringList(item, "bag-trust");
+									}
+									list.add(args[1]);
+									NBT.SetStringList(item, "bag-trust", list);
+									HavenBags.UpdateBagItem(item, null, player);
+									return true;
+								}catch(Exception e) {
+									e.printStackTrace();
+								}
+								
+							}else {
+								player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+							}
+						}
+						return true;
+					}
+					return false;
+				}
+				if(args[0].equalsIgnoreCase("untrust") && sender.hasPermission("havenbags.trust")) {
+					Player player = (Player)sender;
+					if(!Main.config.GetBool("trusting")) {
+						player.sendMessage(Lang.Get("prefix") + Lang.Get("feature-disabled"));
+						return false;
+					}
+					if(args.length >= 2) {
+						ItemStack item = player.getInventory().getItemInMainHand();
+						if(HavenBags.IsBag(item)) {
+							if(HavenBags.IsOwner(item, player)) {
+								try {
+									List<String> list = NBT.GetStringList(item, "bag-trust");
+									for(int i = 0; i < list.size(); i++) {
+										if(list.get(i).equalsIgnoreCase(args[1])) {
+											list.remove(i);
+										}
+									}
+									if(list.size() == 0) {
+										NBT.SetStringList(item, "bag-trust", null);
+									}else {
+										NBT.SetStringList(item, "bag-trust", list);
+									}
+									HavenBags.UpdateBagItem(item, null, player);
+									return true;
+								}catch(Exception e) {
+									e.printStackTrace();
+								}
+								
+							}else {
+								player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+							}
+						}
+						return true;
+					}
+					return false;
 				}
 			} catch(Exception e) {
 				sender.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));

@@ -26,6 +26,7 @@ permissions:
       havenbags.open.36: true
       havenbags.open.45: true
       havenbags.open.54: true
+      havenbags.trust: true
   havenbags.admin:
     description: Gives access to all admin commands.
     children:
@@ -101,5 +102,8 @@ permissions:
     default: op
   havenbags.open.54:
     description: Allows you to open bags with a size of 54.
+    default: op
+  havenbags.trust:
+    description: Allows you to trust other players to open your bag.
     default: op
   

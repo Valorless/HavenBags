@@ -55,7 +55,7 @@ public final class Main extends JavaPlugin implements Listener {
 	boolean ValorlessUtils() {
 		Log.Debug(plugin, "Checking ValorlessUtils");
 		
-		int requiresBuild = 173;
+		int requiresBuild = 227;
 		
 		String ver = Bukkit.getPluginManager().getPlugin("ValorlessUtils").getDescription().getVersion();
 		//Log.Debug(plugin, ver);
@@ -124,6 +124,7 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("auto-pickup-inventory.enabled", false);
 		config.AddValidationEntry("auto-pickup-inventory.events.onBlockBreak", true);
 		config.AddValidationEntry("auto-pickup-inventory.events.onItemPickup", true);
+		config.AddValidationEntry("trusting", true);
 		config.AddValidationEntry("blacklist", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L;
 		{ add("world_name"); add("world_name_nether"); add("another_world"); }} );

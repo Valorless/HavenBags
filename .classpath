@@ -36,6 +36,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="dependencies/oraxen-1.167.0-20240110.120553-24-dev-all.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -236,6 +236,7 @@ public class BagListener implements Listener{
     				}
     				if(canbind) {
     					//player.sendMessage("Bound Bag");
+    					Log.Error(Main.plugin, NBT.GetStringList(hand, "bag-trust").toString());
     					if(owner.equalsIgnoreCase(player.getUniqueId().toString())) {
     						int size = NBT.GetInt(hand, "bag-size");
         					for(int i = 9; i <= 54; i += 9) {
@@ -258,6 +259,18 @@ public class BagListener implements Listener{
         							Main.config.GetFloat("open-pitch").floatValue(), player);
     						return;
     					} else if (player.hasPermission("havenbags.bypass")) {
+    						BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
+    						Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
+        			    	if(!Main.config.GetBool("keep-bags")){ 
+        			    		player.getInventory().remove(hand);
+        			    	}
+    						gui.OpenInventory(player);
+        					SFX.Play(Main.config.GetString("open-sound"), 
+        							Main.config.GetFloat("open-volume").floatValue(), 
+        							Main.config.GetFloat("open-pitch").floatValue(), player);
+    		    			Log.Debug(Main.plugin, player + "has attempted to open a bag, bypassing the lock");
+    						return;
+    					}else if(HavenBags.IsPlayerTrusted(hand, player.getName())) {
     						BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
     						Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
         			    	if(!Main.config.GetBool("keep-bags")){ 

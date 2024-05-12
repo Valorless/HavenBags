@@ -103,6 +103,9 @@ auto-pickup-inventory:
  events:
   onBlockBreak: true # For effect like "Teleport Drops" from AdvancedEnchants or EliteEnchants.
   onItemPickup: true # To add existing items in the inventory to the bag.
+  
+# Can players trust other players with access to their bound bags?
+trusting: true
 
 # Which containers are the player allowed to interact with bags?
 # Use this to prevent the player using bags in unintended ways, such as crafting.

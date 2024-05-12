@@ -11,7 +11,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.StringUtil;
+
+import valorless.valorlessutils.nbt.NBT;
 
 public class TabCompletion implements TabCompleter {
 
@@ -59,6 +62,12 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.weight")) {
 				subCommands.add("weight");
 			}
+			if (sender.hasPermission("havenbags.trust")) {
+				subCommands.add("trust");
+			}
+			if (sender.hasPermission("havenbags.trust")) {
+				subCommands.add("untrust");
+			}
 
 			StringUtil.copyPartialMatches(args[0], subCommands, completions);
 		}
@@ -105,6 +114,19 @@ public class TabCompletion implements TabCompleter {
 				List<String> filters = AutoPickup.GetFilterNames();
 				filters.add("none");
 				StringUtil.copyPartialMatches(cmd, filters, completions);
+			}
+			if (args[0].equalsIgnoreCase("trust") && sender.hasPermission("havenbags.trust")) {
+				StringUtil.copyPartialMatches(cmd, getOnlinePlayerNames(), completions);
+			}
+			if (args[0].equalsIgnoreCase("untrust") && sender.hasPermission("havenbags.trust")) {
+				Player player = (Player)sender;
+				ItemStack item = player.getInventory().getItemInMainHand();
+				if(item != null) {
+					if(HavenBags.IsBag(item)) {
+						List<String> list = NBT.GetStringList(item, "bag-trust");
+						StringUtil.copyPartialMatches(cmd, list, completions);
+					}
+				}
 			}
 			/*
 			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.open")) {

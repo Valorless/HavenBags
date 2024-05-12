@@ -705,4 +705,14 @@ public class HavenBags {
 		
 		return true;
 	}
+	
+	public static boolean IsPlayerTrusted(ItemStack item, String player) {
+		List<String> list = NBT.GetStringList(item, "bag-trust");
+		for(int i = 0; i < list.size(); i++) {
+			if(list.get(i).equalsIgnoreCase(player)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
