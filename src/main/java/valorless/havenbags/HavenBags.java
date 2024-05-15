@@ -1,13 +1,6 @@
 package valorless.havenbags;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,14 +9,11 @@ import javax.annotation.Nullable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.ValorlessUtils.Tags;
 import valorless.valorlessutils.config.Config;
-import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.skulls.SkullCreator;
 import valorless.valorlessutils.sound.SFX;
@@ -194,7 +184,7 @@ public class HavenBags {
 	
 	public static List<ItemStack> LoadBagContentFromServer(ItemStack bag, @Nullable Player player){
     	String uuid = NBT.GetString(bag, "bag-uuid");
-    	String owner = NBT.GetString(bag, "bag-owner");
+    	//String owner = NBT.GetString(bag, "bag-owner");
 		//return LoadBagContentFromServer(uuid, owner, player);
 		return BagData.GetBag(uuid, bag).getContent();
 	}
@@ -353,7 +343,7 @@ public class HavenBags {
 	
 	public static void EmptyBag(ItemStack bag, Player player) {
 		String uuid = NBT.GetString(bag, "bag-uuid");
-    	String owner = NBT.GetString(bag, "bag-owner");
+    	//String owner = NBT.GetString(bag, "bag-owner");
 		Log.Debug(Main.plugin, "Attempting to initialize bag items");
 		//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, player);
 		List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
@@ -414,7 +404,7 @@ public class HavenBags {
 			try {
 				Double weight = 0.0;
 				String uuid = NBT.GetString(bag, "bag-uuid");
-    			String owner = NBT.GetString(bag, "bag-owner");
+    			//String owner = NBT.GetString(bag, "bag-owner");
 				//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, null);
 				List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
 				for(ItemStack item : content) {
@@ -642,7 +632,7 @@ public class HavenBags {
 			materials.add(Material.valueOf(mat));
 		}
 		
-		for(String name : names) {
+		for(@SuppressWarnings("unused") String name : names) {
 			//Log.Debug(Main.plugin, "Blacklisted Name: " + name);	
 		}
 		
@@ -707,6 +697,7 @@ public class HavenBags {
 	}
 	
 	public static boolean IsPlayerTrusted(ItemStack item, String player) {
+		if(!NBT.Has(item, "bag-trust")) return false;
 		List<String> list = NBT.GetStringList(item, "bag-trust");
 		for(int i = 0; i < list.size(); i++) {
 			if(list.get(i).equalsIgnoreCase(player)) {

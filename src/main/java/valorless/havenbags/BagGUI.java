@@ -17,7 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -100,6 +99,7 @@ public class BagGUI implements Listener {
         try {
         	this.content = LoadContent();
         }catch(Exception e) {
+        	e.printStackTrace();
         	inv = null;
         	bagItem.setAmount(0);
         	player.sendMessage(Lang.Parse(Lang.Get("bag-does-not-exist"), player));
@@ -296,7 +296,10 @@ public class BagGUI implements Listener {
     		//return;
     	}
     	
+    	
     	if(!HavenBags.IsBagOpen(bagItem)) return;
+    	String uuid = NBT.GetString(bagItem, "bag-uuid");
+    	if(!BagData.IsBagOpen(uuid)) return;
 
 		SFX.Play(Main.config.GetString("close-sound"), 
 				Main.config.GetFloat("close-volume").floatValue(), 
@@ -333,7 +336,7 @@ public class BagGUI implements Listener {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+		BagData.MarkBagClosed(uuid);
 		Log.Debug(plugin, "Remaining Open Bags: " + Main.activeBags.size());
 		
 		//UpdateTimestamp();

@@ -45,6 +45,9 @@ bag-does-not-exist: '&cThis bag does not exist.'
 # Message sent to the player if their inventory is full when a bag is exited.
 inventory-full: '&cInventory full, dropping bag on the ground!'
 
+# Message sent to the player if the bag is already open.
+bag-already-open: '&cThis bag is already open!'
+
 ### Admin ###
 
 # Message sent when attempting to fetch a player which does not exist.
@@ -123,9 +126,10 @@ bag-ownerless-used: '&aBag'
 
 ### Lore ###
 
-# Bag lore, always at the top before 'bound-to'.
+# Bag lore.
 bag-lore:
  - '&fA well crafted bag, suited for carrying stuff.'
+ - '&8ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ'
 
 ## Additional bag lore, will always be after 'bag-lore'
 # Placeholders are connected to the config entries with the same name.

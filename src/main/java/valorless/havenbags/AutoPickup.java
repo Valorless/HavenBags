@@ -17,9 +17,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.NoChance.PvPManager.PvPManager;
-import me.NoChance.PvPManager.PvPlayer;
-import me.NoChance.PvPManager.Managers.PlayerHandler;
 import net.md_5.bungee.api.ChatMessageType;
 import valorless.havenbags.Main.ServerVersion;
 import valorless.valorlessutils.ValorlessUtils.Log;

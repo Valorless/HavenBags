@@ -144,6 +144,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("bag-cannot-use", "&cYou cannot use this bag.");
 		Lang.lang.AddValidationEntry("bag-does-not-exist", "&cThis bag does not exist.");
 		Lang.lang.AddValidationEntry("inventory-full", "&cInventory full, dropping bag on the ground!");
+		Lang.lang.AddValidationEntry("bag-already-open", "&cThis bag is already open!");
 		Lang.lang.AddValidationEntry("bag-in-bag-error", "&cBags cannot be put inside other bags.");
 		Lang.lang.AddValidationEntry("bag-in-shulker-error", "&cBags cannot be put inside shulker boxes.");
 		Lang.lang.AddValidationEntry("item-blacklisted", "&cSorry, this item cannot go into bags.");
@@ -176,6 +177,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("bag-lore", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L; { 
 				add("&fA well crafted bag, suited for carrying stuff."); 
+				add("&8ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ");
 				}
 			} 
 		);

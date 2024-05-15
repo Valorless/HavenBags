@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +21,8 @@ import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 
 public class BagData {
+	
+	public enum UpdateSource { NULL, PLAYER }
 	
 	private static List<Data> data = new ArrayList<Data>();
 	public static long interval;
@@ -54,6 +55,7 @@ public class BagData {
 		private String owner;
 		private List<ItemStack> content = new ArrayList<ItemStack>();
 		private boolean changed = false;
+		private boolean isOpen = false;
 		
 		public Data(@NotNull String uuid, @NotNull String owner) {
 			this.setUuid(uuid); this.setOwner(owner);
@@ -95,11 +97,18 @@ public class BagData {
 		else return false;
 	}
 	
-	public static Data GetBag(@NotNull String uuid,  ItemStack bagItem) {
+	public static Data GetBag(@NotNull String uuid,  ItemStack bagItem, UpdateSource... source) {
+		UpdateSource m_source = UpdateSource.NULL;
+		if(source.length != 0) {
+			m_source = source[0];
+		}
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				Log.Debug(Main.plugin, bag.uuid);
 				Log.Debug(Main.plugin, bag.owner);
+				if(m_source == UpdateSource.PLAYER) {
+					bag.isOpen = true;
+				}
 				//Log.Debug(Main.plugin, bag.content.toString());
 				return bag;
 			}
@@ -110,12 +119,19 @@ public class BagData {
 		return null;
 	}
 	
-	public static void UpdateBag(@NotNull String uuid, @NotNull List<ItemStack> content) {
+	public static void UpdateBag(@NotNull String uuid, @NotNull List<ItemStack> content, UpdateSource... source) {
+		UpdateSource m_source = UpdateSource.NULL;
+		if(source.length != 0) {
+			m_source = source[0];
+		}
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				try {
 					bag.setContent(content);
 					bag.changed = true;
+					if(m_source == UpdateSource.PLAYER) {
+						bag.isOpen = false;
+					}
 				}catch(Exception e) {
 					Log.Error(Main.plugin, String.format("Failed to update bag '%s'.", uuid));
 				}
@@ -125,13 +141,20 @@ public class BagData {
 		Log.Error(Main.plugin, String.format("Failed to update bag '%s', this bag was not found.", uuid));
 	}
 	
-	public static void UpdateBag(@NotNull ItemStack bagItem, @NotNull List<ItemStack> content) {
+	public static void UpdateBag(@NotNull ItemStack bagItem, @NotNull List<ItemStack> content, UpdateSource... source) {
+		UpdateSource m_source = UpdateSource.NULL;
+		if(source.length != 0) {
+			m_source = source[0];
+		}
 		String uuid = NBT.GetString(bagItem, "bag-uuid");
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				try {
 					bag.setContent(content);
 					bag.changed = true;
+					if(m_source == UpdateSource.PLAYER) {
+						bag.isOpen = false;
+					}
 				}catch(Exception e) {
 					Log.Error(Main.plugin, String.format("Failed to update bag '%s'.", uuid));
 				}
@@ -142,7 +165,7 @@ public class BagData {
 	}
 	
 	public static void CreateBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content) {
-		Data dat =new Data(uuid, owner, content);
+		Data dat = new Data(uuid, owner, content);
 		dat.changed = true;
 		data.add(dat);
 		Log.Debug(Main.plugin, "New bag data created: " + owner + "/" + uuid);
@@ -244,5 +267,35 @@ public class BagData {
 		} catch (Exception e) {
 			return new ArrayList<String>();
 		}
+	}
+	
+	public static boolean IsBagOpen(@NotNull String uuid) {
+		for(Data bag : data) {
+			if(bag.getUuid().equalsIgnoreCase(uuid)) {
+				return bag.isOpen;
+			}
+		}
+		Log.Error(Main.plugin, String.format("Failed to check if bag '%s' is open, this bag was not found.", uuid));
+		return false;
+	}
+	
+	public static void MarkBagOpen(@NotNull String uuid) {
+		for(Data bag : data) {
+			if(bag.getUuid().equalsIgnoreCase(uuid)) {
+				bag.isOpen = true;
+				return;
+			}
+		}
+		Log.Error(Main.plugin, String.format("Failed to mark bag '%s' as open, this bag was not found.", uuid));
+	}
+	
+	public static void MarkBagClosed(@NotNull String uuid) {
+		for(Data bag : data) {
+			if(bag.getUuid().equalsIgnoreCase(uuid)) {
+				bag.isOpen = false;
+				return;
+			}
+		}
+		Log.Error(Main.plugin, String.format("Failed to mark bag '%s' as closed, this bag was not found.", uuid));
 	}
 }
