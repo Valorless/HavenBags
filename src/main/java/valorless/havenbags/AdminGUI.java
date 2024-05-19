@@ -1,15 +1,10 @@
 package valorless.havenbags;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -27,7 +22,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import valorless.havenbags.GUI.GUIAction;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
-import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.skulls.SkullCreator;
 
@@ -444,6 +438,8 @@ public class AdminGUI implements Listener {
 					}
 					
 					player.openInventory(inv);
+					e.setCancelled(true);
+					return;
 				}
 				
 				if(action.equals(GUIAction.NEXT_PAGE)){
@@ -458,6 +454,8 @@ public class AdminGUI implements Listener {
 								page, content, 6);
 					}
 					player.openInventory(inv);
+					e.setCancelled(true);
+					return;
 				}
 				
 				if(action.equals(GUIAction.NONE)){
@@ -784,7 +782,15 @@ public class AdminGUI implements Listener {
 			int size = i*9;
 			
 			if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-				bagItem = SkullCreator.itemFromBase64(bagTexture);
+				if(Main.config.GetBool("bag-textures.enabled")) {
+					for(int s = 9; s <= 54; s += 9) {
+						if(size == s) {
+							bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size));
+						}
+					}
+				}else {
+					bagItem = SkullCreator.itemFromBase64(bagTexture);
+				}
 			} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 				bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 			} else {
@@ -828,7 +834,15 @@ public class AdminGUI implements Listener {
 			int size = i*9;
 			
 			if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-				bagItem = SkullCreator.itemFromBase64(bagTexture);
+				if(Main.config.GetBool("bag-textures.enabled")) {
+					for(int s = 9; s <= 54; s += 9) {
+						if(size == s) {
+							bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + size));
+						}
+					}
+				}else {
+					bagItem = SkullCreator.itemFromBase64(bagTexture);
+				}
 			} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 				bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 			} else {
@@ -918,7 +932,7 @@ public class AdminGUI implements Listener {
 	
 	List<ItemStack> PreparePlayerBags(String playeruuid) {
 		List<ItemStack> bags = new ArrayList<ItemStack>();
-		List<String> bagfiles = GetBags(playeruuid);
+		List<String> bagfiles = BagData.GetBags(playeruuid);
 		
 		//if(!playeruuid.equalsIgnoreCase("ownerless")) {
 		for(String bagUUID : bagfiles){
@@ -1008,6 +1022,12 @@ public class AdminGUI implements Listener {
 			bagMeta.setLore(lore);
 			bagItem.setItemMeta(bagMeta);
 			
+			try {
+				HavenBags.UpdateBagItem(bagItem, Content, Bukkit.getOfflinePlayer(UUID.fromString(playeruuid)));
+			}catch(Exception e) {
+				HavenBags.UpdateBagItem(bagItem, Content, null);
+			}
+			
 			bags.add(bagItem);
 		}
 		//}
@@ -1058,35 +1078,17 @@ public class AdminGUI implements Listener {
 		
 		return buttons;
 	}
-	
-	List<String> GetBagOwners(){
-		try {
-			List<String> bagOwners = Stream.of(new File(String.format("%s/bags/", Main.plugin.getDataFolder())).listFiles())
-					.filter(file -> file.isDirectory())
-					.map(File::getName)
-					.collect(Collectors.toList());
-			return bagOwners;
-		} catch (Exception e) {
-			return new ArrayList<String>();
-		}
-	}
-	
-	List<String> GetBags(String player){
-		try {
-			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
-					.filter(file -> !file.isDirectory())
-					.map(File::getName)
-					.collect(Collectors.toList());
-			for(int i = 0; i < bags.size(); i++) {
-				bags.set(i, bags.get(i).replace(".json", ""));
-			}
-			return bags;
-		} catch (Exception e) {
-			return new ArrayList<String>();
-		}
-	}
+
 	
 	List<ItemStack> LoadContent(String owner, String uuid) {
+		String id = uuid.replace(".json", "");
+		Log.Error(plugin, "id: " + id);
+		return BagData.GetBag(id, null).getContent();
+		//Config data = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
+		
+
+		//return JsonUtils.fromJson(data.Get("content").toString());
+		/*
 		String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, uuid);
 		
 		File bagData;
@@ -1110,5 +1112,6 @@ public class AdminGUI implements Listener {
 			e.printStackTrace();
 			return new ArrayList<ItemStack>();
 		}
+		*/
 	}
 }

@@ -4,18 +4,29 @@ import valorless.havenbags.hooks.*;
 import valorless.havenbags.prevention.*;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
+import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.translate.Translator;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin implements Listener {
@@ -102,6 +113,20 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("bag-material", "ENDER_CHEST");
 		config.AddValidationEntry("bag-custom-model-data", 0);
 		config.AddValidationEntry("bag-texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=");
+		config.AddValidationEntry("bag-textures.enabled", false);
+		config.AddValidationEntry("bag-textures.size-9", "");
+		config.AddValidationEntry("bag-textures.size-18", "");
+		config.AddValidationEntry("bag-textures.size-27", "");
+		config.AddValidationEntry("bag-textures.size-36", "");
+		config.AddValidationEntry("bag-textures.size-45", "");
+		config.AddValidationEntry("bag-textures.size-54", "");
+		config.AddValidationEntry("bag-textures.size-ownerless-9", "");
+		config.AddValidationEntry("bag-textures.size-ownerless-18", "");
+		config.AddValidationEntry("bag-textures.size-ownerless-27", "");
+		config.AddValidationEntry("bag-textures.size-ownerless-36", "");
+		config.AddValidationEntry("bag-textures.size-ownerless-45", "");
+		config.AddValidationEntry("bag-textures.size-ownerless-54", "");
+		
 		config.AddValidationEntry("open-sound", "ITEM_BUNDLE_INSERT");
 		config.AddValidationEntry("open-volume", 1);
 		config.AddValidationEntry("open-pitch", 1);
@@ -341,6 +366,17 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		translator = new Translator(config.GetString("language"));
 		
+		// Config-Version checks
+        BagConversion();
+        //TimeTable();
+        try {
+			DataConversion();
+		} catch (InvalidConfigurationException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+        
+		
 		BagData.Initiate();
 		
 		AutoPickup.Initiate();
@@ -381,9 +417,7 @@ public final class Main extends JavaPlugin implements Listener {
         // Optional: Add custom charts
         metrics.addCustomChart(new Metrics.SimplePie("language", () -> config.GetString("language")));
         
-        // Config-Version checks
-        BagConversion();
-        //TimeTable();
+        
     	activeBags.clear();
     }
     
@@ -490,6 +524,70 @@ public final class Main extends JavaPlugin implements Listener {
 					Log.Error(plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s", folder)));
 				}
 			}
+    	}
+    }
+    void DataConversion() throws InvalidConfigurationException {
+    	if(config.GetInt("config-version") < 4) {
+    		Log.Warning(plugin, "Old data storage found, updating bag data!");
+    		//Log.Error(plugin, "Debugging. Old data files are not removed.");
+    		Log.Error(plugin, "Old data files are not removed, in case of failure.");
+    		config.Set("config-version", 4);
+    		config.SaveConfig();
+    		int converted = 0;
+    		int failed = 0;
+    		
+    		List<String> owners	= BagData.GetBagOwners();
+    		for(String owner : owners) {
+    			List<String> bags = BagData.GetBags(owner);
+    			for(String bag : bags) {
+    				bag = bag.replace(".json", "");
+    				String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, bag);
+    				Path conf = Paths.get(String.format("%s/bags/%s/%s.yml", plugin.getDataFolder(), owner, bag));
+    				try {
+    					List<ItemStack> cont = JsonUtils.fromJson(Files.readString(Paths.get(path)));
+    	    			List<String> lines = Arrays.asList(JsonUtils.toPrettyJson(cont));
+
+    	    			try {
+    	    				//Files.write(conf, lines, StandardCharsets.UTF_8);
+    	    				//Files.createFile(conf);
+    	    				OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(conf.toString()), StandardCharsets.UTF_8);
+    	    				//writer.write(String.format("uuid: %s", bag));
+    	    				writer.close();
+    	    				
+    	    			}catch(IOException e){
+    	    				//e.printStackTrace();
+    	    			}finally {
+    	    				try {
+    	    					Config bagData = new Config(plugin, String.format("/bags/%s/%s.yml", owner, bag));
+    	    					bagData.Set("uuid", bag);
+    	    					bagData.Set("owner", owner);
+    	    					bagData.Set("creator", "null");
+    	    					bagData.Set("size", cont.size());
+    	    					//bagData.Set("texture", Main.config.Get("bag-texture"));
+    	    					bagData.Set("trusted", new ArrayList<String>());
+    	    					bagData.Set("auto-pickup", "null");
+    	    					bagData.Set("weight", 0);
+    	    					bagData.Set("weight-max", 0);
+    	    					bagData.Set("content", JsonUtils.toJson(cont).replace("'", "◊"));
+    	    					bagData.SaveConfig();
+    	    					converted++;
+    	    				}catch(Exception E) {
+    	    					// Error: Top level is not a Map.
+    	    					// Unsure why this is thrown, but the file is converted successfully without issues..
+    	    					//Log.Error(plugin, String.format("Something went wrong while converting %s!.", String.format("/bags/%s/%s", owner, bag)));
+    	    				}
+    	    			}
+    				} catch(Exception e) {
+    					failed++;
+    		    		//config.Set("config-version", 3);
+    		    		//config.SaveConfig();
+    					e.printStackTrace();
+    					Log.Error(plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s/%s.json", owner, bag)));
+    				}
+    			}
+    		}
+    		Log.Info(plugin, String.format("Converted %s Data Files!", converted));
+    		Log.Info(plugin, String.format("Failed: %s.", failed));
     	}
     }
     

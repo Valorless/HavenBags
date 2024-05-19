@@ -108,7 +108,15 @@ public class CommandListener implements CommandExecutor {
 							if (args.length >= 3){
 								int size = Utils.Clamp(Integer.parseInt(args[2]), 1, 6);
 								if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-									bagItem = SkullCreator.itemFromBase64(bagTexture);
+									if(Main.config.GetBool("bag-textures.enabled")) {
+										for(int s = 9; s <= 54; s += 9) {
+											if(size*9 == s) {
+												bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + size*9));
+											}
+										}
+									}else {
+										bagItem = SkullCreator.itemFromBase64(bagTexture);
+									}
 								} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 									bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 								} else {
@@ -147,7 +155,15 @@ public class CommandListener implements CommandExecutor {
 							try{
 								int size = Utils.Clamp(Integer.parseInt(args[1]), 1, 6);
 								if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-									bagItem = SkullCreator.itemFromBase64(bagTexture);
+									if(Main.config.GetBool("bag-textures.enabled")) {
+										for(int s = 9; s <= 54; s += 9) {
+											if(size*9 == s) {
+												bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size*9));
+											}
+										}
+									}else {
+										bagItem = SkullCreator.itemFromBase64(bagTexture);
+									}
 								} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 									bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 								} else {
@@ -200,7 +216,15 @@ public class CommandListener implements CommandExecutor {
 									//String uuid = UUID.randomUUID().toString();
 									//final Bag bag = new Bag(uuid, null, number*9, true);
 									if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-										bagItem = SkullCreator.itemFromBase64(bagTexture);
+										if(Main.config.GetBool("bag-textures.enabled")) {
+											for(int s = 9; s <= 54; s += 9) {
+												if(size == s) {
+													bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size));
+												}
+											}
+										}else {
+											bagItem = SkullCreator.itemFromBase64(bagTexture);
+										}
 									} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 										bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 									} else {
@@ -249,7 +273,15 @@ public class CommandListener implements CommandExecutor {
 									//String uuid = UUID.randomUUID().toString();
 									//final Bag bag = new Bag(uuid, null, number*9, true); //<-- Remove this & Bag.java
 									if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-										bagItem = SkullCreator.itemFromBase64(bagTexture);
+										if(Main.config.GetBool("bag-textures.enabled")) {
+											for(int s = 9; s <= 54; s += 9) {
+												if(size == s) {
+													bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size));
+												}
+											}
+										}else {
+											bagItem = SkullCreator.itemFromBase64(bagTexture);
+										}
 									} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 										bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 									} else {
@@ -346,7 +378,15 @@ public class CommandListener implements CommandExecutor {
 							List<ItemStack> contSize = new ArrayList<ItemStack>();
 							contSize = JsonUtils.fromJson(content);
 							if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-								bagItem = SkullCreator.itemFromBase64(bagTexture);
+								if(Main.config.GetBool("bag-textures.enabled")) {
+									for(int s = 9; s <= 54; s += 9) {
+										if(contSize.size() == s) {
+											bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + contSize.size()));
+										}
+									}
+								}else {
+									bagItem = SkullCreator.itemFromBase64(bagTexture);
+								}
 							} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 								bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 							} else {
@@ -841,14 +881,16 @@ public class CommandListener implements CommandExecutor {
 						if(HavenBags.IsBag(item)) {
 							if(HavenBags.IsOwner(item, player)) {
 								if(args[1].equalsIgnoreCase("none")) {
-									NBT.SetString(item, "bag-filter", null);
+									//NBT.SetString(item, "bag-filter", null);
+									BagData.SetAutoPickup(HavenBags.GetBagUUID(item), "null");
 									HavenBags.UpdateBagItem(item, null, player);
 									return true;
 								}
 								boolean c = false;
 								for(String filter : AutoPickup.GetFilterNames()) {
 									if(filter.equalsIgnoreCase(args[1])) {
-										NBT.SetString(item, "bag-filter", args[1]);
+										BagData.SetAutoPickup(HavenBags.GetBagUUID(item), args[1]);
+										//NBT.SetString(item, "bag-filter", args[1]);
 										HavenBags.UpdateBagItem(item, null, player);
 										c = true;
 										return true;
@@ -867,8 +909,10 @@ public class CommandListener implements CommandExecutor {
 						ItemStack item = player.getInventory().getItemInMainHand();
 						if(HavenBags.IsBag(item)) {
 							if(HavenBags.IsOwner(item, player)) {
-								NBT.SetString(item, "bag-filter", null);
-								HavenBags.UpdateBagLore(item, player);
+								//NBT.SetString(item, "bag-filter", null);
+								BagData.SetAutoPickup(HavenBags.GetBagUUID(item), "null");
+								HavenBags.UpdateBagItem(item, null, player);
+								//HavenBags.UpdateBagLore(item, player);
 								return true;
 							}else {
 								player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
@@ -886,7 +930,9 @@ public class CommandListener implements CommandExecutor {
 							try {
 								//Integer value = Integer.valueOf(args[1]);
 								Double value = Double.valueOf(args[1]);
-								NBT.SetDouble(item, "bag-weight-limit", value);
+								BagData.SetWeightMax(HavenBags.GetBagUUID(item), value);
+								HavenBags.UpdateBagItem(item, null, player);
+								//NBT.SetDouble(item, "bag-weight-limit", value);
 							} catch (Exception e) {
 								//e.printStackTrace();
 								player.sendMessage("§cValue must be a number.");
@@ -897,109 +943,6 @@ public class CommandListener implements CommandExecutor {
 					}
 					return true;
 				}
-				
-				// Work on this later, bags are being returned.
-				/*if(args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.open")) {
-					Player player = (Player)sender;
-					if (args.length >= 2){ // bag-uuid
-						String owner = player.getUniqueId().toString();
-						//Log.Debug(Main.plugin, owner);
-						String dirPath = String.format("%s/bags/%s/", Main.plugin.getDataFolder(), owner);
-						File dir = new File(dirPath);
-						if(!dir.exists()) {
-							sender.sendMessage(Lang.Get("player-no-bags", args[1]));
-							return false;
-						}
-							String uuid = args[1];
-							String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
-							File bagData;
-							try {
-								bagData = new File(path);
-							} catch(Exception e) {
-								sender.sendMessage(e.toString());
-								e.printStackTrace();
-								return false;
-								//sender.sendMessage(Name + "§c Something went wrong! §fPlayer tell the owner this: '§eHavenBags:CommandListener:ProcessCommand():Restore§f'. Thank you! §4❤§r");
-							}
-							if(!bagData.exists()) {
-								sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-not-found"));
-								return false;
-							}
-							String content = "";
-							try {
-								Path filePath = Path.of(path);
-								content = Files.readString(filePath);
-							} catch (IOException e) {
-								sender.sendMessage(Name + "§c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:WriteToServer()§f'. \nThank you! §4❤§r");
-								e.printStackTrace();
-							}
-							List<ItemStack> contSize = new ArrayList<ItemStack>();
-							contSize = JsonUtils.fromJson(content);
-							//final Bag bag = new Bag(uuid, null, number, true);
-							if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-								bagItem = SkullCreator.itemFromBase64(bagTexture);
-							} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-								bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
-							} else {
-								sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
-								return false;
-							}
-							NBT.SetString(bagItem, "bag-uuid", uuid);
-							NBT.SetInt(bagItem, "bag-size", contSize.size());
-							if(owner.equalsIgnoreCase("ownerless")) {
-								NBT.SetString(bagItem, "bag-owner", owner);
-								NBT.SetBool(bagItem, "bag-canBind", false);
-							}else {
-								NBT.SetString(bagItem, "bag-owner", owner);
-								NBT.SetBool(bagItem, "bag-canBind", true);
-							}
-							ItemMeta bagMeta = bagItem.getItemMeta();
-							if(Main.config.GetInt("bag-custom-model-data") != 0) {
-								bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
-							}
-							if(owner.equalsIgnoreCase("ownerless")) {
-								bagMeta.setDisplayName(Lang.Get("bag-ownerless-used"));
-							}else {
-								bagMeta.setDisplayName(Lang.Get("bag-bound-name", owner));
-							}
-								List<String> items = new ArrayList<String>();
-								List<ItemStack> cont = new ArrayList<ItemStack>();
-								for(int i = 0; i < contSize.size(); i++) {
-									cont.add(contSize.get(i));
-									if(contSize.get(i) != null) {
-										if(contSize.get(i).getItemMeta().hasDisplayName()) {
-											if(contSize.get(i).getAmount() != 1) {
-												items.add("§7" + contSize.get(i).getItemMeta().getDisplayName() + " §7x" + contSize.get(i).getAmount());
-												items.add(Lang.Get("bag-content-item-amount", contSize.get(i).getItemMeta().getDisplayName(), contSize.get(i).getAmount()));
-											} else {
-												items.add("§7" + contSize.get(i).getItemMeta().getDisplayName());
-												items.add(Lang.Get("bag-content-item", contSize.get(i).getItemMeta().getDisplayName()));
-											}
-										}else {
-											if(contSize.get(i).getAmount() != 1) {
-												items.add("§7" + FixMaterialName(contSize.get(i).getType().name()) + " §7x" + contSize.get(i).getAmount());
-												items.add(Lang.Get("bag-content-item-amount", FixMaterialName(contSize.get(i).getType().name()), contSize.get(i).getAmount()));
-											} else {
-												items.add(Lang.Get("bag-content-item", FixMaterialName(contSize.get(i).getType().name())));
-											}
-										}
-									}
-								}
-							
-							if(owner.equalsIgnoreCase("ownerless")) {
-								bagMeta.setDisplayName(Lang.Get("bag-ownerless-used"));
-							}else {
-								bagMeta.setDisplayName(Lang.Get("bag-bound-name", owner));
-							}
-							bagItem.setItemMeta(bagMeta);
-
-							BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(bagItem, "bag-size"), player, bagItem, bagItem.getItemMeta());
-							gui.OpenInventory(player);
-						}
-					
-					return true;
-				}
-				*/
 
 				if(args[0].equalsIgnoreCase("help")) {
 					Player player = (Player)sender;
@@ -1023,6 +966,14 @@ public class CommandListener implements CommandExecutor {
 						if(sender.hasPermission("havenbags.autopickup") || sender.hasPermission("havenbags.help")) {
 							message.AddNewLine(" &e/bags autopickup <filter>",
 									"&eAutomatically put items inside the bag.");
+						}
+						if(sender.hasPermission("havenbags.trust") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags trust <player>",
+									"&eAllow trusted player to open your bound bag.");
+						}
+						if(sender.hasPermission("havenbags.trust") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags untrust <player>",
+									"&eRemove a trusted player from accessing your bound bag.");
 						}
 						if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {
 							message.AddNewLine(" &e/bags gui",
@@ -1101,6 +1052,14 @@ public class CommandListener implements CommandExecutor {
 							help.add("&e/bags autopickup <filter>");
 							help.add("&7&o Automatically put items inside the bag.");
 						}
+						if(sender.hasPermission("havenbags.trust") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags trust <player>");
+							help.add("&7&o Allow trusted player to open your bound bag.");
+						}
+						if(sender.hasPermission("havenbags.trust") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags untrust <player>");
+							help.add("&7&o Remove a trusted player from accessing your bound bag.");
+						}
 						if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {
 							help.add("&e/bags gui");
 							help.add("&7&o Opens Admin GUI");
@@ -1174,12 +1133,13 @@ public class CommandListener implements CommandExecutor {
 									return false;
 								}
 								try {
-									List<String> list = new ArrayList<String>();
-									if(NBT.Has(item, "bag-trust")) {
-										list = NBT.GetStringList(item, "bag-trust");
-									}
-									list.add(args[1]);
-									NBT.SetStringList(item, "bag-trust", list);
+									//List<String> list = new ArrayList<String>();
+									//if(NBT.Has(item, "bag-trust")) {
+										//list = NBT.GetStringList(item, "bag-trust");
+									//}
+									//list.add(args[1]);
+									//NBT.SetStringList(item, "bag-trust", list);
+									BagData.AddTrusted(HavenBags.GetBagUUID(item), args[1]);
 									HavenBags.UpdateBagItem(item, null, player);
 									return true;
 								}catch(Exception e) {
@@ -1205,17 +1165,15 @@ public class CommandListener implements CommandExecutor {
 						if(HavenBags.IsBag(item)) {
 							if(HavenBags.IsOwner(item, player)) {
 								try {
-									List<String> list = NBT.GetStringList(item, "bag-trust");
-									for(int i = 0; i < list.size(); i++) {
-										if(list.get(i).equalsIgnoreCase(args[1])) {
-											list.remove(i);
-										}
-									}
-									if(list.size() == 0) {
-										NBT.SetStringList(item, "bag-trust", null);
-									}else {
-										NBT.SetStringList(item, "bag-trust", list);
-									}
+									//List<String> list = NBT.GetStringList(item, "bag-trust");
+									//for(int i = 0; i < list.size(); i++) {
+										//if(list.get(i).equalsIgnoreCase(args[1])) {
+											//list.remove(i);
+										//}
+									//}
+									BagData.RemoveTrusted(HavenBags.GetBagUUID(item), args[1]);
+									//NBT.SetStringList(item, "bag-trust", list);
+									
 									HavenBags.UpdateBagItem(item, null, player);
 									return true;
 								}catch(Exception e) {

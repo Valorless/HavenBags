@@ -9,9 +9,12 @@ import javax.annotation.Nullable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
+
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
@@ -47,6 +50,11 @@ public class HavenBags {
 			}
 		}
 		return false;
+	}
+	
+	public static String GetBagUUID(@NotNull ItemStack item) {
+		if(IsBag(item)) return NBT.GetString(item, "bag-uuid");
+		else return null;
 	}
 	
 	public enum BagState { Null, New, Used }
@@ -208,8 +216,52 @@ public class HavenBags {
         return true;
 	}*/
 	
-	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, Player player) {
+	static void UpdateNBT(ItemStack bag) {
+		String uuid = NBT.GetString(bag, "bag-uuid");
+		//String display = bag.getItemMeta().getDisplayName();
+		String id = uuid.replace(".json", "");
+		Config data = BagData.GetBag(id, null).getData();
+		
+		//ItemStack skull = SkullCreator.itemFromBase64(data.GetString("texture"));
+		//if(!Utils.IsStringNullOrEmpty(data.GetString("texture"))) {
+		//	bag.setItemMeta((SkullMeta)SkullCreator.itemFromBase64(data.GetString("texture")).getItemMeta());
+		//}
+		
+		//ItemMeta meta = bag.getItemMeta();
+		//meta.setDisplayName(display);
+		//bag.setItemMeta(meta);
+		
+		//NBT.SetString(bag, "bag-uuid", uuid);
+		
+		NBT.SetString(bag, "bag-owner", data.GetString("owner"));
+		
+		if(data.GetString("owner").equalsIgnoreCase("ownerless")) {
+			NBT.SetBool(bag, "can-bind", false);
+		} else {
+			NBT.SetBool(bag, "can-bind", true);
+		}
+		NBT.SetString(bag, "bag-owner", data.GetString("owner"));
+		NBT.SetInt(bag, "bag-size", data.GetInt("size"));
+		if(!data.GetString("auto-pickup").equalsIgnoreCase("null")) {
+			NBT.SetString(bag, "bag-filter", data.GetString("auto-pickup"));
+		}else {
+			NBT.SetString(bag, "bag-filter", null);
+		}
+		if(Main.weight.GetBool("enabled")){
+			if(data.GetFloat("weight-max") > 0) {
+				NBT.SetDouble(bag, "bag-weight", data.GetFloat("weight"));
+				NBT.SetDouble(bag, "bag-weight-limit", data.GetFloat("weight-max"));
+			}
+		}
+		NBT.SetString(bag, "bag-creator", data.GetString("creator"));
+		NBT.SetStringList(bag, "bag-trust", data.GetStringList("trusted"));
+	}
+	
+	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, OfflinePlayer player) {
+		UpdateNBT(bag);
+		
     	String owner = NBT.GetString(bag, "bag-owner");
+    	//String owner = BagData.GetOwner(HavenBags.GetBagUUID(bag));
     	
     	List<Placeholder> placeholders = new ArrayList<Placeholder>();
 
@@ -305,6 +357,10 @@ public class HavenBags {
         		if(line.contains("%bag-weight%")) continue;
         	}
         	lore.add(Lang.Parse(line, placeholders, player));
+        }
+        
+        for(int i = 0; i < lore.size(); i++) {
+        	if(lore.get(i).contains("%bag-weight%")) lore.remove(i);
         }
         
         if(a > 0 && Lang.lang.GetBool("show-bag-content")) {
@@ -411,6 +467,7 @@ public class HavenBags {
 					weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
 				}
 				NBT.SetDouble(bag, "bag-weight", weight);
+				BagData.GetBag(uuid, bag).getData().Set("weight", weight);
 				return weight;
 			} catch(Exception e) {
 				return (double) 0;
@@ -474,8 +531,10 @@ public class HavenBags {
 		}else {
 			if(Main.weight.GetBool("weight-per-size")) {
 				NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat("weight-size-" + NBT.GetInt(bag, "bag-size")));
+				BagData.GetBag(HavenBags.GetBagUUID(bag), bag).getData().Set("weight", Main.weight.GetFloat("weight-size-" + NBT.GetInt(bag, "bag-size")));
 			}else {
 				NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat("weight-limit"));
+				BagData.GetBag(HavenBags.GetBagUUID(bag), bag).getData().Set("weight", Main.weight.GetFloat("weight-limit"));
 			}
 		}
 		return false;

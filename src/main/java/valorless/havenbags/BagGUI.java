@@ -299,7 +299,7 @@ public class BagGUI implements Listener {
     	
     	if(!HavenBags.IsBagOpen(bagItem)) return;
     	String uuid = NBT.GetString(bagItem, "bag-uuid");
-    	if(!BagData.IsBagOpen(uuid)) return;
+    	if(!BagData.IsBagOpen(uuid, bagItem)) return;
 
 		SFX.Play(Main.config.GetString("close-sound"), 
 				Main.config.GetFloat("close-volume").floatValue(), 

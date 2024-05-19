@@ -99,8 +99,13 @@ public class Encumbering implements Listener {
 			String[] split = eff.split(":");
 			PotionEffectType type = PotionEffectType.getByName(split[0]);
 			int level = Integer.valueOf(split[1]) - 1;
-			PotionEffect effect = new PotionEffect(type, Integer.MAX_VALUE, level, false, false, true);
-			effects.add(effect);
+			try {
+				PotionEffect effect = new PotionEffect(type, Integer.MAX_VALUE, level, false, false, true);
+				effects.add(effect);
+			}catch(Exception e) {
+				Log.Error(Main.plugin, "[Encumbering] Failed to load PotionEffect '" + split[0] + "'");
+				Log.Error(Main.plugin, "[Encumbering] It may have a different name on some server versions.");
+			}
 			Log.Debug(Main.plugin, "[Encumbering] " + eff);
 		}
 	}

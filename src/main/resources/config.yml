@@ -56,6 +56,24 @@ bag-custom-model-data: 0
 # Inside "For Developers" is a value based off of a large amount of random letters, numbers and symbols. That is the Base64 texture.
 bag-texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0='
 
+# Want textures per size instead?
+# You can fill these with the same method as above.
+# Existing bags are not updated.
+bag-textures:
+ enabled: false
+ size-9: ''
+ size-18: ''
+ size-27: ''
+ size-36: ''
+ size-45: ''
+ size-54: ''
+ size-ownerless-9: ''
+ size-ownerless-18: ''
+ size-ownerless-27: ''
+ size-ownerless-36: ''
+ size-ownerless-45: ''
+ size-ownerless-54: ''
+
 # Sound played when opening a bag.
 # Sounds: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
 # 1.17 Sounds: https://helpch.at/docs/1.17/org/bukkit/Sound.html
