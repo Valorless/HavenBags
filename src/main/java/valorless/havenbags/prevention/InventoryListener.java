@@ -55,6 +55,11 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
+        if(e.getHotbarButton() != -1) {
+        	//Log.Debug(plugin, "" + e.getHotbarButton());
+        	e.setCancelled(true);
+        	return;
+        }
 		Shulkers(e);
 		Containers(e);
     }

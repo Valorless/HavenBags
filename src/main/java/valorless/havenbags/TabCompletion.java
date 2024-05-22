@@ -68,6 +68,9 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.trust")) {
 				subCommands.add("untrust");
 			}
+			if (sender.hasPermission("havenbags.texture")) {
+				subCommands.add("texture");
+			}
 
 			StringUtil.copyPartialMatches(args[0], subCommands, completions);
 		}
@@ -127,6 +130,9 @@ public class TabCompletion implements TabCompleter {
 						StringUtil.copyPartialMatches(cmd, list, completions);
 					}
 				}
+			}
+			if (args[0].equalsIgnoreCase("texture") && sender.hasPermission("havenbags.texture")) {
+				StringUtil.copyPartialMatches(cmd, getTextures(), completions);
 			}
 			/*
 			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.open")) {
@@ -203,6 +209,14 @@ public class TabCompletion implements TabCompleter {
 			playerNames.add(player.getName());
 		}
 		return playerNames;
+	}
+	
+	private List<String> getTextures() {
+		List<String> textures = new ArrayList<>();
+		for (Object texture : Main.textures.GetConfigurationSection("textures").getKeys(false).toArray()) {
+			textures.add(texture.toString());
+		}
+		return textures;
 	}
 	
 	public List<String> GetBags(String player){

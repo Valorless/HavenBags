@@ -232,6 +232,23 @@ public class HavenBags {
 		//bag.setItemMeta(meta);
 		
 		//NBT.SetString(bag, "bag-uuid", uuid);
+
+		if(bag.getType() == Material.PLAYER_HEAD) {
+			String texture = data.GetString("texture");
+			if(!Utils.IsStringNullOrEmpty(texture)) {
+				if(!texture.contains("null")) {
+					BagData.setTextureValue(bag, texture);
+				}
+			}
+		}else {
+			int cmd = data.GetInt("custommodeldata");
+			if(cmd != 0) {
+				if(bag.hasItemMeta()) {
+					bag.getItemMeta().setCustomModelData(cmd);
+				}
+			}
+		}
+		
 		
 		NBT.SetString(bag, "bag-owner", data.GetString("owner"));
 		

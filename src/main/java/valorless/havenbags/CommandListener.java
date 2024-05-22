@@ -70,6 +70,7 @@ public class CommandListener implements CommandExecutor {
 						AutoPickup.Initiate();
 						Main.weight.Reload();
 						Encumbering.Reload();
+						Main.textures.Reload();
 						Main.translator = new Translator(Main.config.GetString("language"));
 
 						if (args.length >= 2){
@@ -767,13 +768,21 @@ public class CommandListener implements CommandExecutor {
 						if(!Utils.IsStringNullOrEmpty(uuid)) { info = info + "\n  §fUUID: §e" + uuid; }
 						if(!Utils.IsStringNullOrEmpty(owner)) { 
 							if (!owner.equalsIgnoreCase("ownerless") && !owner.equalsIgnoreCase("null")) {
-								info = info + String.format("\n  §fOwner: §e%s (%s)", owner, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()); 
+								try {
+									info = info + String.format("\n  §fOwner: §e%s (%s)", owner, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()); 
+								} catch(Exception e) {
+									info = info + "\n  §fOwner: §4Error";
+								}
 							}else {
 								info = info + "\n  §fOwner: §e" + owner;
 							}
 						}
-						if(!Utils.IsStringNullOrEmpty(creator)) {
-							info = info + String.format("\n  §fCreator: §e%s (%s)", creator, Bukkit.getOfflinePlayer(UUID.fromString(creator)).getName());
+						if(!Utils.IsStringNullOrEmpty(creator) && !creator.equalsIgnoreCase("null")) {
+							try {
+								info = info + String.format("\n  §fCreator: §e%s (%s)", creator, Bukkit.getOfflinePlayer(UUID.fromString(creator)).getName());
+							} catch(Exception e) {
+								info = info + "\n  §fCreator: §4Error";
+							}
 						}else {
 							info = info + "\n  §fCreator: §enull";
 						}
@@ -975,6 +984,11 @@ public class CommandListener implements CommandExecutor {
 							message.AddNewLine(" &e/bags untrust <player>",
 									"&eRemove a trusted player from accessing your bound bag.");
 						}
+						if(sender.hasPermission("havenbags.texture") || sender.hasPermission("havenbags.help")) {
+							message.AddNewLine(" &e/bags texture <texture or base64>",
+									"&e Set the texture of the bag you're holding."
+									+ "You can only change textures of bags you own.");
+						}
 						if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {
 							message.AddNewLine(" &e/bags gui",
 									"&eOpens Admin GUI.");
@@ -1059,6 +1073,11 @@ public class CommandListener implements CommandExecutor {
 						if(sender.hasPermission("havenbags.trust") || sender.hasPermission("havenbags.help")) {
 							help.add("&e/bags untrust <player>");
 							help.add("&7&o Remove a trusted player from accessing your bound bag.");
+						}
+						if(sender.hasPermission("havenbags.texture") || sender.hasPermission("havenbags.help")) {
+							help.add("&e/bags texture <texture or base64>");
+							help.add("&7&o Set the texture of the bag you're holding.");
+							help.add("&7&o You can only change textures of bags you own.");
 						}
 						if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {
 							help.add("&e/bags gui");
@@ -1178,6 +1197,28 @@ public class CommandListener implements CommandExecutor {
 									return true;
 								}catch(Exception e) {
 									e.printStackTrace();
+								}
+								
+							}else {
+								player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+							}
+						}
+						return true;
+					}
+					return false;
+				}
+				if(args[0].equalsIgnoreCase("texture") && sender.hasPermission("havenbags.texture")) {
+					Player player = (Player)sender;
+					if(args.length >= 2) {
+						ItemStack item = player.getInventory().getItemInMainHand();
+						if(HavenBags.IsBag(item)) {
+							if(HavenBags.IsOwner(item, player) || player.hasPermission("havenbags.bypass")) {
+								if(args[1].chars().count() > 30) {
+									BagData.GetBag(HavenBags.GetBagUUID(item), item).setTexture(args[1]);
+									BagData.setTextureValue(item, args[1]);
+								}else {
+									BagData.GetBag(HavenBags.GetBagUUID(item), item).setTexture(Main.textures.GetString(String.format("textures.%s", args[1])));
+									BagData.setTextureValue(item, Main.textures.GetString(String.format("textures.%s", args[1])));
 								}
 								
 							}else {

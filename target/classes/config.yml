@@ -5,7 +5,7 @@
 ############################################################
 
 # DO NOT EDIT
-config-version: 3
+config-version: 4
 
 # Additional messages used for debugging.
 debug: false
@@ -125,6 +125,23 @@ auto-pickup-inventory:
 # Can players trust other players with access to their bound bags?
 trusting: true
 
+# Bag Upgrades
+# If enabled, remember to allow "ANVIL" in 'allowed-containers'.
+upgrades:
+ # Can players upgrade bags in Anvils?
+ enabled: false
+ # Should bags keep their texture or upgrade to the next bag size?
+ # (Ignored if 'bag-textures' is disabled)
+ keep-texture: false
+ # Bag upgrades.
+ # <> = Optional
+ # MATERIAL:AMOUNT:<CUSTOMMODELDATA>
+ from-9-to-18: EMERALD:5:90000
+ from-18-to-27: DIAMOND:10:90001
+ from-27-to-36: NETHERITE_INGOT:1:90002
+ from-36-to-45: NETHERITE_BLOCK:1:90003
+ from-45-to-54: END_CRYSTAL:1
+
 # Which containers are the player allowed to interact with bags?
 # Use this to prevent the player using bags in unintended ways, such as crafting.
 # Full list of InventoryTypes: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/inventory/InventoryType.html
@@ -135,6 +152,7 @@ allowed-containers:
 - BARREL
 - SHULKER_BOX
 - MERCHANT
+- ANVIL
 
 # Specify if bags should not work in specific worlds.
 # Worlds do not include _nether or _the_end.

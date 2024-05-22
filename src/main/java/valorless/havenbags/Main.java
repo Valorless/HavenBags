@@ -37,6 +37,7 @@ public final class Main extends JavaPlugin implements Listener {
 	public static Config weight;
 	public static Config blacklist;
 	public static Config plugins;
+	public static Config textures;
 	public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
 	int newupdate = 9999999;
@@ -60,6 +61,7 @@ public final class Main extends JavaPlugin implements Listener {
 		weight = new Config(this, "weight.yml");
 		blacklist = new Config(this, "blacklist.yml");;
 		plugins = new Config(this, "plugins.yml");
+		textures = new Config(this, "textures.yml");
 	}
 	
 	@SuppressWarnings("unused")
@@ -150,6 +152,14 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("auto-pickup-inventory.events.onBlockBreak", true);
 		config.AddValidationEntry("auto-pickup-inventory.events.onItemPickup", true);
 		config.AddValidationEntry("trusting", true);
+		config.AddValidationEntry("upgrades.enabled", false);
+		config.AddValidationEntry("upgrades.keep-texture", false);
+		config.AddValidationEntry("upgrades.from-9-to-18", "EMERALD:5:90000");
+		config.AddValidationEntry("upgrades.from-18-to-27", "DIAMOND:10:90001");
+		config.AddValidationEntry("upgrades.from-27-to-36", "NETHERITE_INGOT:1:90002");
+		config.AddValidationEntry("upgrades.from-36-to-45", "EMERALD:5:NETHERITE_BLOCK:1:90003");
+		config.AddValidationEntry("upgrades.from-45-to-54", "END_CRYSTAL:1");
+		
 		config.AddValidationEntry("blacklist", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L;
 		{ add("world_name"); add("world_name_nether"); add("another_world"); }} );
@@ -477,6 +487,9 @@ public final class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new Encumbering(), this);
 		Encumbering.Reload();
 		
+		Log.Debug(plugin, "Registering BagUpgrade");
+		getServer().getPluginManager().registerEvents(new BagUpgrade(), this);
+		
 		Bukkit.getPluginManager().registerEvents(this, this);
     }
 
@@ -545,7 +558,8 @@ public final class Main extends JavaPlugin implements Listener {
     				Path conf = Paths.get(String.format("%s/bags/%s/%s.yml", plugin.getDataFolder(), owner, bag));
     				try {
     					List<ItemStack> cont = JsonUtils.fromJson(Files.readString(Paths.get(path)));
-    	    			List<String> lines = Arrays.asList(JsonUtils.toPrettyJson(cont));
+    	    			@SuppressWarnings("unused")
+						List<String> lines = Arrays.asList(JsonUtils.toPrettyJson(cont));
 
     	    			try {
     	    				//Files.write(conf, lines, StandardCharsets.UTF_8);

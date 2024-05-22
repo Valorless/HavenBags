@@ -1,6 +1,6 @@
 name: HavenBags
 main: valorless.havenbags.Main
-version: 1.17.0.1308
+version: 1.18.1.1392
 author: Valorless
 api-version: 1.17
 website: https://www.spigotmc.org/resources/110420/
@@ -27,6 +27,11 @@ permissions:
       havenbags.open.45: true
       havenbags.open.54: true
       havenbags.trust: true
+      havenbags.upgrade.9: true
+      havenbags.upgrade.18: true
+      havenbags.upgrade.27: true
+      havenbags.upgrade.36: true
+      havenbags.upgrade.45: true
   havenbags.admin:
     description: Gives access to all admin commands.
     children:
@@ -40,6 +45,7 @@ permissions:
       havenbags.gui: true
       havenbags.weight: true
       havenbags.help: true
+      havenbags.texture: true
   havenbags.reload:
     description: Allows you to reload the configuration.
     default: op
@@ -105,5 +111,23 @@ permissions:
     default: op
   havenbags.trust:
     description: Allows you to trust other players to open your bag.
+    default: op
+  havenbags.texture:
+    description: Allows you to set textures of bags you own.
+    default: op
+  havenbags.upgrade.9:
+    description: Allows you to upgrade bags with a size of 9.
+    default: op
+  havenbags.upgrade.18:
+    description: Allows you to upgrade bags with a size of 18.
+    default: op
+  havenbags.upgrade.27:
+    description: Allows you to upgrade bags with a size of 27.
+    default: op
+  havenbags.upgrade.36:
+    description: Allows you to upgrade bags with a size of 36.
+    default: op
+  havenbags.upgrade.45:
+    description: Allows you to upgrade bags with a size of 45.
     default: op
   

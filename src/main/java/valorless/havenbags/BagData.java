@@ -1,20 +1,33 @@
 package valorless.havenbags;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+
+import valorless.havenbags.Main.ServerVersion;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
+import valorless.valorlessutils.nbt.NBTCompound;
+import valorless.valorlessutils.nbt.NBTCompoundList;
+import valorless.valorlessutils.nbt.NBTItem;
+import valorless.valorlessutils.nbt.NBTListCompound;
+import valorless.valorlessutils.skulls.SkullCreator;
 
 public class BagData {
 	
@@ -33,7 +46,7 @@ public class BagData {
             	SaveData();
             }
         }, interval, interval);
-		Log.Debug(Main.plugin, "Loaded bags: " + data.size());
+		Log.Info(Main.plugin, "Loaded bags: " + data.size());
 	}
 	
 	public static void Reload() {
@@ -79,7 +92,15 @@ public class BagData {
 		}
 		
 		public List<ItemStack> getContent(){
-			return JsonUtils.fromJson(data.Get("content").toString().replace("◊","'"));
+			return JsonUtils.fromJson(data.GetString("content").replace("◊","'"));
+		}
+		
+		public String getTexture() {
+			return data.GetString("texture");
+		}
+		
+		public void setTexture(String base64) {
+			data.Set("texture", base64);
 		}
 
 		public Config getData() {
@@ -160,18 +181,38 @@ public class BagData {
 				try {
 					//bag.setContent(content);
 					bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
+					if(bagItem.getType() == Material.PLAYER_HEAD) {
+						bag.data.Set("texture", getTextureValue(bagItem));
+						bag.data.Set("custommodeldata", 0);
+					}else {
+						if(bagItem.hasItemMeta()) {
+							if(bagItem.getItemMeta().hasCustomModelData()) {
+								bag.data.Set("custommodeldata", bagItem.getItemMeta().getCustomModelData());
+							}else {
+								bag.data.Set("custommodeldata", 0);
+							}
+						}else {
+							bag.data.Set("custommodeldata", 0);
+						}
+						bag.data.Set("texture", Main.config.GetString("bag-texture"));
+					}
+					//bag.data.Set("texture", getTextureValue(bagItem));
 					bag.changed = true;
 					if(m_source == UpdateSource.PLAYER) {
 						bag.isOpen = false;
 					}
 				}catch(Exception e) {
 					Log.Error(Main.plugin, String.format("Failed to update bag '%s'.", uuid));
+					if(m_source == UpdateSource.PLAYER) {
+					}
 				}
 				return;
 			}
 		}
 		Log.Error(Main.plugin, String.format("Failed to update bag '%s', this bag was not found.", uuid));
 	}
+	
+	
 	
 	public static void CreateBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content, Player creator, ItemStack bag) {
 		//String config = String.format("/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
@@ -207,7 +248,21 @@ public class BagData {
 					bagData.Set("owner", owner);
 					bagData.Set("creator", creator.getUniqueId().toString());
 					bagData.Set("size", content.size());
-					//bagData.Set("texture", NBT.GetString(bag, "SkullOwner.Properties.textures.Value"));
+					if(bag.getType() == Material.PLAYER_HEAD) {
+						bagData.Set("texture", getTextureValue(bag));
+						bagData.Set("custommodeldata", 0);
+					}else {
+						if(bag.hasItemMeta()) {
+							if(bag.getItemMeta().hasCustomModelData()) {
+								bagData.Set("custommodeldata", bag.getItemMeta().getCustomModelData());
+							}else {
+								bagData.Set("custommodeldata", 0);
+							}
+						}else {
+							bagData.Set("custommodeldata", 0);
+						}
+						bagData.Set("texture", Main.config.GetString("bag-texture"));
+					}
 					bagData.Set("trusted", new ArrayList<String>());
 					bagData.Set("auto-pickup", "null");
 					bagData.Set("weight", 0);
@@ -215,6 +270,7 @@ public class BagData {
 					bagData.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
 					bagData.SaveConfig();
 				}catch(Exception E) {
+					E.printStackTrace();
 					// Error: Top level is not a Map.
 					// Unsure why this is thrown, but the file is converted successfully without issues..
 					//Log.Error(plugin, String.format("Something went wrong while converting %s!.", String.format("/bags/%s/%s", owner, bag)));
@@ -311,10 +367,11 @@ public class BagData {
 		try {
 			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
 					.filter(file -> !file.isDirectory())
+					.filter(file -> !file.getName().contains(".json"))
 					.map(File::getName)
 					.collect(Collectors.toList());
 			for(int i = 0; i < bags.size(); i++) {
-				if(bags.get(i).contains(".json")) continue;
+				//Log.Debug(Main.plugin, bags.get(i));
 				bags.set(i, bags.get(i).replace(".yml", ""));
 			}
 			return bags;
@@ -476,4 +533,76 @@ public class BagData {
 			}
 		}
 	}
+	
+	@SuppressWarnings("deprecation")
+	public static String getTextureValue(ItemStack head) {
+        if (head == null || head.getType() != Material.PLAYER_HEAD) {
+            throw new IllegalArgumentException("ItemStack must be a Player Head");
+        }
+
+        // Use NBTAPI to access the NBT data
+        NBTItem nbti = new NBTItem(head);
+        if (!nbti.hasKey("SkullOwner")) {
+            return null;
+        }
+
+        // Access the SkullOwner NBT compound
+        NBTCompound skullOwner = nbti.getCompound("SkullOwner");
+        if (skullOwner == null || !skullOwner.hasKey("Properties")) {
+            return null;
+        }
+
+        // Access the Properties NBT compound
+        NBTCompound properties = skullOwner.getCompound("Properties");
+        if (properties == null || !properties.hasKey("textures")) {
+            return null;
+        }
+
+        // Access the textures NBT list
+        NBTCompoundList textures = properties.getCompoundList("textures");
+        if (textures == null || textures.size() == 0) {
+            return null;
+        }
+
+        // Get the first texture compound
+        NBTListCompound texture = textures.get(0);
+        if (texture == null || !texture.hasKey("Value")) {
+            return null;
+        }
+
+        // Return the texture value
+        return texture.getString("Value");
+    }
+	
+	public static void setTextureValue(ItemStack head, String textureValue) {
+		if (head == null || head.getType() != Material.PLAYER_HEAD) {
+        	throw new IllegalArgumentException("ItemStack must be a Player Head");
+    	}
+		if(Main.server == ServerVersion.v1_17 || Main.server == ServerVersion.v1_17_1) {
+			SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+
+	        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+	        profile.getProperties().put("textures", new Property("textures", textureValue));
+
+	        try {
+	            Field profileField = headMeta.getClass().getDeclaredField("profile");
+	            profileField.setAccessible(true);
+	            profileField.set(headMeta, profile);
+	        } catch (NoSuchFieldException | IllegalAccessException e) {
+	            e.printStackTrace();
+	        }
+
+	        head.setItemMeta(headMeta);
+		}
+		else {
+        
+        	SkullMeta meta = (SkullMeta) head.getItemMeta();
+        	SkullMeta m_new = (SkullMeta) SkullCreator.itemFromBase64(textureValue).getItemMeta();
+        	//meta.getOwnerProfile().setTextures(m_new.getOwnerProfile().getTextures());
+        	//m_new.setDisplayName(meta.getDisplayName());
+        	meta.setOwnerProfile(m_new.getOwnerProfile());
+        	head.setItemMeta(meta);
+        	//m_new.getOwnerProfile().
+		}
+    }
 }

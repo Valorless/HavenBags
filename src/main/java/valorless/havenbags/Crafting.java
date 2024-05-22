@@ -2,6 +2,7 @@ package valorless.havenbags;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -157,7 +158,8 @@ public class Crafting implements Listener {
 			if(r.getKey() == null) return;
 			String recipe = r.getKey().getKey();
 			if(!Recipes.contains(r.getKey())) return;
-		
+			Log.Debug(Main.plugin, r.getKey().toString());
+			
 			for(HumanEntity player : event.getViewers()) {
 				//Log.Error(HavenBags.plugin, config.GetString("recipes." + recipe + ".permission"));
 				if(!player.hasPermission(config.GetString("recipes." + recipe + ".permission"))) {
