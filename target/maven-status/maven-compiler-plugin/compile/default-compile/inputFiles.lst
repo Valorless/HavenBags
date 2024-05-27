@@ -1,14 +1,15 @@
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Main.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\ActiveBag.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\InventoryListener.java
-E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagMeta.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagGUI.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\AutoPickup.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\EquipPrevention.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\hooks\PvPManagerHook.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\CraftPrevention.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\TabCompletion.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\HavenBags.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Metrics.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagSkin.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\hooks\PlaceholderAPIHook.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\AdminGUI.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\CommandListener.java
@@ -18,6 +19,7 @@ E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagDat
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Lang.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\CloneListener.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Encumbering.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\utils\Base64Validator.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Placeholder.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\UpdateChecker.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\PlacementBlocker.java

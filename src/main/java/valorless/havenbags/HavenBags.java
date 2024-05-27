@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import valorless.havenbags.BagData.Data;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
@@ -253,11 +254,10 @@ public class HavenBags {
 		NBT.SetString(bag, "bag-owner", data.GetString("owner"));
 		
 		if(data.GetString("owner").equalsIgnoreCase("ownerless")) {
-			NBT.SetBool(bag, "can-bind", false);
+			NBT.SetBool(bag, "bag-canBind", false);
 		} else {
-			NBT.SetBool(bag, "can-bind", true);
+			NBT.SetBool(bag, "bag-canBind", true);
 		}
-		NBT.SetString(bag, "bag-owner", data.GetString("owner"));
 		NBT.SetInt(bag, "bag-size", data.GetInt("size"));
 		if(!data.GetString("auto-pickup").equalsIgnoreCase("null")) {
 			NBT.SetString(bag, "bag-filter", data.GetString("auto-pickup"));
@@ -266,16 +266,25 @@ public class HavenBags {
 		}
 		if(Main.weight.GetBool("enabled")){
 			if(data.GetFloat("weight-max") > 0) {
-				NBT.SetDouble(bag, "bag-weight", data.GetFloat("weight"));
 				NBT.SetDouble(bag, "bag-weight-limit", data.GetFloat("weight-max"));
+			}else {
+				if(Main.weight.GetBool("weight-per-size")) {
+					NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat(String.format("weight-size-%s", data.GetInt("size"))));
+					BagData.SetWeightMax(id, Main.weight.GetFloat(String.format("weight-size-%s", data.GetInt("size"))));
+				}else {
+					NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat("weight-limit"));
+					BagData.SetWeightMax(id, Main.weight.GetFloat("weight-limit"));
+				}
 			}
 		}
 		NBT.SetString(bag, "bag-creator", data.GetString("creator"));
 		NBT.SetStringList(bag, "bag-trust", data.GetStringList("trusted"));
 	}
 	
-	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, OfflinePlayer player) {
-		UpdateNBT(bag);
+	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, OfflinePlayer player, boolean...preview) {
+		if(preview == null) {
+			UpdateNBT(bag);
+		}
 		
     	String owner = NBT.GetString(bag, "bag-owner");
     	//String owner = BagData.GetOwner(HavenBags.GetBagUUID(bag));
@@ -406,11 +415,11 @@ public class HavenBags {
 		bag.setItemMeta(bagMeta);
 	}
 	
-	public static void UpdateBagLore(ItemStack bag, Player player) {
+	public static void UpdateBagLore(ItemStack bag, Player player, boolean...preview) {
 		try {
-			UpdateBagItem(bag, LoadBagContentFromServer(bag, player), player);
+			UpdateBagItem(bag, LoadBagContentFromServer(bag, player), player, preview);
 		} catch (Exception e) {
-			UpdateBagItem(bag, null, player);
+			UpdateBagItem(bag, null, player, preview);
 		}
 	}
 	
@@ -697,6 +706,8 @@ public class HavenBags {
 		if(!blacklist.GetBool("enabled")) {
 			return false;
 		}
+		if(item.getType() == Material.AIR) return false;
+		//if(HavenBags.IsBag(item));
 		Log.Debug(Main.plugin, "Is item blacklisted?");	
 		//Log.Debug(Main.plugin, item.toString());	
 		List<Material> materials = new ArrayList<Material>();
@@ -781,5 +792,38 @@ public class HavenBags {
 			}
 		}
 		return false;
+	}
+	
+	public static ItemStack CreateToken(String value, String...skin) {
+		String name = Main.config.GetString("skin-token.display-name");
+		Material material = Main.config.GetMaterial("skin-token.material");
+		int cmd = Main.config.GetInt("skin-token.custommodeldata");
+		List<String> lore = Main.config.GetStringList("skin-token.lore");
+		List<Placeholder> ph = new ArrayList<Placeholder>();
+		if(skin != null) {
+			ph.add(new Placeholder("%skin%", skin[0]));
+		}
+		
+		ItemStack item = new ItemStack(material);
+		NBT.SetString(item, "bag-token-skin", value); // Set this first to give the item ItemMeta
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(Lang.Parse(name, ph));
+		if(cmd > 0) {
+			meta.setCustomModelData(cmd);
+		}
+		List<String> l = new ArrayList<String>();
+		for (String line : lore) {
+			if(!Utils.IsStringNullOrEmpty(line)) {
+				l.add(Lang.Parse(line, ph));
+			}
+		}
+		meta.setLore(l);
+		item.setItemMeta(meta);
+		
+		if(material == Material.PLAYER_HEAD) {
+			BagData.setTextureValue(item, value);
+		}
+		
+		return item;
 	}
 }

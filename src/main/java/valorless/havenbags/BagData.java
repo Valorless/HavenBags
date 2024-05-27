@@ -8,6 +8,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -119,7 +121,7 @@ public class BagData {
 		else return false;
 	}
 	
-	public static Data GetBag(@NotNull String uuid,  ItemStack bagItem, UpdateSource... source) {
+	public static Data GetBag(@NotNull String uuid,  @Nullable ItemStack bagItem, @Nullable UpdateSource... source) {
 		UpdateSource m_source = UpdateSource.NULL;
 		if(source != null) {
 			if(source.length != 0) {
@@ -143,7 +145,7 @@ public class BagData {
 		return null;
 	}
 	
-	public static void UpdateBag(@NotNull String uuid, @NotNull List<ItemStack> content, UpdateSource... source) {
+	public static void UpdateBag(@NotNull String uuid, @NotNull List<ItemStack> content, @Nullable UpdateSource... source) {
 		UpdateSource m_source = UpdateSource.NULL;
 		if(source != null) {
 			if(source.length != 0) {
@@ -212,8 +214,6 @@ public class BagData {
 		Log.Error(Main.plugin, String.format("Failed to update bag '%s', this bag was not found.", uuid));
 	}
 	
-	
-	
 	public static void CreateBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content, Player creator, ItemStack bag) {
 		//String config = String.format("/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
 		Config bagData = null;
@@ -265,7 +265,6 @@ public class BagData {
 					}
 					bagData.Set("trusted", new ArrayList<String>());
 					bagData.Set("auto-pickup", "null");
-					bagData.Set("weight", 0);
 					bagData.Set("weight-max", 0);
 					bagData.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
 					bagData.SaveConfig();
@@ -360,6 +359,19 @@ public class BagData {
 	    	bag.changed = false;
 		}
 		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, "Bags saved.");
+	}
+	
+	public static void DeleteBag(@NotNull String uuid) {
+		for(int i = 0; i < data.size(); i++) {
+			Data bag = data.get(i);
+			if(bag.getUuid().equalsIgnoreCase(uuid)) {
+				data.remove(i);
+				Log.Info(Main.plugin, String.format("Removed cached data for %s.", uuid));
+				return;
+			}
+		}
+		Log.Error(Main.plugin, String.format("Failed to remove cached data for %s.", uuid));
+		
 	}
 	
 	protected static List<String> GetBags(@NotNull String player){
@@ -507,14 +519,14 @@ public class BagData {
 		}	
 	}
 	
-	public static void SetWeight(@NotNull String uuid, @NotNull double weight) {
+	/*public static void SetWeight(@NotNull String uuid, @NotNull double weight) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				bag.data.Set("weight", weight);
 				bag.changed = true;
 			}
 		}
-	}
+	}*/
 	
 	public static void SetWeightMax(@NotNull String uuid, @NotNull double weightmax) {
 		for(Data bag : data) {

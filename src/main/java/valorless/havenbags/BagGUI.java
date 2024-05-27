@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -153,7 +154,7 @@ public class BagGUI implements Listener {
 						"THIS IS A CUSTOM ERROR THROWN BY THE PLUGIN, NOT THE SERVER\n" +
 						"\n" +
 						"Failed to load content of bag\n" +
-						ChatColor.GOLD + "'%s.json'\n" +
+						ChatColor.GOLD + "'%s.yml'\n" +
 						ChatColor.RED + "Please check if the file is empty or missing before reporting any errors.\n" +
 						"\n" +
 						"################################\n";
@@ -205,8 +206,8 @@ public class BagGUI implements Listener {
         
         ItemStack clickedItem = e.getCurrentItem();
         ItemStack cursorItem = e.getCursor();
-        Log.Debug(plugin, "clicked: " + e.getCurrentItem());
-        Log.Debug(plugin, "cursor: " + e.getCursor());
+        //Log.Debug(plugin, "clicked: " + e.getCurrentItem());
+        //Log.Debug(plugin, "cursor: " + e.getCursor());
         
       //Check Weight When cursor isnt air, clicked item is null. Therefore we run this before the null check.
         if(cursorItem != null) {        	
@@ -268,9 +269,15 @@ public class BagGUI implements Listener {
         		return;
         	}
         }
-        
-        
-        
+    }
+    
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        if (!event.getInventory().equals(inv)) return;
+        // Cancel the event to prevent splitting stacks by dragging
+    	if(Main.weight.GetBool("enabled") == false) return;
+        event.setCancelled(true);
+        //event.getWhoClicked().sendMessage("Splitting stacks by dragging is not allowed!");
     }
 
     @EventHandler

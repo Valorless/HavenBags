@@ -113,8 +113,11 @@ public class AutoPickup implements Listener {
     public void onEntityPickupItem(EntityPickupItemEvent event) {
 		if(!enabled) return;
 		if(event.getEntityType() != EntityType.PLAYER) return;
-		Log.Debug(Main.plugin, "AutoPickup");
 		Player player = (Player)event.getEntity();
+		if(event.getItem().getOwner() != null) {
+			if(event.getItem().getOwner() != player.getUniqueId()) return;
+		}
+		Log.Debug(Main.plugin, "AutoPickup");
 		List<String> blacklist = Main.config.GetStringList("blacklist");
 		if(blacklist != null) {
 			if(blacklist.size() != 0) {
@@ -345,7 +348,8 @@ public class AutoPickup implements Listener {
 			Log.Debug(Main.plugin, "false");
 			return false;
 		}
-		
+
+        if(item.getType() == Material.AIR) return false;
 		if(HavenBags.IsItemBlacklisted(item)) return false;
 	
 		List<Bag> bags = new ArrayList<Bag>();
@@ -362,6 +366,7 @@ public class AutoPickup implements Listener {
 		Log.Debug(Main.plugin, "Checking bag filters.");
 		for(Bag bag : bags) {
 			Log.Debug(Main.plugin, "bag: " + NBT.GetString(bag.item, "bag-uuid"));
+			if(BagData.IsBagOpen(NBT.GetString(bag.item, "bag-uuid"), bag.item)) continue;
 			boolean c = false;
 			for(Filter f : filters) {
 				//Log.Debug(Main.plugin, "Filter: " + f.name);
@@ -560,6 +565,28 @@ public class AutoPickup implements Listener {
 				i == 38 || //Chestplate
 				i == 39 || //Helmet
 				i == 40) { //Off-hand
+				if(item.getType().toString().contains("_sword") ||
+						item.getType().toString().contains("_pickaxe") ||
+						item.getType().toString().contains("_axe") ||
+						item.getType().toString().contains("_shovel") ||
+						item.getType().toString().contains("_hoe") ||
+						item.getType() == Material.FISHING_ROD ||
+						item.getType() == Material.BOW ||
+						item.getType() == Material.CROSSBOW ||
+						item.getType() == Material.SHEARS) {
+					if(i == 0 || // Hotbar slots
+							i == 1 ||
+							i == 2 ||
+							i == 3 ||
+							i == 4 ||
+							i == 5 ||
+							i == 6 ||
+							i == 7 ||
+							i == 8) {
+						continue;
+					}
+						
+				}
 				continue;
 			}
 			

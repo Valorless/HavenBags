@@ -1,16 +1,31 @@
 package valorless.havenbags.prevention;
 
+import java.util.UUID;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.havenbags.*;
+import valorless.valorlessutils.nbt.NBT;
 
 public class PickupPrevention implements Listener {
 	public static JavaPlugin plugin;
 	String Name = "§7[§aHaven§bBags§7]§r";
+	
+	@EventHandler
+	public void onPlayerDropItem(PlayerDropItemEvent event) {
+		if(!Main.config.GetBool("protect-bags-players")) return;
+		ItemStack item = event.getItemDrop().getItemStack();
+		if(!HavenBags.IsBag(item)) return;
+		String owner = NBT.GetString(item, "bag-owner");
+		if(owner.equalsIgnoreCase("ownerless") && owner.equalsIgnoreCase("null")) return;
+		event.getItemDrop().setOwner(UUID.fromString(owner));
+	}
 
 	// NOT IN USE!
 	

@@ -4,7 +4,7 @@
 # +------------------------------------------------------+ #
 ############################################################
 
-# Quick use textures for /bags texture <texture>
+# Quick use textures for /bags texture <texture> & Skin Tokens
 
 # Keep texture names under 30 characters.
 textures:

@@ -123,6 +123,9 @@ public class Encumbering implements Listener {
 		if(!enabled) return;
 		if(e.getEntityType() != EntityType.PLAYER) return;
 		Player player = (Player)e.getEntity();
+		if(e.getItem().getOwner() != null) {
+			if(e.getItem().getOwner() != player.getUniqueId()) return;
+		}
 		if(HavenBags.IsBag(e.getItem().getItemStack())) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 			    public void run() {

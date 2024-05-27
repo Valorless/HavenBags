@@ -49,6 +49,24 @@ bag-material: ENDER_CHEST
 # Custom Model Data if the bag-type is 'ITEM'
 bag-custom-model-data: 0
 
+# Want CustomModelData per size instead?
+# You can fill these with the same method as above.
+# Existing bags are not updated.
+bag-custom-model-datas:
+ enabled: false
+ size-9: 0
+ size-18: 0
+ size-27: 0
+ size-36: 0
+ size-45: 0
+ size-54: 0
+ size-ownerless-9: 0
+ size-ownerless-18: 0
+ size-ownerless-27: 0
+ size-ownerless-36: 0
+ size-ownerless-45: 0
+ size-ownerless-54: 0
+
 # Texture of the bag. Must be Base64 format.
 # You can get textures from https://minecraft-heads.com/
 # The texture by default: https://minecraft-heads.com/custom-heads/decoration/1906-bag
@@ -93,6 +111,9 @@ inventory-full-pitch: 1
 
 # Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?
 protect-bags: true
+
+# Should dropped bags only be able to be picked up by their owner?
+protect-bags-players: false
 
 # Can bags be put inside other bags?
 bags-in-bags: false
@@ -141,6 +162,25 @@ upgrades:
  from-27-to-36: NETHERITE_INGOT:1:90002
  from-36-to-45: NETHERITE_BLOCK:1:90003
  from-45-to-54: END_CRYSTAL:1
+ 
+# Skin Token
+# Used to create a generic token, which you can edit in-game.
+# The rest of the data for the token is given when using the command.
+# You can create skins in the 'textures.yml' file.
+# Placeholders:
+# %skin% - Name of the skin, found in textures.yml. 
+# (Works in name and lore)
+skin-token:
+ display-name: '&aSkin Token'
+ # If material is PLAYER_HEAD, the head's texture will be the same as the skin.
+ material: PLAYER_HEAD
+ custommodeldata: 0 # 0 to ignore
+ # Placeholders:
+ # %skin% - Name of the skin, found in textures.yml. 
+ lore:
+  - '&7Combine with a bag in an anvil to apply.'
+  - '&7Skin: &e%skin%'
+  # You can add extra lore in-game, with things such as which skin it is.
 
 # Which containers are the player allowed to interact with bags?
 # Use this to prevent the player using bags in unintended ways, such as crafting.

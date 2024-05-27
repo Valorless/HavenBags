@@ -6,6 +6,7 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.translate.Translator;
+import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
 import java.io.File;
@@ -20,6 +21,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -28,6 +32,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public final class Main extends JavaPlugin implements Listener {
 	public enum ServerVersion { NULL, v1_17, v1_17_1, v1_18, v1_18_1, v1_18_2, v1_19, v1_19_1, v1_19_2, v1_19_3, v1_19_4, v1_20, v1_20_1, v1_20_3, v1_20_4, v1_20_5, v1_20_6 }
@@ -114,6 +119,19 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("bag-type", "HEAD");
 		config.AddValidationEntry("bag-material", "ENDER_CHEST");
 		config.AddValidationEntry("bag-custom-model-data", 0);
+		config.AddValidationEntry("bag-custom-model-datas.enabled", false);
+		config.AddValidationEntry("bag-custom-model-datas.size-9", 0);
+		config.AddValidationEntry("bag-custom-model-datas.size-18", 0);
+		config.AddValidationEntry("bag-custom-model-datas.size-27", 0);
+		config.AddValidationEntry("bag-custom-model-datas.size-36", 0);
+		config.AddValidationEntry("bag-custom-model-datas.size-45", 0);
+		config.AddValidationEntry("bag-custom-model-datas.size-54", 0);
+		config.AddValidationEntry("bag-custom-model-datas.size-ownerless-9", 0);
+		config.AddValidationEntry("bag-custom-model-datas.size-ownerless-18", 0);
+		config.AddValidationEntry("bag-custom-model-datas.size-ownerless-27", 0);
+		config.AddValidationEntry("bag-custom-model-datas.size-ownerless-36", 0);
+		config.AddValidationEntry("bag-custom-model-datas.size-ownerless-45", 0);
+		config.AddValidationEntry("bag-custom-model-datas.size-ownerless-54", 0);
 		config.AddValidationEntry("bag-texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=");
 		config.AddValidationEntry("bag-textures.enabled", false);
 		config.AddValidationEntry("bag-textures.size-9", "");
@@ -139,6 +157,7 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("inventory-full-volume", 1);
 		config.AddValidationEntry("inventory-full-pitch", 1);
 		config.AddValidationEntry("protect-bags", true);
+		config.AddValidationEntry("protect-bags-players", false);
 		config.AddValidationEntry("bags-in-bags", false);
 		config.AddValidationEntry("bags-in-shulkers", true);
 		config.AddValidationEntry("keep-bags", false);
@@ -159,6 +178,13 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("upgrades.from-27-to-36", "NETHERITE_INGOT:1:90002");
 		config.AddValidationEntry("upgrades.from-36-to-45", "EMERALD:5:NETHERITE_BLOCK:1:90003");
 		config.AddValidationEntry("upgrades.from-45-to-54", "END_CRYSTAL:1");
+		config.AddValidationEntry("skin-token.display-name", "&aSkin Token");
+		config.AddValidationEntry("skin-token.material", "PLAYER_HEAD");
+		config.AddValidationEntry("skin-token.custommodeldata", 0);
+		config.AddValidationEntry("skin-token.lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L;
+		{ add("&7Combine with a bag in an anvil to apply."); add("&7Skin: &e%skin%"); }} );
+		
 		
 		config.AddValidationEntry("blacklist", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L;
@@ -376,6 +402,8 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		translator = new Translator(config.GetString("language"));
 		
+		ValidateSizeTextures();
+		
 		// Config-Version checks
         BagConversion();
         //TimeTable();
@@ -476,6 +504,9 @@ public final class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new PickupPrevention(), this);
 		Log.Debug(plugin, "Registering CraftPrevention");
 		getServer().getPluginManager().registerEvents(new CraftPrevention(), this);
+		Log.Debug(plugin, "Registering EquipPrevention");
+		getServer().getPluginManager().registerEvents(new EquipPrevention(), this);
+		
 		Log.Debug(plugin, "Registering Crafting");
 		getServer().getPluginManager().registerEvents(new Crafting(), this);
 		Crafting.PrepareRecipes();
@@ -489,6 +520,9 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		Log.Debug(plugin, "Registering BagUpgrade");
 		getServer().getPluginManager().registerEvents(new BagUpgrade(), this);
+		
+		Log.Debug(plugin, "Registering BagSkin");
+		getServer().getPluginManager().registerEvents(new BagSkin(), this);
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
     }
@@ -551,7 +585,7 @@ public final class Main extends JavaPlugin implements Listener {
     		
     		List<String> owners	= BagData.GetBagOwners();
     		for(String owner : owners) {
-    			List<String> bags = BagData.GetBags(owner);
+    			List<String> bags = GetBags(owner);
     			for(String bag : bags) {
     				bag = bag.replace(".json", "");
     				String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, bag);
@@ -577,15 +611,16 @@ public final class Main extends JavaPlugin implements Listener {
     	    					bagData.Set("owner", owner);
     	    					bagData.Set("creator", "null");
     	    					bagData.Set("size", cont.size());
-    	    					//bagData.Set("texture", Main.config.Get("bag-texture"));
+    	    					bagData.Set("texture", Main.config.Get("bag-texture"));
+    	    					bagData.Set("custommodeldata", 0);
     	    					bagData.Set("trusted", new ArrayList<String>());
     	    					bagData.Set("auto-pickup", "null");
-    	    					bagData.Set("weight", 0);
     	    					bagData.Set("weight-max", 0);
     	    					bagData.Set("content", JsonUtils.toJson(cont).replace("'", "◊"));
     	    					bagData.SaveConfig();
     	    					converted++;
     	    				}catch(Exception E) {
+    	    					//E.printStackTrace();
     	    					// Error: Top level is not a Map.
     	    					// Unsure why this is thrown, but the file is converted successfully without issues..
     	    					//Log.Error(plugin, String.format("Something went wrong while converting %s!.", String.format("/bags/%s/%s", owner, bag)));
@@ -604,6 +639,24 @@ public final class Main extends JavaPlugin implements Listener {
     		Log.Info(plugin, String.format("Failed: %s.", failed));
     	}
     }
+    
+    List<String> GetBags(@NotNull String player){
+		Log.Debug(Main.plugin, player);
+		try {
+			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
+					.filter(file -> !file.isDirectory())
+					.filter(file -> !file.getName().contains(".yml"))
+					.map(File::getName)
+					.collect(Collectors.toList());
+			for(int i = 0; i < bags.size(); i++) {
+				//Log.Debug(Main.plugin, bags.get(i));
+				bags.set(i, bags.get(i).replace(".yml", ""));
+			}
+			return bags;
+		} catch (Exception e) {
+			return new ArrayList<String>();
+		}
+	}
     
     /*void TimeTable() {
     	if(config.GetInt("config-version") < 3) {
@@ -648,6 +701,26 @@ public final class Main extends JavaPlugin implements Listener {
     	} catch (Exception e) {
     		server = ServerVersion.NULL;
     		Log.Error(plugin, "Failed to resolve server version, some functions might not work correctly.");
+    	}
+    }
+    
+    void ValidateSizeTextures() {
+    	if(config.GetBool("bag-textures.enabled")) {
+    		boolean c = false;
+    		for(int s = 9; s <= 54; s += 9) {
+    			if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag-textures.size-" + s))){
+    				config.Set("bag-textures.size-" + s, config.GetString("bag-texture"));
+    				c = true;
+    			}
+			}
+    		for(int s = 9; s <= 54; s += 9) {
+    			if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag-textures.size-ownerless-" + s))){
+    				config.Set("bag-textures.size-ownerless-" + s, config.GetString("bag-texture"));
+    				c = true;
+    			}
+			}
+    		
+    		if(c) config.SaveConfig();
     	}
     }
 }

@@ -55,11 +55,15 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
-        if(e.getHotbarButton() != -1) {
+		if (e.getHotbarButton() != -1) {
+            ItemStack swapItem = e.getWhoClicked().getInventory().getItem(e.getHotbarButton());
+            if (swapItem != null && HavenBags.IsBag(swapItem)) e.setCancelled(true);
+        }
+        /*if(e.getHotbarButton() != -1) {
         	//Log.Debug(plugin, "" + e.getHotbarButton());
         	e.setCancelled(true);
         	return;
-        }
+        }*/
 		Shulkers(e);
 		Containers(e);
     }

@@ -528,7 +528,7 @@ public class AdminGUI implements Listener {
 			if(!dir.exists()) {
 				return;
 			}
-			String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
+			String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
 			File bagData;
 			try {
 				bagData = new File(path);
@@ -617,7 +617,7 @@ public class AdminGUI implements Listener {
     			if(!dir.exists()) {
     				return;
     			}
-    			String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
+    			String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
     			File bagData;
     			try {
     				bagData = new File(path);
@@ -631,6 +631,7 @@ public class AdminGUI implements Listener {
     			
     			if(bagData.delete()) {
     				Log.Info(plugin, String.format("Bag '%s/%s' successfully deleted.", owner, uuid));
+            		BagData.DeleteBag(uuid);
     			}else {
     				Log.Info(plugin, String.format("Could not delete bag '%s/%s'.", owner, uuid));
     			}
@@ -801,6 +802,13 @@ public class AdminGUI implements Listener {
 			if(Main.config.GetInt("bag-custom-model-data") != 0) {
 				bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
 			}
+			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+				for(int s = 9; s <= 54; s += 9) {
+					if(size == s) {
+						bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
+					}
+				}
+			}
 			bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
 			List<String> lore = new ArrayList<String>();
 			for (String l : Lang.lang.GetStringList("bag-lore")) {
@@ -852,6 +860,13 @@ public class AdminGUI implements Listener {
 			ItemMeta bagMeta = bagItem.getItemMeta();
 			if(Main.config.GetInt("bag-custom-model-data") != 0) {
 				bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+			}
+			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+				for(int s = 9; s <= 54; s += 9) {
+					if(size == s) {
+						bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + size));
+					}
+				}
 			}
 			bagMeta.setDisplayName(Lang.Get("bag-ownerless-unused"));
 			List<String> lore = new ArrayList<String>();
@@ -962,6 +977,17 @@ public class AdminGUI implements Listener {
 			ItemMeta bagMeta = bagItem.getItemMeta();
 			if(Main.config.GetInt("bag-custom-model-data") != 0) {
 				bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+			}
+			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+				for(int s = 9; s <= 54; s += 9) {
+					if(size == s) {
+						if(NBT.GetBool(bagItem, "bag-canBind")) {
+							bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
+						}else {
+							bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + size));
+						}
+					}
+				}
 			}
 			
 			if(NBT.GetBool(bagItem, "bag-canBind")) {
@@ -1082,7 +1108,8 @@ public class AdminGUI implements Listener {
 	
 	List<ItemStack> LoadContent(String owner, String uuid) {
 		String id = uuid.replace(".json", "");
-		Log.Error(plugin, "id: " + id);
+		id = id.replace(".yml", "");
+		//Log.Error(plugin, "id: " + id);
 		return BagData.GetBag(id, null).getContent();
 		//Config data = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
 		

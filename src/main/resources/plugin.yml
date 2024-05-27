@@ -46,6 +46,7 @@ permissions:
       havenbags.weight: true
       havenbags.help: true
       havenbags.texture: true
+      havenbags.token: true
   havenbags.reload:
     description: Allows you to reload the configuration.
     default: op
@@ -129,5 +130,8 @@ permissions:
     default: op
   havenbags.upgrade.45:
     description: Allows you to upgrade bags with a size of 45.
+    default: op
+  havenbags.token:
+    description: Allows you create skin tokens.
     default: op
   

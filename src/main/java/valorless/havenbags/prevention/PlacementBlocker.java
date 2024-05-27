@@ -16,6 +16,11 @@ public class PlacementBlocker implements Listener {
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
 		
+		if(HavenBags.IsBag(event.getItemInHand())) {
+			event.setCancelled(true); 
+			return;
+		}
+		
 		Block block = event.getBlockPlaced();
 		ItemStack item = event.getItemInHand();
 		ItemMeta nbt = item.getItemMeta();

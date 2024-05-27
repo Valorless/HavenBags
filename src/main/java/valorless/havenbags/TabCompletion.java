@@ -71,6 +71,9 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.texture")) {
 				subCommands.add("texture");
 			}
+			if (sender.hasPermission("havenbags.token")) {
+				subCommands.add("token");
+			}
 
 			StringUtil.copyPartialMatches(args[0], subCommands, completions);
 		}
@@ -134,6 +137,12 @@ public class TabCompletion implements TabCompleter {
 			if (args[0].equalsIgnoreCase("texture") && sender.hasPermission("havenbags.texture")) {
 				StringUtil.copyPartialMatches(cmd, getTextures(), completions);
 			}
+			if (args[0].equalsIgnoreCase("token") && sender.hasPermission("havenbags.token")) {
+				List<String> cmds = new ArrayList<String>();
+				cmds.add("texture");
+				cmds.add("custommodeldata");
+				StringUtil.copyPartialMatches(cmd, cmds, completions);
+			}
 			/*
 			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.open")) {
 				Player player = (Player)sender;
@@ -182,6 +191,9 @@ public class TabCompletion implements TabCompleter {
 				List<String> playerNames = getOnlinePlayerNames();
 				StringUtil.copyPartialMatches(cmd, playerNames, completions);
 			}
+			if (args[0].equalsIgnoreCase("token") && args[1].equalsIgnoreCase("texture") && sender.hasPermission("havenbags.token")) {
+				StringUtil.copyPartialMatches(cmd, getTextures(), completions);
+			}
 		} 
 		else if(args.length == 4) {
 			String cmd = args[3];
@@ -223,10 +235,11 @@ public class TabCompletion implements TabCompleter {
 		try {
 			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
 					.filter(file -> !file.isDirectory())
+					.filter(file -> !file.getName().contains(".json"))
 					.map(File::getName)
 					.collect(Collectors.toList());
 			for(int i = 0; i < bags.size(); i++) {
-				bags.set(i, bags.get(i).replace(".json", ""));
+				bags.set(i, bags.get(i).replace(".yml", ""));
 			}
 			return bags;
 		} catch (Exception e) {

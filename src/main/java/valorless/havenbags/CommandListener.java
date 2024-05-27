@@ -1,9 +1,6 @@
 package valorless.havenbags;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -21,8 +18,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import valorless.havenbags.BagData.Data;
+import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.skulls.SkullCreator;
 import valorless.valorlessutils.translate.Translator;
@@ -100,7 +98,7 @@ public class CommandListener implements CommandExecutor {
 
 					
 				}
-				ItemStack bagItem = new ItemStack(Material.AIR);
+				ItemStack bagItem = new ItemStack(Material.DIRT);
 				bagTexture = Main.config.GetString("bag-texture");
 				if(args[0].equalsIgnoreCase("create") && sender.hasPermission("havenbags.create")) {
 					List<Placeholder> placeholders = new ArrayList<Placeholder>();
@@ -127,6 +125,13 @@ public class CommandListener implements CommandExecutor {
 								ItemMeta bagMeta = bagItem.getItemMeta();
 								if(Main.config.GetInt("bag-custom-model-data") != 0) {
 									bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+								}
+								if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+									for(int s = 9; s <= 54; s += 9) {
+										if(size*9 == s) {
+											bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + s));
+										}
+									}
 								}
 								bagMeta.setDisplayName(Lang.Get("bag-ownerless-unused"));
 								List<String> lore = new ArrayList<String>();
@@ -172,8 +177,19 @@ public class CommandListener implements CommandExecutor {
 									return false;
 								}
 								ItemMeta bagMeta = bagItem.getItemMeta();
+								if (bagMeta == null) {
+									NBT.SetString(bagItem, "bag-uuid", "null");
+									bagMeta = bagItem.getItemMeta();
+						        }
 								if(Main.config.GetInt("bag-custom-model-data") != 0) {
 									bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+								}
+								if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+									for(int s = 9; s <= 54; s += 9) {
+										if(size*9 == s) {
+											bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + s));
+										}
+									}
 								}
 								bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
 								List<String> lore = new ArrayList<String>();
@@ -219,8 +235,8 @@ public class CommandListener implements CommandExecutor {
 									if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
 										if(Main.config.GetBool("bag-textures.enabled")) {
 											for(int s = 9; s <= 54; s += 9) {
-												if(size == s) {
-													bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size));
+												if(size*9 == s) {
+													bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + s));
 												}
 											}
 										}else {
@@ -233,10 +249,21 @@ public class CommandListener implements CommandExecutor {
 										return false;
 									}
 									ItemMeta bagMeta = bagItem.getItemMeta();
+									if (bagMeta == null) {
+										bagMeta = Bukkit.getServer().getItemFactory().getItemMeta(bagItem.getType());
+							        }
 									if(Main.config.GetInt("bag-custom-model-data") != 0) {
 										bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
 									}
+									if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+										for(int s = 9; s <= 54; s += 9) {
+											if(size*9 == s) {
+												bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + s));
+											}
+										}
+									}
 									//bagMeta.setDisplayName("§aUnused Bag");
+									
 									bagMeta.setDisplayName(Lang.Get("bag-ownerless-unused"));
 									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "uuid", uuid, PersistentDataType.STRING);
 									//Tags.Set(plugin, bagMeta.getPersistentDataContainer(), "owner", "null", PersistentDataType.STRING);
@@ -276,8 +303,8 @@ public class CommandListener implements CommandExecutor {
 									if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
 										if(Main.config.GetBool("bag-textures.enabled")) {
 											for(int s = 9; s <= 54; s += 9) {
-												if(size == s) {
-													bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size));
+												if(size*9 == s) {
+													bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + s));
 												}
 											}
 										}else {
@@ -289,9 +316,17 @@ public class CommandListener implements CommandExecutor {
 										sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
 										return false;
 									}
+									
 									ItemMeta bagMeta = bagItem.getItemMeta();
 									if(Main.config.GetInt("bag-custom-model-data") != 0) {
 										bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+									}
+									if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+										for(int s = 9; s <= 54; s += 9) {
+											if(size*9 == s) {
+												bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + s));
+											}
+										}
 									}
 									//bagMeta.setDisplayName("§aUnbound Bag");
 									bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
@@ -310,6 +345,7 @@ public class CommandListener implements CommandExecutor {
 							        
 									bagMeta.setLore(lore);
 									bagItem.setItemMeta(bagMeta);
+									
 									NBT.SetString(bagItem, "bag-uuid", "null");
 									NBT.SetString(bagItem, "bag-owner", "null");
 									NBT.SetInt(bagItem, "bag-size", size*9);
@@ -355,8 +391,9 @@ public class CommandListener implements CommandExecutor {
 						}
 						if (args.length >= 3){ // Bag UUID
 							String uuid = args[2];
-							String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
+							String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
 							File bagData;
+							Data bag = BagData.GetBag(uuid, null);
 							try {
 								bagData = new File(path);
 							} catch(Exception e) {
@@ -368,21 +405,18 @@ public class CommandListener implements CommandExecutor {
 								sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-not-found"));
 								return false;
 							}
-							String content = "";
-							try {
-								Path filePath = Path.of(path);
-								content = Files.readString(filePath);
-							} catch (IOException e) {
-								sender.sendMessage(Name + "§c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:WriteToServer()§f'. \nThank you! §4❤§r");
-								e.printStackTrace();
-							}
 							List<ItemStack> contSize = new ArrayList<ItemStack>();
-							contSize = JsonUtils.fromJson(content);
+							//contSize = JsonUtils.fromJson(content);
+							contSize = bag.getContent();
 							if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
 								if(Main.config.GetBool("bag-textures.enabled")) {
 									for(int s = 9; s <= 54; s += 9) {
 										if(contSize.size() == s) {
-											bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + contSize.size()));
+											if(owner.equalsIgnoreCase("ownerless")) {
+												bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + contSize.size()));
+											}else {
+												bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + contSize.size()));
+											}
 										}
 									}
 								}else {
@@ -406,6 +440,17 @@ public class CommandListener implements CommandExecutor {
 							ItemMeta bagMeta = bagItem.getItemMeta();
 							if(Main.config.GetInt("bag-custom-model-data") != 0) {
 								bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+							}
+							if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+								for(int s = 9; s <= 54; s += 9) {
+									if(contSize.size() == s) {
+										if(owner.equalsIgnoreCase("ownerless")) {
+											bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + s));
+										}else {
+											bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + s));
+										}
+									}
+								}
 							}
 
 							if(owner.equalsIgnoreCase("ownerless")) {
@@ -491,7 +536,7 @@ public class CommandListener implements CommandExecutor {
 							List<String> fileNames = new ArrayList<String>();
 							fileNames.addAll(files);
 							for(int i = 0; i < files.size(); i++) {
-								String f = fileNames.get(i).replace(".json", "");
+								String f = fileNames.get(i).replace(".json", "").replace(".yml", "");
 								fileString = fileString + "\n" + f;
 							}
 							sender.sendMessage(fileString);
@@ -523,8 +568,9 @@ public class CommandListener implements CommandExecutor {
 						}
 						if (args.length >= 3){ // Bag UUID
 							String uuid = args[2];
-							String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
+							String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
 							File bagData;
+							Data bag = BagData.GetBag(uuid, null);
 							try {
 								bagData = new File(path);
 							} catch(Exception e) {
@@ -536,16 +582,9 @@ public class CommandListener implements CommandExecutor {
 								sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-not-found"));
 								return false;
 							}
-							String content = "";
-							try {
-								Path filePath = Path.of(path);
-								content = Files.readString(filePath);
-							} catch (IOException e) {
-								sender.sendMessage(Name + "§c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:WriteToServer()§f'. \nThank you! §4❤§r");
-								e.printStackTrace();
-							}
 							List<ItemStack> contSize = new ArrayList<ItemStack>();
-							contSize = JsonUtils.fromJson(content);
+							//contSize = JsonUtils.fromJson(content);
+							contSize = bag.getContent();
 							if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
 								bagItem = SkullCreator.itemFromBase64(bagTexture);
 							} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
@@ -566,6 +605,17 @@ public class CommandListener implements CommandExecutor {
 							ItemMeta bagMeta = bagItem.getItemMeta();
 							if(Main.config.GetInt("bag-custom-model-data") != 0) {
 								bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+							}
+							if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+								for(int s = 9; s <= 54; s += 9) {
+									if(contSize.size() == s) {
+										if(owner.equalsIgnoreCase("ownerless")) {
+											bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + s));
+										}else {
+											bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + s));
+										}
+									}
+								}
 							}
 
 							if(owner.equalsIgnoreCase("ownerless")) {
@@ -657,7 +707,7 @@ public class CommandListener implements CommandExecutor {
 							List<String> fileNames = new ArrayList<String>();
 							fileNames.addAll(files);
 							for(int i = 0; i < files.size(); i++) {
-								String f = fileNames.get(i).replace(".json", "");
+								String f = fileNames.get(i).replace(".json", "").replace(".yml", "");
 								fileString = fileString + "\n" + f;
 							}
 							sender.sendMessage(fileString);
@@ -956,183 +1006,14 @@ public class CommandListener implements CommandExecutor {
 				if(args[0].equalsIgnoreCase("help")) {
 					Player player = (Player)sender;
 					if(Main.config.GetBool("old-help-menu") == false) {
-						Message message = new Message("&a&lHaven&b&lBags &8- &fHelp Menu\n"
-								+ "&7Optional: [] - Required: <>\n"
-								+ "&8(Mouseover commands for information)");
-						message.AddNewLine("");
-						if(sender.hasPermission("havenbags.rename") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags rename <name>",
-									"&eRename the bag in your hand\n"
-									+ "&eYou cannot rename any bags you aren't bound to.\n"
-									+ "&7&o(Supports Hex. Leave value empty to reset)"
-									);
-						}
-						if(sender.hasPermission("havenbags.empty") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags empty",
-									"&eEmpty the content of the bag\n"
-									+ " in your hand, onto the ground.");
-						}
-						if(sender.hasPermission("havenbags.autopickup") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags autopickup <filter>",
-									"&eAutomatically put items inside the bag.");
-						}
-						if(sender.hasPermission("havenbags.trust") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags trust <player>",
-									"&eAllow trusted player to open your bound bag.");
-						}
-						if(sender.hasPermission("havenbags.trust") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags untrust <player>",
-									"&eRemove a trusted player from accessing your bound bag.");
-						}
-						if(sender.hasPermission("havenbags.texture") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags texture <texture or base64>",
-									"&e Set the texture of the bag you're holding."
-									+ "You can only change textures of bags you own.");
-						}
-						if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags gui",
-									"&eOpens Admin GUI.");
-						}
-						if(sender.hasPermission("havenbags.create") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags create [ownerless] <size>",
-									"&eCreate a new bag.\n"
-									+ "&7(Also in GUI)");
-						}
-						if(sender.hasPermission("havenbags.give") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags give <player> [ownerless] <size>",
-									"&eGive player a bag.");
-						}
-						if(sender.hasPermission("havenbags.restore") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags restore <player>",
-									"&eShows a list of bags by that player.\n"
-									+ "&7(Also in GUI)");
-							
-							message.AddNewLine(" &e/bags restore <player> <bag-uuid>",
-									"&eGives a copy of the bag stored on the server.\n"
-									+ "&7(Also in GUI)");
-						}
-						if(sender.hasPermission("havenbags.preview") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags preview <player>",
-									"&eShows a list of bags by that player.\n"
-									+ "&7(Also in GUI)");
-
-							message.AddNewLine(" &e/bags preview <player> <bag-uuid>",
-									"&ePreview a copy of the bag stored on the server.\n"
-									+ "&7(Also in GUI)");
-						}
-						if(sender.hasPermission("havenbags.info") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags info",
-									"&eShows information about the bag"
-									+ " you're currently holding.");
-							
-							message.AddNewLine(" &e/bags rawinfo",
-									"&eShows raw metadata about the bag"
-									+ " you're currently holding.");
-						}
-						if(sender.hasPermission("havenbags.weight") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags weight <number>",
-									"&eSet the weight limit of the bag"
-									+ " you're currently holding.");
-						}
-						if(sender.hasPermission("havenbags.reload") || sender.hasPermission("havenbags.help")) {
-							message.AddNewLine(" &e/bags reload",
-									"&eReloads config files.");
-						}
-						message.AddNewLine(" &e/bags help",
-								"&eYou are here.");
-						message.Send(player);
+						HelpMessage(player);
 						if(!(sender instanceof Player)) { 
 							Log.Info(Main.plugin, "Sorry, but only players can view this menu.");
 							Log.Info(Main.plugin, "Set 'old-help-menu' to true, if you want to use this command.");
 						}
 					}
 					else {
-						List<String> help = new ArrayList<String>();
-						help.add("&a&lHaven&b&lBags &8- &fHelp Menu\n"
-								+ "&7Optional: [] - Required: <>\n"
-								+ "&8(Mouseover commands for information)");
-						help.add("");
-						if(sender.hasPermission("havenbags.rename") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags rename <name>");
-							help.add("&7&o Rename the bag in your hand");
-							help.add("&7&o You cannot rename any bags you aren't bound to");
-							help.add("&7&o (Supports Hex. Leave value empty to reset.)");
-						}
-						if(sender.hasPermission("havenbags.empty") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags empty");
-							help.add("&7&o Empty the content of the bag in your hand, onto the ground");
-						}
-						if(sender.hasPermission("havenbags.autopickup") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags autopickup <filter>");
-							help.add("&7&o Automatically put items inside the bag.");
-						}
-						if(sender.hasPermission("havenbags.trust") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags trust <player>");
-							help.add("&7&o Allow trusted player to open your bound bag.");
-						}
-						if(sender.hasPermission("havenbags.trust") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags untrust <player>");
-							help.add("&7&o Remove a trusted player from accessing your bound bag.");
-						}
-						if(sender.hasPermission("havenbags.texture") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags texture <texture or base64>");
-							help.add("&7&o Set the texture of the bag you're holding.");
-							help.add("&7&o You can only change textures of bags you own.");
-						}
-						if(sender.hasPermission("havenbags.gui") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags gui");
-							help.add("&7&o Opens Admin GUI");
-						}
-						if(sender.hasPermission("havenbags.create") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags create [ownerless] <size>");
-							help.add("&7&o Create a new bag");
-							help.add("&8 (Also in GUI)");
-						}
-						if(sender.hasPermission("havenbags.give") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags give <player> [ownerless] <size>");
-							help.add("&7&o Give player a bag");
-						}
-						if(sender.hasPermission("havenbags.restore") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags restore <player>");
-							help.add("&7&o Shows a list of bags by that player");
-							help.add("&8 (Also in GUI)");
-										
-							help.add("&e/bags restore <player> <bag-uuid>");
-							help.add("&7&o Gives a copy of the bag stored on the server");
-							help.add("&8 (Also in GUI)");
-						}
-						if(sender.hasPermission("havenbags.preview") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags preview <player>");
-							help.add("&7&o Shows a list of bags by that player");
-							help.add("&8 (Also in GUI)");
-
-							help.add("&e/bags preview <player> <bag-uuid>");
-							help.add("&7&o Preview a copy of the bag stored on the server");
-							help.add("&8 (Also in GUI)");
-						}
-						if(sender.hasPermission("havenbags.info") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags info");
-							help.add("&7&o Shows information about the bag you're currently holding");
-							
-							help.add("&e/bags rawinfo");
-							help.add("&7&o Shows raw metadata about the bag you're currently holding");
-						}
-						if(sender.hasPermission("havenbags.weight") || sender.hasPermission("havenbags.help")) {
-							help.add(" &e/bags weight <number>");
-							help.add("&eSet the weight limit of the bag you're currently holding.");
-						}
-						if(sender.hasPermission("havenbags.reload") || sender.hasPermission("havenbags.help")) {
-							help.add("&e/bags reload");
-							help.add("&7&o Reloads config files");
-						}
-						help.add("&e/bags help");
-						help.add("&7&o You are here");
-						
-						String helpString = "";
-						for(String i : help) {
-							helpString = helpString + Lang.Parse(i, player) + "\n ";
-						}
-						sender.sendMessage(helpString);
+						HelpMessageOld(player);
 					}
 					
 					return true;
@@ -1229,6 +1110,34 @@ public class CommandListener implements CommandExecutor {
 					}
 					return false;
 				}
+				if(args[0].equalsIgnoreCase("token") && sender.hasPermission("havenbags.token")) {
+					Player player = (Player)sender;
+					if(args.length >= 3) {
+						if(args[1].equalsIgnoreCase("texture")) {
+							if(args[2].chars().count() > 30) {
+								if(Base64Validator.isValidBase64(args[2])) {
+									player.getInventory().addItem(HavenBags.CreateToken(args[2]));
+								}else {
+									player.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
+									return false;
+								}
+							}else {
+								if(Base64Validator.isValidBase64(Main.textures.GetString(String.format("textures.%s", args[2])))) {
+									player.getInventory().addItem(HavenBags.CreateToken(Main.textures.GetString(String.format("textures.%s", args[2])), args[2]));
+								}else {
+									player.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
+									return false;
+								}
+							}
+						}else {
+							if(args[1].equalsIgnoreCase("custommodeldata")) {
+								player.getInventory().addItem(HavenBags.CreateToken(args[2]));
+							}
+						}
+						return true;
+					}
+					return false;
+				}
 			} catch(Exception e) {
 				sender.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
 				Log.Error(Main.plugin, e.getMessage());
@@ -1265,6 +1174,191 @@ public class CommandListener implements CommandExecutor {
 	      .filter(file -> !file.isDirectory())
 	      .map(File::getName)
 	      .collect(Collectors.toSet());
+	}
+	
+	public void HelpMessage(Player player) {
+		Message message = new Message("&a&lHaven&b&lBags &8- &fHelp Menu\n"
+				+ "&7Optional: [] - Required: <>\n"
+				+ "&8(Mouseover commands for information)");
+		message.AddNewLine("");
+		if(player.hasPermission("havenbags.rename") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags rename <name>",
+					"&eRename the bag in your hand\n"
+					+ "&eYou cannot rename any bags you aren't bound to.\n"
+					+ "&7&o(Supports Hex. Leave value empty to reset)"
+					);
+		}
+		if(player.hasPermission("havenbags.empty") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags empty",
+					"&eEmpty the content of the bag\n"
+					+ " in your hand, onto the ground.");
+		}
+		if(player.hasPermission("havenbags.autopickup") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags autopickup <filter>",
+					"&eAutomatically put items inside the bag.");
+		}
+		if(player.hasPermission("havenbags.trust") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags trust <player>",
+					"&eAllow trusted player to open your bound bag.");
+		}
+		if(player.hasPermission("havenbags.trust") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags untrust <player>",
+					"&eRemove a trusted player from accessing your bound bag.");
+		}
+		if(player.hasPermission("havenbags.texture") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags texture <texture or base64>",
+					"&e Set the texture of the bag you're holding."
+					+ "You can only change textures of bags you own.");
+		}
+		if(player.hasPermission("havenbags.gui") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags gui",
+					"&eOpens Admin GUI.");
+		}
+		if(player.hasPermission("havenbags.create") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags create [ownerless] <size>",
+					"&eCreate a new bag.\n"
+					+ "&7(Also in GUI)");
+		}
+		if(player.hasPermission("havenbags.give") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags give <player> [ownerless] <size>",
+					"&eGive player a bag.");
+		}
+		if(player.hasPermission("havenbags.restore") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags restore <player>",
+					"&eShows a list of bags by that player.\n"
+					+ "&7(Also in GUI)");
+			
+			message.AddNewLine(" &e/bags restore <player> <bag-uuid>",
+					"&eGives a copy of the bag stored on the server.\n"
+					+ "&7(Also in GUI)");
+		}
+		if(player.hasPermission("havenbags.preview") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags preview <player>",
+					"&eShows a list of bags by that player.\n"
+					+ "&7(Also in GUI)");
+
+			message.AddNewLine(" &e/bags preview <player> <bag-uuid>",
+					"&ePreview a copy of the bag stored on the server.\n"
+					+ "&7(Also in GUI)");
+		}
+		if(player.hasPermission("havenbags.info") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags info",
+					"&eShows information about the bag"
+					+ " you're currently holding.");
+			
+			message.AddNewLine(" &e/bags rawinfo",
+					"&eShows raw metadata about the bag"
+					+ " you're currently holding.");
+		}
+		if(player.hasPermission("havenbags.weight") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags weight <number>",
+					"&eSet the weight limit of the bag"
+					+ " you're currently holding.");
+		}
+		if(player.hasPermission("havenbags.token") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags token <type> <value>",
+					"&eCreate a skin token of the chosen type");
+		}
+		if(player.hasPermission("havenbags.reload") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags reload",
+					"&eReloads config files.");
+		}
+		message.AddNewLine(" &e/bags help",
+				"&eYou are here.");
+		message.Send(player);
+	}
+	
+	public void HelpMessageOld(Player player) {
+		List<String> help = new ArrayList<String>();
+		help.add("&a&lHaven&b&lBags &8- &fHelp Menu\n"
+				+ "&7Optional: [] - Required: <>\n"
+				+ "&8(Mouseover commands for information)");
+		help.add("");
+		if(player.hasPermission("havenbags.rename") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags rename <name>");
+			help.add("&7&o Rename the bag in your hand");
+			help.add("&7&o You cannot rename any bags you aren't bound to");
+			help.add("&7&o (Supports Hex. Leave value empty to reset.)");
+		}
+		if(player.hasPermission("havenbags.empty") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags empty");
+			help.add("&7&o Empty the content of the bag in your hand, onto the ground");
+		}
+		if(player.hasPermission("havenbags.autopickup") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags autopickup <filter>");
+			help.add("&7&o Automatically put items inside the bag.");
+		}
+		if(player.hasPermission("havenbags.trust") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags trust <player>");
+			help.add("&7&o Allow trusted player to open your bound bag.");
+		}
+		if(player.hasPermission("havenbags.trust") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags untrust <player>");
+			help.add("&7&o Remove a trusted player from accessing your bound bag.");
+		}
+		if(player.hasPermission("havenbags.texture") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags texture <texture or base64>");
+			help.add("&7&o Set the texture of the bag you're holding.");
+			help.add("&7&o You can only change textures of bags you own.");
+		}
+		if(player.hasPermission("havenbags.gui") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags gui");
+			help.add("&7&o Opens Admin GUI");
+		}
+		if(player.hasPermission("havenbags.create") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags create [ownerless] <size>");
+			help.add("&7&o Create a new bag");
+			help.add("&8 (Also in GUI)");
+		}
+		if(player.hasPermission("havenbags.give") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags give <player> [ownerless] <size>");
+			help.add("&7&o Give player a bag");
+		}
+		if(player.hasPermission("havenbags.restore") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags restore <player>");
+			help.add("&7&o Shows a list of bags by that player");
+			help.add("&8 (Also in GUI)");
+						
+			help.add("&e/bags restore <player> <bag-uuid>");
+			help.add("&7&o Gives a copy of the bag stored on the server");
+			help.add("&8 (Also in GUI)");
+		}
+		if(player.hasPermission("havenbags.preview") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags preview <player>");
+			help.add("&7&o Shows a list of bags by that player");
+			help.add("&8 (Also in GUI)");
+
+			help.add("&e/bags preview <player> <bag-uuid>");
+			help.add("&7&o Preview a copy of the bag stored on the server");
+			help.add("&8 (Also in GUI)");
+		}
+		if(player.hasPermission("havenbags.info") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags info");
+			help.add("&7&o Shows information about the bag you're currently holding");
+			
+			help.add("&e/bags rawinfo");
+			help.add("&7&o Shows raw metadata about the bag you're currently holding");
+		}
+		if(player.hasPermission("havenbags.weight") || player.hasPermission("havenbags.help")) {
+			help.add(" &e/bags weight <number>");
+			help.add("&eSet the weight limit of the bag you're currently holding.");
+		}
+		if(player.hasPermission("havenbags.token") || player.hasPermission("havenbags.help")) {
+			help.add(" &e/bags token <type> <value>");
+			help.add("&eCreate a skin token of the chosen type.");
+		}
+		if(player.hasPermission("havenbags.reload") || player.hasPermission("havenbags.help")) {
+			help.add("&e/bags reload");
+			help.add("&7&o Reloads config files");
+		}
+		help.add("&e/bags help");
+		help.add("&7&o You are here");
+		
+		String helpString = "";
+		for(String i : help) {
+			helpString = helpString + Lang.Parse(i, player) + "\n ";
+		}
+		player.sendMessage(helpString);
 	}
 
 }
