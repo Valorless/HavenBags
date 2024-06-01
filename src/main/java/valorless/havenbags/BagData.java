@@ -183,6 +183,7 @@ public class BagData {
 				try {
 					//bag.setContent(content);
 					bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
+					
 					if(bagItem.getType() == Material.PLAYER_HEAD) {
 						bag.data.Set("texture", getTextureValue(bagItem));
 						bag.data.Set("custommodeldata", 0);
@@ -199,6 +200,8 @@ public class BagData {
 						bag.data.Set("texture", Main.config.GetString("bag-texture"));
 					}
 					//bag.data.Set("texture", getTextureValue(bagItem));
+					 
+					 
 					bag.changed = true;
 					if(m_source == UpdateSource.PLAYER) {
 						bag.isOpen = false;
@@ -607,7 +610,6 @@ public class BagData {
 	        head.setItemMeta(headMeta);
 		}
 		else {
-        
         	SkullMeta meta = (SkullMeta) head.getItemMeta();
         	SkullMeta m_new = (SkullMeta) SkullCreator.itemFromBase64(textureValue).getItemMeta();
         	//meta.getOwnerProfile().setTextures(m_new.getOwnerProfile().getTextures());

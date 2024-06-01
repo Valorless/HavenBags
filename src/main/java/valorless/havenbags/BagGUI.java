@@ -331,8 +331,8 @@ public class BagGUI implements Listener {
         
         HavenBags.UpdateBagItem(bagItem, cont, player);
 		GivePlayerBagBack();
-		//HavenBags.WriteBagToServer(bagItem, cont, player);
 		BagData.UpdateBag(bagItem, cont);
+		//HavenBags.WriteBagToServer(bagItem, cont, player);
 		try {
 			for (int i = 0; i < Main.activeBags.size(); i++) {
     			Log.Debug(plugin, "Open Bag: " + Main.activeBags.get(i).uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));

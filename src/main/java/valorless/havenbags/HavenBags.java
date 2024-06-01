@@ -222,6 +222,9 @@ public class HavenBags {
 		//String display = bag.getItemMeta().getDisplayName();
 		String id = uuid.replace(".json", "");
 		Config data = BagData.GetBag(id, null).getData();
+		//Log.Error(Main.plugin, uuid);
+		//Log.Error(Main.plugin, id);
+		//Log.Error(Main.plugin, data + "");
 		
 		//ItemStack skull = SkullCreator.itemFromBase64(data.GetString("texture"));
 		//if(!Utils.IsStringNullOrEmpty(data.GetString("texture"))) {
@@ -259,10 +262,10 @@ public class HavenBags {
 			NBT.SetBool(bag, "bag-canBind", true);
 		}
 		NBT.SetInt(bag, "bag-size", data.GetInt("size"));
-		if(!data.GetString("auto-pickup").equalsIgnoreCase("null")) {
-			NBT.SetString(bag, "bag-filter", data.GetString("auto-pickup"));
-		}else {
+		if(data.GetString("auto-pickup").equalsIgnoreCase("null")) {
 			NBT.SetString(bag, "bag-filter", null);
+		}else {
+			NBT.SetString(bag, "bag-filter", data.GetString("auto-pickup"));
 		}
 		if(Main.weight.GetBool("enabled")){
 			if(data.GetFloat("weight-max") > 0) {
@@ -282,7 +285,9 @@ public class HavenBags {
 	}
 	
 	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, OfflinePlayer player, boolean...preview) {
-		if(preview == null) {
+		//Log.Error(Main.plugin, preview.toString());
+		//Log.Error(Main.plugin, preview.length + "");
+		if(preview.length == 0) {
 			UpdateNBT(bag);
 		}
 		
