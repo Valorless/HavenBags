@@ -367,6 +367,7 @@ public class AutoPickup implements Listener {
 		for(Bag bag : bags) {
 			Log.Debug(Main.plugin, "bag: " + NBT.GetString(bag.item, "bag-uuid"));
 			if(BagData.IsBagOpen(NBT.GetString(bag.item, "bag-uuid"), bag.item)) continue;
+			if(HavenBags.IsBagFull(bag.item)) continue;
 			boolean c = false;
 			for(Filter f : filters) {
 				//Log.Debug(Main.plugin, "Filter: " + f.name);

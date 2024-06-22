@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import valorless.havenbags.BagData.Data;
+import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
@@ -47,6 +48,16 @@ public class HavenBags {
 		if(item == null) return false;
 		if(item.hasItemMeta()) {
 			if(NBT.Has(item, "bag-uuid")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static Boolean IsSkinToken(ItemStack item) {
+		if(item == null) return false;
+		if(item.hasItemMeta()) {
+			if(NBT.Has(item, "bag-token-skin")) {
 				return true;
 			}
 		}
@@ -293,6 +304,12 @@ public class HavenBags {
 		
     	String owner = NBT.GetString(bag, "bag-owner");
     	//String owner = BagData.GetOwner(HavenBags.GetBagUUID(bag));
+    	
+    	if(!owner.equalsIgnoreCase("null")) {
+    		if(inventory == null) {
+    			inventory = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
+    		}
+    	}
     	
     	List<Placeholder> placeholders = new ArrayList<Placeholder>();
 
@@ -805,8 +822,12 @@ public class HavenBags {
 		int cmd = Main.config.GetInt("skin-token.custommodeldata");
 		List<String> lore = Main.config.GetStringList("skin-token.lore");
 		List<Placeholder> ph = new ArrayList<Placeholder>();
-		if(skin != null) {
+		if(skin.length != 0) {
 			ph.add(new Placeholder("%skin%", skin[0]));
+		}else if(!Base64Validator.isValidBase64(value)) {
+			ph.add(new Placeholder("%skin%", value));
+		}else {
+			ph.add(new Placeholder("%skin%", ""));
 		}
 		
 		ItemStack item = new ItemStack(material);
@@ -825,10 +846,31 @@ public class HavenBags {
 		meta.setLore(l);
 		item.setItemMeta(meta);
 		
-		if(material == Material.PLAYER_HEAD) {
+		if(material == Material.PLAYER_HEAD && Base64Validator.isValidBase64(value)) {
 			BagData.setTextureValue(item, value);
 		}
 		
 		return item;
+	}
+	
+	public static boolean IsBagFull(ItemStack bag) {
+		try {
+			int size = NBT.GetInt(bag, "bag-size");
+			List<ItemStack> content = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
+			content.removeIf(item -> item.getType() == Material.AIR);
+			content.removeIf(item -> item == null);
+			if(content.size() >= size) return true;
+			else return false;
+		}catch(Exception e) {
+			return false;
+		}
+	}
+	
+	public static int SlotsEmpty(ItemStack bag) {
+		int size = NBT.GetInt(bag, "bag-size");
+		List<ItemStack> content = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
+		content.removeIf(item -> item.getType() == Material.AIR);
+		content.removeIf(item -> item == null);
+		return size - content.size();
 	}
 }

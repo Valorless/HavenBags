@@ -65,9 +65,10 @@ public class BagData {
 		private String uuid;
 		private String owner;
 		private Config data;
-		//private List<ItemStack> content = new ArrayList<ItemStack>();
+		private List<ItemStack> content = new ArrayList<ItemStack>();
 		private boolean changed = false;
 		private boolean isOpen = false;
+		private Player viewer = null;
 		
 		public Data(@NotNull String uuid, @NotNull String owner) {
 			this.setUuid(uuid); this.setOwner(owner);
@@ -94,7 +95,8 @@ public class BagData {
 		}
 		
 		public List<ItemStack> getContent(){
-			return JsonUtils.fromJson(data.GetString("content").replace("◊","'"));
+			return content;
+			//return JsonUtils.fromJson(data.GetString("content").replace("◊","'"));
 		}
 		
 		public String getTexture() {
@@ -156,7 +158,8 @@ public class BagData {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				try {
 					//bag.setContent(content);
-					bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
+					bag.content = content;
+					//bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
 					bag.changed = true;
 					if(m_source == UpdateSource.PLAYER) {
 						bag.isOpen = false;
@@ -182,7 +185,8 @@ public class BagData {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				try {
 					//bag.setContent(content);
-					bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
+					bag.content = content;
+					//bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
 					
 					if(bagItem.getType() == Material.PLAYER_HEAD) {
 						bag.data.Set("texture", getTextureValue(bagItem));
@@ -286,6 +290,7 @@ public class BagData {
 		}
 		Data dat = new Data(uuid, owner, bagData);
 		dat.changed = true;
+		dat.content = content;
 		data.add(dat);
 		Log.Debug(Main.plugin, "New bag data created: " + owner + "/" + uuid);
 	}
@@ -311,6 +316,7 @@ public class BagData {
 				try {
 					Config d = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, bag));
 					Data bagdata = new Data(bag, owner, d);
+					bagdata.content = JsonUtils.fromJson(bagdata.data.GetString("content").replace("◊","'"));
 					//Path filePath = Path.of(path);
 					//bagdata.setContent(JsonUtils.fromJson(Files.readString(filePath)));
 					//bagdata.SetData();
@@ -331,33 +337,7 @@ public class BagData {
 			String uuid = bag.uuid;
 	    	String owner = bag.owner;
 	    	Log.Debug(Main.plugin, "Attempting to write bag " + owner + "/" + uuid + " onto server");
-	    	
-	    	/*File bagData;
-	    	List<ItemStack> cont = new ArrayList<ItemStack>();
-	        for(int i = 0; i < bag.content.size(); i++) {
-	    		cont.add(bag.content.get(i));
-	    	}
-	    	if(owner != "ownerless") {
-	    		bagData = new File(Main.plugin.getDataFolder() + "/bags/", owner + "/" + uuid + ".json");
-	    		if(!bagData.exists()) {
-	            	bagData.getParentFile().mkdirs();
-	                Log.Debug(Main.plugin, String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
-	            }
-	    	}else {
-	    		bagData = new File(Main.plugin.getDataFolder() + "/bags/", owner + "/" + uuid + ".json");
-	    		if(!bagData.exists()) {
-	            	bagData.getParentFile().mkdirs();
-	                Log.Debug(Main.plugin, String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
-	            }
-	    	}
-	    	
-	    	Path path = Paths.get(Main.plugin.getDataFolder() + "/bags/", owner + "/" + uuid + ".json");
-	    	List<String> lines = Arrays.asList(JsonUtils.toPrettyJson(cont));
-	    	try {
-	    		Files.write(path, lines, StandardCharsets.UTF_8);
-	    	}catch(IOException e){
-				e.printStackTrace();
-	    	}*/
+	    	bag.data.Set("content", JsonUtils.toJson(bag.content).replace("'", "◊"));
 	    	bag.data.SaveConfig();
 	    	bag.changed = false;
 		}
@@ -418,10 +398,24 @@ public class BagData {
 		return false;
 	}
 	
-	public static void MarkBagOpen(@NotNull String uuid,  ItemStack bagItem) {
+	public static Player BagOpenBy(@NotNull String uuid,  ItemStack bagItem) {
+		for(Data bag : data) {
+			if(bag.getUuid().equalsIgnoreCase(uuid)) {
+				if(IsBagOpen(uuid, bagItem)) {
+					return bag.viewer;
+				}else return null;
+			}
+		}
+		Log.Error(Main.plugin, String.format("Failed to check if bag '%s' is open, this bag was not found.", uuid));
+		if(bagItem != null) bagItem.setAmount(0);
+		return null;
+	}
+	
+	public static void MarkBagOpen(@NotNull String uuid,  ItemStack bagItem, Player player) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				bag.isOpen = true;
+				bag.viewer = player;
 				return;
 			}
 		}

@@ -215,6 +215,9 @@ public class BagListener implements Listener{
 				
     				if(!canbind) {
     					//player.sendMessage("Ownerless Bag");
+    					if(BagData.BagOpenBy(uuid, hand) == player) {
+    						return;
+    					}
     					if(BagData.IsBagOpen(uuid, hand)) {
 	    					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-already-open"), null));
 	    					Log.Debug(Main.plugin, "This bag is already open.");
@@ -232,7 +235,7 @@ public class BagListener implements Listener{
     					}
     	    			Log.Debug(Main.plugin, "Attempting to open ownerless bag");
     	    			try {
-    	    				BagData.MarkBagOpen(uuid, hand);
+    	    				BagData.MarkBagOpen(uuid, hand, player);
     						HavenBags.UpdateBagItem(hand, null, player);
 		    				BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
 							Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
@@ -252,6 +255,9 @@ public class BagListener implements Listener{
     				if(canbind) {
     					//player.sendMessage("Bound Bag");
     					//Log.Error(Main.plugin, NBT.GetStringList(hand, "bag-trust").toString());
+    					if(BagData.BagOpenBy(uuid, hand) == player) {
+    						return;
+    					}
     					if(BagData.IsBagOpen(uuid, hand)) {
 	    					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-already-open"), null));
     						return;
@@ -269,7 +275,7 @@ public class BagListener implements Listener{
         					}
     		    			Log.Debug(Main.plugin, "Attempting to open bag");
     		    			try {
-    		    				BagData.MarkBagOpen(uuid, hand);
+    		    				BagData.MarkBagOpen(uuid, hand, player);
     		    				HavenBags.UpdateBagItem(hand, null, player);
     		    				BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
     		    				Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
@@ -287,7 +293,7 @@ public class BagListener implements Listener{
     						return;
     					} else if (player.hasPermission("havenbags.bypass")) {
     						try {
-    							BagData.MarkBagOpen(uuid, hand);
+    							BagData.MarkBagOpen(uuid, hand, player);
     							HavenBags.UpdateBagItem(hand, null, player);
     							BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
     							Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
@@ -306,7 +312,7 @@ public class BagListener implements Listener{
     						return;
     					}else if(HavenBags.IsPlayerTrusted(hand, player.getName())) {
     						try {
-    							BagData.MarkBagOpen(uuid, hand);
+    							BagData.MarkBagOpen(uuid, hand, player);
 	    						HavenBags.UpdateBagItem(hand, null, player);
     							BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
     							Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);

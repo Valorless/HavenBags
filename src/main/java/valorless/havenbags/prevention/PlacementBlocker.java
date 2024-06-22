@@ -36,6 +36,11 @@ public class PlacementBlocker implements Listener {
 				block.setType(Material.AIR);
 				event.setCancelled(true);
 			}
+			if(HavenBags.IsSkinToken(item)) {
+				Log.Debug(Main.plugin, "Block was skin token!");
+				block.setType(Material.AIR);
+				event.setCancelled(true);
+			}
 		}
 		if(item.getType() == Material.AIR) {
 			block.setType(Material.AIR);
