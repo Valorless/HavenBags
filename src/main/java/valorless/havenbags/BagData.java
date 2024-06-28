@@ -2,6 +2,7 @@ package valorless.havenbags;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,15 +22,19 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import valorless.havenbags.Main.ServerVersion;
+import valorless.havenbags.utils.Reflex;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
-import valorless.valorlessutils.nbt.NBTCompound;
-import valorless.valorlessutils.nbt.NBTCompoundList;
-import valorless.valorlessutils.nbt.NBTItem;
-import valorless.valorlessutils.nbt.NBTListCompound;
-import valorless.valorlessutils.skulls.SkullCreator;
+import valorless.valorlessutils.nbtapi.NBTCompound;
+import valorless.valorlessutils.nbtapi.NBTCompoundList;
+import valorless.valorlessutils.nbtapi.NBTItem;
+import valorless.valorlessutils.nbtapi.NBTListCompound;
+import valorless.valorlessutils.nbtapi.iface.ReadWriteNBT;
+import valorless.valorlessutils.nbtapi.iface.ReadableNBT;
+import valorless.valorlessutils.nbtapi.iface.ReadableNBTList;
+import valorless.havenbags.utils.HeadCreator;
 
 public class BagData {
 	
@@ -543,39 +548,38 @@ public class BagData {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	public static String getTextureValue(ItemStack head) {
         if (head == null || head.getType() != Material.PLAYER_HEAD) {
             throw new IllegalArgumentException("ItemStack must be a Player Head");
         }
 
         // Use NBTAPI to access the NBT data
-        NBTItem nbti = new NBTItem(head);
-        if (!nbti.hasKey("SkullOwner")) {
+        if (valorless.valorlessutils.nbtapi.NBT.readNbt(head).hasTag("SkullOwner") == false) {
             return null;
         }
 
         // Access the SkullOwner NBT compound
-        NBTCompound skullOwner = nbti.getCompound("SkullOwner");
-        if (skullOwner == null || !skullOwner.hasKey("Properties")) {
+        //NBTCompound skullOwner = nbti.getCompound("SkullOwner");
+        ReadableNBT skullOwner = valorless.valorlessutils.nbtapi.NBT.readNbt(head).getCompound("SkullOwner");
+        if (skullOwner == null || !skullOwner.hasTag("Properties")) {
             return null;
         }
 
         // Access the Properties NBT compound
-        NBTCompound properties = skullOwner.getCompound("Properties");
-        if (properties == null || !properties.hasKey("textures")) {
+        ReadableNBT properties = skullOwner.getCompound("Properties");
+        if (properties == null || !properties.hasTag("textures")) {
             return null;
         }
 
         // Access the textures NBT list
-        NBTCompoundList textures = properties.getCompoundList("textures");
+        ReadableNBTList<ReadWriteNBT> textures = properties.getCompoundList("textures");
         if (textures == null || textures.size() == 0) {
             return null;
         }
 
         // Get the first texture compound
-        NBTListCompound texture = textures.get(0);
-        if (texture == null || !texture.hasKey("Value")) {
+        ReadWriteNBT texture = textures.get(0);
+        if (texture == null || !texture.hasTag("Value")) {
             return null;
         }
 
@@ -583,7 +587,7 @@ public class BagData {
         return texture.getString("Value");
     }
 	
-	public static void setTextureValue(ItemStack head, String textureValue) {
+	public static void setTextureValueOld(ItemStack head, String textureValue) {
 		if (head == null || head.getType() != Material.PLAYER_HEAD) {
         	throw new IllegalArgumentException("ItemStack must be a Player Head");
     	}
@@ -605,12 +609,30 @@ public class BagData {
 		}
 		else {
         	SkullMeta meta = (SkullMeta) head.getItemMeta();
-        	SkullMeta m_new = (SkullMeta) SkullCreator.itemFromBase64(textureValue).getItemMeta();
+        	SkullMeta m_new = (SkullMeta) HeadCreator.itemFromBase64(textureValue).getItemMeta();
         	//meta.getOwnerProfile().setTextures(m_new.getOwnerProfile().getTextures());
         	//m_new.setDisplayName(meta.getDisplayName());
         	meta.setOwnerProfile(m_new.getOwnerProfile());
         	head.setItemMeta(meta);
         	//m_new.getOwnerProfile().
 		}
+    }
+	public static void setTextureValue(@NotNull ItemStack item, @NotNull String value) {
+        if (item.getType() != Material.PLAYER_HEAD) return;
+        //if (!(item.getItemMeta() instanceof SkullMeta meta)) return;
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+
+        UUID uuid = UUID.nameUUIDFromBytes(value.getBytes());
+        GameProfile profile = new GameProfile(uuid, "null");
+        profile.getProperties().put("textures", new Property("textures", value));
+
+        Method method = Reflex.getMethod(meta.getClass(), "setProfile", GameProfile.class);
+        if (method != null) {
+            Reflex.invokeMethod(method, meta, profile);
+        } else {
+            Reflex.setFieldValue(meta, "profile", profile);
+        }
+
+        item.setItemMeta(meta);
     }
 }

@@ -22,7 +22,7 @@ import valorless.havenbags.BagData.Data;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;
-import valorless.valorlessutils.skulls.SkullCreator;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.translate.Translator;
 import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.uuid.UUIDFetcher;
@@ -110,11 +110,11 @@ public class CommandListener implements CommandExecutor {
 									if(Main.config.GetBool("bag-textures.enabled")) {
 										for(int s = 9; s <= 54; s += 9) {
 											if(size*9 == s) {
-												bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + size*9));
+												bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + size*9));
 											}
 										}
 									}else {
-										bagItem = SkullCreator.itemFromBase64(bagTexture);
+										bagItem = HeadCreator.itemFromBase64(bagTexture);
 									}
 								} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 									bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
@@ -164,11 +164,11 @@ public class CommandListener implements CommandExecutor {
 									if(Main.config.GetBool("bag-textures.enabled")) {
 										for(int s = 9; s <= 54; s += 9) {
 											if(size*9 == s) {
-												bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size*9));
+												bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size*9));
 											}
 										}
 									}else {
-										bagItem = SkullCreator.itemFromBase64(bagTexture);
+										bagItem = HeadCreator.itemFromBase64(bagTexture);
 									}
 								} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 									bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
@@ -236,11 +236,11 @@ public class CommandListener implements CommandExecutor {
 										if(Main.config.GetBool("bag-textures.enabled")) {
 											for(int s = 9; s <= 54; s += 9) {
 												if(size*9 == s) {
-													bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + s));
+													bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + s));
 												}
 											}
 										}else {
-											bagItem = SkullCreator.itemFromBase64(bagTexture);
+											bagItem = HeadCreator.itemFromBase64(bagTexture);
 										}
 									} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 										bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
@@ -304,11 +304,11 @@ public class CommandListener implements CommandExecutor {
 										if(Main.config.GetBool("bag-textures.enabled")) {
 											for(int s = 9; s <= 54; s += 9) {
 												if(size*9 == s) {
-													bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + s));
+													bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + s));
 												}
 											}
 										}else {
-											bagItem = SkullCreator.itemFromBase64(bagTexture);
+											bagItem = HeadCreator.itemFromBase64(bagTexture);
 										}
 									} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 										bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
@@ -413,14 +413,14 @@ public class CommandListener implements CommandExecutor {
 									for(int s = 9; s <= 54; s += 9) {
 										if(contSize.size() == s) {
 											if(owner.equalsIgnoreCase("ownerless")) {
-												bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + contSize.size()));
+												bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + contSize.size()));
 											}else {
-												bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + contSize.size()));
+												bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + contSize.size()));
 											}
 										}
 									}
 								}else {
-									bagItem = SkullCreator.itemFromBase64(bagTexture);
+									bagItem = HeadCreator.itemFromBase64(bagTexture);
 								}
 							} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 								bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
@@ -586,7 +586,7 @@ public class CommandListener implements CommandExecutor {
 							//contSize = JsonUtils.fromJson(content);
 							contSize = bag.getContent();
 							if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-								bagItem = SkullCreator.itemFromBase64(bagTexture);
+								bagItem = HeadCreator.itemFromBase64(bagTexture);
 							} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 								bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 							} else {

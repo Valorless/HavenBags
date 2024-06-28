@@ -20,7 +20,7 @@ import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
-import valorless.valorlessutils.skulls.SkullCreator;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.sound.SFX;
 import valorless.valorlessutils.utils.Utils;
 
@@ -237,9 +237,9 @@ public class HavenBags {
 		//Log.Error(Main.plugin, id);
 		//Log.Error(Main.plugin, data + "");
 		
-		//ItemStack skull = SkullCreator.itemFromBase64(data.GetString("texture"));
+		//ItemStack skull = HeadCreator.itemFromBase64(data.GetString("texture"));
 		//if(!Utils.IsStringNullOrEmpty(data.GetString("texture"))) {
-		//	bag.setItemMeta((SkullMeta)SkullCreator.itemFromBase64(data.GetString("texture")).getItemMeta());
+		//	bag.setItemMeta((SkullMeta)HeadCreator.itemFromBase64(data.GetString("texture")).getItemMeta());
 		//}
 		
 		//ItemMeta meta = bag.getItemMeta();
@@ -491,7 +491,7 @@ public class HavenBags {
 		ItemStack bagItem;
 		String bagTexture = Main.config.GetString("bag-texture");
 		if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-			bagItem = SkullCreator.itemFromBase64(bagTexture);
+			bagItem = HeadCreator.itemFromBase64(bagTexture);
 		} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 			bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 		} else {

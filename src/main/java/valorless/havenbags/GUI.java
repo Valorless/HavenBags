@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.valorlessutils.nbt.NBT;
-import valorless.valorlessutils.skulls.SkullCreator;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.utils.Utils;
 
 public class GUI {
@@ -65,7 +65,7 @@ public class GUI {
     }
 	
     private static ItemStack CreateButton(GUIAction action, String buttonTexture) {
-		ItemStack button = SkullCreator.itemFromBase64(buttonTexture);
+		ItemStack button = HeadCreator.itemFromBase64(buttonTexture);
     	//ItemStack button = new ItemStack(Material.DIRT);
         ItemMeta meta = button.getItemMeta();
         if(action.equals(GUIAction.NEXT_PAGE)) {
@@ -93,11 +93,11 @@ public class GUI {
     private static ItemStack CreatePageButton(int page) {
     	List<Placeholder> placeholders = new ArrayList<Placeholder>();
 		placeholders.add(new Placeholder("%page%", page));
-		ItemStack button = SkullCreator.itemFromBase64(PageNumberTextures.get(page));
+		ItemStack button = HeadCreator.itemFromBase64(PageNumberTextures.get(page));
 		if(page > 31) {
 			// PageNumberTextures only contains 31 numbers textures.
 			// Beyond this, set the texture to the page 0 texture.
-			button = SkullCreator.itemFromBase64(PageNumberTextures.get(0));
+			button = HeadCreator.itemFromBase64(PageNumberTextures.get(0));
 		}
         ItemMeta meta = button.getItemMeta();
         meta.setDisplayName(Lang.Parse(Lang.Get("page"), placeholders));

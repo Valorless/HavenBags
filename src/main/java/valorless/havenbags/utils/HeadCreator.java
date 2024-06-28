@@ -1,13 +1,7 @@
 package valorless.havenbags.utils;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-
-import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.nbt.NBTCompound;
-import valorless.valorlessutils.nbt.NBTItem;
-
+import valorless.havenbags.BagData;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -35,7 +29,7 @@ public class HeadCreator {
      */
     public static ItemStack itemFromBase64(String base64) {
         ItemStack skull = createSkull();
-        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+        /*SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
 
         if (skullMeta == null) {
         	//Log.Error(Main.plugin, "null");
@@ -51,9 +45,21 @@ public class HeadCreator {
 
         skullOwner.setString("Id", UUID.randomUUID().toString());
         NBTCompound properties = skullOwner.addCompound("Properties");
-        properties.getCompoundList("textures").addCompound().setString("Value", base64);
+        properties.getCompoundList("textures").addCompound().setString("Value", base64);*/
+        
+        BagData.setTextureValue(skull, base64);
+        
         //Log.Error(Main.plugin, skull.toString());
         //Log.Error(Main.plugin, nbtItem.getItem().toString());
-        return nbtItem.getItem();
+        return skull;
     }
+    
+    public static ItemStack itemFromUuid(UUID id) {
+    	ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+    	SkullMeta meta = (SkullMeta) item.getItemMeta();
+		meta.setOwningPlayer(Bukkit.getOfflinePlayer(id));
+		item.setItemMeta(meta);
+
+		return item;
+	}
 }

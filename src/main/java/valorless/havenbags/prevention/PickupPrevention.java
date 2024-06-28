@@ -24,7 +24,9 @@ public class PickupPrevention implements Listener {
 		if(!HavenBags.IsBag(item)) return;
 		String owner = NBT.GetString(item, "bag-owner");
 		if(owner.equalsIgnoreCase("ownerless") && owner.equalsIgnoreCase("null")) return;
-		event.getItemDrop().setOwner(UUID.fromString(owner));
+		try {
+			event.getItemDrop().setOwner(UUID.fromString(owner));
+		}catch(Exception e) {}
 	}
 
 	// NOT IN USE!

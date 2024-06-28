@@ -21,7 +21,7 @@ import org.bukkit.permissions.Permission;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
-import valorless.valorlessutils.skulls.SkullCreator;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.utils.Utils;
 
 public class Crafting implements Listener {
@@ -70,7 +70,7 @@ public class Crafting implements Listener {
 		}
 		int size = Utils.Clamp(config.GetInt("recipes." + recipe + ".bag-size"), 1, 6);
 		if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-			bagItem = SkullCreator.itemFromBase64(bagTexture);
+			bagItem = HeadCreator.itemFromBase64(bagTexture);
 		} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 			bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 		} else {

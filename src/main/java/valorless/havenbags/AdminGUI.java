@@ -23,7 +23,7 @@ import valorless.havenbags.GUI.GUIAction;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.nbt.NBT;
-import valorless.valorlessutils.skulls.SkullCreator;
+import valorless.havenbags.utils.HeadCreator;
 
 public class AdminGUI implements Listener {
 	public enum GUIType { Main, Creation, Restoration, Player, Preview, PreviewPlayer, Deletion, DeletionPlayer, Confirmation }
@@ -661,7 +661,7 @@ public class AdminGUI implements Listener {
 		
 		//Create
 		String cresteTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjA1NmJjMTI0NGZjZmY5OTM0NGYxMmFiYTQyYWMyM2ZlZTZlZjZlMzM1MWQyN2QyNzNjMTU3MjUzMWYifX19";
-		ItemStack createItem = SkullCreator.itemFromBase64(cresteTexture);
+		ItemStack createItem = HeadCreator.itemFromBase64(cresteTexture);
 		ItemMeta createMeta = createItem.getItemMeta();
 		createMeta.setDisplayName(Lang.Get("main-create"));
 		List<String> c_lore = new ArrayList<String>();
@@ -678,7 +678,7 @@ public class AdminGUI implements Listener {
 		
 		//Restore
 		String restoreTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
-		ItemStack restoreItem = SkullCreator.itemFromBase64(restoreTexture);
+		ItemStack restoreItem = HeadCreator.itemFromBase64(restoreTexture);
 		ItemMeta restoreMeta = restoreItem.getItemMeta();
 		restoreMeta.setDisplayName(Lang.Get("main-restore"));
 		List<String> r_lore = new ArrayList<String>();
@@ -695,7 +695,7 @@ public class AdminGUI implements Listener {
 		
 		//Preview
 		String previewTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWZlM2JjYmE1N2M3YjdmOGQ0NjJiMzAwNTQzZDEzMmVjZWE5YmYyZWQ1ODdjYzlkOTk0YTM5NWFjOTU5MmVhYSJ9fX0=";
-		ItemStack previewItem = SkullCreator.itemFromBase64(previewTexture);
+		ItemStack previewItem = HeadCreator.itemFromBase64(previewTexture);
 		ItemMeta previewMeta = previewItem.getItemMeta();
 		previewMeta.setDisplayName(Lang.Get("main-preview"));
 		List<String> p_lore = new ArrayList<String>();
@@ -714,7 +714,7 @@ public class AdminGUI implements Listener {
 		
 		//Deletion
 		String deleteTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0=";
-		ItemStack deleteItem = SkullCreator.itemFromBase64(deleteTexture);
+		ItemStack deleteItem = HeadCreator.itemFromBase64(deleteTexture);
 		ItemMeta deleteMeta = deleteItem.getItemMeta();
 		deleteMeta.setDisplayName(Lang.Get("main-delete"));
 		List<String> d_lore = new ArrayList<String>();
@@ -730,7 +730,7 @@ public class AdminGUI implements Listener {
 		
 		//Info
 		String infoTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjcwNWZkOTRhMGM0MzE5MjdmYjRlNjM5YjBmY2ZiNDk3MTdlNDEyMjg1YTAyYjQzOWUwMTEyZGEyMmIyZTJlYyJ9fX0=";
-		ItemStack infoItem = SkullCreator.itemFromBase64(infoTexture);
+		ItemStack infoItem = HeadCreator.itemFromBase64(infoTexture);
 		ItemMeta infoMeta = infoItem.getItemMeta();
 		infoMeta.setDisplayName(Lang.Get("main-info"));
 		List<String> I_lore = new ArrayList<String>();
@@ -786,11 +786,11 @@ public class AdminGUI implements Listener {
 				if(Main.config.GetBool("bag-textures.enabled")) {
 					for(int s = 9; s <= 54; s += 9) {
 						if(size == s) {
-							bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size));
+							bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size));
 						}
 					}
 				}else {
-					bagItem = SkullCreator.itemFromBase64(bagTexture);
+					bagItem = HeadCreator.itemFromBase64(bagTexture);
 				}
 			} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 				bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
@@ -846,11 +846,11 @@ public class AdminGUI implements Listener {
 				if(Main.config.GetBool("bag-textures.enabled")) {
 					for(int s = 9; s <= 54; s += 9) {
 						if(size == s) {
-							bagItem = SkullCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + size));
+							bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + size));
 						}
 					}
 				}else {
-					bagItem = SkullCreator.itemFromBase64(bagTexture);
+					bagItem = HeadCreator.itemFromBase64(bagTexture);
 				}
 			} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 				bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
@@ -892,7 +892,7 @@ public class AdminGUI implements Listener {
 		templates.add(new ItemStack(Material.AIR));
 		
 		String returnTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTY5NjFhZDFmNWM3NmU5NzM1OGM0NDRmZTBlODNhMzk1NjRlNmI0ODEwOTE3MDk4NGE4NGVjYTVkY2NkNDI0In19fQ==";
-		ItemStack returnItem = SkullCreator.itemFromBase64(returnTexture);
+		ItemStack returnItem = HeadCreator.itemFromBase64(returnTexture);
 		ItemMeta returnMeta = returnItem.getItemMeta();
 		returnMeta.setDisplayName(Lang.Get("return"));
 		List<String> r_lore = new ArrayList<String>();
@@ -915,7 +915,7 @@ public class AdminGUI implements Listener {
 		//List<Player> players = new ArrayList<>(p);
 		
 		String bagTexture = Main.config.GetString("bag-texture");
-		ItemStack ownerless = SkullCreator.itemFromBase64(bagTexture);
+		ItemStack ownerless = HeadCreator.itemFromBase64(bagTexture);
 		ItemMeta ownerlessmeta = ownerless.getItemMeta();
 		ownerlessmeta.setDisplayName("Ownerless");
 		ownerless.setItemMeta(ownerlessmeta);
@@ -923,7 +923,7 @@ public class AdminGUI implements Listener {
 		bags.add(ownerless);
 		
 		/*for(int i = 0; i < players.size(); i++) {
-			ItemStack entry = SkullCreator.itemFromUuid(players.get(i).getUniqueId());
+			ItemStack entry = HeadCreator.itemFromUuid(players.get(i).getUniqueId());
 			ItemMeta meta = entry.getItemMeta();
 			meta.setDisplayName(players.get(i).getName());
 			entry.setItemMeta(meta);
@@ -932,7 +932,7 @@ public class AdminGUI implements Listener {
 		}*/
 		
 		for(Player p : Bukkit.getOnlinePlayers()){
-			ItemStack entry = SkullCreator.itemFromUuid(p.getUniqueId());
+			ItemStack entry = HeadCreator.itemFromUuid(p.getUniqueId());
 			ItemMeta meta = entry.getItemMeta();
 			meta.setDisplayName(p.getName());
 			entry.setItemMeta(meta);
@@ -958,7 +958,7 @@ public class AdminGUI implements Listener {
 			int size = Content.size();
 			
 			if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-				bagItem = SkullCreator.itemFromBase64(bagTexture);
+				bagItem = HeadCreator.itemFromBase64(bagTexture);
 			} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 				bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 			}
@@ -1064,7 +1064,7 @@ public class AdminGUI implements Listener {
 		
 		//Cancel
 		String cancelTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1NDgzNjJhMjRjMGZhODQ1M2U0ZDkzZTY4YzU5NjlkZGJkZTU3YmY2NjY2YzAzMTljMWVkMWU4NGQ4OTA2NSJ9fX0=";
-		ItemStack cancelItem = SkullCreator.itemFromBase64(cancelTexture);
+		ItemStack cancelItem = HeadCreator.itemFromBase64(cancelTexture);
 		ItemMeta cancelMeta = cancelItem.getItemMeta();
 		cancelMeta.setDisplayName(Lang.Get("confirm-cancel"));
 		List<String> c_lore = new ArrayList<String>();
@@ -1088,7 +1088,7 @@ public class AdminGUI implements Listener {
 
 		//Confirm
 		String comfirmTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTc5YTVjOTVlZTE3YWJmZWY0NWM4ZGMyMjQxODk5NjQ5NDRkNTYwZjE5YTQ0ZjE5ZjhhNDZhZWYzZmVlNDc1NiJ9fX0=";
-		ItemStack confirmItem = SkullCreator.itemFromBase64(comfirmTexture);
+		ItemStack confirmItem = HeadCreator.itemFromBase64(comfirmTexture);
 		ItemMeta confirmMeta = confirmItem.getItemMeta();
 		confirmMeta.setDisplayName(Lang.Get("confirm-confirm"));
 		List<String> co_lore = new ArrayList<String>();

@@ -1,5 +1,6 @@
 package valorless.havenbags.prevention;
 
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
@@ -36,6 +37,9 @@ public class EquipPrevention implements Listener {
                 Inventory clickedInventory = event.getClickedInventory();
                 Inventory topInventory = event.getView().getTopInventory();
                 PlayerInventory playerInventory = (PlayerInventory) event.getWhoClicked().getInventory();
+                
+                if(event.getCurrentItem().getType() != Material.PLAYER_HEAD) return;
+                if(playerInventory.getHelmet() != null) return;
                 
                 // Ensure the event is within the player's inventory
                 if (clickedInventory == playerInventory && topInventory == playerInventory) {
