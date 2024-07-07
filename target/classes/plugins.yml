@@ -33,3 +33,7 @@ plugins:
   # Use the Oraxen ID's of the items.
   items:
    - 'test_item'
+   
+mods:
+ HavenBagsPreview:
+  enabled: true

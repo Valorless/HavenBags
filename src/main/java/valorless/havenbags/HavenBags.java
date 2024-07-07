@@ -15,7 +15,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import valorless.havenbags.BagData.Data;
+import com.google.gson.Gson;
+
+import valorless.havenbags.mods.HavenBagsPreview;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
@@ -25,6 +27,7 @@ import valorless.valorlessutils.sound.SFX;
 import valorless.valorlessutils.utils.Utils;
 
 public class HavenBags {
+	private static final Gson gson = new Gson();
 
 	public static class BagHashes {
 		
@@ -309,7 +312,11 @@ public class HavenBags {
     		if(inventory == null) {
     			inventory = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
     		}
+    		if(Main.plugins.GetBool("mods.HavenBagsPreview.enabled")) {
+    			NBT.SetString(bag, "bag-preview-content", gson.toJson(new HavenBagsPreview(inventory)));
+    		}
     	}
+		
     	
     	List<Placeholder> placeholders = new ArrayList<Placeholder>();
 

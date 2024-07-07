@@ -374,14 +374,14 @@ public final class Main extends JavaPlugin implements Listener {
 		weight.Validate();
 		
 		blacklist.AddValidationEntry("enabled", false);
-		Lang.lang.AddValidationEntry("blacklist.materials", new ArrayList<String>() {
+		blacklist.AddValidationEntry("blacklist.materials", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L; { 
 				add("DRAGON_EGG"); 
 				add("SPAWNER"); 
 				}
 			} 
 		);
-		Lang.lang.AddValidationEntry("blacklist.displayname", new ArrayList<String>() {
+		blacklist.AddValidationEntry("blacklist.displayname", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L; { 
 				add("Domination Sword"); 
 				add("Decapitation Shovel"); 
@@ -390,7 +390,8 @@ public final class Main extends JavaPlugin implements Listener {
 				}
 			} 
 		);
-		Lang.lang.AddValidationEntry("blacklist.nbt", new ArrayList<String>());
+		blacklist.AddValidationEntry("blacklist.nbt", new ArrayList<String>());
+		blacklist.Validate();
 		
 		plugins.AddValidationEntry("plugins.PlaceholderAPI.enabled", true);
 		plugins.AddValidationEntry("plugins.ChestSort.enabled", true);
@@ -399,6 +400,9 @@ public final class Main extends JavaPlugin implements Listener {
 		plugins.AddValidationEntry("plugins.PvPManager.pvp", true);
 		plugins.AddValidationEntry("plugins.PvPManager.message", "&cYou cannot use this while in PvP.");
 		//plugins.AddValidationEntry("plugins.Oraxen.enabled", true);
+		
+		plugins.AddValidationEntry("mods.HavenBagsPreview.enabled", true);
+		plugins.Validate();
 		
 		translator = new Translator(config.GetString("language"));
 		
