@@ -42,6 +42,7 @@ public class BagUpgrade implements Listener{
 		if(split.length == 3) {
 			cmd = Integer.valueOf(split[2]);
 			if(upgrade.hasItemMeta()) {
+				if(upgrade.getItemMeta().hasCustomModelData() == false) return;
 				if(upgrade.getItemMeta().getCustomModelData() != cmd) return;
 			}else return;
 		}

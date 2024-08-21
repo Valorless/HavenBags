@@ -55,6 +55,7 @@ public class CommandListener implements CommandExecutor {
 						Main.config.Reload();
 						Lang.lang.Reload();
 						Main.blacklist.Reload();
+						Main.plugins.Reload();
 						BagData.Reload();
 						if (args.length >= 2){
 							if(args[1].equalsIgnoreCase("force")) {
