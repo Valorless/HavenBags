@@ -401,13 +401,33 @@ public class HavenBags {
         	//lore.add(Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player));
         }
         
+        if(NBT.Has(bag, "bag-trust")) {
+			List<String> trust = NBT.GetStringList(bag, "bag-trust");
+			String trusted = "";
+			if(trust.size() != 0) {
+				for(int i = 0; i < trust.size(); i++) { 
+					if(i != 0) {
+						trusted = trusted + ", " + trust.get(i); 
+					}else {
+						trusted = trust.get(i); 
+					}
+				}
+			}
+        	placeholders.add(new Placeholder("%trusted%", trusted));
+        	placeholders.add(new Placeholder("%bag-trusted%", Lang.Parse(Lang.Get("bag-trusted"), placeholders, player)));
+        }
+        
+        
+        
         for(String line : Lang.lang.GetStringList("bag-lore-add")) {
         	if(owner.equalsIgnoreCase("null") == false) {
         		if(line.contains("%bound-to%") && !NBT.GetBool(bag, "bag-canBind")) continue;
+        		if(line.contains("%bag-trusted%") && !NBT.Has(bag, "bag-trust")) continue;
         		if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
         		if(line.contains("%bag-weight%") && !Main.weight.GetBool("enabled")) continue;
         	}else {
         		if(line.contains("%bound-to%")) continue;
+        		if(line.contains("%bag-trusted%") && !NBT.Has(bag, "bag-trust")) continue;
         		if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
         		if(line.contains("%bag-weight%")) continue;
         	}
@@ -735,8 +755,10 @@ public class HavenBags {
 		if(!blacklist.GetBool("enabled")) {
 			return false;
 		}
+		boolean whitelist = blacklist.GetBool("use-as-whitelist");
 		if(item.getType() == Material.AIR) return false;
 		//if(HavenBags.IsBag(item));
+		if(whitelist) Log.Debug(Main.plugin, "Treating blacklist as whitelist!");	
 		Log.Debug(Main.plugin, "Is item blacklisted?");	
 		//Log.Debug(Main.plugin, item.toString());	
 		List<Material> materials = new ArrayList<Material>();
@@ -767,6 +789,7 @@ public class HavenBags {
 		
 		if(materials.contains(item.getType())) {
 			Log.Debug(Main.plugin, "Material blacklisted!");	
+			if(whitelist) return false;
 			return true;
 		}
 		
@@ -774,6 +797,7 @@ public class HavenBags {
 			for(String name : names) {
 				if(name.equalsIgnoreCase(Lang.RemoveColorFormatting(item.getItemMeta().getDisplayName()))) {
 					Log.Debug(Main.plugin, "Name blacklisted!");	
+					if(whitelist) return false;
 					return true;
 				}
 			}
@@ -782,10 +806,12 @@ public class HavenBags {
 		for(BlacklistNBT nk : nbt) {
 			if(NBT.Has(item, nk.key)) {
 				Log.Debug(Main.plugin, "NBT blacklisted!");	
+				if(whitelist) return false;
 				return true;
 			}
 		}
-		
+
+		if(whitelist) return true;
 		return false;
 	}
 	

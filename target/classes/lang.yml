@@ -136,11 +136,13 @@ bag-lore:
 # %bound-to%
 # %bag-size%
 # %bag-auto-pickup%
+# %bag-trusted%
 # %bag-weight% ------- Uses the 'weight-lore' from weight.yml.
 bag-lore-add:
  - '%bound-to%'
  - '%bag-size%'
  - '%bag-auto-pickup%'
+ - '%bag-trusted%'
  - '%bag-weight%'
  # Bag content will always be at the bottom.
 
@@ -177,6 +179,10 @@ bag-content-and-more: '  &7And more..'
 # If bag has auto-pickup enabled.
 # %filter% - filter displayname.
 bag-auto-pickup: '&7Auto Loot: %filter%'
+
+# If bag has trusted players.
+# %trusted% - trusted players.
+bag-trusted: '&7Trusted: %trusted%'
 
 ############################################################
 # +------------------------------------------------------+ #

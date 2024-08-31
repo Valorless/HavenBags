@@ -8,6 +8,9 @@
 # Works for both manual and auto-pickup.
 enabled: false
 
+# Should the Blacklist be treated as a Whitelist instead?
+use-as-whitelist: false
+
 # List of items unable to go into bags.
 blacklist:
  # List of materials blacklisted.

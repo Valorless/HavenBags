@@ -247,6 +247,7 @@ public final class Main extends JavaPlugin implements Listener {
 				add("%bound-to%"); 
 				add("%bag-size%"); 
 				add("%bag-auto-pickup%"); 
+				add("%bag-trusted%"); 
 				add("%bag-weight%"); 
 				}
 			} 
@@ -260,6 +261,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("bag-content-item-amount", "&7%item% &7x%amount%");
 		Lang.lang.AddValidationEntry("bag-content-and-more", "&7And more..");
 		Lang.lang.AddValidationEntry("bag-auto-pickup", "&7Auto Loot: %filter%");
+		Lang.lang.AddValidationEntry("bag-trusted", "&7Trusted: %trusted%");
 		
 		// Admin GUI
 		Lang.lang.AddValidationEntry("too-many-bags", "&cThis player has over 53 bags.\\nPlease restore their bags through &e/bags restore&c!");
@@ -374,6 +376,7 @@ public final class Main extends JavaPlugin implements Listener {
 		weight.Validate();
 		
 		blacklist.AddValidationEntry("enabled", false);
+		blacklist.AddValidationEntry("use-as-whitelist", false);
 		blacklist.AddValidationEntry("blacklist.materials", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L; { 
 				add("DRAGON_EGG"); 
