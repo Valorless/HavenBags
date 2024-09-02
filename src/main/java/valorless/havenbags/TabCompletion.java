@@ -117,7 +117,7 @@ public class TabCompletion implements TabCompleter {
 				StringUtil.copyPartialMatches(cmd, cmds, completions);
 			}
 			if (args[0].equalsIgnoreCase("autopickup") && sender.hasPermission("havenbags.autopickup")) {
-				List<String> filters = AutoPickup.GetFilterNames();
+				List<String> filters = AutoPickup.GetFilterNames((Player)sender);
 				filters.add("none");
 				StringUtil.copyPartialMatches(cmd, filters, completions);
 			}

@@ -2,9 +2,6 @@ package valorless.havenbags;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -116,7 +113,7 @@ public class BagUpgrade implements Listener{
 	ItemStack GetResult(ItemStack item, int from, int to, ItemStack bag, ItemStack upgrade) {
 
 		ItemMeta meta = item.getItemMeta();
-		List<String> lore = meta.getLore();
+		//List<String> lore = meta.getLore();
 		List<String> newLore = new ArrayList<String>();
 		String owner = NBT.GetString(bag, "bag-owner");
 

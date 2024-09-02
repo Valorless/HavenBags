@@ -88,9 +88,16 @@ public class AutoPickup implements Listener {
 		return filters;
 	}
 	
-	public static List<String> GetFilterNames(){
+	public static List<String> GetFilterNames(Player player){
 		List<String> filternames = new ArrayList<String>();
 		for(Filter filter : filters) {
+			if(AutoPickup.filter.HasKey("filters." + filter.name + ".permission.node") && player != null) {
+				if(!AutoPickup.filter.GetString("filters." + filter.name + ".permission.node").equalsIgnoreCase("none")) {
+					if(!player.hasPermission("filters." + filter.name + ".permission.node")) {
+						continue;
+					}
+				}
+			}
 			filternames.add(filter.name);
 		}
 		return filternames;
@@ -373,6 +380,13 @@ public class AutoPickup implements Listener {
 				//Log.Debug(Main.plugin, "Filter: " + f.name);
 				//Log.Debug(Main.plugin, "Bag Filter: " + NBT.GetString(bag.item, "bag-filter"));
 				if(f.name.equalsIgnoreCase(NBT.GetString(bag.item, "bag-filter"))) {
+					if(AutoPickup.filter.HasKey("filters." + f.name + ".permission.node")) {
+						if(!AutoPickup.filter.GetString("filters." + f.name + ".permission.node").equalsIgnoreCase("none")) {
+							if(!AutoPickup.filter.GetBool("filters." + f.name + ".permission.use")) {
+								if(!player.hasPermission("filters." + f.name + ".permission.node")) c = false; break;
+							}
+						}
+					}
 					c = true;
 					break;
 				}

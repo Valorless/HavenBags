@@ -2,8 +2,20 @@
 # You can add more filters yourself.
 
 filters:
+ # Filter name, as shown when typing the command.
  plants:
+  # Display name, shown in the bag's lore.
   displayname: '&aPlants'
+  # Permission required to use/apply this filter.
+  permission: 
+   node: havenbags.plants
+   # Does the player require this permission to apply the filter?
+   # This way to can give bags with specific filters, that the player cant apply themselves.
+   # They can still remove/change them though.
+   apply: false
+   # Does the player require this permission to use the filter?
+   use: true
+  # Items that this filter will pick up.
   items:
     # Seeds
     - WHEAT_SEEDS
