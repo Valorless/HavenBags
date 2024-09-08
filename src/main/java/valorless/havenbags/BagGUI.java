@@ -50,7 +50,7 @@ public class BagGUI implements Listener {
     			this.bagOwner = "ownerless" + "/" + NBT.GetString(bagItem, "bag-uuid").toString();
     		}
     	}
-    	Log.Debug(plugin, "Attempting to create and open bag " + bag);
+    	Log.Debug(plugin, "[DI-33] " + "Attempting to create and open bag " + bag);
     	this.plugin = plugin;
     	this.bagItem = bagItem;
     	this.bagMeta = bagMeta;
@@ -117,7 +117,7 @@ public class BagGUI implements Listener {
     void CheckInstances() {
     	List<BagGUI> thisUUID = new ArrayList<BagGUI>();
     	for (ActiveBag openBag : Main.activeBags) {
-    		Log.Debug(plugin, "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
+    		Log.Debug(plugin, "[DI-34] " + "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
     		if(openBag.uuid.equalsIgnoreCase(NBT.GetString(bagItem, "bag-uuid"))) {
     			thisUUID.add(openBag.gui);
     		}
@@ -137,7 +137,7 @@ public class BagGUI implements Listener {
     
 	public void InitializeItems() {
 		try {
-			Log.Debug(plugin, "Attempting to initialize bag items");
+			Log.Debug(plugin, "[DI-35] " + "Attempting to initialize bag items");
     		for(int i = 0; i < content.size(); i++) {
     			inv.setItem(i, content.get(i));
     		}
@@ -160,7 +160,7 @@ public class BagGUI implements Listener {
 						"################################\n";
 				console.sendMessage(String.format(errorMessage, bag));
 				for (ActiveBag openBag : Main.activeBags) {
-		    		Log.Debug(plugin, "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
+		    		Log.Debug(plugin, "[DI-36] " + "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
 		    		if(openBag.uuid == NBT.GetString(bagItem, "bag-uuid")) {
 		    			Main.activeBags.remove(openBag);
 		    		}
@@ -173,7 +173,7 @@ public class BagGUI implements Listener {
     }
 	
 	List<ItemStack> LoadContent() {
-		Log.Debug(plugin, "Attempting to load bag content");
+		Log.Debug(plugin, "[DI-37] " + "Attempting to load bag content");
 
     	String uuid = NBT.GetString(this.bagItem, "bag-uuid");
     	String owner = NBT.GetString(this.bagItem, "bag-owner");
@@ -198,11 +198,11 @@ public class BagGUI implements Listener {
         if (!e.getInventory().equals(inv)) return;
         if(e.getRawSlot() == -999) return;
         if(e.getHotbarButton() != -1) {
-        	Log.Debug(plugin, "" + e.getHotbarButton());
+        	Log.Debug(plugin, "[DI-38] " + "" + e.getHotbarButton());
         	e.setCancelled(true);
         	return;
         }
-        Log.Debug(Main.plugin, e.getRawSlot() + "");
+        Log.Debug(Main.plugin, "[DI-39] " + e.getRawSlot() + "");
         
         ItemStack clickedItem = e.getCurrentItem();
         ItemStack cursorItem = e.getCursor();
@@ -212,9 +212,9 @@ public class BagGUI implements Listener {
       //Check Weight When cursor isnt air, clicked item is null. Therefore we run this before the null check.
         if(cursorItem != null) {        	
         if(e.getRawSlot() < inv.getSize() && !cursorItem.getType().equals(Material.AIR)) {
-            Log.Debug(Main.plugin, "within");
+            Log.Debug(Main.plugin, "[DI-40] " + "within");
         	if(Main.weight.GetBool("enabled") == false) return;
-            Log.Debug(Main.plugin, "enabled");
+            Log.Debug(Main.plugin, "[DI-41] " + "enabled");
             List<ItemStack> cont = new ArrayList<ItemStack>();
             for(int i = 0; i < inv.getSize(); i++) {
         		cont.add(inv.getItem(i));
@@ -250,9 +250,9 @@ public class BagGUI implements Listener {
         }
         
         if(e.getRawSlot() > inv.getSize() && e.isShiftClick()) {
-            Log.Debug(Main.plugin, "within");
+            Log.Debug(Main.plugin, "[DI-42] " + "within");
         	if(Main.weight.GetBool("enabled") == false) return;
-            Log.Debug(Main.plugin, "enabled");
+            Log.Debug(Main.plugin, "[DI-43] " + "enabled");
             List<ItemStack> cont = new ArrayList<ItemStack>();
             for(int i = 0; i < inv.getSize(); i++) {
         		cont.add(inv.getItem(i));
@@ -312,7 +312,7 @@ public class BagGUI implements Listener {
 				Main.config.GetFloat("close-volume").floatValue(), 
 				Main.config.GetFloat("close-pitch").floatValue(), player);
     	
-        Log.Debug(plugin, "Bag closed, attempting to save bag. (" + bag + ")");
+        Log.Debug(plugin, "[DI-44] " + "Bag closed, attempting to save bag. (" + bag + ")");
 
 		//if(Main.weight.GetBool("enabled")) {
 		//	inv.setContents(HavenBags.HideWeight(inv.getContents()));
@@ -335,7 +335,7 @@ public class BagGUI implements Listener {
 		//HavenBags.WriteBagToServer(bagItem, cont, player);
 		try {
 			for (int i = 0; i < Main.activeBags.size(); i++) {
-    			Log.Debug(plugin, "Open Bag: " + Main.activeBags.get(i).uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
+    			Log.Debug(plugin, "[DI-45] " + "Open Bag: " + Main.activeBags.get(i).uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
     			if(Main.activeBags.get(i).uuid == NBT.GetString(bagItem, "bag-uuid")) {
     				Main.activeBags.remove(i);
     			}
@@ -344,7 +344,7 @@ public class BagGUI implements Listener {
 			e.printStackTrace();
 		}
 		BagData.MarkBagClosed(uuid);
-		Log.Debug(plugin, "Remaining Open Bags: " + Main.activeBags.size());
+		Log.Debug(plugin, "[DI-46] " + "Remaining Open Bags: " + Main.activeBags.size());
 		
 		//UpdateTimestamp();
     }

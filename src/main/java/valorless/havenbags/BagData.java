@@ -27,10 +27,6 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
-import valorless.valorlessutils.nbtapi.NBTCompound;
-import valorless.valorlessutils.nbtapi.NBTCompoundList;
-import valorless.valorlessutils.nbtapi.NBTItem;
-import valorless.valorlessutils.nbtapi.NBTListCompound;
 import valorless.valorlessutils.nbtapi.iface.ReadWriteNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBTList;
@@ -137,7 +133,7 @@ public class BagData {
 		}
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				Log.Debug(Main.plugin, bag.uuid);
+				Log.Debug(Main.plugin, "[DI-28] " + bag.uuid);
 				//Log.Debug(Main.plugin, bag.owner);
 				if(m_source == UpdateSource.PLAYER) {
 					bag.isOpen = true;
@@ -235,7 +231,7 @@ public class BagData {
 		    	if(!file.exists()) {
 		    		file.getParentFile().mkdirs();
 		    		file.createNewFile();
-		        	Log.Debug(Main.plugin, String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
+		        	Log.Debug(Main.plugin, "[DI-29] " + String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
 		        }
 		    	
 		    	
@@ -297,7 +293,7 @@ public class BagData {
 		dat.changed = true;
 		dat.content = content;
 		data.add(dat);
-		Log.Debug(Main.plugin, "New bag data created: " + owner + "/" + uuid);
+		Log.Debug(Main.plugin, "[DI-30] " + "New bag data created: " + owner + "/" + uuid);
 	}
 	
 	public static void LoadData(){
@@ -341,7 +337,7 @@ public class BagData {
 			if(!bag.changed) continue;
 			String uuid = bag.uuid;
 	    	String owner = bag.owner;
-	    	Log.Debug(Main.plugin, "Attempting to write bag " + owner + "/" + uuid + " onto server");
+	    	Log.Debug(Main.plugin, "[DI-31] " + "Attempting to write bag " + owner + "/" + uuid + " onto server");
 	    	bag.data.Set("content", JsonUtils.toJson(bag.content).replace("'", "◊"));
 	    	bag.data.SaveConfig();
 	    	bag.changed = false;
@@ -363,7 +359,7 @@ public class BagData {
 	}
 	
 	protected static List<String> GetBags(@NotNull String player){
-		Log.Debug(Main.plugin, player);
+		Log.Debug(Main.plugin, "[DI-32] " + player);
 		try {
 			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
 					.filter(file -> !file.isDirectory())

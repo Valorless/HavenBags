@@ -16,11 +16,6 @@ public class CommandReload {
 	static String Name = "§7[§aHaven§bBags§7]§r";
 
 	public static boolean Run(HBCommand command) {
-		if(command != null) {
-			for(String arg : command.args) {
-				Log.Debug(Main.plugin, arg);
-			}
-		}
 		try {
 			Main.CloseBags();
 			Main.config.Reload();
@@ -60,7 +55,7 @@ public class CommandReload {
 			return true;
 		}catch(Exception e) {
 			Log.Error(Main.plugin, "Something failed during reload.");
-			return false;
+			return true;
 		}
 	}
 }

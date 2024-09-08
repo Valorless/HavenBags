@@ -36,7 +36,7 @@ public class InventoryListener implements Listener {
 	final private List<InventoryType> allowedContainers = PrepareAllowedContainers();
 		
 	List<InventoryType> PrepareAllowedContainers() {
-		Log.Debug(Main.plugin, "Preparing Allowed Containers");
+		Log.Debug(Main.plugin, "[DI-198] " + "Preparing Allowed Containers");
 		List<InventoryType> cont = new ArrayList<InventoryType>();
 		cont.add(InventoryType.CRAFTING);
 		cont.add(InventoryType.HOPPER);
@@ -45,11 +45,11 @@ public class InventoryListener implements Listener {
 		for(String container : Main.config.GetStringList("allowed-containers")) {
 			cont.add(GetInventoryType(container));
 		}
-		Log.Debug(Main.plugin, "Allowed Containers:");
+		Log.Debug(Main.plugin, "[DI-199] " + "Allowed Containers:");
 		for(InventoryType type : cont) {
 			Log.Debug(Main.plugin, "- " + type.toString());
 		}
-		Log.Debug(Main.plugin, "To update this list, you have to restart or reload the server, not /bags reload.");
+		Log.Debug(Main.plugin, "[DI-200] " + "To update this list, you have to restart or reload the server, not /bags reload.");
 		return cont;
 	}
 

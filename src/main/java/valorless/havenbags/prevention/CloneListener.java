@@ -51,7 +51,7 @@ public class CloneListener implements Listener{
 			
 			if(NBT.Has(item, "bag-uuid")) {
 				while(item.getAmount() > 1) {
-					Log.Debug(Main.plugin, "Stacked bag found!");
+					Log.Debug(Main.plugin, "[DI-191] " + "Stacked bag found!");
 					
 					ItemStack clone = item.clone();
 					clone.setAmount(1);
@@ -87,11 +87,11 @@ public class CloneListener implements Listener{
 					}
 					
 					
-					Log.Debug(Main.plugin, "Giving cloned bag a new id");
+					Log.Debug(Main.plugin, "[DI-192] " + "Giving cloned bag a new id");
 					NBT.SetString(clone, "bag-uuid", UUID.randomUUID().toString());
 					NBT.SetString(clone, "bag-owner", "null");
 
-					Log.Debug(Main.plugin, "Splitting bags apart");
+					Log.Debug(Main.plugin, "[DI-193] " + "Splitting bags apart");
 					item.setAmount(item.getAmount() - 1);
 					player.getInventory().addItem(clone);
 				}

@@ -47,7 +47,7 @@ public class AdminGUI implements Listener {
 		this.target = player.getUniqueId().toString();
 		this.targetPlayer = player;
 		
-		Log.Debug(plugin, type.toString());
+		Log.Debug(plugin, "[DI-22] " + type.toString());
 		
 		try {
 			PrepareContent();
@@ -64,7 +64,7 @@ public class AdminGUI implements Listener {
 		this.target = target.getUniqueId().toString();
 		this.targetPlayer = target;
 		
-		Log.Debug(plugin, type.toString());
+		Log.Debug(plugin, "[DI-23] " + type.toString());
 		
 		try {
 			PrepareContent();
@@ -300,7 +300,7 @@ public class AdminGUI implements Listener {
         	}
         	
         	String owner = clickedItem.getItemMeta().getDisplayName();
-        	Log.Debug(plugin, "Changing Admin target to " + owner);
+        	Log.Debug(plugin, "[DI-24] " + "Changing Admin target to " + owner);
         	if(owner.equalsIgnoreCase("ownerless")) {
         		target = "ownerless";
         	}else {
@@ -350,7 +350,7 @@ public class AdminGUI implements Listener {
         	}
         	
         	String owner = clickedItem.getItemMeta().getDisplayName();
-        	Log.Debug(plugin, "Changing Admin target to " + owner);
+        	Log.Debug(plugin, "[DI-25] " + "Changing Admin target to " + owner);
         	if(owner.equalsIgnoreCase("ownerless")) {
         		target = "ownerless";
         	}else {
@@ -400,7 +400,7 @@ public class AdminGUI implements Listener {
         	}
         	
         	String owner = clickedItem.getItemMeta().getDisplayName();
-        	Log.Debug(plugin, "Changing Admin target to " + owner);
+        	Log.Debug(plugin, "[DI-26] " + "Changing Admin target to " + owner);
         	if(owner.equalsIgnoreCase("ownerless")) {
         		target = "ownerless";
         	}else {
@@ -768,7 +768,7 @@ public class AdminGUI implements Listener {
 
 	ArrayList<ItemStack> PrepareTemplates() {
     	for(Field f : ItemStack.class.getDeclaredFields()) {
-    		Log.Debug(plugin, f.getName() + " - " + f.getType());
+    		Log.Debug(plugin, "[DI-27] " + f.getName() + " - " + f.getType());
     	}
 		ArrayList<ItemStack> templates = new ArrayList<ItemStack>();
 		

@@ -30,11 +30,7 @@ public class CommandPreview {
 	static String bagTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
 
 	public static boolean Run(HBCommand command) {
-		if(command != null) {
-			for(String arg : command.args) {
-				Log.Debug(Main.plugin, arg);
-			}
-		}
+		
 		ItemStack bagItem = new ItemStack(Material.DIRT);
 		bagTexture = Main.config.GetString("bag-texture");
 		
@@ -54,7 +50,7 @@ public class CommandPreview {
 			File dir = new File(dirPath);
 			if(!dir.exists()) {
 				command.sender.sendMessage(Lang.Parse(Lang.Get("player-no-bags"), placeholders, player));
-				return false;
+				return true;
 			}
 			if (command.args.length >= 3){ // Bag UUID
 				String uuid = command.args[2];
@@ -66,11 +62,11 @@ public class CommandPreview {
 				} catch(Exception e) {
 					command.sender.sendMessage(e.toString());
 					e.printStackTrace();
-					return false;
+					return true;
 				}
 				if(!bagData.exists()) {
 					command.sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-not-found"));
-					return false;
+					return true;
 				}
 				List<ItemStack> contSize = new ArrayList<ItemStack>();
 				//contSize = JsonUtils.fromJson(content);
@@ -81,7 +77,7 @@ public class CommandPreview {
 					bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 				} else {
 					command.sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
-					return false;
+					return true;
 				}
 				NBT.SetString(bagItem, "bag-uuid", uuid);
 				NBT.SetInt(bagItem, "bag-size", contSize.size());
@@ -185,8 +181,8 @@ public class CommandPreview {
 				gui.OpenInventory(Bukkit.getPlayer(command.sender.getName()));
 				//HavenBags.activeBags.remove(gui);
 				
-				Log.Debug(Main.plugin, "Attempting to preview bag");
-				Log.Debug(Main.plugin, String.format("%s previwing bag: %s/%s size: %s", command.sender.getName(), owner, uuid, contSize.size()));
+				Log.Debug(Main.plugin, "[DI-142] " + "Attempting to preview bag");
+				Log.Debug(Main.plugin, "[DI-143] " + String.format("%s previwing bag: %s/%s size: %s", command.sender.getName(), owner, uuid, contSize.size()));
 				//content = 
 			}else {
 				// No uuid
@@ -205,6 +201,6 @@ public class CommandPreview {
 		}else {
 			command.sender.sendMessage(Name + "§c /havenbags restore <player> <bag-uuid>");
 		}
-		return false;
+		return true;
 	}
 }

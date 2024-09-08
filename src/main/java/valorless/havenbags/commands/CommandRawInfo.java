@@ -5,19 +5,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.havenbags.HavenBags;
-import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class CommandRawInfo {
 	
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
 	public static boolean Run(HBCommand command) {
-		if(command != null) {
-			for(String arg : command.args) {
-				Log.Debug(Main.plugin, arg);
-			}
-		}
 		
 		ItemStack hand = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand();
 		ItemMeta meta = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand().getItemMeta();
@@ -28,6 +21,6 @@ public class CommandRawInfo {
 			command.sender.sendMessage(info);
 			return true;
 		}
-		return false;
+		return true;
 	}
 }

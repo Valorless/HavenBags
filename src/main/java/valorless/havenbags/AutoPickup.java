@@ -64,21 +64,21 @@ public class AutoPickup implements Listener {
 		if(!enabled) return;
 		filters.clear();
 		Object[] f = filter.GetConfigurationSection("filters").getKeys(false).toArray();
-		Log.Debug(Main.plugin, "Filters: " + f.length);
+		Log.Debug(Main.plugin, "[DI-145] " + "Filters: " + f.length);
 		for(int i = 0; i < f.length; i++) {
 			String filterName = String.valueOf(f[i]);
 			filters.add(new Filter(filterName, filter.GetString(String.format("filters.%s.displayname", filterName)), filter.GetStringList(String.format("filters.%s.items", filterName))));
 
-			Log.Debug(Main.plugin, "Filter: " + filterName);
+			Log.Debug(Main.plugin, "[DI-146] " + "Filter: " + filterName);
 		}
 		
 		if(Main.plugins.GetBool("plugins.Oraxen.enabled")) {
 			if(Bukkit.getPluginManager().getPlugin("Oraxen") != null) {
         		try {
-        			Log.Debug(Main.plugin, "Adding Oraxen items to auto-pickup.");
+        			Log.Debug(Main.plugin, "[DI-147] " + "Adding Oraxen items to auto-pickup.");
         			oraxenIDs = Main.plugins.GetStringList("plugins.Oraxen.items");
         		}catch (Exception e) {
-        			Log.Error(Main.plugin, "Failed to get Oraxen API. Is it up to date?");
+        			Log.Error(Main.plugin, "[DI-148] " + "Failed to get Oraxen API. Is it up to date?");
         		}
         	}
 		}
@@ -92,9 +92,13 @@ public class AutoPickup implements Listener {
 		List<String> filternames = new ArrayList<String>();
 		for(Filter filter : filters) {
 			if(AutoPickup.filter.HasKey("filters." + filter.name + ".permission.node") && player != null) {
-				if(!AutoPickup.filter.GetString("filters." + filter.name + ".permission.node").equalsIgnoreCase("none")) {
-					if(!player.hasPermission("filters." + filter.name + ".permission.node")) {
-						continue;
+				if(!player.hasPermission("havenbags.bypass")) {
+					if(!AutoPickup.filter.GetString("filters." + filter.name + ".permission.node").equalsIgnoreCase("none")) {
+						if(AutoPickup.filter.GetBool("filters." + filter.name + ".permission.apply")) {
+							if(!player.hasPermission(AutoPickup.filter.GetString("filters." + filter.name + ".permission.node"))) continue;
+						}else {
+							continue;
+						}
 					}
 				}
 			}
@@ -124,13 +128,13 @@ public class AutoPickup implements Listener {
 		if(event.getItem().getOwner() != null) {
 			if(event.getItem().getOwner() != player.getUniqueId()) return;
 		}
-		Log.Debug(Main.plugin, "AutoPickup");
+		Log.Debug(Main.plugin, "[DI-149] " + "AutoPickup");
 		List<String> blacklist = Main.config.GetStringList("blacklist");
 		if(blacklist != null) {
 			if(blacklist.size() != 0) {
-				Log.Debug(Main.plugin, "Player World: " + player.getWorld().getName());
+				Log.Debug(Main.plugin, "[DI-150] " + "Player World: " + player.getWorld().getName());
 				for(String world : blacklist) {
-					Log.Debug(Main.plugin, "Blacklist: " + world);
+					Log.Debug(Main.plugin, "[DI-151] " + "Blacklist: " + world);
 					if(player.getWorld().getName().equalsIgnoreCase(world)) return;
 				}
 			}
@@ -149,15 +153,15 @@ public class AutoPickup implements Listener {
 		// For some reason handling ExecutableItems items, would duplicate the item.
 		if (Bukkit.getPluginManager().getPlugin("ExecutableItems") != null) {
 			if(Tags.Has((JavaPlugin)Bukkit.getPluginManager().getPlugin("ExecutableItems"), item.getItemMeta().getPersistentDataContainer(), "ei-id", PersistentDataType.STRING)) {
-				Log.Debug(Main.plugin, "Item is ExecutableItem, skipping.");
+				Log.Debug(Main.plugin, "[DI-152] " + "Item is ExecutableItem, skipping.");
 				return;
 			}
 		}
 		
 		if(HavenBags.IsBag(item)) return;
-		Log.Debug(Main.plugin, item.getType().toString());
+		Log.Debug(Main.plugin, "[DI-153] " + item.getType().toString());
 		boolean cancel = PutItemInBag(item, player);
-		Log.Debug(Main.plugin, "Cancelled: " + cancel);
+		Log.Debug(Main.plugin, "[DI-154] " + "Cancelled: " + cancel);
 		if(cancel) {
 			event.setCancelled(true);
 			int count = 10;
@@ -349,10 +353,10 @@ public class AutoPickup implements Listener {
 	*/
 	
 	boolean PutItemInBag(ItemStack item, Player player){
-		Log.Debug(Main.plugin, "PutItemInBag?");
+		Log.Debug(Main.plugin, "[DI-154] " + "PutItemInBag?");
 		
 		if(ItemFilter(item) == null) {
-			Log.Debug(Main.plugin, "false");
+			Log.Debug(Main.plugin, "[DI-155] " + "false");
 			return false;
 		}
 
@@ -360,7 +364,7 @@ public class AutoPickup implements Listener {
 		if(HavenBags.IsItemBlacklisted(item)) return false;
 	
 		List<Bag> bags = new ArrayList<Bag>();
-		Log.Debug(Main.plugin, "Checking for bags.");
+		Log.Debug(Main.plugin, "[DI-156] " + "Checking for bags.");
 		for(ItemStack i : player.getInventory().getContents()) {
 			//Log.Debug(Main.plugin, HavenBags.BagState(i).toString());
 			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
@@ -369,10 +373,10 @@ public class AutoPickup implements Listener {
 				}
 			}
 		}
-		Log.Debug(Main.plugin, "bags:" + bags.size());
-		Log.Debug(Main.plugin, "Checking bag filters.");
+		Log.Debug(Main.plugin, "[DI-157] " + "bags:" + bags.size());
+		Log.Debug(Main.plugin, "[DI-158] " + "Checking bag filters.");
 		for(Bag bag : bags) {
-			Log.Debug(Main.plugin, "bag: " + NBT.GetString(bag.item, "bag-uuid"));
+			Log.Debug(Main.plugin, "[DI-159] " + "bag: " + NBT.GetString(bag.item, "bag-uuid"));
 			if(BagData.IsBagOpen(NBT.GetString(bag.item, "bag-uuid"), bag.item)) continue;
 			if(HavenBags.IsBagFull(bag.item)) continue;
 			boolean c = false;
@@ -381,9 +385,19 @@ public class AutoPickup implements Listener {
 				//Log.Debug(Main.plugin, "Bag Filter: " + NBT.GetString(bag.item, "bag-filter"));
 				if(f.name.equalsIgnoreCase(NBT.GetString(bag.item, "bag-filter"))) {
 					if(AutoPickup.filter.HasKey("filters." + f.name + ".permission.node")) {
+						Log.Debug(Main.plugin, "[DI-160] " + "[AutoPickup] Permission");
 						if(!AutoPickup.filter.GetString("filters." + f.name + ".permission.node").equalsIgnoreCase("none")) {
-							if(!AutoPickup.filter.GetBool("filters." + f.name + ".permission.use")) {
-								if(!player.hasPermission("filters." + f.name + ".permission.node")) c = false; break;
+							Log.Debug(Main.plugin, "[DI-161] " + "[AutoPickup] Permission " + f.name);
+							if(AutoPickup.filter.GetBool("filters." + f.name + ".permission.use")) {
+								if(!player.hasPermission(AutoPickup.filter.GetString("filters." + f.name + ".permission.node"))) {
+									Log.Debug(Main.plugin, "[DI-162] " + "[AutoPickup] Permission Use true - Player false");
+									c = false; break;
+								}else {
+									Log.Debug(Main.plugin, "[DI-163] " + "[AutoPickup] Permission Use true - Player true");
+								}
+							}else {
+								Log.Debug(Main.plugin, "[DI-164] " + "[AutoPickup] Permission Use false");
+								c = false; break;
 							}
 						}
 					}
@@ -391,14 +405,14 @@ public class AutoPickup implements Listener {
 					break;
 				}
 			}
-			Log.Debug(Main.plugin, "Filter " + c);
+			Log.Debug(Main.plugin, "[DI-165] " + "Filter " + c);
 			if(!c) {
-				Log.Debug(Main.plugin, "No filters, skipping.");
+				Log.Debug(Main.plugin, "[DI-166] " + "No filters, skipping.");
 				continue;
 			}
 			
 			if(!IsItemInFilter(NBT.GetString(bag.item, "bag-filter"), item)) {
-				Log.Debug(Main.plugin, "Item " + item.getType().toString() + " is not in the filter. Skipping.");
+				Log.Debug(Main.plugin, "[DI-167] " + "Item " + item.getType().toString() + " is not in the filter. Skipping.");
 				continue;
 			}
 			
@@ -414,7 +428,7 @@ public class AutoPickup implements Listener {
 			
 			
 			int maxContent = NBT.GetInt(bag.item, "bag-size");
-			Log.Debug(Main.plugin, "cont:" + bag.content.size());
+			Log.Debug(Main.plugin, "[DI-168] " + "cont:" + bag.content.size());
 			int contSize = 0;
 //			for(int i = 0; i < bag.content.size(); i++) {
 //				if(bag.content.get(i) == null) {
@@ -425,7 +439,7 @@ public class AutoPickup implements Listener {
 //					contSize++;
 //				}
 //			}
-			Log.Debug(Main.plugin, "Checking bag content.");
+			Log.Debug(Main.plugin, "[DI-169] " + "Checking bag content.");
 			for(ItemStack i : bag.content) {
 				try {
 					if(i.getType() != Material.AIR) {
@@ -440,9 +454,9 @@ public class AutoPickup implements Listener {
 			
 			if(HavenBags.CanCarry(item, bag.item) == false) return false;
 			
-			Log.Debug(Main.plugin, "maxContent:" + maxContent);
+			Log.Debug(Main.plugin, "[DI-170] " + "maxContent:" + maxContent);
 			//if(contSize >= maxContent) return false;
-			Log.Debug(Main.plugin, "contSize:" + contSize);
+			Log.Debug(Main.plugin, "[DI-171] " + "contSize:" + contSize);
 			if(contSize == 0) {
 				bag.content.set(0, item);
 				if(Main.weight.GetBool("enabled")) {
@@ -476,14 +490,14 @@ public class AutoPickup implements Listener {
 				//HavenBags.WriteBagToServer(bag.item, bag.content, player);
 				BagData.UpdateBag(bag.item, bag.content);
 				PickupSound(player);
-				Log.Debug(Main.plugin, "Item put in bag.");
+				Log.Debug(Main.plugin, "[DI-172] " + "Item put in bag.");
 				return true;
 			}else {
-				Log.Debug(Main.plugin, "Item was not put in bag.");
+				Log.Debug(Main.plugin, "[DI-173] " + "Item was not put in bag.");
 				return false;
 			}
 		}
-		Log.Debug(Main.plugin, "Item was not put in bag.");
+		Log.Debug(Main.plugin, "[DI-174] " + "Item was not put in bag.");
 		return false;
 	}
 	
@@ -497,7 +511,7 @@ public class AutoPickup implements Listener {
 	}
 	
 	boolean IsItemInFilter(String filter, ItemStack item) {
-		Log.Debug(Main.plugin, "IsItemInFilter?");
+		Log.Debug(Main.plugin, "[DI-175] " + "IsItemInFilter?");
 		if(Main.plugins.GetBool("plugins.Oraxen.enabled")) {
 			if(Bukkit.getPluginManager().getPlugin("Oraxen") != null) {
 				if(item.hasItemMeta()) {
@@ -514,25 +528,25 @@ public class AutoPickup implements Listener {
 		for(Filter f : filters) {
 			if(f.name.equalsIgnoreCase(filter)) {
 				if(f.entries.contains(item.getType().toString())){
-					Log.Debug(Main.plugin, "IsItemInFilter true");
+					Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
 					return true;
 				}
 			}
 		}
 
-		Log.Debug(Main.plugin, "IsItemInFilter false");
+		Log.Debug(Main.plugin, "[DI-177] " + "IsItemInFilter false");
 		return false;
 	}
 	
 	boolean StackHasSpace(ItemStack stack, ItemStack pickup) {
-		Log.Debug(Main.plugin, "StackHasSpace?");
+		Log.Debug(Main.plugin, "[DI-178] " + "StackHasSpace?");
 		int comb = stack.getAmount() + pickup.getAmount();
-		Log.Debug(Main.plugin, "comb: " + comb);
+		Log.Debug(Main.plugin, "[DI-179] " + "comb: " + comb);
 		if((stack.getAmount() + pickup.getAmount()) <= stack.getMaxStackSize()) {
-			Log.Debug(Main.plugin, "StackHasSpace true");
+			Log.Debug(Main.plugin, "[DI-180] " + "StackHasSpace true");
 			return true;
 		}else {
-			Log.Debug(Main.plugin, "StackHasSpace false");
+			Log.Debug(Main.plugin, "[DI-181] " + "StackHasSpace false");
 			return false;
 		}
 	}
@@ -567,7 +581,7 @@ public class AutoPickup implements Listener {
 	}
 	
 	void FromInventory(Player player) {
-		Log.Debug(Main.plugin, "Checking for items in inventory, to put into bag.");
+		Log.Debug(Main.plugin, "[DI-182] " + "Checking for items in inventory, to put into bag.");
 		PlayerInventory inv = player.getInventory();
 		for(int i = 0; i < inv.getContents().length; i++) {
 			ItemStack item = inv.getItem(i);
@@ -580,11 +594,11 @@ public class AutoPickup implements Listener {
 				i == 38 || //Chestplate
 				i == 39 || //Helmet
 				i == 40) { //Off-hand
-				if(item.getType().toString().contains("_sword") ||
-						item.getType().toString().contains("_pickaxe") ||
-						item.getType().toString().contains("_axe") ||
-						item.getType().toString().contains("_shovel") ||
-						item.getType().toString().contains("_hoe") ||
+				if(item.getType().toString().contains("_SWORD") ||
+						item.getType().toString().contains("_PICKAXE") ||
+						item.getType().toString().contains("_AXE") ||
+						item.getType().toString().contains("_SHOVEL") ||
+						item.getType().toString().contains("_HOE") ||
 						item.getType() == Material.FISHING_ROD ||
 						item.getType() == Material.BOW ||
 						item.getType() == Material.CROSSBOW ||

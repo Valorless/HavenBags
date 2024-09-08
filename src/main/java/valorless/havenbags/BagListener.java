@@ -60,24 +60,24 @@ public class BagListener implements Listener{
         			if(Main.plugins.GetBool("plugins.PvPManager.enabled")) {
         				if(Bukkit.getPluginManager().getPlugin("PvPManager") != null) {
         	        		try {
-        	        			Log.Debug(Main.plugin, "Checking if player is pvp.");
+        	        			Log.Debug(Main.plugin, "[DI-47] " + "Checking if player is pvp.");
         	        			PlayerHandler playerHandler = PvPManager.getInstance() .getPlayerHandler();
         	        			PvPlayer pvplayer = playerHandler.get(player);
         	        			boolean pvp = pvplayer.hasPvPEnabled();
         	        			boolean tagged = pvplayer.isInCombat();
         	        			if(pvp && Main.plugins.GetBool("plugins.PvPManager.pvp") == false) {
-            	        			Log.Debug(Main.plugin, "Pvp.");
+            	        			Log.Debug(Main.plugin, "[DI-48] " + "Pvp.");
             	        			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Main.plugins.GetString("plugins.PvPManager.message"), player));
         	        				return;
         	        			}
         	        			if(tagged && Main.plugins.GetBool("plugins.PvPManager.tagged") == false) {
             	        			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Main.plugins.GetString("plugins.PvPManager.message"), player));
-            	        			Log.Debug(Main.plugin, "Pvp.");
+            	        			Log.Debug(Main.plugin, "[DI-49] " + "Pvp.");
         	        				return;
         	        			}
-        	        			Log.Debug(Main.plugin, "No pvp.");
+        	        			Log.Debug(Main.plugin, "[DI-50] " + "No pvp.");
         	        		}catch (Exception e) {
-        	        			Log.Error(Main.plugin, "Failed to get PvPManager's API. Is it up to date?");
+        	        			Log.Error(Main.plugin, "[DI-51] " + "Failed to get PvPManager's API. Is it up to date?");
         	        		}
         	        	}
         			}
@@ -86,20 +86,20 @@ public class BagListener implements Listener{
         			List<String> blacklist = Main.config.GetStringList("blacklist");
             		if(blacklist != null) {
             			if(blacklist.size() != 0) {
-        					Log.Debug(Main.plugin, "Player World: " + player.getWorld().getName());
+        					Log.Debug(Main.plugin, "[DI-52] " + "Player World: " + player.getWorld().getName());
             				for(String world : blacklist) {
-            					Log.Debug(Main.plugin, "Blacklist: " + world);
+            					Log.Debug(Main.plugin, "[DI-53] " + "Blacklist: " + world);
             					if(player.getWorld().getName().equalsIgnoreCase(world)) return;
             				}
             			}
             		}
             		
-        			Log.Debug(Main.plugin, player.getName() + " is attempting to open a bag");
+        			Log.Debug(Main.plugin, "[DI-54] " + player.getName() + " is attempting to open a bag");
     				//player.sendMessage("has uuid: true");
     				//String owner = Tags.Get(plugin, item.getPersistentDataContainer(), "owner", PersistentDataType.STRING).toString();
     				String uuid = NBT.GetString(hand, "bag-uuid");
     				if(uuid.equalsIgnoreCase("null")) {
-    					Log.Debug(Main.plugin, "bag-uuid null");
+    					Log.Debug(Main.plugin, "[DI-55] " + "bag-uuid null");
     					NBT.SetString(hand, "bag-uuid", UUID.randomUUID().toString());
     					return;
     				}
@@ -138,8 +138,8 @@ public class BagListener implements Listener{
     			    		cont.add(null);
     			    	}
     					BagData.CreateBag(uuid, "ownerless", cont, player, hand);
-    	    			Log.Debug(Main.plugin, "Ownerless bag created.");
-    	    			Log.Debug(Main.plugin, "Creating timestamp for " + uuid);
+    	    			Log.Debug(Main.plugin, "[DI-56] " + "Ownerless bag created.");
+    	    			Log.Debug(Main.plugin, "[DI-57] " + "Creating timestamp for " + uuid);
     	    			
     					HavenBags.HasWeightLimit(hand);
     					HavenBags.UpdateBagItem(hand, null, player);
@@ -198,8 +198,8 @@ public class BagListener implements Listener{
     			    		cont.add(null);
     			    	}
     					BagData.CreateBag(uuid, player.getUniqueId().toString(), cont, player, hand);
-    	    			Log.Debug(Main.plugin, "Bound new bag to: " + player.getName());
-    	    			Log.Debug(Main.plugin, "Creating timestamp for " + uuid);
+    	    			Log.Debug(Main.plugin, "[DI-58] " + "Bound new bag to: " + player.getName());
+    	    			Log.Debug(Main.plugin, "[DI-59] " + "Creating timestamp for " + uuid);
 
     					HavenBags.HasWeightLimit(hand);
     					HavenBags.UpdateBagItem(hand, null, player);
@@ -220,20 +220,20 @@ public class BagListener implements Listener{
     					}
     					if(BagData.IsBagOpen(uuid, hand)) {
 	    					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-already-open"), null));
-	    					Log.Debug(Main.plugin, "This bag is already open.");
+	    					Log.Debug(Main.plugin, "[DI-60] " + "This bag is already open.");
     						return;
     					}
     					if(hand.getType() == Material.AIR) return;
     					int size = NBT.GetInt(hand, "bag-size");
     					for(int i = 9; i <= 54; i += 9) {
-    						Log.Debug(Main.plugin, "havenbags.open." + String.valueOf(i) + ": "+ player.hasPermission("havenbags.open." + String.valueOf(i)));
+    						Log.Debug(Main.plugin, "[DI-61] " + "havenbags.open." + String.valueOf(i) + ": "+ player.hasPermission("havenbags.open." + String.valueOf(i)));
     						if(size != i) continue;
     						if(!player.hasPermission("havenbags.open." + String.valueOf(i))) {
     	    					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-cannot-use"), null));
     							return;
     						}
     					}
-    	    			Log.Debug(Main.plugin, "Attempting to open ownerless bag");
+    	    			Log.Debug(Main.plugin, "[DI-62] " + "Attempting to open ownerless bag");
     	    			try {
     	    				BagData.MarkBagOpen(uuid, hand, player);
     						HavenBags.UpdateBagItem(hand, null, player);
@@ -266,14 +266,14 @@ public class BagListener implements Listener{
     					if(owner.equalsIgnoreCase(player.getUniqueId().toString())) {
     						int size = NBT.GetInt(hand, "bag-size");
         					for(int i = 9; i <= 54; i += 9) {
-        						Log.Debug(Main.plugin, "havenbags.open." + String.valueOf(i) + ": "+ player.hasPermission("havenbags.open." + String.valueOf(i)));
+        						Log.Debug(Main.plugin, "[DI-63] " + "havenbags.open." + String.valueOf(i) + ": "+ player.hasPermission("havenbags.open." + String.valueOf(i)));
         						if(size != i) continue;
         						if(!player.hasPermission("havenbags.open." + String.valueOf(i))) {
         	    					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-cannot-use"), null));
         							return;
         						}
         					}
-    		    			Log.Debug(Main.plugin, "Attempting to open bag");
+    		    			Log.Debug(Main.plugin, "[DI-64] " + "Attempting to open bag");
     		    			try {
     		    				BagData.MarkBagOpen(uuid, hand, player);
     		    				HavenBags.UpdateBagItem(hand, null, player);
@@ -304,7 +304,7 @@ public class BagListener implements Listener{
     							SFX.Play(Main.config.GetString("open-sound"), 
     									Main.config.GetFloat("open-volume").floatValue(), 
     									Main.config.GetFloat("open-pitch").floatValue(), player);
-    							Log.Debug(Main.plugin, player + "has attempted to open a bag, bypassing the lock");
+    							Log.Debug(Main.plugin, "[DI-65] " + player + "has attempted to open a bag, bypassing the lock");
     		    			}catch(Exception e) {
     		    				e.printStackTrace();
     		    				BagData.MarkBagClosed(uuid);

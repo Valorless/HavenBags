@@ -35,9 +35,12 @@ public class CommandListener implements CommandExecutor {
 	
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    	Log.Debug(Main.plugin, "Sender: " + sender.getName());
-    	Log.Debug(Main.plugin, "Command: " + command.toString());
-    	Log.Debug(Main.plugin, "Label: " + label);
+    	Log.Debug(Main.plugin, "[DI-85] " + "Sender: " + sender.getName());
+    	Log.Debug(Main.plugin, "[DI-86] " + "Command: " + command.toString());
+    	Log.Debug(Main.plugin, "[DI-87] " + "Label: " + label);
+    	for(String arg : args) {
+			Log.Debug(Main.plugin, "[DI-132] " + arg);
+		}
     	final HBCommand cmd = new HBCommand(sender, command, label, args);
     	
 		if(args.length == 0) {

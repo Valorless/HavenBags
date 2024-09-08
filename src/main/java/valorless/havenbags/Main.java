@@ -71,7 +71,7 @@ public final class Main extends JavaPlugin implements Listener {
 	
 	@SuppressWarnings("unused")
 	boolean ValorlessUtils() {
-		Log.Debug(plugin, "Checking ValorlessUtils");
+		Log.Debug(plugin, "[DI-0] Checking ValorlessUtils");
 		
 		int requiresBuild = 237;
 		
@@ -108,7 +108,7 @@ public final class Main extends JavaPlugin implements Listener {
 		PvPManagerHook.Hook();
 		//OraxenHook.Hook();
 		
-		Log.Debug(plugin, Long.toString(System.currentTimeMillis() / 1000L));
+		Log.Debug(plugin, "[DI-1] " +Long.toString(System.currentTimeMillis() / 1000L));
 		
 		config.AddValidationEntry("debug", false);
 		config.AddValidationEntry("config-version", 2);
@@ -192,7 +192,7 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("allowed-containers", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L;
 		{ add("CHEST"); add("ENDER_CHEST"); add("BARREL"); add("SHULKER_BOX"); add("MERCHANT"); }} );
-		Log.Debug(plugin, "Validating config.yml");
+		Log.Debug(plugin, "[DI-2] Validating config.yml");
 		config.Validate();
 		
 		Lang.lang.AddValidationEntry("prefix", "&7[&aHaven&bBags&7] &r");
@@ -339,7 +339,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("next-page", "&aNext Page");
 		Lang.lang.AddValidationEntry("prev-page", "&cPrevious Page");
 
-		Log.Debug(plugin, "Validating lang.yml");
+		Log.Debug(plugin, "[DI-3] Validating lang.yml");
 		Lang.lang.Validate();
 		
 		weight.AddValidationEntry("enabled", false);
@@ -372,7 +372,7 @@ public final class Main extends JavaPlugin implements Listener {
 		weight.AddValidationEntry("weight-text-pickup", true);
 		weight.AddValidationEntry("bag-cant-carry", "&cCannot carry any more items.\n%item% weighs %weight%, but you can only carry %remaining%.");
 		weight.AddValidationEntry("enabled", false);
-		Log.Debug(plugin, "Validating weight.yml");
+		Log.Debug(plugin, "[DI-4] Validating weight.yml");
 		weight.Validate();
 		
 		blacklist.AddValidationEntry("enabled", false);
@@ -394,6 +394,7 @@ public final class Main extends JavaPlugin implements Listener {
 			} 
 		);
 		blacklist.AddValidationEntry("blacklist.nbt", new ArrayList<String>());
+		Log.Debug(plugin, "[DI-5] Validating blacklist.yml");
 		blacklist.Validate();
 		
 		plugins.AddValidationEntry("plugins.PlaceholderAPI.enabled", true);
@@ -405,6 +406,7 @@ public final class Main extends JavaPlugin implements Listener {
 		//plugins.AddValidationEntry("plugins.Oraxen.enabled", true);
 		
 		plugins.AddValidationEntry("mods.HavenBagsPreview.enabled", true);
+		Log.Debug(plugin, "[DI-6] Validating plugins.yml");
 		plugins.Validate();
 		
 		translator = new Translator(config.GetString("language"));
@@ -490,45 +492,45 @@ public final class Main extends JavaPlugin implements Listener {
     
     protected void RegisterCommands() {
     	for (int i = 0; i < commands.length; i++) {
-    		Log.Debug(plugin, "Registering Command: " + commands[i]);
+    		Log.Debug(plugin, "[DI-20] Registering Command: " + commands[i]);
     		getCommand(commands[i]).setExecutor(new CommandListener());
     		getCommand(commands[i]).setTabCompleter(new TabCompletion());
     	}
     }
     
     protected void RegisterListeners() {
-    	Log.Debug(plugin, "Registering PlacementListener");
+    	Log.Debug(plugin, "[DI-7] Registering PlacementListener");
 		getServer().getPluginManager().registerEvents(new PlacementBlocker(), this);
-		Log.Debug(plugin, "Registering BagDamagePrevention");
+		Log.Debug(plugin, "[DI-8] Registering BagDamagePrevention");
 		getServer().getPluginManager().registerEvents(new BagDamagePrevention(), this);
-		Log.Debug(plugin, "Registering BagListener");
+		Log.Debug(plugin, "[DI-9] Registering BagListener");
 		getServer().getPluginManager().registerEvents(new BagListener(), this);
-		Log.Debug(plugin, "Registering CloneListener");
+		Log.Debug(plugin, "[DI-10] Registering CloneListener");
 		getServer().getPluginManager().registerEvents(new CloneListener(), this);
-		Log.Debug(plugin, "Registering InventoryListener");
+		Log.Debug(plugin, "[DI-11] Registering InventoryListener");
 		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
-		Log.Debug(plugin, "Registering PickupPrevention");
+		Log.Debug(plugin, "[DI-12] Registering PickupPrevention");
 		getServer().getPluginManager().registerEvents(new PickupPrevention(), this);
-		Log.Debug(plugin, "Registering CraftPrevention");
+		Log.Debug(plugin, "[DI-13] Registering CraftPrevention");
 		getServer().getPluginManager().registerEvents(new CraftPrevention(), this);
-		Log.Debug(plugin, "Registering EquipPrevention");
+		Log.Debug(plugin, "[DI-14] Registering EquipPrevention");
 		getServer().getPluginManager().registerEvents(new EquipPrevention(), this);
 		
-		Log.Debug(plugin, "Registering Crafting");
+		Log.Debug(plugin, "[DI-15] Registering Crafting");
 		getServer().getPluginManager().registerEvents(new Crafting(), this);
 		Crafting.PrepareRecipes();
 
-		Log.Debug(plugin, "Registering AutoPickup");
+		Log.Debug(plugin, "[DI-16] Registering AutoPickup");
 		getServer().getPluginManager().registerEvents(new AutoPickup(), this);
 
-		Log.Debug(plugin, "Registering Encumbering");
+		Log.Debug(plugin, "[DI-17] Registering Encumbering");
 		getServer().getPluginManager().registerEvents(new Encumbering(), this);
 		Encumbering.Reload();
 		
-		Log.Debug(plugin, "Registering BagUpgrade");
+		Log.Debug(plugin, "[DI-18] Registering BagUpgrade");
 		getServer().getPluginManager().registerEvents(new BagUpgrade(), this);
 		
-		Log.Debug(plugin, "Registering BagSkin");
+		Log.Debug(plugin, "[DI-19] Registering BagSkin");
 		getServer().getPluginManager().registerEvents(new BagSkin(), this);
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
@@ -648,7 +650,7 @@ public final class Main extends JavaPlugin implements Listener {
     }
     
     List<String> GetBags(@NotNull String player){
-		Log.Debug(Main.plugin, player);
+		Log.Debug(Main.plugin, "[DI-21] " + player);
 		try {
 			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
 					.filter(file -> !file.isDirectory())

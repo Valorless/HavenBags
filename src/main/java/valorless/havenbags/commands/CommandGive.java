@@ -23,11 +23,7 @@ public class CommandGive {
 	static String bagTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
 
 	public static boolean Run(HBCommand command) {
-		if(command != null) {
-			for(String arg : command.args) {
-				Log.Debug(Main.plugin, arg);
-			}
-		}
+		
 		ItemStack bagItem = new ItemStack(Material.DIRT);
 		bagTexture = Main.config.GetString("bag-texture");
 		
@@ -54,7 +50,7 @@ public class CommandGive {
 							bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 						} else {
 							command.sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
-							return false;
+							return true;
 						}
 						ItemMeta bagMeta = bagItem.getItemMeta();
 						if (bagMeta == null) {
@@ -97,7 +93,7 @@ public class CommandGive {
 						receiver.getInventory().addItem(bagItem);
 				        placeholders.add(new Placeholder("%name%", Lang.Get("bag-ownerless-unused")));
 						receiver.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("bag-given"), placeholders));
-						Log.Debug(Main.plugin, String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size*9, "false"));
+						Log.Debug(Main.plugin, "[DI-140] " + String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size*9, "false"));
 						//sender.sendMessage(JsonUtils.toJson(bagItem));
 				}else {
 					command.sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-ownerless-no-size"));
@@ -122,7 +118,7 @@ public class CommandGive {
 							bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 						} else {
 							command.sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
-							return false;
+							return true;
 						}
 						
 						ItemMeta bagMeta = bagItem.getItemMeta();
@@ -164,7 +160,7 @@ public class CommandGive {
 						receiver.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("bag-given"), placeholders));
 						//receiver.sendMessage(Lang.Get("prefix") + Lang.Get("bag-given", Lang.Get("bag-unbound-name")));
 						//sender.sendMessage(JsonUtils.toJson(bagItem));
-						Log.Debug(Main.plugin, String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
+						Log.Debug(Main.plugin, "[DI-141] " + String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
 				}
 				catch (NumberFormatException ex){
 					ex.printStackTrace();
@@ -175,6 +171,6 @@ public class CommandGive {
 		}else {
 			command.sender.sendMessage(Name + "§c /havenbags give <player> <size>\n/havenbags give <player> ownerless <size>");
 		}
-		return false;
+		return true;
 	}
 }

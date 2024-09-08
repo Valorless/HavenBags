@@ -12,11 +12,11 @@ public class OraxenHook {
 		if(!Main.plugins.GetBool("plugins.Oraxen.enabled")) return;
 		JavaPlugin plugin = Main.plugin;
 		
-		Log.Debug(plugin, "Attempting to hook Oraxen.");
+		Log.Debug(plugin, "[DI-185] " + "Attempting to hook Oraxen.");
 		if (Bukkit.getPluginManager().getPlugin("Oraxen") != null) {
     		Log.Info(plugin, "Oraxen integrated!");
 		}else {
-			Log.Debug(plugin, "Oraxen not detected.");
+			Log.Debug(plugin, "[DI-186] " + "Oraxen not detected.");
 		}
 	}
 	

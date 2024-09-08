@@ -14,11 +14,6 @@ public class CommandHelp {
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
 	public static boolean Run(HBCommand command) {
-		if(command != null) {
-			for(String arg : command.args) {
-				Log.Debug(Main.plugin, arg);
-			}
-		}
 		
 		Player player = (Player)command.sender;
 		if(Main.config.GetBool("old-help-menu") == false) {

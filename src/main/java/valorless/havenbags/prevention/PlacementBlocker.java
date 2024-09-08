@@ -26,18 +26,18 @@ public class PlacementBlocker implements Listener {
 		ItemMeta nbt = item.getItemMeta();
 		//ItemStack offItem = event.getPlayer().getInventory().getItemInOffHand();
 		//ItemMeta offMeta = offItem.getItemMeta();
-		Log.Debug(Main.plugin, "Block Placed: " + block.getType().toString());
-		Log.Debug(Main.plugin, "Player Holding: " + item.getType().toString());
+		Log.Debug(Main.plugin, "[DI-201] " + "Block Placed: " + block.getType().toString());
+		Log.Debug(Main.plugin, "[DI-202] " + "Player Holding: " + item.getType().toString());
 		
 		if(nbt != null) {
-			Log.Debug(Main.plugin, "Block has ItemMeta.");
+			Log.Debug(Main.plugin, "[DI-203] " + "Block has ItemMeta.");
 			if(HavenBags.IsBag(item)) {
-				Log.Debug(Main.plugin, "Block was bag!");
+				Log.Debug(Main.plugin, "[DI-204] " + "Block was bag!");
 				block.setType(Material.AIR);
 				event.setCancelled(true);
 			}
 			if(HavenBags.IsSkinToken(item)) {
-				Log.Debug(Main.plugin, "Block was skin token!");
+				Log.Debug(Main.plugin, "[DI-205] " + "Block was skin token!");
 				block.setType(Material.AIR);
 				event.setCancelled(true);
 			}
@@ -45,8 +45,8 @@ public class PlacementBlocker implements Listener {
 		if(item.getType() == Material.AIR) {
 			block.setType(Material.AIR);
 			event.setCancelled(true);
-			Log.Debug(Main.plugin, "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
-			Log.Debug(Main.plugin, "Block was likely bag, removing.");
+			Log.Debug(Main.plugin, "[DI-206] " + "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
+			Log.Debug(Main.plugin, "[DI-207] " + "Block was likely bag, removing.");
 		}
 		
 		/*

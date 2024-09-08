@@ -4,8 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import valorless.havenbags.AdminGUI;
-import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
 public class CommandGUI {
@@ -13,11 +11,6 @@ public class CommandGUI {
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
 	public static boolean Run(HBCommand command) {
-		if(command != null) {
-			for(String arg : command.args) {
-				Log.Debug(Main.plugin, arg);
-			}
-		}
 		
 		if (command.args.length == 1) {
 			AdminGUI gui = new AdminGUI(AdminGUI.GUIType.Main, (Player)command.sender);
@@ -49,6 +42,6 @@ public class CommandGUI {
 				return true;
 			}
 		}
-		return false;
+		return true;
 	}
 }

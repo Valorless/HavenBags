@@ -12,11 +12,11 @@ public class PlaceholderAPIHook {
 		if(!Main.plugins.GetBool("plugins.PlaceholderAPI.enabled")) return;
 		JavaPlugin plugin = Main.plugin;
 		
-		Log.Debug(plugin, "Attempting to hook PlaceholderAPI.");
+		Log.Debug(plugin, "[DI-187] " + "Attempting to hook PlaceholderAPI.");
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
     		Log.Info(plugin, "PlaceholderAPI integrated!");
 		}else {
-			Log.Debug(plugin, "PlaceholderAPI not detected.");
+			Log.Debug(plugin, "[DI-188] " + "PlaceholderAPI not detected.");
 		}
 	}
 	

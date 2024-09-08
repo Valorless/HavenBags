@@ -5,19 +5,12 @@ import org.bukkit.inventory.ItemStack;
 
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
-import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class CommandWeight {
 	
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
 	public static boolean Run(HBCommand command) {
-		if(command != null) {
-			for(String arg : command.args) {
-				Log.Debug(Main.plugin, arg);
-			}
-		}
 		
 		Player player = (Player)command.sender;
 		ItemStack item = player.getInventory().getItemInMainHand();
@@ -32,7 +25,7 @@ public class CommandWeight {
 				} catch (Exception e) {
 					//e.printStackTrace();
 					player.sendMessage("§cValue must be a number.");
-					return false;
+					return true;
 				}
 				HavenBags.UpdateBagLore(item, player);
 			}

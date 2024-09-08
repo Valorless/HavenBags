@@ -12,11 +12,11 @@ public class PvPManagerHook {
 		if(!Main.plugins.GetBool("plugins.PvPManager.enabled")) return;
 		JavaPlugin plugin = Main.plugin;
 		
-		Log.Debug(plugin, "Attempting to hook PvPManager.");
+		Log.Debug(plugin, "[DI-189] " + "Attempting to hook PvPManager.");
 		if (Bukkit.getPluginManager().getPlugin("PvPManager") != null) {
     		Log.Info(plugin, "PvPManager integrated!");
 		}else {
-			Log.Debug(plugin, "PvPManager not detected.");
+			Log.Debug(plugin, "[DI-190] " + "PvPManager not detected.");
 		}
 	}
 	

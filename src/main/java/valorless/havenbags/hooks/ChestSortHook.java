@@ -12,11 +12,11 @@ public class ChestSortHook {
 		if(!Main.plugins.GetBool("plugins.ChestSort.enabled")) return;
 		JavaPlugin plugin = Main.plugin;
 		
-		Log.Debug(plugin, "Attempting to hook ChestSort.");
+		Log.Debug(plugin, "[DI-183] " + "Attempting to hook ChestSort.");
 		if (Bukkit.getPluginManager().getPlugin("ChestSort") != null) {
     		Log.Info(plugin, "ChestSort integrated!");
 		}else {
-			Log.Debug(plugin, "ChestSort not detected.");
+			Log.Debug(plugin, "[DI-184] " + "ChestSort not detected.");
 		}
 	}
 	

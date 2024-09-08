@@ -62,25 +62,25 @@ public class BagUpgrade implements Listener{
 		ItemStack upgrade = event.getInventory().getItem(1);
 		if(clicked == null || upgrade == null || bag == null) return;
 		if(NBT.Has(upgrade, "bag-token-skin")) return; // If the item in slot 2 is a skin token, return.
-		Log.Debug(Main.plugin, "[BagUpgrade] is bag?");
+		Log.Debug(Main.plugin, "[DI-77] " + "[BagUpgrade] is bag?");
 		if(HavenBags.IsBag(clicked)) {
-			Log.Debug(Main.plugin, "[BagUpgrade] was bag");
+			Log.Debug(Main.plugin, "[DI-78] " + "[BagUpgrade] was bag");
 			int size = NBT.GetInt(bag, "bag-size");
 
-			Log.Debug(Main.plugin, "[BagUpgrade] Upgrade item is correct?");
+			Log.Debug(Main.plugin, "[DI-79] " + "[BagUpgrade] Upgrade item is correct?");
 			String[] split = Main.config.GetString(String.format("upgrades.from-%s-to-%s", size, size+9)).split(":");
 			int cmd = 0;
 			Material requirement = Material.getMaterial(split[0]);
 			int amount = Integer.valueOf(split[1]);
 
 
-			Log.Debug(Main.plugin, "[BagUpgrade] Checking Type and Amount");
+			Log.Debug(Main.plugin, "[DI-80] " + "[BagUpgrade] Checking Type and Amount");
 			if(upgrade.getType() != requirement || upgrade.getAmount() != amount) return;
 			
 			if(split.length == 3) {
-				Log.Debug(Main.plugin, "[BagUpgrade] Checking CustomModelData");
+				Log.Debug(Main.plugin, "[DI-81] " + "[BagUpgrade] Checking CustomModelData");
 				cmd = Integer.valueOf(split[2]);
-				Log.Debug(Main.plugin, "[BagUpgrade] " + cmd);
+				Log.Debug(Main.plugin, "[DI-82] " + "[BagUpgrade] " + cmd);
 				if(upgrade.hasItemMeta()) {
 					if(upgrade.getItemMeta().hasCustomModelData()) {
 						if(upgrade.getItemMeta().getCustomModelData() != cmd) return;
@@ -90,11 +90,11 @@ public class BagUpgrade implements Listener{
 			
 			String owner = NBT.GetString(clicked, "bag-owner");
 			BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).getData().Set("size", NBT.GetInt(clicked, "bag-size"));
-			Log.Debug(Main.plugin, "[BagUpgrade] Size set to " + NBT.GetInt(clicked, "bag-size"));
+			Log.Debug(Main.plugin, "[DI-83] " + "[BagUpgrade] Size set to " + NBT.GetInt(clicked, "bag-size"));
 
 			if(Main.weight.GetBool("weight-per-size")) {
 				BagData.SetWeightMax(HavenBags.GetBagUUID(clicked), Main.weight.GetFloat(String.format("weight-size-%s", NBT.GetInt(clicked, "bag-size"))));
-				Log.Debug(Main.plugin, "[BagUpgrade] Weight Limit set to " + Main.weight.GetFloat(String.format("weight-size-%s", NBT.GetInt(clicked, "bag-size"))));
+				Log.Debug(Main.plugin, "[DI-84] " + "[BagUpgrade] Weight Limit set to " + Main.weight.GetFloat(String.format("weight-size-%s", NBT.GetInt(clicked, "bag-size"))));
 			}
 			if(clicked.getType() == Material.PLAYER_HEAD) {
 				if(Main.config.GetBool("bag-textures.enabled") && !Main.config.GetBool("upgrades.keep-texture")) {

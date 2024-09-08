@@ -157,7 +157,7 @@ public class Crafting implements Listener {
 			if(r.getKey() == null) return;
 			String recipe = r.getKey().getKey();
 			if(!Recipes.contains(r.getKey())) return;
-			Log.Debug(Main.plugin, r.getKey().toString());
+			Log.Debug(Main.plugin, "[DI-88] " + r.getKey().toString());
 			
 			for(HumanEntity player : event.getViewers()) {
 				//Log.Error(HavenBags.plugin, config.GetString("recipes." + recipe + ".permission"));
@@ -170,8 +170,8 @@ public class Crafting implements Listener {
 	
 	@EventHandler
 	public void onCraftItem (CraftItemEvent event) {
-		Log.Debug(Main.plugin, event.getInventory().getType().toString());
-		Log.Debug(Main.plugin, event.getRecipe().toString());
+		Log.Debug(Main.plugin, "[DI-89] " + event.getInventory().getType().toString());
+		Log.Debug(Main.plugin, "[DI-90] " + event.getRecipe().toString());
 		try {
 			//if(event.getInventory().getType() != InventoryType.WORKBENCH) return;
 			ShapedRecipe r = (ShapedRecipe)event.getRecipe();

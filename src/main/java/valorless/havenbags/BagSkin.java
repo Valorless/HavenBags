@@ -25,11 +25,11 @@ public class BagSkin implements Listener{
 		//Log.Debug(Main.plugin, skin.toString());
 		
 		if(!HavenBags.IsBag(bag)) return;
-		Log.Debug(Main.plugin, "[BagSkin] Was bag.");
+		Log.Debug(Main.plugin, "[DI-66] " + "[BagSkin] Was bag.");
 		if(HavenBags.BagState(bag) == BagState.New) return;
-		Log.Debug(Main.plugin, "[BagSkin] BagState.Used");
+		Log.Debug(Main.plugin, "[DI-67] " + "[BagSkin] BagState.Used");
 		if(!NBT.Has(skin, "bag-token-skin")) return;
-		Log.Debug(Main.plugin, "[BagSkin] Found skin.");
+		Log.Debug(Main.plugin, "[DI-68] " + "[BagSkin] Found skin.");
 		
 		ItemStack result = bag.clone();
 		
@@ -47,43 +47,43 @@ public class BagSkin implements Listener{
 		ItemStack skin = event.getInventory().getItem(1);
 		if(clicked == null || skin == null) return;
 		if(!NBT.Has(skin, "bag-token-skin")) return; // If the item in slot 2 isnt a skin token, return.
-		Log.Debug(Main.plugin, "[BagSkin] is bag?");
+		Log.Debug(Main.plugin, "[DI-69] " + "[BagSkin] is bag?");
 		if(HavenBags.IsBag(clicked)) {
 			ItemMeta meta = clicked.getItemMeta();
 			String value = NBT.GetString(skin, "bag-token-skin");
 			if(isNumber(value)) {
 				int cmd = Integer.valueOf(value);
 				if(value != null && meta.hasCustomModelData()) {
-					Log.Debug(Main.plugin, "[BagSkin] CustomModelData Skin.");
+					Log.Debug(Main.plugin, "[DI-70] " + "[BagSkin] CustomModelData Skin.");
 					meta.setCustomModelData(cmd);
 					clicked.setItemMeta(meta);
 				}
 			}else {
-				Log.Debug(Main.plugin, "[BagSkin] Texture Skin.");
+				Log.Debug(Main.plugin, "[DI-71] " + "[BagSkin] Texture Skin.");
 				BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(value);
 			}
-			Log.Debug(Main.plugin, "[BagSkin] Applied skin!");
+			Log.Debug(Main.plugin, "[DI-72] " + "[BagSkin] Applied skin!");
 		}
 		
 	}
 	
 	ItemStack GetResult(ItemStack item, ItemStack skin) {
-		Log.Debug(Main.plugin, "[BagSkin] Preparing Result.");
+		Log.Debug(Main.plugin, "[DI-73] " + "[BagSkin] Preparing Result.");
 		ItemMeta meta = item.getItemMeta();
 		String value = NBT.GetString(skin, "bag-token-skin");
 		if(isNumber(value)) {
 			int cmd = Integer.valueOf(value);
 			if(value != null) {
-				Log.Debug(Main.plugin, "[BagSkin] CustomModelData Skin.");
+				Log.Debug(Main.plugin, "[DI-74] " + "[BagSkin] CustomModelData Skin.");
 				meta.setCustomModelData(cmd);
 				item.setItemMeta(meta);
 			}
 		}else {
 			if(Base64Validator.isValidBase64(value)) {
-				Log.Debug(Main.plugin, "[BagSkin] Texture Skin.");
+				Log.Debug(Main.plugin, "[DI-75] " + "[BagSkin] Texture Skin.");
 				BagData.setTextureValue(item, value);
 			}else {
-				Log.Debug(Main.plugin, "[BagSkin] Invalid Skin.");
+				Log.Debug(Main.plugin, "[DI-76] " + "[BagSkin] Invalid Skin.");
 				item = new ItemStack(Material.AIR);
 			}
 		}

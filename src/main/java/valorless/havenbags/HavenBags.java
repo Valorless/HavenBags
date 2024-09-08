@@ -95,18 +95,18 @@ public class HavenBags {
 	}
 
 	public static void ReturnBag(ItemStack bag, Player player) {
-		Log.Debug(Main.plugin, "Returning bag to " + player.getName());
-		Log.Debug(Main.plugin, "health " + player.getHealth());
+		Log.Debug(Main.plugin, "[DI-104] " + "Returning bag to " + player.getName());
+		Log.Debug(Main.plugin, "[DI-105] " + "health " + player.getHealth());
     	
     	if(player.isDead()) {
     		if (Bukkit.getPluginManager().getPlugin("AngelChest") == null) {
-    			Log.Debug(Main.plugin, "Player dead, dropping bag instead.");
+    			Log.Debug(Main.plugin, "[DI-106] " + "Player dead, dropping bag instead.");
     			player.getWorld().dropItem(player.getLocation(), bag);
     			return;
     		}else {
     			if(player.getInventory().getItemInMainHand() != null) {
         			if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
-    	   	 			Log.Debug(Main.plugin, "Hand Empty.");
+    	   	 			Log.Debug(Main.plugin, "[DI-107] " + "Hand Empty.");
         				player.getInventory().setItemInMainHand(bag);
         				return;
         			}
@@ -122,10 +122,10 @@ public class HavenBags {
         		}
     		}
     	}else {
-    		Log.Debug(Main.plugin, "Player alive.");
+    		Log.Debug(Main.plugin, "[DI-108] " + "Player alive.");
     		if(player.getInventory().getItemInMainHand() != null) {
     			if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
-	   	 			Log.Debug(Main.plugin, "Hand Empty.");
+	   	 			Log.Debug(Main.plugin, "[DI-109] " + "Hand Empty.");
     				player.getInventory().setItemInMainHand(bag);
     				return;
     			}
@@ -475,7 +475,7 @@ public class HavenBags {
 	public static void EmptyBag(ItemStack bag, Player player) {
 		String uuid = NBT.GetString(bag, "bag-uuid");
     	//String owner = NBT.GetString(bag, "bag-owner");
-		Log.Debug(Main.plugin, "Attempting to initialize bag items");
+		Log.Debug(Main.plugin, "[DI-110] " + "Attempting to initialize bag items");
 		//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, player);
 		List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
 		SFX.Play(Main.config.GetString("close-sound"), 
@@ -567,24 +567,24 @@ public class HavenBags {
 	}
 	
 	public static boolean CanCarry(ItemStack item, ItemStack bag) {
-		Log.Debug(Main.plugin, "Can carry?");
+		Log.Debug(Main.plugin, "[DI-111] " + "Can carry?");
 		HasWeightLimit(bag);
 		double maxWeight = NBT.GetDouble(bag, "bag-weight-limit");
 		double weight = GetWeight(bag);
 		double itemWeight = ItemWeight(item);
 		
-		Log.Debug(Main.plugin, (weight + itemWeight) + "");
+		Log.Debug(Main.plugin, "[DI-112] " + (weight + itemWeight) + "");
 		if(weight + itemWeight <= maxWeight) {
-			Log.Debug(Main.plugin, "true");
+			Log.Debug(Main.plugin, "[DI-113] " + "true");
 			return true;
 		}else {
-			Log.Debug(Main.plugin, "false");
+			Log.Debug(Main.plugin, "[DI-114] " + "false");
 			return false;
 		}
 	}
 	
 	public static boolean CanCarry(ItemStack item, ItemStack bag, List<ItemStack> content) {
-		Log.Debug(Main.plugin, "Can carry?");
+		Log.Debug(Main.plugin, "[DI-115] " + "Can carry?");
 		HasWeightLimit(bag);
 		double maxWeight = NBT.GetDouble(bag, "bag-weight-limit");
 		double weight = GetWeight(content);
@@ -592,10 +592,10 @@ public class HavenBags {
 		
 		Log.Debug(Main.plugin, (weight + itemWeight) + "");
 		if(weight + itemWeight <= maxWeight) {
-			Log.Debug(Main.plugin, "true");
+			Log.Debug(Main.plugin, "[DI-116] " + "true");
 			return true;
 		}else {
-			Log.Debug(Main.plugin, "false");
+			Log.Debug(Main.plugin, "[DI-117] " + "false");
 			return false;
 		}
 	}
@@ -669,18 +669,18 @@ public class HavenBags {
 	}
 	
 	public static boolean AddItemToInventory(List<ItemStack> items, int inventorySlots, ItemStack itemToAdd, Player player) {
-		Log.Debug(Main.plugin, "Put item in bag?");	
+		Log.Debug(Main.plugin, "[DI-118] " + "Put item in bag?");	
 		
 		items = RemoveAir(items);
 		
 	    // Check if there is still space in the list for new items
 	    if (items.size() >= inventorySlots && allSlotsFull(items, itemToAdd)) {
-			Log.Debug(Main.plugin, "bag full!");	
+			Log.Debug(Main.plugin, "[DI-119] " + "bag full!");	
 	        return false; // The bag is full and item is dropped
 	    }
 
 	    boolean added = false;
-		Log.Debug(Main.plugin, "checking bag.");	
+		Log.Debug(Main.plugin, "[DI-120] " + "checking bag.");	
 	    for (ItemStack stack : items) {
 	    	if(stack == null) continue;
 	        if (stack.isSimilar(itemToAdd)) {
@@ -688,11 +688,11 @@ public class HavenBags {
 	            int totalAmount = stack.getAmount() + itemToAdd.getAmount();
 
 	            if (totalAmount <= maxStackSize) {
-	        		Log.Debug(Main.plugin, "stack has space.");	
+	        		Log.Debug(Main.plugin, "[DI-121] " + "stack has space.");	
 	                stack.setAmount(totalAmount); // Perfect fit or less
 	                return true;
 	            } else {
-	        		Log.Debug(Main.plugin, "stack overflow, adjusting.");	
+	        		Log.Debug(Main.plugin, "[DI-122] " + "stack overflow, adjusting.");	
 	                stack.setAmount(maxStackSize); // Max out the stack
 	                itemToAdd.setAmount(totalAmount - maxStackSize); // Adjust remaining
 	                added = true; // Partially added
@@ -705,15 +705,15 @@ public class HavenBags {
 	        if (items.size() < inventorySlots) {
 	            items.add(itemToAdd.clone());
 	            itemToAdd.setAmount(0);
-        		Log.Debug(Main.plugin, "success.");	
+        		Log.Debug(Main.plugin, "[DI-123] " + "success.");	
 	            return true; // New stack added successfully
 	        } else {
-        		Log.Debug(Main.plugin, "no space.");	
+        		Log.Debug(Main.plugin, "[DI-124] " + "no space.");	
 	            DropItem(player.getLocation(), itemToAdd); // No space left, drop the remaining items
 	            return false;
 	        }
 	    }
-		Log.Debug(Main.plugin, "failed.");	
+		Log.Debug(Main.plugin, "[DI-125] " + "failed.");	
 
 	    return true; // This line is theoretically unreachable
 	}
@@ -733,7 +733,7 @@ public class HavenBags {
 	}
 	
 	private static List<ItemStack> RemoveAir(List<ItemStack> items){
-		Log.Debug(Main.plugin, "removing air, if any.");	
+		Log.Debug(Main.plugin, "[DI-126] " + "removing air, if any.");	
 		for(int i = 0; i < items.size(); i++) {
 			if(items.get(i) == null) {
 				items.remove(i);
@@ -758,8 +758,8 @@ public class HavenBags {
 		boolean whitelist = blacklist.GetBool("use-as-whitelist");
 		if(item.getType() == Material.AIR) return false;
 		//if(HavenBags.IsBag(item));
-		if(whitelist) Log.Debug(Main.plugin, "Treating blacklist as whitelist!");	
-		Log.Debug(Main.plugin, "Is item blacklisted?");	
+		if(whitelist) Log.Debug(Main.plugin, "[DI-127] " + "Treating blacklist as whitelist!");	
+		Log.Debug(Main.plugin, "[DI-128] " + "Is item blacklisted?");	
 		//Log.Debug(Main.plugin, item.toString());	
 		List<Material> materials = new ArrayList<Material>();
 		List<String> names = blacklist.GetStringList("blacklist.displayname");
@@ -788,7 +788,7 @@ public class HavenBags {
 		}
 		
 		if(materials.contains(item.getType())) {
-			Log.Debug(Main.plugin, "Material blacklisted!");	
+			Log.Debug(Main.plugin, "[DI-129] " + "Material blacklisted!");	
 			if(whitelist) return false;
 			return true;
 		}
@@ -796,7 +796,7 @@ public class HavenBags {
 		if(item.hasItemMeta()) {
 			for(String name : names) {
 				if(name.equalsIgnoreCase(Lang.RemoveColorFormatting(item.getItemMeta().getDisplayName()))) {
-					Log.Debug(Main.plugin, "Name blacklisted!");	
+					Log.Debug(Main.plugin, "[DI-130] " + "Name blacklisted!");	
 					if(whitelist) return false;
 					return true;
 				}
@@ -805,7 +805,7 @@ public class HavenBags {
 		
 		for(BlacklistNBT nk : nbt) {
 			if(NBT.Has(item, nk.key)) {
-				Log.Debug(Main.plugin, "NBT blacklisted!");	
+				Log.Debug(Main.plugin, "[DI-131] " + "NBT blacklisted!");	
 				if(whitelist) return false;
 				return true;
 			}

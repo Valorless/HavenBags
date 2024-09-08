@@ -14,16 +14,11 @@ public class CommandAutopickup {
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
 	public static boolean Run(HBCommand command) {
-		if(command != null) {
-			for(String arg : command.args) {
-				Log.Debug(Main.plugin, arg);
-			}
-		}
-		
 		Player player = (Player)command.sender;
+		
 		if(!Main.config.GetBool("auto-pickup")) {
 			player.sendMessage(Lang.Get("prefix") + Lang.Get("feature-disabled"));
-			return false;
+			return true;
 		}
 		if(command.args.length >= 2) {
 			ItemStack item = player.getInventory().getItemInMainHand();
@@ -39,9 +34,21 @@ public class CommandAutopickup {
 					for(String filter : AutoPickup.GetFilterNames(null)) {
 						if(filter.equalsIgnoreCase(command.args[1])) {
 							if(AutoPickup.filter.HasKey("filters." + filter + ".permission.node")) {
-								if(!AutoPickup.filter.GetString("filters." + filter + ".permission.node").equalsIgnoreCase("none")) {
-									if(!AutoPickup.filter.GetBool("filters." + filter + ".permission.apply")) {
-										if(!command.sender.hasPermission("filters." + filter + ".permission.node")) return true;
+								if(!player.hasPermission("havenbags.bypass")) {
+									Log.Debug(Main.plugin, "[DI-133] " + "[AutoPickup] Has Permission");
+									if(!AutoPickup.filter.GetString("filters." + filter + ".permission.node").equalsIgnoreCase("none")) {
+										Log.Debug(Main.plugin, "[DI-134] " + "[AutoPickup] Permission " + filter);
+										if(AutoPickup.filter.GetBool("filters." + filter + ".permission.apply")) {
+											if(!command.sender.hasPermission(AutoPickup.filter.GetString("filters." + filter + ".permission.node"))) {
+												Log.Debug(Main.plugin, "[DI-135] " + "[AutoPickup] Permission Apply true - Player false");
+												return true;
+											}else {
+												Log.Debug(Main.plugin, "[DI-136] " + "[AutoPickup] Permission Apply true - Player true");
+											}
+										}else {
+											Log.Debug(Main.plugin, "[DI-137] " + "[AutoPickup] Permission Apply false");
+											return true;
+										}
 									}
 								}
 							}
@@ -75,6 +82,6 @@ public class CommandAutopickup {
 				}
 			}
 		}
-		return false;
+		return true;
 	}
 }

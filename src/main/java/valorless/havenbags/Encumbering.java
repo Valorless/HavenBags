@@ -63,22 +63,22 @@ public class Encumbering implements Listener {
 	}
 	
 	public static void Reload() {
-		Log.Debug(Main.plugin, "[Encumbering] Reloading.");
+		Log.Debug(Main.plugin, "[DI-91] " + "[Encumbering] Reloading.");
 		enabled = Main.weight.GetBool("over-encumber.enabled");
-		Log.Debug(Main.plugin, "[Encumbering] " + enabled);
+		Log.Debug(Main.plugin, "[DI-92] " + "[Encumbering] " + enabled);
 		percent = Main.weight.GetFloat("over-encumber.percent");
-		Log.Debug(Main.plugin, "[Encumbering] " + percent);
+		Log.Debug(Main.plugin, "[DI-93] " + "[Encumbering] " + percent);
 		message = Lang.Parse(Lang.Get("prefix") + Main.weight.GetString("over-encumber.message"), null);
-		Log.Debug(Main.plugin, "[Encumbering] " + message);
+		Log.Debug(Main.plugin, "[DI-94] " + "[Encumbering] " + message);
 		not = Lang.Parse(Lang.Get("prefix") + Main.weight.GetString("over-encumber.not"), null);
-		Log.Debug(Main.plugin, "[Encumbering] " + not);
+		Log.Debug(Main.plugin, "[DI-95] " + "[Encumbering] " + not);
 		ReloadEffects();
 		encumbered.clear();
 		bagWeights.clear();
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			if(player.getActivePotionEffects().size() != 0) {
 				for(PotionEffect effect : effects) {
-					Log.Debug(Main.plugin, effect.toString());
+					Log.Debug(Main.plugin, "[DI-96] " + effect.toString());
 					if(player.hasPotionEffect(effect.getType())) {
 						for(PotionEffect eff : player.getActivePotionEffects()) {
 							if(eff.getAmplifier() != effect.getAmplifier()) continue;
@@ -106,7 +106,7 @@ public class Encumbering implements Listener {
 				Log.Error(Main.plugin, "[Encumbering] Failed to load PotionEffect '" + split[0] + "'");
 				Log.Error(Main.plugin, "[Encumbering] It may have a different name on some server versions.");
 			}
-			Log.Debug(Main.plugin, "[Encumbering] " + eff);
+			Log.Debug(Main.plugin, "[DI-97] " + "[Encumbering] " + eff);
 		}
 	}
 		
@@ -146,7 +146,7 @@ public class Encumbering implements Listener {
 	
 	
 	public static void UpdateWeight(Player player) {
-		Log.Debug(Main.plugin, "[Encumbering] " + player.toString());
+		Log.Debug(Main.plugin, "[DI-98] " + "[Encumbering] " + player.toString());
 		for(BagWeight bw : bagWeights) {
 			if(bw.player == player) bw.weight = 0.0; 
 		}
@@ -157,16 +157,16 @@ public class Encumbering implements Listener {
 				if(uuid.equalsIgnoreCase("null")) continue;
 				if(NBT.Has(i, "bag-weight")) {
 					Double weight = Utils.Percent(NBT.GetDouble(i, "bag-weight"), NBT.GetDouble(i, "bag-weight-limit"));
-					Log.Debug(Main.plugin, "[Encumbering] " + weight);
+					Log.Debug(Main.plugin, "[DI-99] " + "[Encumbering] " + weight);
 					//bagWeights.add(new Bag(uuid, Utils.Percent(NBT.GetDouble(i, "bag-weight"), NBT.GetDouble(i, "bag-weight-limit"))));
 					if(!Contains(player)) {
 						BagWeight bag = new BagWeight(player, weight);
 						bagWeights.add(bag);
-						Log.Debug(Main.plugin, "[Encumbering] Added weight");
+						Log.Debug(Main.plugin, "[DI-100] " + "[Encumbering] Added weight");
 					}else {
 						if(weight > GetBag(player).weight) {
 							GetBag(player).weight = weight;
-							Log.Debug(Main.plugin, "[Encumbering] Updated weight");
+							Log.Debug(Main.plugin, "[DI-101] " + "[Encumbering] Updated weight");
 						}
 					}
 					
@@ -179,7 +179,7 @@ public class Encumbering implements Listener {
 			player.sendMessage(message);
 			encumbered.add(player);
 			for(PotionEffect effect : effects) {
-				Log.Debug(Main.plugin, effect.toString());
+				Log.Debug(Main.plugin, "[DI-102] " + effect.toString());
 				if(!player.hasPotionEffect(effect.getType())) {
 					player.addPotionEffect(effect);
 				}
@@ -191,7 +191,7 @@ public class Encumbering implements Listener {
 			encumbered.remove(player);
 			if(player.getActivePotionEffects().size() == 0) return;
 			for(PotionEffect effect : effects) {
-				Log.Debug(Main.plugin, effect.toString());
+				Log.Debug(Main.plugin, "[DI-103] " + effect.toString());
 				if(player.hasPotionEffect(effect.getType())) {
 					for(PotionEffect eff : player.getActivePotionEffects()) {
 						if(eff.getAmplifier() != effect.getAmplifier()) continue;
