@@ -124,7 +124,7 @@ bags-in-shulkers: true
 # Should bag remain in the player's inventory when opened?
 # Keep this 'false' if bags-in-bags is 'true'.
 # Otherwise players can put the bag inside itself, and lose it.
-keep-bags: false
+keep-bags: true
 
 # Should /havenbags help, show commands without mouseover text, and the information below each command?
 old-help-menu: false

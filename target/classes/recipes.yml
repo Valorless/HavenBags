@@ -4,8 +4,7 @@
 # +------------------------------------------------------+ #
 ############################################################
 
-### NOTE: Do not use & in names for colors, use §.
-### NOTE: custom-model-data at 0 will be ignored.
+### Deprecated - Will be removed at a later date.
 
 ### Recipes for crafting custom bags
 enabled: false

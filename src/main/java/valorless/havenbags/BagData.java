@@ -3,6 +3,7 @@ package valorless.havenbags;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +17,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.authlib.GameProfile;
@@ -548,85 +551,79 @@ public class BagData {
         if (head == null || head.getType() != Material.PLAYER_HEAD) {
             throw new IllegalArgumentException("ItemStack must be a Player Head");
         }
-
-        // Use NBTAPI to access the NBT data
-        if (valorless.valorlessutils.nbtapi.NBT.readNbt(head).hasTag("SkullOwner") == false) {
-            return null;
-        }
-
-        // Access the SkullOwner NBT compound
-        //NBTCompound skullOwner = nbti.getCompound("SkullOwner");
-        ReadableNBT skullOwner = valorless.valorlessutils.nbtapi.NBT.readNbt(head).getCompound("SkullOwner");
-        if (skullOwner == null || !skullOwner.hasTag("Properties")) {
-            return null;
-        }
-
-        // Access the Properties NBT compound
-        ReadableNBT properties = skullOwner.getCompound("Properties");
-        if (properties == null || !properties.hasTag("textures")) {
-            return null;
-        }
-
-        // Access the textures NBT list
-        ReadableNBTList<ReadWriteNBT> textures = properties.getCompoundList("textures");
-        if (textures == null || textures.size() == 0) {
-            return null;
-        }
-
-        // Get the first texture compound
-        ReadWriteNBT texture = textures.get(0);
-        if (texture == null || !texture.hasTag("Value")) {
-            return null;
-        }
-
-        // Return the texture value
-        return texture.getString("Value");
-    }
-	
-	public static void setTextureValueOld(ItemStack head, String textureValue) {
-		if (head == null || head.getType() != Material.PLAYER_HEAD) {
-        	throw new IllegalArgumentException("ItemStack must be a Player Head");
-    	}
-		if(Main.server == ServerVersion.v1_17 || Main.server == ServerVersion.v1_17_1) {
-			SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-
-	        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-	        profile.getProperties().put("textures", new Property("textures", textureValue));
-
-	        try {
-	            Field profileField = headMeta.getClass().getDeclaredField("profile");
-	            profileField.setAccessible(true);
-	            profileField.set(headMeta, profile);
-	        } catch (NoSuchFieldException | IllegalAccessException e) {
-	            e.printStackTrace();
-	        }
-
-	        head.setItemMeta(headMeta);
-		}
-		else {
+        
+        if(Main.VersionCompare(Main.server, ServerVersion.v1_21_1) >= 0) {
         	SkullMeta meta = (SkullMeta) head.getItemMeta();
-        	SkullMeta m_new = (SkullMeta) HeadCreator.itemFromBase64(textureValue).getItemMeta();
-        	//meta.getOwnerProfile().setTextures(m_new.getOwnerProfile().getTextures());
-        	//m_new.setDisplayName(meta.getDisplayName());
-        	meta.setOwnerProfile(m_new.getOwnerProfile());
-        	head.setItemMeta(meta);
-        	//m_new.getOwnerProfile().
-		}
+        	return HeadCreator.convertUrlToBase64(meta.getOwnerProfile().getTextures().getSkin().toString());
+        }else {
+
+        	// Use NBTAPI to access the NBT data
+        	if (valorless.valorlessutils.nbtapi.NBT.readNbt(head).hasTag("SkullOwner") == false) {
+            	return null;
+        	}
+
+        	// Access the SkullOwner NBT compound
+        	//NBTCompound skullOwner = nbti.getCompound("SkullOwner");
+        	ReadableNBT skullOwner = valorless.valorlessutils.nbtapi.NBT.readNbt(head).getCompound("SkullOwner");
+        	if (skullOwner == null || !skullOwner.hasTag("Properties")) {
+            	return null;
+        	}
+
+        	// Access the Properties NBT compound
+        	ReadableNBT properties = skullOwner.getCompound("Properties");
+        	if (properties == null || !properties.hasTag("textures")) {
+            	return null;
+        	}
+
+        	// Access the textures NBT list
+        	ReadableNBTList<ReadWriteNBT> textures = properties.getCompoundList("textures");
+        	if (textures == null || textures.size() == 0) {
+        		return null;
+        	}
+
+        	// Get the first texture compound
+        	ReadWriteNBT texture = textures.get(0);
+        	if (texture == null || !texture.hasTag("Value")) {
+            	return null;
+        	}
+
+        	// Return the texture value
+        	return texture.getString("Value");
+        }
     }
+
 	public static void setTextureValue(@NotNull ItemStack item, @NotNull String value) {
         if (item.getType() != Material.PLAYER_HEAD) return;
         //if (!(item.getItemMeta() instanceof SkullMeta meta)) return;
         SkullMeta meta = (SkullMeta) item.getItemMeta();
-
+        
         UUID uuid = UUID.nameUUIDFromBytes(value.getBytes());
-        GameProfile profile = new GameProfile(uuid, "null");
-        profile.getProperties().put("textures", new Property("textures", value));
+        
+        if(Main.VersionCompare(Main.server, ServerVersion.v1_21_1) >= 0) {
+        	try {
+            	// Create a new GameProfile with a random UUID and apply the texture
+            	PlayerProfile profile = Bukkit.getServer().createPlayerProfile(uuid, "bag");
+            	PlayerTextures textures = profile.getTextures();
+            	textures.setSkin(new URL(HeadCreator.extractUrlFromBase64(value)));
+            	profile.setTextures(textures);
 
-        Method method = Reflex.getMethod(meta.getClass(), "setProfile", GameProfile.class);
-        if (method != null) {
-            Reflex.invokeMethod(method, meta, profile);
-        } else {
-            Reflex.setFieldValue(meta, "profile", profile);
+            	// Use the API method to set the profile (this method was introduced in recent Spigot versions)
+            	meta.setOwnerProfile(profile);
+            }catch(Exception E) {
+            	E.printStackTrace();
+            }
+        }else {
+        	try {
+        		GameProfile profile = new GameProfile(uuid, "null");
+        		profile.getProperties().put("textures", new Property("textures", value));
+
+        		Method method = Reflex.getMethod(meta.getClass(), "setProfile", GameProfile.class);
+        		if (method != null) {
+        			Reflex.invokeMethod(method, meta, profile);
+        		} else {
+            		Reflex.setFieldValue(meta, "profile", profile);
+        		}
+        	}catch(Exception e) {}
         }
 
         item.setItemMeta(meta);

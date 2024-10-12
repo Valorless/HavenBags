@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
-  <version>1.23.1</version>
+  <version>1.25.0</version>
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -130,6 +130,26 @@
         </execution>
     </executions>
 </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.2.4</version> <!-- or the latest version -->
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <artifactSet>
+                            <includes>
+                                <include>org.json:json</include>
+                            </includes>
+                        </artifactSet>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
       </plugins>
       <finalName>${project.artifactId}-${project.version}.${buildNumber}</finalName>
   </build>
@@ -138,6 +158,10 @@
          <id>spigot-repo</id>
          <url>https://hub.spigotmc.org/nexus/content/repositories/public/</url>
        </repository>
+       <repository>
+    <id>spigot-repo2</id>
+    <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+</repository>
        <repository>
             <id>minecraft-repo</id>
             <url>https://libraries.minecraft.net/</url>
@@ -169,6 +193,12 @@
            <scope>provided</scope>
        </dependency>
        <dependency>
+    <groupId>org.spigotmc</groupId>
+    <artifactId>spigot</artifactId>
+    <version>1.19.4-R0.1-SNAPSHOT</version>
+    <scope>provided</scope>
+</dependency>
+       <dependency>
 		<groupId>valorless.valorlessutils</groupId>
 		<artifactId>ValorlessUtils</artifactId>
 		<version>1.8.0.235</version>
@@ -181,7 +211,7 @@
         <dependency>
     <groupId>org.json</groupId>
     <artifactId>json</artifactId>
-    <version>20180130</version>
+    <version>20211205</version>
 </dependency>
 <dependency>
     <groupId>org.yaml</groupId>

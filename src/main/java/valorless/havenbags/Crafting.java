@@ -24,6 +24,7 @@ import valorless.valorlessutils.nbt.NBT;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.utils.Utils;
 
+@Deprecated
 public class Crafting implements Listener {
 
 	public static Config config = new Config(Main.plugin, "recipes.yml");
@@ -170,6 +171,7 @@ public class Crafting implements Listener {
 	
 	@EventHandler
 	public void onCraftItem (CraftItemEvent event) {
+		if(config.GetBool("enabled") == false) return;
 		Log.Debug(Main.plugin, "[DI-89] " + event.getInventory().getType().toString());
 		Log.Debug(Main.plugin, "[DI-90] " + event.getRecipe().toString());
 		try {

@@ -763,6 +763,7 @@ public class HavenBags {
 		//Log.Debug(Main.plugin, item.toString());	
 		List<Material> materials = new ArrayList<Material>();
 		List<String> names = blacklist.GetStringList("blacklist.displayname");
+		List<Integer> cmd = blacklist.GetIntList("blacklist.custommodeldata");
 		List<BlacklistNBT> nbt = new ArrayList<BlacklistNBT>();
 		
 		for(String mat : blacklist.GetStringList("blacklist.materials")) {
@@ -799,6 +800,16 @@ public class HavenBags {
 					Log.Debug(Main.plugin, "[DI-130] " + "Name blacklisted!");	
 					if(whitelist) return false;
 					return true;
+				}
+			}
+			
+			for(Integer c : cmd) {
+				if(item.getItemMeta().hasCustomModelData()) {
+					if(c == item.getItemMeta().getCustomModelData()) {
+						Log.Debug(Main.plugin, "[DI-208] " + "CustomModelData blacklisted!");	
+						if(whitelist) return false;
+						return true;
+					}
 				}
 			}
 		}

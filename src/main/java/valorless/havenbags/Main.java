@@ -50,6 +50,24 @@ public final class Main extends JavaPlugin implements Listener {
 	public static Translator translator;
 	public static ServerVersion server;
 	
+	/**
+	 * Compares two ServerVersion enums to determine their order based on their declaration.
+	 *
+	 * @param version    The ServerVersion to compare.
+	 * @param compareTo  The ServerVersion to compare against.
+	 * @return          A negative integer, zero, or a positive integer as the first argument
+	 *                  is less than, equal to, or greater than the second argument.
+	 */
+	public static int VersionCompare(ServerVersion version, ServerVersion compareTo) {
+	    if (version.ordinal() < compareTo.ordinal()) {
+	        return -1;  // version is less than compareTo
+	    } else if (version.ordinal() > compareTo.ordinal()) {
+	        return 1;   // version is greater than compareTo
+	    } else {
+	        return 0;   // version is equal to compareTo
+	    }
+	}
+	
 	public String[] commands = {
     		"havenbags", "bags", "bag",
     };
@@ -160,7 +178,7 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("protect-bags-players", false);
 		config.AddValidationEntry("bags-in-bags", false);
 		config.AddValidationEntry("bags-in-shulkers", true);
-		config.AddValidationEntry("keep-bags", false);
+		config.AddValidationEntry("keep-bags", true);
 		config.AddValidationEntry("old-help-menu", false);
 		config.AddValidationEntry("auto-pickup", true);
 		config.AddValidationEntry("auto-pickup-sound", "ENTITY_ITEM_PICKUP");
@@ -390,6 +408,13 @@ public final class Main extends JavaPlugin implements Listener {
 				add("Decapitation Shovel"); 
 				add("Anti-air Axe"); 
 				add("Cheese");
+				}
+			} 
+		);
+		blacklist.AddValidationEntry("blacklist.custommodeldata", new ArrayList<Integer>() {
+			private static final long serialVersionUID = 1L; { 
+				add(1234567); 
+				add(70274); 
 				}
 			} 
 		);

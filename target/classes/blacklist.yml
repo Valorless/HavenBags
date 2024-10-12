@@ -24,6 +24,10 @@ blacklist:
   - 'Decapitation Shovel'
   - 'Anti-air Axe'
   - 'Cheese'
+ # List of CustomModelData blacklisted.
+ custommodeldata:
+  - 1234567
+  - 70274
  # List of NBT blacklisted.
  # Does not support PDC data yet.
  nbt:

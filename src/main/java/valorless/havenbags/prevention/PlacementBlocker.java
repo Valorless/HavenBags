@@ -26,62 +26,38 @@ public class PlacementBlocker implements Listener {
 		ItemMeta nbt = item.getItemMeta();
 		//ItemStack offItem = event.getPlayer().getInventory().getItemInOffHand();
 		//ItemMeta offMeta = offItem.getItemMeta();
-		Log.Debug(Main.plugin, "[DI-201] " + "Block Placed: " + block.getType().toString());
-		Log.Debug(Main.plugin, "[DI-202] " + "Player Holding: " + item.getType().toString());
+		Log.Debug(Main.plugin, "[PlacementBlocker][DI-201] " + "Block Placed: " + block.getType().toString());
+		Log.Debug(Main.plugin, "[PlacementBlocker][DI-202] " + "Player Holding: " + item.getType().toString());
 		
 		if(nbt != null) {
-			Log.Debug(Main.plugin, "[DI-203] " + "Block has ItemMeta.");
+			Log.Debug(Main.plugin, "[PlacementBlocker][DI-203] " + "Block has ItemMeta.");
 			if(HavenBags.IsBag(item)) {
-				Log.Debug(Main.plugin, "[DI-204] " + "Block was bag!");
+				Log.Debug(Main.plugin, "[PlacementBlocker][DI-204] " + "Block was bag!");
 				block.setType(Material.AIR);
 				event.setCancelled(true);
 			}
 			if(HavenBags.IsSkinToken(item)) {
-				Log.Debug(Main.plugin, "[DI-205] " + "Block was skin token!");
+				Log.Debug(Main.plugin, "[PlacementBlocker][DI-205] " + "Block was skin token!");
 				block.setType(Material.AIR);
 				event.setCancelled(true);
 			}
 		}
 		if(item.getType() == Material.AIR) {
-			block.setType(Material.AIR);
-			event.setCancelled(true);
-			Log.Debug(Main.plugin, "[DI-206] " + "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
-			Log.Debug(Main.plugin, "[DI-207] " + "Block was likely bag, removing.");
-		}
-		
-		/*
-		if(block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
-			Log.Debug(Main.plugin, "Block was head.");
-			if(nbt != null) {
-				Log.Debug(Main.plugin, "Block has ItemMeta.");
-				if(NBT.Has(item, "bag-uuid")) {
-					Log.Debug(Main.plugin, "Block was bag!");
+			if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
+			if(block.getType() == Main.config.GetMaterial("bag-material")) {
+				block.setType(Material.AIR);
+				event.setCancelled(true);
+				Log.Debug(Main.plugin, "[PlacementBlocker][DI-206] " + "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
+				Log.Debug(Main.plugin, "[PlacementBlocker][DI-207] " + "Block was likely bag, removing.");
+			}
+			}else if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")) {
+				if(block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
 					block.setType(Material.AIR);
 					event.setCancelled(true);
+					Log.Debug(Main.plugin, "[PlacementBlocker][DI-206] " + "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
+					Log.Debug(Main.plugin, "[PlacementBlocker][DI-207] " + "Block was likely bag, removing.");
 				}
-			}
-			
-			if(item.getType() == Material.AIR) {
-				block.setType(Material.AIR);
-				event.setCancelled(true);
-				Log.Debug(Main.plugin, "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
-				Log.Debug(Main.plugin, "Block was likely bag, removing.");
-			}
-		} else {
-			if(nbt != null) {
-				Log.Debug(Main.plugin, "Block has ItemMeta.");
-				if(NBT.Has(item, "bag-uuid")) {
-					Log.Debug(Main.plugin, "Block was bag!");
-				}
-			}
-			
-			if(item.getType() == Material.AIR) {
-				block.setType(Material.AIR);
-				event.setCancelled(true);
-				Log.Debug(Main.plugin, "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
-				Log.Debug(Main.plugin, "Block was likely bag, removing.");
-			}
+			} 
 		}
-		*/
 	}
 }

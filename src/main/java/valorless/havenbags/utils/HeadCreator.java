@@ -5,7 +5,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.json.JSONObject;
 
+import java.util.Base64;
 import java.util.UUID;
 
 public class HeadCreator {
@@ -62,4 +64,29 @@ public class HeadCreator {
 
 		return item;
 	}
+    
+    public static String extractUrlFromBase64(String base64Texture) {
+        // Decode the Base64 string back into the original JSON string
+        byte[] decodedBytes = Base64.getDecoder().decode(base64Texture);
+        String json = new String(decodedBytes);
+
+        // Parse the JSON string to extract the texture URL
+        JSONObject jsonObj = new JSONObject(json);
+        String textureUrl = jsonObj
+                .getJSONObject("textures")
+                .getJSONObject("SKIN")
+                .getString("url");
+
+        return textureUrl;
+    }
+    
+
+    public static String convertUrlToBase64(String textureUrl) {
+        // Construct the JSON structure with the texture URL
+        String json = "{\"textures\":{\"SKIN\":{\"url\":\"" + textureUrl + "\"}}}";
+
+        // Encode the JSON structure to Base64
+        String base64 = Base64.getEncoder().encodeToString(json.getBytes());
+        return base64;
+    }
 }

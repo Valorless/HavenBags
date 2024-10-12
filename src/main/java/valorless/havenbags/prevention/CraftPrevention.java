@@ -10,13 +10,17 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 
 import valorless.havenbags.HavenBags;
+import valorless.havenbags.Main;
+import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class CraftPrevention implements Listener {
 	
 	@EventHandler
 	void onPrepareItemCraft(PrepareItemCraftEvent e) {
 		for(ItemStack item : e.getInventory().getContents()) {
+			if(item.isSimilar(e.getInventory().getResult())) return;
 			if(HavenBags.IsBag(item)) {
+				Log.Debug(Main.plugin, "[DI-209] [CraftPrevention] Trying to craft with bag.");
 				e.getInventory().setResult(null);
 			}
 		}
@@ -25,7 +29,9 @@ public class CraftPrevention implements Listener {
 	@EventHandler
 	public void onCraftItem (CraftItemEvent e) {
 		for(ItemStack item : e.getInventory().getContents()) {
+			if(item.isSimilar(e.getInventory().getResult())) return;
 			if(HavenBags.IsBag(item)) {
+				Log.Debug(Main.plugin, "[DI-210] [CraftPrevention] Trying to craft with bag.");
 				e.setCancelled(true);
 			}
 		}

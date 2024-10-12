@@ -42,6 +42,7 @@ public class InventoryListener implements Listener {
 		cont.add(InventoryType.HOPPER);
 		cont.add(InventoryType.PLAYER);
 		cont.add(InventoryType.CREATIVE);
+		cont.add(InventoryType.WORKBENCH);
 		for(String container : Main.config.GetStringList("allowed-containers")) {
 			cont.add(GetInventoryType(container));
 		}
