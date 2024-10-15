@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
-  <version>1.25.0</version>
+  <version>1.26.0</version>
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -180,6 +180,10 @@
       <name>Oraxen Repository</name>
       <url>https://repo.oraxen.com/releases</url>
     </repository>
+    <repository>
+      <id>pcgf-repo</id>
+      <url>https://repo.pcgamingfreaks.at/repository/maven-everything</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -281,6 +285,12 @@
           <groupId>gs.mclo</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>at.pcgamingfreaks</groupId>
+      <artifactId>Minepacks-API</artifactId>
+      <version>2.2</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

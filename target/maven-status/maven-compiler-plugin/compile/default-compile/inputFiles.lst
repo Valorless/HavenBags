@@ -27,7 +27,9 @@ E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\BagUpg
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\BagDamagePrevention.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\prevention\PickupPrevention.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\GUI.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\hooks\MinepacksBagRestore.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\hooks\OraxenHook.java
+E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\commands\CommandConvertMinepacks.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\commands\CommandReload.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\commands\CommandTexture.java
 E:\Projects\Minecraft Plugins\HavenBags\src\main\java\valorless\havenbags\Main.java

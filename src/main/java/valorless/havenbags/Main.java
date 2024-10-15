@@ -558,6 +558,9 @@ public final class Main extends JavaPlugin implements Listener {
 		Log.Debug(plugin, "[DI-19] Registering BagSkin");
 		getServer().getPluginManager().registerEvents(new BagSkin(), this);
 		
+		Log.Debug(plugin, "[DI-211] Registering MinepacksBagRestore");
+		getServer().getPluginManager().registerEvents(new MinepacksBagRestore(), this);
+		
 		Bukkit.getPluginManager().registerEvents(this, this);
     }
 

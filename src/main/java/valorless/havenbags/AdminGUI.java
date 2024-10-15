@@ -999,7 +999,7 @@ public class AdminGUI implements Listener {
 			}
 			if(NBT.GetBool(bagItem, "bag-canBind")) {
 				placeholders.add(new Placeholder("%owner%", player.getName()));
-	            lore.add(Lang.Parse(Lang.Get("bound-to"), placeholders, player));
+	            lore.add(Lang.Parse(Lang.Get("bound-to"), placeholders, targetPlayer));
 	        }
 			
             placeholders.add(new Placeholder("%size%", size));
@@ -1016,17 +1016,17 @@ public class AdminGUI implements Listener {
     					itemph.add(new Placeholder("%item%", Content.get(i).getItemMeta().getDisplayName()));
     					itemph.add(new Placeholder("%amount%", Content.get(i).getAmount()));
     					if(Content.get(i).getAmount() != 1) {
-    						items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+    						items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, targetPlayer));
     					} else {
-    						items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+    						items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, targetPlayer));
     					}
 	    			}else {
     	    			itemph.add(new Placeholder("%item%", Main.translator.Translate(Content.get(i).getType().getTranslationKey())));
     	    			itemph.add(new Placeholder("%amount%", Content.get(i).getAmount()));
     	    			if(Content.get(i).getAmount() != 1) {
-        					items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+        					items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, targetPlayer));
         				} else {
-        					items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+        					items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, targetPlayer));
         				}
 	    			}
 	    			a++;

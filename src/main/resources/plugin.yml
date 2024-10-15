@@ -6,7 +6,7 @@ api-version: 1.17
 website: https://www.spigotmc.org/resources/110420/
 description: Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
 depend: [ValorlessUtils]
-softdepend: [ChestSort, PlaceholderAPI, AngelChest, PvPManager]
+softdepend: [ChestSort, PlaceholderAPI, AngelChest, PvPManager, Minepacks]
 commands:
   havenbags:
     description: Main command.
