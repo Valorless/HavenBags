@@ -256,7 +256,11 @@ public class BagData {
 					bagData = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
 					bagData.Set("uuid", uuid);
 					bagData.Set("owner", owner);
-					bagData.Set("creator", creator.getUniqueId().toString());
+					if(creator != null) {
+						bagData.Set("creator", creator.getUniqueId().toString());
+					}else {
+						bagData.Set("creator", owner);
+					}
 					bagData.Set("size", content.size());
 					if(bag.getType() == Material.PLAYER_HEAD) {
 						bagData.Set("texture", getTextureValue(bag));

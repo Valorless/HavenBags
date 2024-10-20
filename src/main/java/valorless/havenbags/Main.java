@@ -493,7 +493,8 @@ public final class Main extends JavaPlugin implements Listener {
     	activeBags.clear();
     }
     
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void onDisable() {
     	CloseBags();
     	BagData.SaveData();
@@ -523,7 +524,8 @@ public final class Main extends JavaPlugin implements Listener {
     	}
     }
     
-    protected void RegisterListeners() {
+    @SuppressWarnings("deprecation")
+	protected void RegisterListeners() {
     	Log.Debug(plugin, "[DI-7] Registering PlacementListener");
 		getServer().getPluginManager().registerEvents(new PlacementBlocker(), this);
 		Log.Debug(plugin, "[DI-8] Registering BagDamagePrevention");
@@ -560,6 +562,9 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		Log.Debug(plugin, "[DI-211] Registering MinepacksBagRestore");
 		getServer().getPluginManager().registerEvents(new MinepacksBagRestore(), this);
+		
+		Log.Debug(plugin, "[DI-220] Registering EpicBackpacksBagRestore");
+		getServer().getPluginManager().registerEvents(new EpicBackpacksBagRestore(), this);
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
     }

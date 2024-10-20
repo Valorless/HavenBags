@@ -11,6 +11,7 @@ import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.translate.Translator;
 
+@SuppressWarnings("deprecation")
 public class CommandReload {
 	
 	static String Name = "§7[§aHaven§bBags§7]§r";

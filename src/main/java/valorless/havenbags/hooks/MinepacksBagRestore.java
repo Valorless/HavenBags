@@ -28,14 +28,22 @@ import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
 public class MinepacksBagRestore implements Listener{
+	
+	Boolean playersRemain = true;
 
 	@EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-		if(!PlayersRemaining()) return;
+		if(!playersRemain) return;
+		playersRemain = PlayersRemaining();
         Player player = event.getPlayer();
         Log.Debug(Main.plugin, "DI-212] [MinepacksBagRestore] " + player.getName());
         Config config = new Config(Main.plugin, "minepacks/players.yml");
         ConfigurationSection playersSection = config.GetConfigurationSection("players");
+        
+        if(playersSection == null) {
+        	RemoveDirectory();
+        	return;
+        }
         
         if(playersSection.getKeys(false) == null || playersSection.getKeys(false).size() == 0) {
         	RemoveDirectory();

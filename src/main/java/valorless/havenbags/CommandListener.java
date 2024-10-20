@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 
 import valorless.havenbags.commands.HBCommand;
 import valorless.havenbags.commands.CommandAutopickup;
+import valorless.havenbags.commands.CommandConvertEpicBackpacks;
 import valorless.havenbags.commands.CommandConvertMinepacks;
 import valorless.havenbags.commands.CommandCreate;
 import valorless.havenbags.commands.CommandEmpty;
@@ -120,6 +121,9 @@ public class CommandListener implements CommandExecutor {
 				
 				if(args[0].equalsIgnoreCase("convertminepacks") && sender.isOp()) {
 					return CommandConvertMinepacks.Run(cmd);
+				}
+				if(args[0].equalsIgnoreCase("convertepicbackpacks") && sender.isOp()) {
+					return CommandConvertEpicBackpacks.Run(cmd);
 				}
 			} catch(Exception e) {
 				sender.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));

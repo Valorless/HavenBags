@@ -7,7 +7,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -53,7 +52,7 @@ public class CommandConvertMinepacks {
 				BagData.CreateBag(uuid, 
 						player.getUniqueId().toString(), 
 						cont, 
-						(Player) player, 
+						null, 
 						PlaceholderBag(player));
 				config.Set("players." + player.getUniqueId().toString(), uuid);
 			}
@@ -112,10 +111,10 @@ public class CommandConvertMinepacks {
 		bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
 		List<String> lore = new ArrayList<String>();
 		for (String l : Lang.lang.GetStringList("bag-lore")) {
-			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, owner));
+			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, null));
 		}
 		placeholders.add(new Placeholder("%size%", size*9));
-        lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, owner));
+        lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders));
 		//for (String l : Lang.lang.GetStringList("bag-size")) {
 		//	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), (Player)sender));
 		//}
