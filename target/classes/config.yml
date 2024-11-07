@@ -109,6 +109,12 @@ inventory-full-sound: 'ENTITY_VILLAGER_NO'
 inventory-full-volume: 1
 inventory-full-pitch: 1
 
+# The max amount of bags a player can create.
+# Note that is they lose a bag, they'll need it restored, 
+# or their max-bags would essentially be 8. (if 9)
+# (Ownerless bags do not count, set 0 for unlimited)
+max-bags: 9
+
 # Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?
 protect-bags: true
 

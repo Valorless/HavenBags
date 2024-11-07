@@ -174,6 +174,7 @@ public final class Main extends JavaPlugin implements Listener {
 		config.AddValidationEntry("inventory-full-sound", "ENTITY_VILLAGER_NO");
 		config.AddValidationEntry("inventory-full-volume", 1);
 		config.AddValidationEntry("inventory-full-pitch", 1);
+		config.AddValidationEntry("max-bags", 0);
 		config.AddValidationEntry("protect-bags", true);
 		config.AddValidationEntry("protect-bags-players", false);
 		config.AddValidationEntry("bags-in-bags", false);
@@ -224,6 +225,7 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("bag-does-not-exist", "&cThis bag does not exist.");
 		Lang.lang.AddValidationEntry("inventory-full", "&cInventory full, dropping bag on the ground!");
 		Lang.lang.AddValidationEntry("bag-already-open", "&cThis bag is already open!");
+		Lang.lang.AddValidationEntry("max-bags", "&cSorry, you cannot make any more bags.");
 		Lang.lang.AddValidationEntry("bag-in-bag-error", "&cBags cannot be put inside other bags.");
 		Lang.lang.AddValidationEntry("bag-in-shulker-error", "&cBags cannot be put inside shulker boxes.");
 		Lang.lang.AddValidationEntry("item-blacklisted", "&cSorry, this item cannot go into bags.");

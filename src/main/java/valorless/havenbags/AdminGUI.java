@@ -26,7 +26,7 @@ import valorless.valorlessutils.nbt.NBT;
 import valorless.havenbags.utils.HeadCreator;
 
 public class AdminGUI implements Listener {
-	public enum GUIType { Main, Creation, Restoration, Player, Preview, PreviewPlayer, Deletion, DeletionPlayer, Confirmation }
+	public enum GUIType { Main, Creation, Restoration, Player, Preview, PreviewPlayer, Deletion, DeletionPlayer, Confirmation, Content }
 	
 	public JavaPlugin plugin;
 	String Name = "§7[§aHaven§bBags§7]§r";
@@ -98,6 +98,9 @@ public class AdminGUI implements Listener {
 			Open();
 		}else if(type == GUIType.Confirmation) {
 			content = PrepareConfirmation();
+			Open();
+		}else if(type == GUIType.Content) {
+			content = BagData.GetBag(HavenBags.GetBagUUID(selectedBag), null).getContent();
 			Open();
 		}
 	}
@@ -198,6 +201,13 @@ public class AdminGUI implements Listener {
     		}
 			player.openInventory(inv);
 		}
+		else if(type == GUIType.Content) {
+			inv = Bukkit.createInventory(player, content.size(), "");
+			for(int i = 0; i < content.size(); i++) {
+    			inv.setItem(i, content.get(i));
+    		}
+			player.openInventory(inv);
+		}
 	}
 	
 	public void OpenInventory(final HumanEntity ent) {
@@ -207,6 +217,16 @@ public class AdminGUI implements Listener {
 	@EventHandler
     public void onInventoryClose(final InventoryCloseEvent e) {
         if (!e.getInventory().equals(inv)) return;
+        if (type == GUIType.Content) {
+        	Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
+                @Override
+                public void run(){
+                	type = GUIType.PreviewPlayer;
+                	Reload();
+                }
+            }, 2L);
+        	
+        }
         //player.closeInventory();
     }
     
@@ -519,28 +539,9 @@ public class AdminGUI implements Listener {
 				}
         	}
         	
-        	String owner = NBT.GetString(clickedItem, "bag-owner");
-        	String uuid = NBT.GetString(clickedItem, "bag-uuid");
-        	int size = NBT.GetInt(clickedItem, "bag-size");
-
-			String dirPath = String.format("%s/bags/%s/", Main.plugin.getDataFolder(), owner);
-			File dir = new File(dirPath);
-			if(!dir.exists()) {
-				return;
-			}
-			String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
-			File bagData;
-			try {
-				bagData = new File(path);
-			} catch(Exception ex) {
-				ex.printStackTrace();
-				return;
-			}
-			if(!bagData.exists()) {
-				return;
-			}
-			BagGUI gui = new BagGUI(Main.plugin, size, player, clickedItem, clickedItem.getItemMeta(), true);
-			gui.OpenInventory(player);
+        	selectedBag = clickedItem;
+        	type = GUIType.Content;
+        	Reload();
         	e.setCancelled(true);
         	return;
         }

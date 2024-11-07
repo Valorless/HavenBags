@@ -48,6 +48,9 @@ inventory-full: '&cInventory full, dropping bag on the ground!'
 # Message sent to the player if the bag is already open.
 bag-already-open: '&cThis bag is already open!'
 
+# Message sent to the player when they've reached the bag limit.
+max-bags: '&cSorry, you cannot make any more bags.'
+
 ### Admin ###
 
 # Message sent when attempting to fetch a player which does not exist.

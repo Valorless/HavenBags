@@ -154,6 +154,14 @@ public class BagListener implements Listener{
     				if(owner.equalsIgnoreCase("null") && canbind)
     				{
     					//item.setDisplayName("§a" + player.getName() +"'s Bag");
+    					if(Main.config.GetInt("max-bags") > 0) {
+    						if(!player.hasPermission("havenbags.bypass")) {
+    							if(BagData.GetBags(player.getName()).size() >= Main.config.GetInt("max-bags")) {
+    								player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("max-bags"), player));
+    								return;
+    							}
+    						}
+    					}
     					
     					item.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), player));
     					List<String> lore = new ArrayList<String>();

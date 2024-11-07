@@ -17,7 +17,7 @@ public class CommandAutopickup {
 		Player player = (Player)command.sender;
 		
 		if(!Main.config.GetBool("auto-pickup")) {
-			player.sendMessage(Lang.Get("prefix") + Lang.Get("feature-disabled"));
+			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("feature-disabled"), player));
 			return true;
 		}
 		if(command.args.length >= 2) {
