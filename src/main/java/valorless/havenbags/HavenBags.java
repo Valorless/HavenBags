@@ -401,6 +401,7 @@ public class HavenBags {
         	//lore.add(Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player));
         }
         
+        boolean hasTrust = false;
         if(NBT.Has(bag, "bag-trust")) {
 			List<String> trust = NBT.GetStringList(bag, "bag-trust");
 			String trusted = "";
@@ -415,6 +416,8 @@ public class HavenBags {
 			}
         	placeholders.add(new Placeholder("%trusted%", trusted));
         	placeholders.add(new Placeholder("%bag-trusted%", Lang.Parse(Lang.Get("bag-trusted"), placeholders, player)));
+        	
+        	if(!Utils.IsStringNullOrEmpty(trusted)) hasTrust = true;
         }
         
         
@@ -422,12 +425,12 @@ public class HavenBags {
         for(String line : Lang.lang.GetStringList("bag-lore-add")) {
         	if(owner.equalsIgnoreCase("null") == false) {
         		if(line.contains("%bound-to%") && !NBT.GetBool(bag, "bag-canBind")) continue;
-        		if(line.contains("%bag-trusted%") && !NBT.Has(bag, "bag-trust")) continue;
+        		if(line.contains("%bag-trusted%") && !hasTrust) continue;
         		if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
         		if(line.contains("%bag-weight%") && !Main.weight.GetBool("enabled")) continue;
         	}else {
         		if(line.contains("%bound-to%")) continue;
-        		if(line.contains("%bag-trusted%") && !NBT.Has(bag, "bag-trust")) continue;
+        		if(line.contains("%bag-trusted%") && !hasTrust) continue;
         		if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
         		if(line.contains("%bag-weight%")) continue;
         	}

@@ -51,6 +51,23 @@ bag-already-open: '&cThis bag is already open!'
 # Message sent to the player when they've reached the bag limit.
 max-bags: '&cSorry, you cannot make any more bags.'
 
+# Message sent if clicking on a bag item, while inside another bag.
+bag-in-bag-error: '&cBags cannot be put inside other bags.'
+
+# Message sent if clicking on a bag item, while inside a shulker box.
+bag-in-shulker-error: '&cBags cannot be put inside shulker boxes.'
+
+# Message sent if item clicked is blacklisted.
+item-blacklisted: '&cSorry, this item cannot go into bags.'
+
+# Message sent to the player when trusting a player.
+# %trusted% - Trusted player's name.
+player-trusted: '&aAdded %trusted% as trusted.'
+
+# Message sent to the player when untrusting a player.
+# %trusted% - Trusted player's name.
+player-untrusted: '&eRemoved %trusted% as trusted.'
+
 ### Admin ###
 
 # Message sent when attempting to fetch a player which does not exist.
@@ -77,15 +94,6 @@ player-no-bags: '&cPlayer ''%player%'' has no bags.'
 # Bags found of player, using '/bags restore <player>'.
 # %player% - Name of the player specified.
 bags-of: 'Bags of %player%:'
-
-# Message sent if clicking on a bag item, while inside another bag.
-bag-in-bag-error: '&cBags cannot be put inside other bags.'
-
-# Message sent if clicking on a bag item, while inside a shulker box.
-bag-in-shulker-error: '&cBags cannot be put inside shulker boxes.'
-
-# Message sent if item clicked is blacklisted.
-item-blacklisted: '&cSorry, this item cannot go into bags.'
 
 ############################################################
 # +------------------------------------------------------+ #

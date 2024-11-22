@@ -156,7 +156,7 @@ public class BagListener implements Listener{
     					//item.setDisplayName("§a" + player.getName() +"'s Bag");
     					if(Main.config.GetInt("max-bags") > 0) {
     						if(!player.hasPermission("havenbags.bypass")) {
-    							if(BagData.GetBags(player.getName()).size() >= Main.config.GetInt("max-bags")) {
+    							if(BagData.GetBags(player.getUniqueId().toString()).size() >= Main.config.GetInt("max-bags")) {
     								player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("max-bags"), player));
     								return;
     							}

@@ -364,10 +364,10 @@ public class BagData {
 		
 	}
 	
-	protected static List<String> GetBags(@NotNull String player){
-		Log.Debug(Main.plugin, "[DI-32] " + player);
+	protected static List<String> GetBags(@NotNull String playerUUID){
+		Log.Debug(Main.plugin, "[DI-32] " + playerUUID);
 		try {
-			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
+			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), playerUUID)).listFiles())
 					.filter(file -> !file.isDirectory())
 					.filter(file -> !file.getName().contains(".json"))
 					.map(File::getName)
@@ -378,6 +378,7 @@ public class BagData {
 			}
 			return bags;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ArrayList<String>();
 		}
 	}

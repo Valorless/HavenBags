@@ -1,11 +1,15 @@
 package valorless.havenbags.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.Placeholder;
 
 public class CommandTrust {
 	
@@ -34,6 +38,10 @@ public class CommandTrust {
 						//NBT.SetStringList(item, "bag-trust", list);
 						BagData.AddTrusted(HavenBags.GetBagUUID(item), command.args[1]);
 						HavenBags.UpdateBagItem(item, null, player);
+						
+						List<Placeholder> ph = new ArrayList<Placeholder>();
+						ph.add(new Placeholder("%trusted%", command.args[1]));
+						player.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("player-trusted"), ph));
 						return true;
 					}catch(Exception e) {
 						e.printStackTrace();

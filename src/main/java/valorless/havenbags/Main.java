@@ -229,6 +229,8 @@ public final class Main extends JavaPlugin implements Listener {
 		Lang.lang.AddValidationEntry("bag-in-bag-error", "&cBags cannot be put inside other bags.");
 		Lang.lang.AddValidationEntry("bag-in-shulker-error", "&cBags cannot be put inside shulker boxes.");
 		Lang.lang.AddValidationEntry("item-blacklisted", "&cSorry, this item cannot go into bags.");
+		Lang.lang.AddValidationEntry("player-trusted", "&aAdded %trusted% as trusted.");
+		Lang.lang.AddValidationEntry("player-untrusted", "&eRemoved %trusted% as trusted.");
 		
 		// Admin Lang
 		//Lang.lang.AddValidationEntry("bag-create", ""); //unsure wtf this was for
