@@ -17,10 +17,12 @@ import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.Gson;
 
+import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.mods.HavenBagsPreview;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
+import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.sound.SFX;
@@ -322,6 +324,7 @@ public class HavenBags {
 
     	ItemMeta bagMeta = bag.getItemMeta();
     	
+    	
 		List<ItemStack> cont = new ArrayList<ItemStack>();
         int a = 0;
         List<String> items = new ArrayList<String>();
@@ -342,7 +345,20 @@ public class HavenBags {
     						items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
     						//items.add(Lang.Get("bag-content-item", inventory.get(i).getItemMeta().getDisplayName()));
     					}
-    				}else {
+    				}
+    				else if(Main.VersionCompare(Main.server, ServerVersion.v1_20_5) >= 0) {
+    					if(ItemUtils.HasItemName(inventory.get(i))) {
+    						itemph.add(new Placeholder("%item%", ItemUtils.GetItemName(inventory.get(i))));
+    						itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
+        			
+    						if(inventory.get(i).getAmount() != 1) {
+    							items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+    						} else {
+    							items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+    						}
+    					}
+    				}
+    				else {
     	    			itemph.add(new Placeholder("%item%", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
     	    			itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
     	    			

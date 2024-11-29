@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
-  <version>1.27.2</version>
+  <version>1.28.0</version>
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -116,11 +116,11 @@
             <id>install-external</id>
             <phase>clean</phase>
             <configuration>
-                <file>${basedir}\dependencies/ValorlessUtils-1.8.0.235.jar</file>
+                <file>${basedir}\dependencies/ValorlessUtils-1.11.0.248.jar</file>
                 <repositoryLayout>default</repositoryLayout>
                 <groupId>valorless.valorlessutils</groupId>
                 <artifactId>ValorlessUtils</artifactId>
-                <version>1.8.0.235</version>
+                <version>1.11.0.248</version>
                 <packaging>jar</packaging>
                 <generatePom>true</generatePom>
             </configuration>
@@ -205,7 +205,7 @@
        <dependency>
 		<groupId>valorless.valorlessutils</groupId>
 		<artifactId>ValorlessUtils</artifactId>
-		<version>1.8.0.235</version>
+		<version>1.11.0.248</version>
 	</dependency>
 	<dependency>
             <groupId>com.mojang</groupId>
