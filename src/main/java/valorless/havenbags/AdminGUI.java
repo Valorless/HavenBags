@@ -822,7 +822,7 @@ public class AdminGUI implements Listener {
 			//}
 			bagMeta.setLore(lore);
 			bagItem.setItemMeta(bagMeta);
-			Log.Warning(plugin, bagItem.toString());
+			//Log.Warning(plugin, bagItem.toString());
 			//NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
 			NBT.SetString(bagItem, "bag-uuid", "null");
 			NBT.SetString(bagItem, "bag-owner", "null");
