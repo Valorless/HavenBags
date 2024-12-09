@@ -51,14 +51,14 @@ public class BagSkin implements Listener{
 		if(HavenBags.IsBag(clicked)) {
 			ItemMeta meta = clicked.getItemMeta();
 			String value = NBT.GetString(skin, "bag-token-skin");
-			if(isNumber(value)) {
+			try {
 				int cmd = Integer.valueOf(value);
 				if(value != null && meta.hasCustomModelData()) {
 					Log.Debug(Main.plugin, "[DI-70] " + "[BagSkin] CustomModelData Skin.");
 					meta.setCustomModelData(cmd);
 					clicked.setItemMeta(meta);
 				}
-			}else {
+			}catch(Exception e) {
 				Log.Debug(Main.plugin, "[DI-71] " + "[BagSkin] Texture Skin.");
 				BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(value);
 			}
@@ -71,14 +71,14 @@ public class BagSkin implements Listener{
 		Log.Debug(Main.plugin, "[DI-73] " + "[BagSkin] Preparing Result.");
 		ItemMeta meta = item.getItemMeta();
 		String value = NBT.GetString(skin, "bag-token-skin");
-		if(isNumber(value)) {
+		try {
 			int cmd = Integer.valueOf(value);
 			if(value != null) {
 				Log.Debug(Main.plugin, "[DI-74] " + "[BagSkin] CustomModelData Skin.");
 				meta.setCustomModelData(cmd);
 				item.setItemMeta(meta);
 			}
-		}else {
+		}catch(Exception e) {
 			if(Base64Validator.isValidBase64(value)) {
 				Log.Debug(Main.plugin, "[DI-75] " + "[BagSkin] Texture Skin.");
 				BagData.setTextureValue(item, value);
@@ -90,8 +90,4 @@ public class BagSkin implements Listener{
 		
 		return item;
 	}
-	
-	public static boolean isNumber(Object obj) {
-        return obj instanceof Integer;
-    }
 }

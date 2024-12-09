@@ -332,6 +332,7 @@ public class BagGUI implements Listener {
         HavenBags.UpdateBagItem(bagItem, cont, player);
 		GivePlayerBagBack();
 		BagData.UpdateBag(bagItem, cont);
+        
 		//HavenBags.WriteBagToServer(bagItem, cont, player);
 		try {
 			for (int i = 0; i < Main.activeBags.size(); i++) {

@@ -36,6 +36,8 @@ auto-save-message: true
 # Chinese (Simplified) - zh_cn
 # Russian -------------- ru_ru
 # Polish --------------- pl_pl
+# Portuguese ----------- pt_pt
+# Portuguese (Brazil) -- pt_br
 language: 'en_us'
 
 # Should the bags use heads or items?
@@ -91,6 +93,20 @@ bag-textures:
  size-ownerless-36: ''
  size-ownerless-45: ''
  size-ownerless-54: ''
+ 
+# Should we change the bag's texture regarless of other settings,
+# based on how full the bag is?
+# NOTE: This function glitches if 'keep-bags' is set to false.
+capacity-based-textures:
+ enabled: false
+ # Defined capacities and their defined textures.
+ # If a bag is over the capacity defined, they get the texture.
+ textures:
+  '0': ''
+  '25': ''
+  '50': ''
+  '70': ''
+  '90': ''
 
 # Sound played when opening a bag.
 # Sounds: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
@@ -151,6 +167,10 @@ auto-pickup-inventory:
   
 # Can players trust other players with access to their bound bags?
 trusting: true
+
+# Should bags be able to used as quivers?
+# Will prioritize offhand over inventory.
+quiver-bags: true
 
 # Bag Upgrades
 # If enabled, remember to allow "ANVIL" in 'allowed-containers'.

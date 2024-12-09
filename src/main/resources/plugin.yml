@@ -46,6 +46,7 @@ permissions:
       havenbags.weight: true
       havenbags.help: true
       havenbags.texture: true
+      havenbags.modeldata: true
       havenbags.token: true
   havenbags.reload:
     description: Allows you to reload the configuration.
@@ -115,6 +116,9 @@ permissions:
     default: op
   havenbags.texture:
     description: Allows you to set textures of bags you own.
+    default: op
+  havenbags.modeldata:
+    description: Allows you to set CustoModelData of bags you own.
     default: op
   havenbags.upgrade.9:
     description: Allows you to upgrade bags with a size of 9.

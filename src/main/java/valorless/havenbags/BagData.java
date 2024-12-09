@@ -119,6 +119,16 @@ public class BagData {
 		}
 	}
 	
+	public static class Bag {
+		public ItemStack item;
+		public List<ItemStack> content = new ArrayList<ItemStack>();
+		
+		public Bag (ItemStack item, List<ItemStack> content) {
+			this.item = item;
+			this.content = content;
+		}
+	}
+	
 	public static boolean Contains(@NotNull String uuid) {
 		if(GetBag(uuid, null) != null) {
 			return true;
@@ -212,6 +222,19 @@ public class BagData {
 					bag.changed = true;
 					if(m_source == UpdateSource.PLAYER) {
 						bag.isOpen = false;
+					}
+					
+
+					if(Main.config.GetBool("capacity-based-textures.enabled")) {
+						bag.data.Set("texture", HavenBags.CapacityTexture(bagItem, content));
+						//bag.setTexture(HavenBags.CapacityTexture(bagItem, content));
+						Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable(){
+				            @Override
+				            public void run(){
+				            	HavenBags.UpdateBagItem(bagItem, content, bag.viewer);
+				            }
+				        }, 1L);
+						
 					}
 				}catch(Exception e) {
 					Log.Error(Main.plugin, String.format("Failed to update bag '%s'.", uuid));

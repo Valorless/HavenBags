@@ -18,6 +18,7 @@ import valorless.havenbags.commands.CommandEmpty;
 import valorless.havenbags.commands.CommandGUI;
 import valorless.havenbags.commands.CommandGive;
 import valorless.havenbags.commands.CommandInfo;
+import valorless.havenbags.commands.CommandModelData;
 import valorless.havenbags.commands.CommandPreview;
 import valorless.havenbags.commands.CommandRawInfo;
 import valorless.havenbags.commands.CommandReload;
@@ -113,6 +114,10 @@ public class CommandListener implements CommandExecutor {
 				
 				if(args[0].equalsIgnoreCase("texture") && sender.hasPermission("havenbags.texture")) {
 					return CommandTexture.Run(cmd);
+				}
+				
+				if(args[0].equalsIgnoreCase("modeldata") && sender.hasPermission("havenbags.modeldata")) {
+					return CommandModelData.Run(cmd);
 				}
 				
 				if(args[0].equalsIgnoreCase("token") && sender.hasPermission("havenbags.token")) {

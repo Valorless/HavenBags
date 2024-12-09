@@ -18,6 +18,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.md_5.bungee.api.ChatMessageType;
+import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.Main.ServerVersion;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.ValorlessUtils.Tags;
@@ -40,16 +41,6 @@ public class AutoPickup implements Listener {
 			this.name = name;
 			this.displayname = displayname;
 			this.entries = entries;
-		}
-	}
-	
-	private static class Bag {
-		public ItemStack item;
-		public List<ItemStack> content = new ArrayList<ItemStack>();
-		
-		public Bag (ItemStack item, List<ItemStack> content) {
-			this.item = item;
-			this.content = content;
 		}
 	}
 
@@ -375,7 +366,7 @@ public class AutoPickup implements Listener {
 		}
 		Log.Debug(Main.plugin, "[DI-157] " + "bags:" + bags.size());
 		Log.Debug(Main.plugin, "[DI-158] " + "Checking bag filters.");
-		for(Bag bag : bags) {
+		for(Bag bag : HavenBags.GetBagsInInventory(player)) {
 			Log.Debug(Main.plugin, "[DI-159] " + "bag: " + NBT.GetString(bag.item, "bag-uuid"));
 			if(BagData.IsBagOpen(NBT.GetString(bag.item, "bag-uuid"), bag.item)) continue;
 			if(HavenBags.IsBagFull(bag.item)) continue;
@@ -458,7 +449,9 @@ public class AutoPickup implements Listener {
 			//if(contSize >= maxContent) return false;
 			Log.Debug(Main.plugin, "[DI-171] " + "contSize:" + contSize);
 			if(contSize == 0) {
-				bag.content.set(0, item);
+				if(bag.content.size() > 0) {
+					bag.content.set(0, item);
+				}else bag.content.add(item);
 				if(Main.weight.GetBool("enabled")) {
 		        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
 					if(Main.weight.GetBool("weight-text-pickup")) {

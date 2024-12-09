@@ -96,7 +96,7 @@ public class EpicBackpacksBagRestore implements Listener{
     }
     
     void RemoveDirectory() {
-    	Log.Info(Main.plugin, "All converted EpicBackpacks have been given out.");
+    	//Log.Info(Main.plugin, "All converted EpicBackpacks have been given out.");
     	// Get the data folder of the plugin
         File dataFolder = Main.plugin.getDataFolder();
 

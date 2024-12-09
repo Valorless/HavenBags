@@ -71,6 +71,9 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.texture")) {
 				subCommands.add("texture");
 			}
+			if (sender.hasPermission("havenbags.modeldata")) {
+				subCommands.add("modeldata");
+			}
 			if (sender.hasPermission("havenbags.token")) {
 				subCommands.add("token");
 			}

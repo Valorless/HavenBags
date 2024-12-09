@@ -1,8 +1,13 @@
 package valorless.havenbags;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -17,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.Gson;
 
+import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.mods.HavenBagsPreview;
 import valorless.havenbags.utils.Base64Validator;
@@ -483,6 +489,35 @@ public class HavenBags {
 		bag.setItemMeta(bagMeta);
 	}
 	
+	public static String CapacityTexture(ItemStack bag, List<ItemStack> content) {
+		Double capacity = UsedCapacity(bag, content);
+		//Log.Error(Main.plugin, capacity + "");
+		Map<Double, String> map = new HashMap<Double, String>();
+		for(Object entry : Main.config.GetConfigurationSection("capacity-based-textures.textures").getKeys(false)) {
+			Double key = Double.valueOf(entry.toString());
+			String value = Main.config.GetString("capacity-based-textures.textures." + entry.toString());
+			map.put(key, value);
+		}
+		// Sorting the map by keys in descending order
+        Map<Double, String> sortedMap = map.entrySet()
+                .stream()
+                .sorted((e1, e2) -> e2.getKey().compareTo(e1.getKey())) // Descending order
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, // Handle duplicate keys
+                        LinkedHashMap::new // Maintain sorted order
+                ));
+        
+		for(Entry<Double, String> entry : sortedMap.entrySet()) {
+			if(capacity >= entry.getKey()) {
+				//Log.Error(Main.plugin, entry.getKey() + "");
+				return entry.getValue();
+			}
+		}
+		return BagData.getTextureValue(bag);
+	}
+	
 	public static void UpdateBagLore(ItemStack bag, Player player, boolean...preview) {
 		try {
 			UpdateBagItem(bag, LoadBagContentFromServer(bag, player), player, preview);
@@ -899,6 +934,10 @@ public class HavenBags {
 		meta.setDisplayName(Lang.Parse(name, ph));
 		if(cmd > 0) {
 			meta.setCustomModelData(cmd);
+		}else {
+			try {
+				meta.setCustomModelData(Integer.valueOf(value));
+			}catch(Exception e) {}
 		}
 		List<String> l = new ArrayList<String>();
 		for (String line : lore) {
@@ -932,8 +971,32 @@ public class HavenBags {
 	public static int SlotsEmpty(ItemStack bag) {
 		int size = NBT.GetInt(bag, "bag-size");
 		List<ItemStack> content = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
-		content.removeIf(item -> item.getType() == Material.AIR);
 		content.removeIf(item -> item == null);
+		content.removeIf(item -> item.getType() == Material.AIR);
 		return size - content.size();
+	}
+	
+	public static double UsedCapacity(ItemStack bag, List<ItemStack> content) {
+		//Log.Error(Main.plugin, "content " + NBT.GetInt(bag, "bag-size"));
+		Double size = Double.valueOf(NBT.GetInt(bag, "bag-size") + ".0");
+		//Log.Error(Main.plugin, "size " + size);
+		List<ItemStack> used = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
+		used.removeIf(item -> item == null);
+		used.removeIf(item -> item.getType() == Material.AIR);
+		//Log.Error(Main.plugin, "empty " + (size - used.size()));
+		//Double empty = size - Double.valueOf(used.size() + ".0");
+		//Log.Error(Main.plugin, "used " + used.size());
+		return (used.size()/size)*100;
+	}
+	
+	public static List<Bag> GetBagsInInventory(Player player) {
+		List<Bag> bags = new ArrayList<Bag>();
+		Log.Debug(Main.plugin, "[DI-156] " + "Checking for bags.");
+		for(ItemStack i : player.getInventory().getContents()) {
+			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
+				bags.add(new Bag(i, HavenBags.LoadBagContentFromServer(i, null)));
+			}
+		}
+		return bags;
 	}
 }
