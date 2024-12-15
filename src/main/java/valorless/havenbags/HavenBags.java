@@ -607,17 +607,47 @@ public class HavenBags {
 	public static Double GetWeight(List<ItemStack> content) {
 		Double weight = 0.0;
 		for(ItemStack item : content) {
-			try {
-				weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
-			} catch(Exception e) {
-				continue;
+			if(item == null) continue; 
+			if(item.hasItemMeta() && item.getItemMeta().hasCustomModelData()) {
+				int cmd = item.getItemMeta().getCustomModelData();
+				if(Main.weight.HasKey(item.getType().toString() + "-" + cmd)) {
+					try {
+						weight += (Main.weight.GetFloat(item.getType().toString() + "-" + cmd) * item.getAmount());
+					} catch(Exception e) {
+						continue;
+					}
+				}else {
+					try {
+						weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
+					} catch(Exception e) {
+						continue;
+					}
+				}
+			}else {
+				try {
+					weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
+				} catch(Exception e) {
+					continue;
+				}
 			}
 		}
 		return weight;
 	}
 	
 	public static Double ItemWeight(ItemStack item) {
-		return (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
+		if(item == null) return 0.0;
+		if(item.hasItemMeta() && item.getItemMeta().hasCustomModelData()) {
+			int cmd = item.getItemMeta().getCustomModelData();
+			if(Main.weight.HasKey(item.getType().toString() + "-" + cmd)) {
+				return Main.weight.GetFloat(item.getType().toString() + "-" + cmd) * item.getAmount();
+			}else {
+				return Main.weight.GetFloat(item.getType().toString()) * item.getAmount();
+			}
+		}else {
+			return Main.weight.GetFloat(item.getType().toString()) * item.getAmount();
+		}
+		
+		//return Main.weight.GetFloat(item.getType().toString()) * item.getAmount();
 	}
 	
 	public static boolean CanCarry(ItemStack item, ItemStack bag) {

@@ -21,8 +21,8 @@ public class CommandModelData {
 					ItemMeta meta = item.getItemMeta();
 					try {
 						meta.setCustomModelData(Integer.valueOf(command.args[1]));
+						item.setItemMeta(meta);
 					}catch(Exception e) { player.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command")); }
-					item.setItemMeta(meta);
 				}else {
 					player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
 				}

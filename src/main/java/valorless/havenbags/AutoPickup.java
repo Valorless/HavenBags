@@ -505,6 +505,10 @@ public class AutoPickup implements Listener {
 	
 	boolean IsItemInFilter(String filter, ItemStack item) {
 		Log.Debug(Main.plugin, "[DI-175] " + "IsItemInFilter?");
+		int cmd = 0;
+		if(item.hasItemMeta() && item.getItemMeta().hasCustomModelData()) {
+			cmd = item.getItemMeta().getCustomModelData();
+		}
 		if(Main.plugins.GetBool("plugins.Oraxen.enabled")) {
 			if(Bukkit.getPluginManager().getPlugin("Oraxen") != null) {
 				if(item.hasItemMeta()) {
@@ -520,9 +524,21 @@ public class AutoPickup implements Listener {
 		}
 		for(Filter f : filters) {
 			if(f.name.equalsIgnoreCase(filter)) {
-				if(f.entries.contains(item.getType().toString())){
-					Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
-					return true;
+				if(cmd != 0) {
+					if(f.entries.contains(item.getType().toString() + "-" + cmd)){
+						Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
+						return true;
+					}else {
+						if(f.entries.contains(item.getType().toString())){
+							Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
+							return true;
+						}
+					}
+				}else {
+					if(f.entries.contains(item.getType().toString())){
+						Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
+						return true;
+					}
 				}
 			}
 		}

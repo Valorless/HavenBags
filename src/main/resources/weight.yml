@@ -83,6 +83,11 @@ bag-cant-carry: '&cCannot carry any more items.\n%item% weighs %weight%, but you
 # please post on the plugin github, what you think the weights should be like. :)
 # Note: These values are not validated, so if any are removed, they may cause issues.
 STONE: 2
+
+## Want specific CustomModelData to have custom weight?
+# You can do MATERIAL-CMD, like:
+STONE-12345: 100
+
 GRANITE: 2
 POLISHED_GRANITE: 2
 DIORITE: 2
