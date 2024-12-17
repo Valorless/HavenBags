@@ -57,6 +57,7 @@ public final class Main extends JavaPlugin implements Listener {
 		v1_21_1, 
 		v1_21_2, 
 		v1_21_3, 
+		v1_21_4,
 		v1_22
 	}
 	public static JavaPlugin plugin;

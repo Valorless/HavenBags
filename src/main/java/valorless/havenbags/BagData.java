@@ -626,7 +626,7 @@ public class BagData {
         
         UUID uuid = UUID.nameUUIDFromBytes(value.getBytes());
         
-        if(Main.VersionCompare(Main.server, ServerVersion.v1_21_1) >= 0) {
+        if(Main.VersionCompare(Main.server, ServerVersion.v1_21_1) >= 0 || Main.server == ServerVersion.NULL) {
         	try {
             	// Create a new GameProfile with a random UUID and apply the texture
             	PlayerProfile profile = Bukkit.getServer().createPlayerProfile(uuid, "bag");
