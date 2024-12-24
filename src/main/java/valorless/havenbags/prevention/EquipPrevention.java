@@ -18,7 +18,7 @@ public class EquipPrevention implements Listener {
 
 	@EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-		if (event.getWhoClicked().getGameMode() != GameMode.SURVIVAL) {
+		if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE) {
             return;
         }
         Log.Debug(Main.plugin, "[DI-194] " + "[EquipPrevention] " + event.getWhoClicked().getOpenInventory().getTopInventory().getType());
