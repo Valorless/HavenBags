@@ -1,7 +1,11 @@
 package valorless.havenbags;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -16,11 +20,27 @@ import valorless.valorlessutils.nbt.NBT;
 
 public class BagSkin implements Listener{
 	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onPrepareAnvilMonitor(PrepareAnvilEvent event) {
+		if(!Main.config.GetBool("bag-event-monitor")) return;
+		onPrepareAnvil(event);
+	}
+	
 	@EventHandler
 	public void onPrepareAnvil(PrepareAnvilEvent event) {
-		ItemStack bag = event.getInventory().getItem(0);
-		ItemStack skin = event.getInventory().getItem(1);
+		if(event.getInventory().getItem(0) == null) return;
+		if(event.getInventory().getItem(1) == null) return;
+		ItemStack bag = null;
+		ItemStack skin = null;
+		try {
+			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(0), event.getInventory().getItem(1)))) {
+				if(HavenBags.IsBag(item)) bag = item;
+				if(NBT.Has(item, "bag-token-skin")) skin = item;
+			}
+		}
+		catch(Exception e) {}
 		if(bag == null || skin == null) return;
+		if(bag.getType() == Material.AIR || skin.getType() == Material.AIR) return;
 		//Log.Debug(Main.plugin, bag.toString());
 		//Log.Debug(Main.plugin, skin.toString());
 		
@@ -34,17 +54,24 @@ public class BagSkin implements Listener{
 		ItemStack result = bag.clone();
 		
 		event.getInventory().setRepairCost(0);
-		event.setResult(GetResult(result, skin));
-		
+		event.setResult(GetResult(result, skin));		
 	}
 	
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		if(event.getInventory().getType() != InventoryType.ANVIL) return;
+		if(event.getInventory().getItem(0) == null) return;
+		if(event.getInventory().getItem(1) == null) return;
 		//Log.Debug(Main.plugin, event.getRawSlot()+ "");
 		if(event.getRawSlot() != 2) return;
 		ItemStack clicked = event.getCurrentItem();
-		ItemStack skin = event.getInventory().getItem(1);
+		ItemStack skin = null;
+		try {
+			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(0), event.getInventory().getItem(1)))) {
+				if(NBT.Has(item, "bag-token-skin")) skin = item;
+			}
+		}
+		catch(Exception e) {}
 		if(clicked == null || skin == null) return;
 		if(!NBT.Has(skin, "bag-token-skin")) return; // If the item in slot 2 isnt a skin token, return.
 		Log.Debug(Main.plugin, "[DI-69] " + "[BagSkin] is bag?");

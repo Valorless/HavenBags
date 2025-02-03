@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
-  <version>1.31.0</version>
+  <version>0.0.0</version>
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -151,7 +151,7 @@
             </executions>
         </plugin>
       </plugins>
-      <finalName>${project.artifactId}-${project.version}.${buildNumber}</finalName>
+      <finalName>${project.artifactId}</finalName>
   </build>
   <repositories>
        <repository>
@@ -200,11 +200,13 @@
 		<groupId>valorless.valorlessutils</groupId>
 		<artifactId>ValorlessUtils</artifactId>
 		<version>1.11.0.248</version>
+    <scope>provided</scope>
 	</dependency>
 	<dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
             <version>1.5.25</version>
+    <scope>provided</scope>
         </dependency>
         <dependency>
     <groupId>org.json</groupId>
@@ -290,6 +292,7 @@
     <groupId>at.pcgamingfreaks</groupId>
     <artifactId>Minepacks-API</artifactId>
     <version>2.2</version><!-- Check api-version shield for newest version -->
+    <scope>provided</scope>
 </dependency>
    </dependencies>
 </project>

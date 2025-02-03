@@ -1,6 +1,9 @@
 ### Used for the auto-pickup feature.
 # You can add more filters yourself.
 
+# Whether specific items can be chosen as a custom filter.
+allow-specific: false
+
 filters:
  # Filter name, as shown when typing the command.
  plants:

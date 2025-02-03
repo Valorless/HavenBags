@@ -13,6 +13,7 @@ public class ConfigValidation {
 	 * - {@link #Lang()} to handle language or localization setup.<br>
 	 * - {@link #Weight()} to set up or validate weight configurations.<br>
 	 * - {@link #Blacklist()} to process or validate the blacklist.<br>
+	 * - {@link #Filters()} to process or validate the filters.<br>
 	 * - {@link #Plugins()} to initialize or validate plugins.
 	 */
 	public static void Validate() {
@@ -20,6 +21,7 @@ public class ConfigValidation {
 		Lang();
 		Weight();
 		Blacklist();
+		Filters();
 		Plugins();
 	}
 	
@@ -333,6 +335,13 @@ public class ConfigValidation {
 		Main.blacklist.Validate();
 	}
 	
+	private static void Filters() {
+		AutoPickup.filter.AddValidationEntry("allow-specific", false);
+		
+		Log.Debug(Main.plugin, "[DI-6] Validating filters.yml");
+		AutoPickup.filter.Validate();
+	}
+	
 	private static void Plugins() {
 		Main.plugins.AddValidationEntry("plugins.PlaceholderAPI.enabled", true);
 		Main.plugins.AddValidationEntry("plugins.ChestSort.enabled", true);
@@ -343,6 +352,9 @@ public class ConfigValidation {
 		//plugins.AddValidationEntry("plugins.Oraxen.enabled", true);
 		
 		Main.plugins.AddValidationEntry("mods.HavenBagsPreview.enabled", true);
+		Main.plugins.AddValidationEntry("mods.HavenBagsPreview.enable-command", true);
+		Main.plugins.AddValidationEntry("mods.HavenBagsPreview.command-message", "§7[§aHaven§bBags§7]§r §9§nhttps://modrinth.com/mod/havenbagspreview");
+		
 		Log.Debug(Main.plugin, "[DI-6] Validating plugins.yml");
 		Main.plugins.Validate();
 	}

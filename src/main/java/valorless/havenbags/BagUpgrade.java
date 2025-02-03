@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -17,11 +18,26 @@ import valorless.valorlessutils.nbt.NBT;
 
 public class BagUpgrade implements Listener{
 	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onPrepareAnvilMonitor(PrepareAnvilEvent event) {
+		if(!Main.config.GetBool("bag-event-monitor")) return;
+		onPrepareAnvil(event);
+	}
+	
 	@EventHandler
 	public void onPrepareAnvil(PrepareAnvilEvent event) {
 		if(Main.config.GetBool("upgrades.enabled") == false) return;
-		ItemStack bag = event.getInventory().getItem(0);
-		ItemStack upgrade = event.getInventory().getItem(1);
+		if(event.getInventory().getItem(0) == null) return;
+		if(event.getInventory().getItem(1) == null) return;
+		ItemStack bag = null;
+		ItemStack upgrade = null;
+		try {
+			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(0), event.getInventory().getItem(1)))) {
+				if(HavenBags.IsBag(item)) bag = item;
+				else upgrade = item;
+			}
+		}
+		catch(Exception e) {}
 		if(bag == null || upgrade == null) return;
 		if(NBT.Has(upgrade, "bag-token-skin")) return; // If the item in slot 2 is a skin token, return.
 		//Log.Debug(Main.plugin, bag.toString());
@@ -55,11 +71,20 @@ public class BagUpgrade implements Listener{
 	public void onInventoryClick(InventoryClickEvent event) {
 		if(Main.config.GetBool("upgrades.enabled") == false) return;
 		if(event.getInventory().getType() != InventoryType.ANVIL) return;
+		if(event.getInventory().getItem(0) == null) return;
+		if(event.getInventory().getItem(1) == null) return;
 		//Log.Debug(Main.plugin, event.getRawSlot()+ "");
 		if(event.getRawSlot() != 2) return;
 		ItemStack clicked = event.getCurrentItem();
-		ItemStack bag = event.getInventory().getItem(0);
-		ItemStack upgrade = event.getInventory().getItem(1);
+		ItemStack bag = null;
+		ItemStack upgrade = null;
+		try {
+			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(0), event.getInventory().getItem(1)))) {
+				if(HavenBags.IsBag(item)) bag = item;
+				else upgrade = item;
+			}
+		}
+		catch(Exception e) {}
 		if(clicked == null || upgrade == null || bag == null) return;
 		if(NBT.Has(upgrade, "bag-token-skin")) return; // If the item in slot 2 is a skin token, return.
 		Log.Debug(Main.plugin, "[DI-77] " + "[BagUpgrade] is bag?");

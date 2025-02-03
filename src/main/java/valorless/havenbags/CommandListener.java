@@ -18,6 +18,7 @@ import valorless.havenbags.commands.CommandEmpty;
 import valorless.havenbags.commands.CommandGUI;
 import valorless.havenbags.commands.CommandGive;
 import valorless.havenbags.commands.CommandInfo;
+import valorless.havenbags.commands.CommandMod;
 import valorless.havenbags.commands.CommandModelData;
 import valorless.havenbags.commands.CommandPreview;
 import valorless.havenbags.commands.CommandRawInfo;
@@ -122,6 +123,10 @@ public class CommandListener implements CommandExecutor {
 				
 				if(args[0].equalsIgnoreCase("token") && sender.hasPermission("havenbags.token")) {
 					return CommandToken.Run(cmd);
+				}
+				
+				if(args[0].equalsIgnoreCase("mod") && Main.plugins.GetBool("mods.HavenBagsPreview.enable-command")) {
+					return CommandMod.Run(cmd);
 				}
 				
 				if(args[0].equalsIgnoreCase("convertminepacks") && sender.isOp()) {

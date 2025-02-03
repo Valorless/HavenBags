@@ -1,7 +1,9 @@
 package valorless.havenbags;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -61,6 +63,18 @@ public class AutoPickup implements Listener {
 			filters.add(new Filter(filterName, filter.GetString(String.format("filters.%s.displayname", filterName)), filter.GetStringList(String.format("filters.%s.items", filterName))));
 
 			Log.Debug(Main.plugin, "[DI-146] " + "Filter: " + filterName);
+		}
+		
+
+		if(filter.GetBool("allow-specific")) {
+			List<Material> validMaterials = Arrays.stream(Material.values())
+					.filter(Material::isItem)
+					.collect(Collectors.toList());
+			for(Material mat : validMaterials) {
+				List<String> thisMat = new ArrayList<>();
+				thisMat.add(mat.toString());
+				filters.add(new Filter(Main.translator.Translate(mat.getTranslationKey()).toLowerCase().replace(" ", "_"), Main.translator.Translate(mat.getTranslationKey()), thisMat));
+			}
 		}
 		
 		if(Main.plugins.GetBool("plugins.Oraxen.enabled")) {
@@ -348,7 +362,7 @@ public class AutoPickup implements Listener {
 		
 		if(ItemFilter(item) == null) {
 			Log.Debug(Main.plugin, "[DI-155] " + "false");
-			return false;
+			//return false;
 		}
 
         if(item.getType() == Material.AIR) return false;
@@ -396,6 +410,7 @@ public class AutoPickup implements Listener {
 					break;
 				}
 			}
+			
 			Log.Debug(Main.plugin, "[DI-165] " + "Filter " + c);
 			if(!c) {
 				Log.Debug(Main.plugin, "[DI-166] " + "No filters, skipping.");
@@ -528,7 +543,10 @@ public class AutoPickup implements Listener {
 					if(f.entries.contains(item.getType().toString() + "-" + cmd)){
 						Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
 						return true;
-					}else {
+					}else if(f.entries.contains(item.getType().toString() + ":" + cmd)){
+						Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
+						return true;
+					}else{
 						if(f.entries.contains(item.getType().toString())){
 							Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
 							return true;

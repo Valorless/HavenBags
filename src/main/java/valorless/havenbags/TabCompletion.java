@@ -77,6 +77,9 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.token")) {
 				subCommands.add("token");
 			}
+			if(Main.plugins.GetBool("mods.HavenBagsPreview.enable-command")) {
+				subCommands.add("mod");
+			}
 
 			StringUtil.copyPartialMatches(args[0], subCommands, completions);
 		}

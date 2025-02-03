@@ -37,3 +37,6 @@ plugins:
 mods:
  HavenBagsPreview:
   enabled: true
+  # Whether '/havenbags mod' should be enabled.
+  enable-command: true
+  command-message: '§7[§aHaven§bBags§7]§r §9§nhttps://modrinth.com/mod/havenbagspreview'
