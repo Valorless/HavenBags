@@ -20,6 +20,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
+import valorless.havenbags.datamodels.ActiveBag;
+import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
 
@@ -28,6 +30,7 @@ public class BagGUI implements Listener {
 	String Name = "§7[§aHaven§bBags§7]§r";
 	private Inventory inv;
 	public ItemStack bagItem;
+	public final String uuid;
 	public ItemMeta bagMeta;
 	public List<ItemStack> content;
 	//public static Config config;
@@ -53,6 +56,7 @@ public class BagGUI implements Listener {
     	Log.Debug(plugin, "[DI-33] " + "Attempting to create and open bag " + bag);
     	this.plugin = plugin;
     	this.bagItem = bagItem;
+    	this.uuid = NBT.GetString(bagItem, "bag-uuid");
     	this.bagMeta = bagMeta;
     	this.player = player;
     	try {
@@ -303,7 +307,6 @@ public class BagGUI implements Listener {
     		//return;
     	}
     	
-    	
     	if(!HavenBags.IsBagOpen(bagItem)) return;
     	String uuid = NBT.GetString(bagItem, "bag-uuid");
     	if(!BagData.IsBagOpen(uuid, bagItem)) return;
@@ -331,7 +334,12 @@ public class BagGUI implements Listener {
         
         HavenBags.UpdateBagItem(bagItem, cont, player);
 		GivePlayerBagBack();
-		BagData.UpdateBag(bagItem, cont);
+		try {
+			BagData.UpdateBag(bagItem, cont);
+		}catch(Exception e) {
+			BagData.UpdateBag(uuid, cont);
+			Log.Error(Main.plugin, String.format("Failed to update bag data completely for %s (Viewer: %s)", uuid, player.getName()));
+		}
         
 		//HavenBags.WriteBagToServer(bagItem, cont, player);
 		try {

@@ -1,4 +1,4 @@
-package valorless.havenbags;
+package valorless.havenbags.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,8 +20,15 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.md_5.bungee.api.ChatMessageType;
+import valorless.havenbags.BagData;
+import valorless.havenbags.HavenBags;
+import valorless.havenbags.Lang;
+import valorless.havenbags.Main;
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.Main.ServerVersion;
+import valorless.havenbags.datamodels.Message;
+import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.utils.TextFeatures;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.ValorlessUtils.Tags;
 import valorless.valorlessutils.config.Config;
@@ -65,16 +72,31 @@ public class AutoPickup implements Listener {
 			Log.Debug(Main.plugin, "[DI-146] " + "Filter: " + filterName);
 		}
 		
-
-		if(filter.GetBool("allow-specific")) {
-			List<Material> validMaterials = Arrays.stream(Material.values())
-					.filter(Material::isItem)
-					.collect(Collectors.toList());
-			for(Material mat : validMaterials) {
-				List<String> thisMat = new ArrayList<>();
-				thisMat.add(mat.toString());
-				filters.add(new Filter(Main.translator.Translate(mat.getTranslationKey()).toLowerCase().replace(" ", "_"), Main.translator.Translate(mat.getTranslationKey()), thisMat));
+		try {
+			if(filter.GetBool("allow-specific")) {
+				Log.Info(Main.plugin, "Creating filters..");
+				int i = 0;
+				List<Material> validMaterials = Arrays.stream(Material.values())
+						.filter(Material::isItem)
+						.collect(Collectors.toList());
+				for(Material mat : validMaterials) {
+					List<String> thisMat = new ArrayList<>();
+					thisMat.add(mat.toString());
+					try {
+						filters.add(new Filter(Main.translator.Translate(
+								mat.getTranslationKey()).toLowerCase().replace(" ", "_"), 
+								Main.translator.Translate(mat.getTranslationKey()), thisMat));
+						i++;
+					}catch(Exception e) {
+						Log.Error(Main.plugin, String.format("Failed to translate '%s'.", mat.getTranslationKey()));
+						//e.printStackTrace();
+					}
+				}
+				Log.Info(Main.plugin, String.format("Created %s filters.", i));
 			}
+		}catch(Exception e) {
+			Log.Error(Main.plugin, "Something went wrong creating filters for specific items:");
+			e.printStackTrace();
 		}
 		
 		if(Main.plugins.GetBool("plugins.Oraxen.enabled")) {

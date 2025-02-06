@@ -1,4 +1,4 @@
-package valorless.havenbags;
+package valorless.havenbags.features;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.CrossbowMeta;
 
+import valorless.havenbags.BagData;
+import valorless.havenbags.HavenBags;
+import valorless.havenbags.Lang;
+import valorless.havenbags.Main;
 import valorless.havenbags.BagData.Bag;
 
 public class Quiver implements Listener {
@@ -48,7 +53,11 @@ public class Quiver implements Listener {
         ItemStack hand = player.getInventory().getItemInMainHand();
         ItemStack offhand = player.getInventory().getItemInOffHand();
         if (hand == null) return;
-        if (hand.getType() == Material.BOW) {
+        if (hand.getType() == Material.BOW || hand.getType() == Material.CROSSBOW) {
+        	if(hand.getItemMeta() instanceof CrossbowMeta cross) {
+        		if(cross.hasChargedProjectiles()) return;
+        	}
+        	
         	bags = HavenBags.GetBagsInInventory(player);
         	if(bags.size() == 0) return;
         	

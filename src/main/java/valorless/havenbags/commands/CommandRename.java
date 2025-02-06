@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.havenbags.Lang;
-import valorless.havenbags.Placeholder;
+import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 

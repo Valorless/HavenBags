@@ -2,12 +2,12 @@ package valorless.havenbags.commands;
 
 import org.bukkit.entity.Player;
 
-import valorless.havenbags.AutoPickup;
 import valorless.havenbags.BagData;
-import valorless.havenbags.Crafting;
-import valorless.havenbags.Encumbering;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.features.AutoPickup;
+import valorless.havenbags.features.Crafting;
+import valorless.havenbags.features.Encumbering;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.translate.Translator;
 

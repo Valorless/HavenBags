@@ -222,11 +222,13 @@
 		<groupId>de.jeff_media</groupId>
 		<artifactId>ChestSortAPI</artifactId>
 		<version>13.0.0-SNAPSHOT</version>
+		<scope>provided</scope>
 	</dependency>
         <dependency>
          <groupId>me.clip</groupId>
           <artifactId>placeholderapi</artifactId>
           <version>2.11.3</version>
+         <scope>provided</scope>
         </dependency>
         <dependency>
     <groupId>me.NoChance.PvPManager</groupId>
@@ -284,6 +286,7 @@
             <artifactId>java</artifactId>
         </exclusion>
     </exclusions>
+    <scope>provided</scope>
 </dependency>
 <dependency>
     <groupId>at.pcgamingfreaks</groupId>

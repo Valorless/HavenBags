@@ -9,7 +9,7 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.Placeholder;
+import valorless.havenbags.datamodels.Placeholder;
 
 public class CommandUntrust {
 	

@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.hooks.PlaceholderAPIHook;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
@@ -47,7 +48,7 @@ public class Lang {
 	
 	public static String Parse(String text, List<Placeholder> placeholders, OfflinePlayer... player) {
 		for(Placeholder ph : placeholders) {
-			text = text.replace(ph.key, ph.value);
+			text = text.replace(ph.getKey(), ph.getValue());
 			if(player.length != 0) {
 				text = Parse(text, player[0]);
 			}else {

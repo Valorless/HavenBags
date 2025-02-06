@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.havenbags.HavenBags;
-import valorless.havenbags.TextFeatures;
+import valorless.havenbags.utils.TextFeatures;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 

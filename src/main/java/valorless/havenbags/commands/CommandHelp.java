@@ -6,7 +6,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.Message;
+import valorless.havenbags.datamodels.Message;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class CommandHelp {

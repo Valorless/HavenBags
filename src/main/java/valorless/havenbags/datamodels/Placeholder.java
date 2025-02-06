@@ -1,4 +1,4 @@
-package valorless.havenbags;
+package valorless.havenbags.datamodels;
 
 public class Placeholder {
 	String key;
@@ -7,6 +7,14 @@ public class Placeholder {
 	public Placeholder(String key, Object value) {
 		this.key = key;
 		this.value = String.valueOf(value);
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public String getValue() {
+		return value;
 	}
 
 }

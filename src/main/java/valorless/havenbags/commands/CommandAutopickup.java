@@ -1,13 +1,20 @@
 package valorless.havenbags.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import valorless.havenbags.AutoPickup;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.features.AutoPickup;
 import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.nbt.NBT;
 
 public class CommandAutopickup {
 	
@@ -52,10 +59,21 @@ public class CommandAutopickup {
 									}
 								}
 							}
-							BagData.SetAutoPickup(HavenBags.GetBagUUID(item), command.args[1]);
+							if(NBT.GetString(item, "bag-uuid").equalsIgnoreCase("null")) {
+								NBT.SetString(item, "bag-filter", filter);
+								List<Placeholder> ph = new ArrayList<>();
+								ph.add(new Placeholder("%filter%", AutoPickup.GetFilterDisplayname(filter)));
+								ItemMeta meta = item.getItemMeta();
+								List<String> lore = meta.getLore();
+								lore.add(Lang.Parse(Lang.Get("bag-auto-pickup"), ph));
+								meta.setLore(lore);
+								item.setItemMeta(meta);
+								return true;
+							}
+							BagData.SetAutoPickup(HavenBags.GetBagUUID(item), filter);
 							//NBT.SetString(item, "bag-filter", args[1]);
 							HavenBags.UpdateBagItem(item, null, player);
-							c = true;
+							c = true; // Future Valor: why this?
 							return true;
 						}
 					}
@@ -73,6 +91,17 @@ public class CommandAutopickup {
 			if(HavenBags.IsBag(item)) {
 				if(HavenBags.IsOwner(item, player)) {
 					//NBT.SetString(item, "bag-filter", null);
+					if(NBT.GetString(item, "bag-uuid") == "null") {
+						NBT.SetString(item, "bag-filter", "null");
+						List<Placeholder> ph = new ArrayList<>();
+						ph.add(new Placeholder("%filter%", "null"));
+						ItemMeta meta = item.getItemMeta();
+						List<String> lore = meta.getLore();
+						lore.add(Lang.Parse(Lang.Get("bag-auto-pickup"), ph));
+						meta.setLore(lore);
+						item.setItemMeta(meta);
+						return true;
+					}
 					BagData.SetAutoPickup(HavenBags.GetBagUUID(item), "null");
 					HavenBags.UpdateBagItem(item, null, player);
 					//HavenBags.UpdateBagLore(item, player);

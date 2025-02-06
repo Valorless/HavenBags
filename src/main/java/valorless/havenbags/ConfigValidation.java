@@ -2,6 +2,7 @@ package valorless.havenbags;
 
 import java.util.ArrayList;
 
+import valorless.havenbags.features.AutoPickup;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class ConfigValidation {

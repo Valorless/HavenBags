@@ -19,6 +19,7 @@ import org.bukkit.util.BlockIterator;
 import me.NoChance.PvPManager.PvPManager;
 import me.NoChance.PvPManager.PvPlayer;
 import me.NoChance.PvPManager.Managers.PlayerHandler;
+import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
@@ -147,6 +148,7 @@ public class BagListener implements Listener{
     	    	    	//	String.format("%s/%s", "ownerless", uuid),
     	    	    	//		Long.toString(System.currentTimeMillis() / 1000L));
     	    	    	//Main.timeTable.SaveConfig();
+	    				event.setCancelled(true);
     					return;
     				}
 				
@@ -215,6 +217,7 @@ public class BagListener implements Listener{
     	    	    	//	String.format("%s/%s", player.getUniqueId().toString(), uuid),
     	    	    	//		System.currentTimeMillis() / 1000L);
     	    	    	//Main.timeTable.SaveConfig();
+	    				event.setCancelled(true);
     					return;
     				}
     				
@@ -243,6 +246,7 @@ public class BagListener implements Listener{
     					}
     	    			Log.Debug(Main.plugin, "[DI-62] " + "Attempting to open ownerless bag");
     	    			try {
+    	    				event.setCancelled(true);
     	    				BagData.MarkBagOpen(uuid, hand, player);
     						HavenBags.UpdateBagItem(hand, null, player);
 		    				BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
@@ -283,6 +287,7 @@ public class BagListener implements Listener{
         					}
     		    			Log.Debug(Main.plugin, "[DI-64] " + "Attempting to open bag");
     		    			try {
+        	    				event.setCancelled(true);
     		    				BagData.MarkBagOpen(uuid, hand, player);
     		    				HavenBags.UpdateBagItem(hand, null, player);
     		    				BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
@@ -301,6 +306,7 @@ public class BagListener implements Listener{
     						return;
     					} else if (player.hasPermission("havenbags.bypass")) {
     						try {
+        	    				event.setCancelled(true);
     							BagData.MarkBagOpen(uuid, hand, player);
     							HavenBags.UpdateBagItem(hand, null, player);
     							BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());
@@ -320,6 +326,7 @@ public class BagListener implements Listener{
     						return;
     					}else if(HavenBags.IsPlayerTrusted(hand, player.getName())) {
     						try {
+        	    				event.setCancelled(true);
     							BagData.MarkBagOpen(uuid, hand, player);
 	    						HavenBags.UpdateBagItem(hand, null, player);
     							BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(hand, "bag-size"), player, hand, hand.getItemMeta());

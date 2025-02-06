@@ -1,4 +1,4 @@
-package valorless.havenbags;
+package valorless.havenbags.features;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,9 @@ import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import valorless.havenbags.BagData;
+import valorless.havenbags.HavenBags;
+import valorless.havenbags.Main;
 import valorless.havenbags.HavenBags.BagState;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;

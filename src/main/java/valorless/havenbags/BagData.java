@@ -51,7 +51,7 @@ public class BagData {
             	SaveData();
             }
         }, interval, interval);
-		Log.Info(Main.plugin, "Loaded bags: " + data.size());
+		//Log.Info(Main.plugin, "Loaded bags: " + data.size());
 	}
 	
 	public static void Reload() {
@@ -301,7 +301,11 @@ public class BagData {
 						bagData.Set("texture", Main.config.GetString("bag-texture"));
 					}
 					bagData.Set("trusted", new ArrayList<String>());
-					bagData.Set("auto-pickup", "null");
+					if(NBT.Has(bag, "bag-filter")) {
+						bagData.Set("auto-pickup", NBT.GetString(bag, "bag-filter"));
+					}else {
+						bagData.Set("auto-pickup", "null");
+					}
 					bagData.Set("weight-max", 0);
 					bagData.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
 					bagData.SaveConfig();
@@ -327,6 +331,7 @@ public class BagData {
 	
 	public static void LoadData(){
 		Log.Info(Main.plugin, "Loading bags.");
+		int i = 0;
 		List<String> owners	= GetBagOwners();
 		for(String owner : owners) {
 			List<String> bags	= GetBags(owner);
@@ -351,13 +356,14 @@ public class BagData {
 					//bagdata.setContent(JsonUtils.fromJson(Files.readString(filePath)));
 					//bagdata.SetData();
 					data.add(bagdata);
+					i++;
 				} catch (Exception e) {
 					e.printStackTrace();
 					continue;
 				}
 			}
 		}
-		Log.Info(Main.plugin, "Bags loaded.");
+		Log.Info(Main.plugin, String.format("Loaded %s bags.", i));
 	}
 	
 	public static void SaveData() {

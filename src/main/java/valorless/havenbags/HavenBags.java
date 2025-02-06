@@ -24,6 +24,9 @@ import com.google.gson.Gson;
 
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.Main.ServerVersion;
+import valorless.havenbags.datamodels.ActiveBag;
+import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.mods.HavenBagsPreview;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -31,6 +34,7 @@ import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.havenbags.utils.HeadCreator;
+import valorless.havenbags.utils.TextFeatures;
 import valorless.valorlessutils.sound.SFX;
 import valorless.valorlessutils.utils.Utils;
 
@@ -307,6 +311,11 @@ public class HavenBags {
 	}
 	
 	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, OfflinePlayer player, boolean...preview) {
+		if(bag == null || bag.getType() == Material.AIR) {
+			Log.Warning(Main.plugin, String.format("Failed to update bag item for player '%s'.\n"
+					+ "It's possible they have a mod allowing them to move the item away.", player.getName()));
+			return;
+		}
 		//Log.Error(Main.plugin, preview.toString());
 		//Log.Error(Main.plugin, preview.length + "");
 		if(preview.length == 0) {

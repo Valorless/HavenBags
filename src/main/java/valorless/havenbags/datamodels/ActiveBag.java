@@ -1,4 +1,6 @@
-package valorless.havenbags;
+package valorless.havenbags.datamodels;
+
+import valorless.havenbags.BagGUI;
 
 public class ActiveBag {
 	public BagGUI gui;

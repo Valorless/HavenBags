@@ -1,4 +1,4 @@
-package valorless.havenbags;
+package valorless.havenbags.features;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import valorless.havenbags.HavenBags;
+import valorless.havenbags.Lang;
+import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;

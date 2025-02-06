@@ -1,4 +1,4 @@
-package valorless.havenbags;
+package valorless.havenbags.features;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,9 @@ import org.bukkit.permissions.Permission;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
+import valorless.havenbags.Lang;
+import valorless.havenbags.Main;
+import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.utils.Utils;
 

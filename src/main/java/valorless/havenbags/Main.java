@@ -1,7 +1,16 @@
 package valorless.havenbags;
 
+import valorless.havenbags.datamodels.ActiveBag;
+import valorless.havenbags.features.AutoPickup;
+import valorless.havenbags.features.BagSkin;
+import valorless.havenbags.features.BagUpgrade;
+import valorless.havenbags.features.Crafting;
+import valorless.havenbags.features.Encumbering;
+import valorless.havenbags.features.Quiver;
 import valorless.havenbags.hooks.*;
 import valorless.havenbags.prevention.*;
+import valorless.havenbags.utils.Metrics;
+import valorless.havenbags.utils.UpdateChecker;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
@@ -34,6 +43,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("deprecation")
 public final class Main extends JavaPlugin implements Listener {
 	public enum ServerVersion { 
 		NULL, 
@@ -213,7 +223,6 @@ public final class Main extends JavaPlugin implements Listener {
     	activeBags.clear();
     }
     
-    @SuppressWarnings("deprecation")
 	@Override
     public void onDisable() {
     	CloseBags();
@@ -244,7 +253,6 @@ public final class Main extends JavaPlugin implements Listener {
     	}
     }
     
-    @SuppressWarnings("deprecation")
 	protected void RegisterListeners() {
     	Log.Debug(plugin, "[DI-7] Registering PlacementListener");
 		getServer().getPluginManager().registerEvents(new PlacementBlocker(), this);

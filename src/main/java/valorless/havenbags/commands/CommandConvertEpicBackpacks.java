@@ -16,7 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import valorless.havenbags.BagData;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.Placeholder;
+import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;

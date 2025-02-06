@@ -1,4 +1,7 @@
-package valorless.havenbags;
+package valorless.havenbags.utils;
+
+import valorless.havenbags.Lang;
+import valorless.havenbags.Main;
 
 public class TextFeatures {
 	

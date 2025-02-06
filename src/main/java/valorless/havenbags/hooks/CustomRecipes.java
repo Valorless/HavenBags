@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.Placeholder;
+import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.nbt.NBT;

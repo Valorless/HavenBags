@@ -1,4 +1,4 @@
-package valorless.havenbags;
+package valorless.havenbags.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;

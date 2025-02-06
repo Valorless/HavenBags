@@ -19,11 +19,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import valorless.havenbags.GUI.GUIAction;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.nbt.NBT;
+import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.utils.GUI;
 import valorless.havenbags.utils.HeadCreator;
+import valorless.havenbags.utils.GUI.GUIAction;
 
 public class AdminGUI implements Listener {
 	public enum GUIType { Main, Creation, Restoration, Player, Preview, PreviewPlayer, Deletion, DeletionPlayer, Confirmation, Content }
@@ -326,6 +328,7 @@ public class AdminGUI implements Listener {
         	}else {
         		target = Bukkit.getPlayer(owner).getUniqueId().toString();
         	}
+        	targetPlayer = Bukkit.getPlayer(UUID.fromString(target));
         	type = GUIType.Player;
         	Reload();
         	e.setCancelled(true);
@@ -376,6 +379,7 @@ public class AdminGUI implements Listener {
         	}else {
         		target = Bukkit.getPlayer(owner).getUniqueId().toString();
         	}
+        	targetPlayer = Bukkit.getPlayer(UUID.fromString(target));
         	type = GUIType.PreviewPlayer;
         	Reload();
         	e.setCancelled(true);
@@ -426,6 +430,7 @@ public class AdminGUI implements Listener {
         	}else {
         		target = Bukkit.getPlayer(owner).getUniqueId().toString();
         	}
+        	targetPlayer = Bukkit.getPlayer(UUID.fromString(target));
         	type = GUIType.DeletionPlayer;
         	Reload();
         	e.setCancelled(true);
@@ -1048,7 +1053,7 @@ public class AdminGUI implements Listener {
 			bagItem.setItemMeta(bagMeta);
 			
 			try {
-				HavenBags.UpdateBagItem(bagItem, Content, Bukkit.getOfflinePlayer(UUID.fromString(playeruuid)));
+				HavenBags.UpdateBagItem(bagItem, Content, targetPlayer);
 			}catch(Exception e) {
 				HavenBags.UpdateBagItem(bagItem, Content, null);
 			}

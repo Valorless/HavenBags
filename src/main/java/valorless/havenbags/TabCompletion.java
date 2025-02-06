@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.StringUtil;
 
+import valorless.havenbags.features.AutoPickup;
 import valorless.valorlessutils.nbt.NBT;
 
 public class TabCompletion implements TabCompleter {

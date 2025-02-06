@@ -1,4 +1,4 @@
-package valorless.havenbags;
+package valorless.havenbags.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import valorless.havenbags.Lang;
+import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.nbt.NBT;
-import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.utils.Utils;
 
 public class GUI {
