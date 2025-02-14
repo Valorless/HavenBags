@@ -74,6 +74,7 @@ public class AutoPickup implements Listener {
 		
 		try {
 			if(filter.GetBool("allow-specific")) {
+				long startTime = System.currentTimeMillis();
 				Log.Info(Main.plugin, "Creating filters..");
 				int i = 0;
 				List<Material> validMaterials = Arrays.stream(Material.values())
@@ -92,7 +93,9 @@ public class AutoPickup implements Listener {
 						//e.printStackTrace();
 					}
 				}
-				Log.Info(Main.plugin, String.format("Created %s filters.", i));
+				long endTime = System.currentTimeMillis();
+				long duration = endTime - startTime;
+				Log.Info(Main.plugin, String.format("Created %s filters. %sms", i, duration));
 			}
 		}catch(Exception e) {
 			Log.Error(Main.plugin, "Something went wrong creating filters for specific items:");

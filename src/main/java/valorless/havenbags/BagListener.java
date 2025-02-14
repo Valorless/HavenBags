@@ -62,10 +62,11 @@ public class BagListener implements Listener{
         				if(Bukkit.getPluginManager().getPlugin("PvPManager") != null) {
         	        		try {
         	        			Log.Debug(Main.plugin, "[DI-47] " + "Checking if player is pvp.");
-        	        			PlayerHandler playerHandler = PvPManager.getInstance() .getPlayerHandler();
+        	        			PlayerHandler playerHandler = PvPManager.getInstance().getPlayerHandler();
         	        			PvPlayer pvplayer = playerHandler.get(player);
         	        			boolean pvp = pvplayer.hasPvPEnabled();
         	        			boolean tagged = pvplayer.isInCombat();
+        	        			//if(PvPManager.getInstance().)  //if global pvp = false, set pvp to false.
         	        			if(pvp && Main.plugins.GetBool("plugins.PvPManager.pvp") == false) {
             	        			Log.Debug(Main.plugin, "[DI-48] " + "Pvp.");
             	        			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Main.plugins.GetString("plugins.PvPManager.message"), player));

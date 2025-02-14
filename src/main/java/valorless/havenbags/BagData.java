@@ -331,6 +331,7 @@ public class BagData {
 	
 	public static void LoadData(){
 		Log.Info(Main.plugin, "Loading bags.");
+		long startTime = System.currentTimeMillis();
 		int i = 0;
 		List<String> owners	= GetBagOwners();
 		for(String owner : owners) {
@@ -363,7 +364,9 @@ public class BagData {
 				}
 			}
 		}
-		Log.Info(Main.plugin, String.format("Loaded %s bags.", i));
+		long endTime = System.currentTimeMillis();
+		long duration = endTime - startTime;
+		Log.Info(Main.plugin, String.format("Loaded %s bags. %sms", i, duration));
 	}
 	
 	public static void SaveData() {
