@@ -3,6 +3,7 @@ package valorless.havenbags.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,80 +17,67 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.havenbags.BagData.Bag;
 
 public class Quiver implements Listener {
 	
 	List<Bag> bags = new ArrayList<Bag>();
 	
-	/*@EventHandler
-    public void onBowShoot(EntityShootBowEvent event) {
-        // Check if the shooter is a player
-        if (!(event.getEntity() instanceof Player)) return;
-
-        Player player = (Player) event.getEntity();
-        if(event.getConsumable().getType() != Material.ARROW) return;
-        
-
-        // Check for your virtual "quiver" (for example, stored in metadata or custom data)
-        ItemStack arrowFromQuiver = getArrowFromQuiver(player);
-
-        if (arrowFromQuiver != null) {
-            // Use the arrow from the virtual container
-            consumeArrowFromQuiver(player);
-
-        } else {
-            //if (!hasArrowInInventory(player)) {
-            //    event.setCancelled(true); // Cancel if no arrows are available
-            //}
-        }
-    }*/
+	public static final List<Material> Projectiles = List.of(Material.ARROW, Material.SPECTRAL_ARROW, Material.TIPPED_ARROW);
 	
 	@EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
 		if(Main.config.GetBool("quiver-bags") == false) return;
 		if(event.getAction() != Action.RIGHT_CLICK_AIR  && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Player player = event.getPlayer();
+        if(player.getGameMode() == GameMode.CREATIVE) return;
         ItemStack hand = player.getInventory().getItemInMainHand();
+        if(hand.getType() != Material.BOW && hand.getType() != Material.CROSSBOW) return;
         ItemStack offhand = player.getInventory().getItemInOffHand();
-        if (hand == null) return;
-        if (hand.getType() == Material.BOW || hand.getType() == Material.CROSSBOW) {
-        	if(hand.getItemMeta() instanceof CrossbowMeta cross) {
-        		if(cross.hasChargedProjectiles()) return;
-        	}
-        	
-        	bags = HavenBags.GetBagsInInventory(player);
-        	if(bags.size() == 0) return;
-        	
-        	if(offhand != null && offhand.getType() != Material.AIR) {
-        		if(HavenBags.IsBag(offhand) && !player.getInventory().contains(Material.ARROW)) {
-        			Bag quiver = new Bag(offhand, BagData.GetBag(HavenBags.GetBagUUID(offhand), offhand).getContent());
-        			if(quiver != null) {
-            	        if(hasArrowInSpecificQuiver(quiver)) {
-            	        	if(hasFreeSpaceOrArrows(player)) {
-            	        		if(!consumeArrowFromSpecificQuiver(quiver, player)) return;
-            	        		player.getInventory().addItem(new ItemStack(Material.ARROW));
-            	        		return;
-            	        	}else {
-            	        		player.sendMessage(Lang.Get("prefix") + Lang.Get("quiver-no-space"));
-            	        		return;
-            	        	}
-            	        }
-        			}
-        		}
-        	}
-        	
-            if(hasArrowInQuiver(player) && !player.getInventory().contains(Material.ARROW)) {
-            	if(hasFreeSpaceOrArrows(player)) {
-            		if(!consumeArrowFromQuiver(player)) return;
-            		player.getInventory().addItem(new ItemStack(Material.ARROW));
-            		return;
-            	}else {
-            		player.sendMessage(Lang.Get("prefix") + Lang.Get("quiver-no-space"));
-            		return;
-            	}
-            }
-        }
+        if(hand == null) return;
+        if(hand.getItemMeta() instanceof CrossbowMeta cross) {
+    		if(cross.hasChargedProjectiles()) return;
+    	}
+    	
+    	bags = HavenBags.GetBagsInInventory(player);
+    	if(bags.size() == 0) return;
+    	
+    	if(offhand != null && offhand.getType() != Material.AIR) {
+    		if(HavenBags.IsBag(offhand) && !hasProjectile(player)) {
+				Bag quiver = new Bag(offhand, BagData.GetBag(HavenBags.GetBagUUID(offhand), offhand).getContent());
+				if(quiver != null) {
+					if(hasFreeSpace(player)) {
+						//Log.Info(Main.plugin, "Free space");
+						ItemStack arrow = drawArrow(hand, quiver, player);
+						//Log.Info(Main.plugin, arrow.toString());
+						if(arrow == null) return;
+						player.getInventory().addItem(arrow);
+						return;
+					}else {
+						player.sendMessage(Lang.Get("prefix") + Lang.Get("quiver-no-space"));
+						return;
+					}
+				}
+			}
+    	}
+    	if(!hasProjectile(player)) {
+			if(hasFreeSpace(player)) {
+				for(Bag bag : bags) {
+					//Log.Info(Main.plugin, "Free space");
+					ItemStack arrow = drawArrow(hand, bag, player);
+					//Log.Info(Main.plugin, (arrow == null) ? "null" : arrow.toString());
+					if(arrow == null) continue;
+					player.getInventory().addItem(arrow);
+					return;
+				}
+			}else {
+				player.sendMessage(Lang.Get("prefix") + Lang.Get("quiver-no-space"));
+				return;
+			}
+		}
+        //if(hand.getType() == Material.BOW) handleBow(event);
+        //if(hand.getType() == Material.CROSSBOW) handleCrossbow(event);
     }
 
     private boolean consumeArrowFromSpecificQuiver(Bag bag, Player player) {
@@ -140,13 +128,44 @@ public class Quiver implements Listener {
     	return false;
     }
     
-    private boolean hasFreeSpaceOrArrows(Player player) {
+    private boolean hasProjectile(Player player) {
+    	for(Material valid : Projectiles) {
+    		if(player.getInventory().contains(valid)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    private boolean hasFreeSpace(Player player) {
     	for(ItemStack item : player.getInventory().getContents()) {
     		if(item == null) return true;
     		if(item.getType() == Material.AIR) return true;
-    		if(item.getType() == Material.ARROW) return true;
+    		//if(item.getType() == Material.ARROW) return true;
     	}
     	
     	return false;
+    }
+    
+    private ItemStack drawArrow(ItemStack hand, Bag bag, Player player) {
+    	for(ItemStack item : bag.content) {
+    		if(item == null) continue;
+    		for(Material valid : Projectiles) {
+    			if(item.getType() == valid) {
+    				int amount = item.getAmount() -1;
+    				item.setAmount(amount);
+    				BagData.UpdateBag(bag.item, bag.content);
+    				HavenBags.UpdateBagLore(bag.item, player);
+    				Log.Info(Main.plugin, item.toString());
+
+    				ItemStack give = item.clone();
+    				give.setAmount(1);
+    				return give;
+    			}
+    		}
+
+    	}
+    	
+    	return null;
     }
 }
