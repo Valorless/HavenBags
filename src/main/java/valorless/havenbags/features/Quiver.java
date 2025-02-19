@@ -156,7 +156,7 @@ public class Quiver implements Listener {
     				item.setAmount(amount);
     				BagData.UpdateBag(bag.item, bag.content);
     				HavenBags.UpdateBagLore(bag.item, player);
-    				Log.Info(Main.plugin, item.toString());
+    				//Log.Info(Main.plugin, item.toString());
 
     				ItemStack give = item.clone();
     				give.setAmount(1);
