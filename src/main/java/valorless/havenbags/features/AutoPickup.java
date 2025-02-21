@@ -8,12 +8,15 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.entity.AbstractArrow;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.persistence.PersistentDataType;
@@ -144,6 +147,54 @@ public class AutoPickup implements Listener {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 				    public void run() {
 				    	FromInventory(event.getPlayer());
+				    }
+				}, 5L);
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onArrowPickup(PlayerPickupArrowEvent event) {
+		Player player = event.getPlayer();
+		ItemStack item = event.getItem().getItemStack();
+		if(event.getItem().getOwner() != null) {
+			if(event.getItem().getOwner() != player.getUniqueId()) return;
+		}
+		Log.Debug(Main.plugin, "[DI-149] " + "AutoPickupArrow");
+		List<String> blacklist = Main.config.GetStringList("blacklist");
+		if(blacklist != null) {
+			if(blacklist.size() != 0) {
+				Log.Debug(Main.plugin, "[DI-150] " + "Player World: " + player.getWorld().getName());
+				for(String world : blacklist) {
+					Log.Debug(Main.plugin, "[DI-151] " + "Blacklist: " + world);
+					if(player.getWorld().getName().equalsIgnoreCase(world)) return;
+				}
+			}
+		}
+		if(HavenBags.InventoryContainsBag(player) == false) return;
+		if(HavenBags.IsBag(item)) return;
+		Log.Debug(Main.plugin, "[DI-153] " + item.getType().toString());
+		boolean cancel = PutItemInBag(item, player);
+		Log.Debug(Main.plugin, "[DI-154] " + "Cancelled: " + cancel);
+		if(cancel) {
+			event.setCancelled(true);
+			int count = 10;
+			double force = 0.1;
+			try {
+				player.spawnParticle(Particle.BLOCK_DUST, event.getItem().getLocation(), count, 0, 0.1, 0, force, item.getType().createBlockData());
+			} catch (Exception e) {
+				player.spawnParticle(Particle.ITEM_CRACK, event.getItem().getLocation(), count, 0, 0.1, 0, force, item);
+			}
+			player.spawnParticle(Particle.SMOKE_NORMAL, event.getItem().getLocation(), 5, 0, 0.1, 0, 0.02);
+			event.getArrow().remove();
+			event.getItem().remove();
+		}
+
+		if(Main.config.GetBool("auto-pickup-inventory.enabled")) {
+			if(Main.config.GetBool("auto-pickup-inventory.events.onItemPickup")) {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+				    public void run() {
+				    	FromInventory(player);
 				    }
 				}, 5L);
 			}

@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -546,7 +547,8 @@ public class HavenBags {
 				Main.config.GetFloat("close-pitch").floatValue(), player);
 		for(int i = 0; i < content.size(); i++) {
 			try {
-				player.getWorld().dropItem(player.getLocation(), content.get(i));
+				Item dropped = player.getWorld().dropItem(player.getLocation(), content.get(i));
+				dropped.setPickupDelay(100);
 				content.set(i, null);
 			} catch (Exception e) {
 				continue;

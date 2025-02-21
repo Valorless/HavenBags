@@ -152,15 +152,15 @@ public class Quiver implements Listener {
     		if(item == null) continue;
     		for(Material valid : Projectiles) {
     			if(item.getType() == valid) {
+    				ItemStack clone = item.clone();
     				int amount = item.getAmount() -1;
     				item.setAmount(amount);
     				BagData.UpdateBag(bag.item, bag.content);
     				HavenBags.UpdateBagLore(bag.item, player);
     				//Log.Info(Main.plugin, item.toString());
 
-    				ItemStack give = item.clone();
-    				give.setAmount(1);
-    				return give;
+    				clone.setAmount(1);
+    				return clone;
     			}
     		}
 
