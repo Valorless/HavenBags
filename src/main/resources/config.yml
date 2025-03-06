@@ -131,6 +131,10 @@ inventory-full-pitch: 1
 # (Ownerless bags do not count, set 0 for unlimited)
 max-bags: 9
 
+# How many bags the player can carry at a time.
+# set 0 for unlimited.
+carry-limit: 3
+
 # Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?
 protect-bags: true
 

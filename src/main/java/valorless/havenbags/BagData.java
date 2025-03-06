@@ -23,10 +23,12 @@ import org.jetbrains.annotations.NotNull;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
+import valorless.havenbags.HavenBags.BagState;
 import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.utils.Reflex;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
+import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.nbtapi.iface.ReadWriteNBT;
@@ -40,6 +42,12 @@ public class BagData {
 	
 	private static List<Data> data = new ArrayList<Data>();
 	public static long interval;
+	
+	private static boolean ready = false;
+
+	public static boolean isReady() {
+		return ready;
+	}
 	
 	public static void Initiate() {
 		data.clear(); // Just in case
@@ -72,6 +80,7 @@ public class BagData {
 		private boolean changed = false;
 		private boolean isOpen = false;
 		private Player viewer = null;
+		private BagGUI gui;
 		
 		public Data(@NotNull String uuid, @NotNull String owner) {
 			this.setUuid(uuid); this.setOwner(owner);
@@ -116,6 +125,18 @@ public class BagData {
 
 		public void SetData(@NotNull Config data) {
 			this.data = data;
+		}
+
+		public BagGUI getGui() {
+			return gui;
+		}
+
+		public void setGui(BagGUI gui) {
+			this.gui = gui;
+		}
+
+		public Player getViewer() {
+			return viewer;
 		}
 	}
 	
@@ -211,8 +232,14 @@ public class BagData {
 							}else {
 								bag.data.Set("custommodeldata", 0);
 							}
+							if(ItemUtils.GetItemModel(bagItem) != null) {
+								bag.data.Set("itemmodel", ItemUtils.GetItemModel(bagItem).toString());
+							}else {
+								bag.data.Set("itemmodel", "");
+							}
 						}else {
 							bag.data.Set("custommodeldata", 0);
+							bag.data.Set("itemmodel", "");
 						}
 						bag.data.Set("texture", Main.config.GetString("bag-texture"));
 					}
@@ -330,6 +357,7 @@ public class BagData {
 	}
 	
 	public static void LoadData(){
+		ready = false;
 		Log.Info(Main.plugin, "Loading bags.");
 		long startTime = System.currentTimeMillis();
 		int i = 0;
@@ -367,9 +395,11 @@ public class BagData {
 		long endTime = System.currentTimeMillis();
 		long duration = endTime - startTime;
 		Log.Info(Main.plugin, String.format("Loaded %s bags. %sms", i, duration));
+		ready = true;
 	}
 	
 	public static void SaveData() {
+		long startTime = System.currentTimeMillis();
 		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, "Saving bags.");
 		for(Data bag : data) {
 			if(!bag.changed) continue;
@@ -380,10 +410,12 @@ public class BagData {
 	    	bag.data.SaveConfig();
 	    	bag.changed = false;
 		}
-		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, "Bags saved.");
+		long endTime = System.currentTimeMillis();
+		long duration = endTime - startTime;
+		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, String.format("Bags saved. %sms", duration));
 	}
 	
-	public static void DeleteBag(@NotNull String uuid) {
+	public static void RemoveBag(@NotNull String uuid) {
 		for(int i = 0; i < data.size(); i++) {
 			Data bag = data.get(i);
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
@@ -393,7 +425,24 @@ public class BagData {
 			}
 		}
 		Log.Error(Main.plugin, String.format("Failed to remove cached data for %s.", uuid));
-		
+	}
+	
+	public static void DeleteBag(@NotNull String uuid) {
+		for(int i = 0; i < data.size(); i++) {
+			Data bag = data.get(i);
+			if(bag.getUuid().equalsIgnoreCase(uuid)) {
+				RemoveBag(uuid);
+				try {
+					bag.data.GetFile().deleteFile();
+				}catch(Exception e) {
+					Log.Error(Main.plugin, String.format("Failed to delete data for %s.", uuid));
+					e.printStackTrace();
+				}
+				Log.Info(Main.plugin, String.format("Deleted data for %s.", uuid));
+				return;
+			}
+		}
+		Log.Error(Main.plugin, String.format("Failed to delete data for %s.", uuid));
 	}
 	
 	protected static List<String> GetBags(@NotNull String playerUUID){
@@ -438,6 +487,17 @@ public class BagData {
 		return false;
 	}
 	
+	public static boolean IsBagOpen(ItemStack bagItem) {
+		if(HavenBags.BagState(bagItem) != BagState.Used) return false;
+		String uuid = HavenBags.GetBagUUID(bagItem);
+		for(Data bag : data) {
+			if(bag.getUuid().equalsIgnoreCase(uuid)) {
+				return bag.isOpen;
+			}
+		}
+		return false;
+	}
+	
 	public static Player BagOpenBy(@NotNull String uuid,  ItemStack bagItem) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
@@ -451,7 +511,7 @@ public class BagData {
 		return null;
 	}
 	
-	public static void MarkBagOpen(@NotNull String uuid,  ItemStack bagItem, Player player) {
+	public static void MarkBagOpen(@NotNull String uuid, ItemStack bagItem, Player player) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				bag.isOpen = true;
@@ -463,10 +523,24 @@ public class BagData {
 		if(bagItem != null) bagItem.setAmount(0);
 	}
 	
+	public static void MarkBagOpen(@NotNull String uuid, ItemStack bagItem, Player player, BagGUI gui) {
+		for(Data bag : data) {
+			if(bag.getUuid().equalsIgnoreCase(uuid)) {
+				bag.isOpen = true;
+				bag.viewer = player;
+				bag.gui = gui;
+				return;
+			}
+		}
+		Log.Error(Main.plugin, String.format("Failed to mark bag '%s' as open, this bag was not found.", uuid));
+		if(bagItem != null) bagItem.setAmount(0);
+	}
+	
 	public static void MarkBagClosed(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				bag.isOpen = false;
+				bag.gui = null;
 				return;
 			}
 		}
@@ -664,4 +738,12 @@ public class BagData {
 
         item.setItemMeta(meta);
     }
+	
+	public static List<Data> GetOpenBags(){
+		List<Data> open = new ArrayList<>();
+		for(Data bag : data) {
+			if(bag.isOpen) open.add(bag);
+		}
+		return open;
+	}
 }

@@ -1,12 +1,14 @@
 package valorless.havenbags;
 
-import valorless.havenbags.datamodels.ActiveBag;
+import valorless.havenbags.BagData.Data;
 import valorless.havenbags.features.AutoPickup;
+import valorless.havenbags.features.BagCarryLimit;
 import valorless.havenbags.features.BagSkin;
 import valorless.havenbags.features.BagUpgrade;
 import valorless.havenbags.features.Crafting;
 import valorless.havenbags.features.Encumbering;
 import valorless.havenbags.features.Quiver;
+import valorless.havenbags.features.WeightTooltip;
 import valorless.havenbags.hooks.*;
 import valorless.havenbags.prevention.*;
 import valorless.havenbags.utils.Metrics;
@@ -77,7 +79,7 @@ public final class Main extends JavaPlugin implements Listener {
 	public static Config blacklist;
 	public static Config plugins;
 	public static Config textures;
-	public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
+	//public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
 	int newupdate = 9999999;
 	String newVersion = null;
@@ -125,7 +127,7 @@ public final class Main extends JavaPlugin implements Listener {
 	boolean ValorlessUtils() {
 		Log.Debug(plugin, "[DI-0] Checking ValorlessUtils");
 		
-		int requiresBuild = 248;
+		int requiresBuild = 262;
 		
 		String ver = Bukkit.getPluginManager().getPlugin("ValorlessUtils").getDescription().getVersion();
 		//Log.Debug(plugin, ver);
@@ -158,6 +160,9 @@ public final class Main extends JavaPlugin implements Listener {
 		PlaceholderAPIHook.Hook();
 		ChestSortHook.Hook();
 		PvPManagerHook.Hook();
+		if(ProtocolLibHook.Hook()) {
+			WeightTooltip.registerTooltipListener(this);
+		}
 		//OraxenHook.Hook();
 		
 		Log.Debug(plugin, "[DI-1] " +Long.toString(System.currentTimeMillis() / 1000L));
@@ -220,7 +225,7 @@ public final class Main extends JavaPlugin implements Listener {
         metrics.addCustomChart(new Metrics.SimplePie("language", () -> config.GetString("language")));
         
         
-    	activeBags.clear();
+    	//activeBags.clear();
     }
     
 	@Override
@@ -231,18 +236,17 @@ public final class Main extends JavaPlugin implements Listener {
     }
     
     public static void CloseBags() {
-    	if(activeBags.size() != 0) {
+    	if(BagData.GetOpenBags().size() != 0) {
     		Log.Info(plugin, "Closing all open bags.");
     		try {
-    			for(ActiveBag bag : activeBags) {
-    				bag.gui.Close(true);
-    				activeBags.remove(bag);
+    			for(Data bag : BagData.GetOpenBags()) {
+    				bag.getGui().Close(true);
     			}
     		} catch (Exception e) {
     		
     		}
     	}
-    	activeBags.clear();
+    	//activeBags.clear();
     }
     
     protected void RegisterCommands() {
@@ -296,6 +300,9 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		Log.Debug(plugin, "[DI-221] Registering Quiver");
 		getServer().getPluginManager().registerEvents(new Quiver(), this);
+		
+		Log.Debug(plugin, "[DI-222] Registering BagCarryLimit");
+		getServer().getPluginManager().registerEvents(new BagCarryLimit(), this);
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
     }

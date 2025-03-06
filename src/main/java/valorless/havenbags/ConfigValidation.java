@@ -77,6 +77,7 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("inventory-full-volume", 1);
 	Main.config.AddValidationEntry("inventory-full-pitch", 1);
 	Main.config.AddValidationEntry("max-bags", 0);
+	Main.config.AddValidationEntry("carry-limit", 0);
 	Main.config.AddValidationEntry("protect-bags", true);
 	Main.config.AddValidationEntry("protect-bags-players", false);
 	Main.config.AddValidationEntry("bags-in-bags", false);
@@ -137,6 +138,7 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("player-trusted", "&aAdded %trusted% as trusted.");
 		Lang.lang.AddValidationEntry("player-untrusted", "&eRemoved %trusted% as trusted.");
 		Lang.lang.AddValidationEntry("quiver-no-space", "&cNo space available in inventory, cannot draw arrow!");
+		Lang.lang.AddValidationEntry("carry-limit", "&cSorry, you cannot carry more than %max% bags.");
 		
 		// Admin Lang
 		//Lang.lang.AddValidationEntry("bag-create", ""); //unsure wtf this was for
@@ -281,6 +283,7 @@ public class ConfigValidation {
 		Main.weight.AddValidationEntry("weight-size-36", 4600);
 		Main.weight.AddValidationEntry("weight-size-45", 5700);
 		Main.weight.AddValidationEntry("weight-size-54", 6800);
+		Main.weight.AddValidationEntry("weight-tooltip", "&7Weight: &f%weight%");
 		Main.weight.AddValidationEntry("over-encumber.enabled", false);
 		Main.weight.AddValidationEntry("over-encumber.percent", 80);
 		Main.weight.AddValidationEntry("over-encumber.effects", new ArrayList<String>() {

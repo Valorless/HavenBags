@@ -58,6 +58,10 @@ public class CommandListener implements CommandExecutor {
 				if(args[0].equalsIgnoreCase("reload") && sender.hasPermission("havenbags.reload")) {
 					return CommandReload.Run(cmd);
 				}
+
+				if(BagData.isReady() == false) {
+					return true;
+				}
 				
 				if(args[0].equalsIgnoreCase("create") && sender.hasPermission("havenbags.create")) {
 					return CommandCreate.Run(cmd);

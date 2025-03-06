@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.havenbags.datamodels.Placeholder;
@@ -815,6 +816,7 @@ public class AdminGUI implements Listener {
 					}
 				}
 			}
+			
 			bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
 			List<String> lore = new ArrayList<String>();
 			for (String l : Lang.lang.GetStringList("bag-lore")) {
@@ -827,6 +829,23 @@ public class AdminGUI implements Listener {
 			//}
 			bagMeta.setLore(lore);
 			bagItem.setItemMeta(bagMeta);
+			
+			if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-custom-model-data")) && 
+					!Main.config.GetString("bag-custom-model-data").matches("-?\\d+(\\.\\d+)?")) {
+				ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-custom-model-data"));
+			}
+			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+				for(int s = 9; s <= 54; s += 9) {
+					if(size == s) {
+						if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-custom-model-datas.size-" + size)) && 
+								!Main.config.GetString("bag-custom-model-datas.size-" + size).matches("-?\\d+(\\.\\d+)?")) {
+							ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-custom-model-datas.size-" + size));
+						}
+						//bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
+					}
+				}
+			}
+			
 			//Log.Warning(plugin, bagItem.toString());
 			//NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
 			NBT.SetString(bagItem, "bag-uuid", "null");
@@ -887,6 +906,23 @@ public class AdminGUI implements Listener {
 			//}
 			bagMeta.setLore(lore);
 			bagItem.setItemMeta(bagMeta);
+			
+			if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-custom-model-data")) && 
+					!Main.config.GetString("bag-custom-model-data").matches("-?\\d+(\\.\\d+)?")) {
+				ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-custom-model-data"));
+			}
+			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+				for(int s = 9; s <= 54; s += 9) {
+					if(size == s) {
+						if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-custom-model-datas.size-ownerless-" + size)) && 
+								!Main.config.GetString("bag-custom-model-datas").matches("-?\\d+(\\.\\d+)?")) {
+							ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-custom-model-datas.size-ownerless-" + size));
+						}
+						//bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
+					}
+				}
+			}
+			
 			NBT.SetString(bagItem, "bag-uuid", "null");
 			NBT.SetString(bagItem, "bag-owner", "null");
 			NBT.SetInt(bagItem, "bag-size", size);

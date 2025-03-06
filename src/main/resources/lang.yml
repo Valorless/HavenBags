@@ -71,6 +71,10 @@ player-untrusted: '&eRemoved %trusted% as trusted.'
 # Message sent to the player when an arrow cannot be drawn from the bags.
 quiver-no-space: '&cNo space available in inventory, cannot draw arrow!'
 
+# Message sent to the player if they cant carry any more bags.
+# %max% - Carry limit
+carry-limit: '&cSorry, you cannot carry more than %max% bags.'
+
 
 
 ### Admin ###

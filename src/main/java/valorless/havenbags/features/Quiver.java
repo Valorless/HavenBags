@@ -17,7 +17,6 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.havenbags.BagData.Bag;
 
 public class Quiver implements Listener {
@@ -29,18 +28,21 @@ public class Quiver implements Listener {
 	@EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
 		if(Main.config.GetBool("quiver-bags") == false) return;
+		if(BagData.isReady() == false) {
+			return;
+		}
 		if(event.getAction() != Action.RIGHT_CLICK_AIR  && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Player player = event.getPlayer();
         if(player.getGameMode() == GameMode.CREATIVE) return;
         ItemStack hand = player.getInventory().getItemInMainHand();
+        if(hand == null) return;
         if(hand.getType() != Material.BOW && hand.getType() != Material.CROSSBOW) return;
         ItemStack offhand = player.getInventory().getItemInOffHand();
-        if(hand == null) return;
         if(hand.getItemMeta() instanceof CrossbowMeta cross) {
     		if(cross.hasChargedProjectiles()) return;
     	}
     	
-    	bags = HavenBags.GetBagsInInventory(player);
+    	bags = HavenBags.GetBagsDataInInventory(player);
     	if(bags.size() == 0) return;
     	
     	if(offhand != null && offhand.getType() != Material.AIR) {
@@ -80,7 +82,8 @@ public class Quiver implements Listener {
         //if(hand.getType() == Material.CROSSBOW) handleCrossbow(event);
     }
 
-    private boolean consumeArrowFromSpecificQuiver(Bag bag, Player player) {
+    @SuppressWarnings("unused")
+	private boolean consumeArrowFromSpecificQuiver(Bag bag, Player player) {
     	for(ItemStack item : bag.content) {
     		if(item == null) continue;
     		if(item.getType() == Material.ARROW) {
@@ -94,7 +97,8 @@ public class Quiver implements Listener {
     	return false;
     }
 
-    private boolean hasArrowInSpecificQuiver(Bag bag) {
+    @SuppressWarnings("unused")
+	private boolean hasArrowInSpecificQuiver(Bag bag) {
     	for(ItemStack item : bag.content) {
     		if(item == null) continue;
     		if(item.getType() == Material.ARROW) return true;
@@ -102,7 +106,8 @@ public class Quiver implements Listener {
     	return false;
     }
 
-    private boolean consumeArrowFromQuiver(Player player) {
+    @SuppressWarnings("unused")
+	private boolean consumeArrowFromQuiver(Player player) {
     	for(Bag bag : bags) {
     		for(ItemStack item : bag.content) {
         		if(item == null) continue;
@@ -118,7 +123,8 @@ public class Quiver implements Listener {
     	return false;
     }
 
-    private boolean hasArrowInQuiver(Player player) {
+    @SuppressWarnings("unused")
+	private boolean hasArrowInQuiver(Player player) {
     	for(Bag bag : bags) {
     		for(ItemStack item : bag.content) {
         		if(item == null) continue;

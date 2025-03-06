@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.entity.AbstractArrow;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -434,6 +432,10 @@ public class AutoPickup implements Listener {
 	*/
 	
 	boolean PutItemInBag(ItemStack item, Player player){
+		if(BagData.isReady() == false) {
+			return false;
+		}
+		
 		Log.Debug(Main.plugin, "[DI-154] " + "PutItemInBag?");
 		
 		if(ItemFilter(item) == null) {
@@ -456,7 +458,7 @@ public class AutoPickup implements Listener {
 		}
 		Log.Debug(Main.plugin, "[DI-157] " + "bags:" + bags.size());
 		Log.Debug(Main.plugin, "[DI-158] " + "Checking bag filters.");
-		for(Bag bag : HavenBags.GetBagsInInventory(player)) {
+		for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
 			Log.Debug(Main.plugin, "[DI-159] " + "bag: " + NBT.GetString(bag.item, "bag-uuid"));
 			if(BagData.IsBagOpen(NBT.GetString(bag.item, "bag-uuid"), bag.item)) continue;
 			if(HavenBags.IsBagFull(bag.item)) continue;

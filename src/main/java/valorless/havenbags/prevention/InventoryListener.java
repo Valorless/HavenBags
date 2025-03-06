@@ -36,7 +36,7 @@ public class InventoryListener implements Listener {
 	final private List<InventoryType> allowedContainers = PrepareAllowedContainers();
 		
 	List<InventoryType> PrepareAllowedContainers() {
-		Log.Debug(Main.plugin, "[DI-198] " + "Preparing Allowed Containers");
+		Log.Debug(Main.plugin, "[DI-198] " + "[InventoryListener] Preparing Allowed Containers");
 		List<InventoryType> cont = new ArrayList<InventoryType>();
 		cont.add(InventoryType.CRAFTING);
 		cont.add(InventoryType.HOPPER);
@@ -46,16 +46,18 @@ public class InventoryListener implements Listener {
 		for(String container : Main.config.GetStringList("allowed-containers")) {
 			cont.add(GetInventoryType(container));
 		}
-		Log.Debug(Main.plugin, "[DI-199] " + "Allowed Containers:");
+		Log.Debug(Main.plugin, "[DI-199] " + "[InventoryListener] Allowed Containers:");
 		for(InventoryType type : cont) {
 			Log.Debug(Main.plugin, "- " + type.toString());
 		}
-		Log.Debug(Main.plugin, "[DI-200] " + "To update this list, you have to restart or reload the server, not /bags reload.");
+		Log.Debug(Main.plugin, "[DI-200] " + "[InventoryListener] To update this list, you have to restart or reload the server, not /bags reload.");
 		return cont;
 	}
 
 	@EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
+		if(e.getRawSlot() == -1 || e.getRawSlot() == 999) return;
+		Log.Debug(Main.plugin, "[DI-223] " + "[InventoryListener] Inventory Click");
 		if (e.getHotbarButton() != -1) {
             ItemStack swapItem = e.getWhoClicked().getInventory().getItem(e.getHotbarButton());
             if (swapItem != null && HavenBags.IsBag(swapItem)) e.setCancelled(true);
@@ -65,11 +67,34 @@ public class InventoryListener implements Listener {
         	e.setCancelled(true);
         	return;
         }*/
+		
 		Shulkers(e);
 		Containers(e);
     }
 	
 	void Containers(final InventoryClickEvent e) {
+        if(e.getInventory().getType() == InventoryType.SHULKER_BOX) return;
+		Log.Debug(Main.plugin, "[DI-224] " + "[InventoryListener] Container");
+		boolean holdingBag = HavenBags.IsBag(e.getCursor());
+		if(e.getClickedInventory() == null) return;
+        
+        if(e.getClickedInventory().getType() != InventoryType.PLAYER && holdingBag){
+        	if(!allowedContainers.contains(e.getInventory().getType())) {
+        		e.setCancelled(true);
+        		return;
+        	}
+        }
+        
+        ItemStack clickedItem = e.getCurrentItem();
+        if(clickedItem == null) return;
+        
+        if(HavenBags.IsBag(clickedItem) && e.isShiftClick()) {
+        	if(!allowedContainers.contains(e.getInventory().getType())) {
+        		e.setCancelled(true);
+        		return;
+        	}
+        }
+		/*
 		ItemStack clickedItem = e.getCurrentItem();
         if(clickedItem == null) return;
         
@@ -78,21 +103,38 @@ public class InventoryListener implements Listener {
         	if(allowedContainers.contains(e.getInventory().getType()) == false) {
         		e.setCancelled(true);
         	}
-        }
+        }*/
 	}
 	
 	void Shulkers(final InventoryClickEvent e) {
+        if(e.getInventory().getType() != InventoryType.SHULKER_BOX) return;
+		Log.Debug(Main.plugin, "[DI-225] " + "[InventoryListener] Shulker");
         if (Main.config.GetBool("bags-in-shulkers") == true) return;
 
+        boolean holdingBag = HavenBags.IsBag(e.getCursor());
+		if(e.getClickedInventory() == null) return;
+        
+        if(e.getClickedInventory().getType() != InventoryType.PLAYER && holdingBag){
+        	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-shulker-error"));
+        	e.setCancelled(true);
+        	return;
+        }
+        
         ItemStack clickedItem = e.getCurrentItem();
         if(clickedItem == null) return;
         
-        if(e.getInventory().getType() != InventoryType.SHULKER_BOX) return;
+        if(HavenBags.IsBag(clickedItem) && e.isShiftClick()) {
+        	e.setCancelled(true);
+        	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-shulker-error"));
+        }
+        /*
+        ItemStack clickedItem = e.getCurrentItem();
+        if(clickedItem == null) return;
         
         if(HavenBags.IsBag(clickedItem)) {
         	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-shulker-error"));
         	e.setCancelled(true);
-        }
+        }*/
 	}
 	
 	@EventHandler

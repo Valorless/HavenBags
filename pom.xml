@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
-  <version>1.31.2</version>
+  <version>1.32.0</version>
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -116,11 +116,11 @@
             <id>install-external</id>
             <phase>clean</phase>
             <configuration>
-                <file>${basedir}\dependencies/ValorlessUtils-1.11.0.248.jar</file>
+                <file>${basedir}\dependencies/ValorlessUtils-1.12.0.259.jar</file>
                 <repositoryLayout>default</repositoryLayout>
                 <groupId>valorless.valorlessutils</groupId>
                 <artifactId>ValorlessUtils</artifactId>
-                <version>1.11.0.248</version>
+                <version>1.12.0.259</version>
                 <packaging>jar</packaging>
                 <generatePom>true</generatePom>
             </configuration>
@@ -179,14 +179,13 @@
     <url>https://repo.codemc.org/repository/maven-public/</url>
 </repository>
 <repository>
-  <id>oraxen</id>
-  <name>Oraxen Repository</name>
-  <url>https://repo.oraxen.com/releases</url>
-</repository>
-<repository>
 	<id>pcgf-repo</id>
 	<url>https://repo.pcgamingfreaks.at/repository/maven-everything</url>
 </repository>
+  <repository>
+    <id>dmulloy2-repo</id>
+    <url>https://repo.dmulloy2.net/repository/public/</url>
+  </repository>
    </repositories>
   <dependencies>
        <dependency>
@@ -199,7 +198,7 @@
        <dependency>
 		<groupId>valorless.valorlessutils</groupId>
 		<artifactId>ValorlessUtils</artifactId>
-		<version>1.11.0.248</version>
+		<version>1.12.0.259</version>
 	</dependency>
 	<dependency>
             <groupId>com.mojang</groupId>
@@ -235,61 +234,14 @@
     <scope>provided</scope>
 </dependency>
 <dependency>
-    <groupId>io.th0rgal</groupId>
-    <artifactId>oraxen</artifactId>
-    <version>1.167.0</version>
-    <exclusions>
-        <exclusion>
-            <groupId>me.gabytm.util</groupId>
-            <artifactId>actions-spigot</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>com.ticxo</groupId>
-            <artifactId>PlayerAnimator</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
-            <artifactId>IF</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>io.th0rgal</groupId>
-            <artifactId>protectionlib</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>dev.triumphteam</groupId>
-            <artifactId>triumph-gui</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>com.jeff-media</groupId>
-            <artifactId>custom-block-data</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>com.jeff-media</groupId>
-            <artifactId>persistent-data-serializer</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>com.jeff_media</groupId>
-            <artifactId>MorePersistentDataTypes</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>gs.mclo</groupId>
-            <artifactId>java</artifactId>
-        </exclusion>
-    </exclusions>
-    <scope>provided</scope>
-</dependency>
-<dependency>
     <groupId>at.pcgamingfreaks</groupId>
     <artifactId>Minepacks-API</artifactId>
     <version>2.2</version><!-- Check api-version shield for newest version -->
 </dependency>
+  <dependency>
+    <groupId>com.comphenix.protocol</groupId>
+    <artifactId>ProtocolLib</artifactId>
+    <version>4.8.0</version>
+  </dependency>
    </dependencies>
 </project>

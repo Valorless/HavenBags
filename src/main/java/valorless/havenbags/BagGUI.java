@@ -7,12 +7,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,7 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
-import valorless.havenbags.datamodels.ActiveBag;
+import valorless.havenbags.BagData.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
@@ -38,6 +40,7 @@ public class BagGUI implements Listener {
 	public String bagOwner;
 	String bag = "";
 	boolean preview;
+	public int size;
 	
     public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, ItemMeta bagMeta, boolean... preview) {
     	if(preview.length != 0) this.preview = preview[0];
@@ -59,6 +62,7 @@ public class BagGUI implements Listener {
     	this.uuid = NBT.GetString(bagItem, "bag-uuid");
     	this.bagMeta = bagMeta;
     	this.player = player;
+    	this.size = size;
     	try {
     		// Try get owner's name on the server.
     		this.bagOwner = NBT.GetString(bagItem, "bag-owner");
@@ -78,7 +82,8 @@ public class BagGUI implements Listener {
     	if(Lang.lang.GetBool("per-size-title")) {
     		for(int i = 9; i <= 54; i += 9) {
 				if(size != i) continue;
-    			inv = Bukkit.createInventory(player, size, Lang.Get("bag-inventory-title-" + String.valueOf(i)));
+				String title = Lang.Get("bag-inventory-title-" + String.valueOf(i));
+    			inv = Bukkit.createInventory(player, size, title.replace("%name%", bagMeta.getDisplayName()));
 			}
     	}else {
     		if(!Utils.IsStringNullOrEmpty(Lang.Get("bag-inventory-title"))) {
@@ -115,15 +120,15 @@ public class BagGUI implements Listener {
         //LoadContent();
         
         if(!this.preview) HavenBags.BagHashes.Add(inv.hashCode());
-    	if(!this.preview) Main.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid")));
+    	//if(!this.preview) Main.activeBags.add(new ActiveBag(this, NBT.GetString(bagItem, "bag-uuid"), player));
     }
     
     void CheckInstances() {
     	List<BagGUI> thisUUID = new ArrayList<BagGUI>();
-    	for (ActiveBag openBag : Main.activeBags) {
-    		Log.Debug(plugin, "[DI-34] " + "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
-    		if(openBag.uuid.equalsIgnoreCase(NBT.GetString(bagItem, "bag-uuid"))) {
-    			thisUUID.add(openBag.gui);
+    	for (BagData.Data openBag : BagData.GetOpenBags()) {
+    		Log.Debug(plugin, "[DI-34] " + "Open Bag: " + openBag.getUuid() + " - " + NBT.GetString(bagItem, "bag-uuid"));
+    		if(openBag.getUuid().equalsIgnoreCase(NBT.GetString(bagItem, "bag-uuid"))) {
+    			thisUUID.add(openBag.getGui());
     		}
     	}
     	//Log.Debug(plugin, "" + thisUUID.size());
@@ -163,10 +168,10 @@ public class BagGUI implements Listener {
 						"\n" +
 						"################################\n";
 				console.sendMessage(String.format(errorMessage, bag));
-				for (ActiveBag openBag : Main.activeBags) {
-		    		Log.Debug(plugin, "[DI-36] " + "Open Bag: " + openBag.uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
-		    		if(openBag.uuid == NBT.GetString(bagItem, "bag-uuid")) {
-		    			Main.activeBags.remove(openBag);
+				for (Data openBag : BagData.GetOpenBags()) {
+		    		Log.Debug(plugin, "[DI-36] " + "Open Bag: " + openBag.getUuid() + " - " + NBT.GetString(bagItem, "bag-uuid"));
+		    		if(openBag.getUuid() == NBT.GetString(bagItem, "bag-uuid")) {
+		    			Close(true);
 		    		}
 		    	}
 				throw(new NullPointerException(""));
@@ -210,49 +215,81 @@ public class BagGUI implements Listener {
         
         ItemStack clickedItem = e.getCurrentItem();
         ItemStack cursorItem = e.getCursor();
+        
+        for(ItemStack item : player.getInventory().getContents()) {
+			if(HavenBags.IsBag(item)) {
+				if(uuid.equalsIgnoreCase(HavenBags.GetBagUUID(item))) {
+					bagItem = item;
+				}
+			}
+		}
+        
         //Log.Debug(plugin, "clicked: " + e.getCurrentItem());
         //Log.Debug(plugin, "cursor: " + e.getCursor());
         
       //Check Weight When cursor isnt air, clicked item is null. Therefore we run this before the null check.
         if(cursorItem != null) {        	
-        if(e.getRawSlot() < inv.getSize() && !cursorItem.getType().equals(Material.AIR)) {
-            Log.Debug(Main.plugin, "[DI-40] " + "within");
-        	if(Main.weight.GetBool("enabled") == false) return;
-            Log.Debug(Main.plugin, "[DI-41] " + "enabled");
-            List<ItemStack> cont = new ArrayList<ItemStack>();
-            for(int i = 0; i < inv.getSize(); i++) {
-        		cont.add(inv.getItem(i));
-        	}
-            //Log.Debug(Main.plugin, HavenBags.CanCarry(clickedItem, bagItem, cont) + "");
-        	if(!HavenBags.CanCarry(cursorItem, bagItem, cont)) { 
-        		e.setCancelled(true);
-            	//e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Main.weight.GetString("bag-cant-carry")));
-            	List<Placeholder> placeholders = new ArrayList<Placeholder>();
-            	placeholders.add(new Placeholder("%item%", Main.translator.Translate(cursorItem.getTranslationKey())));
-            	placeholders.add(new Placeholder("%weight%",  HavenBags.ItemWeight(cursorItem) + ""));
-            	placeholders.add(new Placeholder("%remaining%", (NBT.GetDouble(bagItem, "bag-weight-limit") - HavenBags.GetWeight(cont)) + ""));
-            	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Main.weight.GetString("bag-cant-carry"), placeholders, player));
-        		return;
+        	if(e.getRawSlot() < inv.getSize() && !cursorItem.getType().equals(Material.AIR)) {
+        		Log.Debug(Main.plugin, "[DI-40] " + "within");
+        		if(Main.weight.GetBool("enabled")) {
+        			Log.Debug(Main.plugin, "[DI-41] " + "enabled");
+        			List<ItemStack> cont = new ArrayList<ItemStack>();
+        			for(int i = 0; i < inv.getSize(); i++) {
+        				cont.add(inv.getItem(i));
+        			}
+        			//Log.Debug(Main.plugin, HavenBags.CanCarry(clickedItem, bagItem, cont) + "");
+        			if(!HavenBags.CanCarry(cursorItem, bagItem, cont)) { 
+        				e.setCancelled(true);
+        				//e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Main.weight.GetString("bag-cant-carry")));
+        				List<Placeholder> placeholders = new ArrayList<Placeholder>();
+        				placeholders.add(new Placeholder("%item%", Main.translator.Translate(cursorItem.getTranslationKey())));
+        				placeholders.add(new Placeholder("%weight%",  HavenBags.ItemWeight(cursorItem) + ""));
+        				placeholders.add(new Placeholder("%remaining%", (NBT.GetDouble(bagItem, "bag-weight-limit") - HavenBags.GetWeight(cont)) + ""));
+        				e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Main.weight.GetString("bag-cant-carry"), placeholders, player));
+        				return;
+        			}
+        		}
         	}
         }
-        }
         
-        if(clickedItem == null) return;
-        
-        //if (Main.config.GetBool("bags-in-bags") == true) return;
-    	if(HavenBags.IsItemBlacklisted(clickedItem)) {
+        if(clickedItem.isSimilar(bagItem)) {
         	e.setCancelled(true);
-    		e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("item-blacklisted"), player));
-    		return;
+        	return;
+        }
+    	
+    	boolean holdingBag = HavenBags.IsBag(cursorItem);	
+    	boolean clickedBag = HavenBags.IsBag(clickedItem);	
+    	
+    	if(e.getRawSlot() < inv.getSize() && holdingBag) {
+    		if(uuid.equalsIgnoreCase(HavenBags.GetBagUUID(cursorItem))) {
+    			e.setCancelled(true);
+    		}
     	}
-        
-        if(HavenBags.IsBag(clickedItem) && !Main.config.GetBool("bags-in-bags")) {
+    	
+		if(e.getRawSlot() < inv.getSize() && holdingBag && !Main.config.GetBool("bags-in-bags")){
         	//e.getWhoClicked().closeInventory();
         	//e.getWhoClicked().sendMessage(Name + "§c Bags cannot be placed inside bags.");
         	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
         	e.setCancelled(true);
         }
+		else if(e.getRawSlot() > inv.getSize() && clickedBag && e.isShiftClick() && !Main.config.GetBool("bags-in-bags")){
+            e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
+            e.setCancelled(true);
+        }
         
+        
+        //if (Main.config.GetBool("bags-in-bags") == true) return;
+    	if(e.getRawSlot() < inv.getSize() && HavenBags.IsItemBlacklisted(cursorItem)) {
+        	e.setCancelled(true);
+    		e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("item-blacklisted"), player));
+    		return;
+    	}
+		else if(e.getRawSlot() > inv.getSize() && e.isShiftClick() && HavenBags.IsItemBlacklisted(clickedItem)){
+            e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
+            e.setCancelled(true);
+        }
+    	
+    	if(clickedItem == null) return;
         if(e.getRawSlot() > inv.getSize() && e.isShiftClick()) {
             Log.Debug(Main.plugin, "[DI-42] " + "within");
         	if(Main.weight.GetBool("enabled") == false) return;
@@ -290,16 +327,6 @@ public class BagGUI implements Listener {
         if(!preview) Close(false);
     }
     
-    // Move into HavenBags.java to make it public and specific.
-    public boolean IsOpen() {
-    	for (ActiveBag openBag : Main.activeBags) {
-    		if(openBag.uuid.equalsIgnoreCase(NBT.GetString(bagItem, "bag-uuid"))) {
-    			return true;
-    		}
-    	}
-    	return false;
-    }
-    
     public void Close(boolean forced) {
     	if(forced) {
     		Log.Warning(plugin, String.format("%s forcefully closed! Attempting to save it and return it to %s!", bag, player.getName()));
@@ -307,8 +334,17 @@ public class BagGUI implements Listener {
     		//return;
     	}
     	
-    	if(!HavenBags.IsBagOpen(bagItem)) return;
-    	String uuid = NBT.GetString(bagItem, "bag-uuid");
+    	if(Main.config.GetBool("keep-bags")){ 
+    		for(ItemStack item : player.getInventory().getContents()) {
+    			if(HavenBags.IsBag(item)) {
+    				if(uuid.equalsIgnoreCase(HavenBags.GetBagUUID(item))) {
+    					bagItem = item;
+    				}
+    			}
+    		}
+    	}
+    	
+    	//if(!HavenBags.IsBagOpen(bagItem)) return;
     	if(!BagData.IsBagOpen(uuid, bagItem)) return;
 
 		SFX.Play(Main.config.GetString("close-sound"), 
@@ -342,7 +378,7 @@ public class BagGUI implements Listener {
 		}
         
 		//HavenBags.WriteBagToServer(bagItem, cont, player);
-		try {
+		/*try {
 			for (int i = 0; i < Main.activeBags.size(); i++) {
     			Log.Debug(plugin, "[DI-45] " + "Open Bag: " + Main.activeBags.get(i).uuid + " - " + NBT.GetString(bagItem, "bag-uuid"));
     			if(Main.activeBags.get(i).uuid == NBT.GetString(bagItem, "bag-uuid")) {
@@ -351,9 +387,9 @@ public class BagGUI implements Listener {
     		}
 		} catch(Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		BagData.MarkBagClosed(uuid);
-		Log.Debug(plugin, "[DI-46] " + "Remaining Open Bags: " + Main.activeBags.size());
+		Log.Debug(plugin, "[DI-46] " + "Remaining Open Bags: " + BagData.GetOpenBags().size());
 		
 		//UpdateTimestamp();
     }
@@ -391,6 +427,20 @@ public class BagGUI implements Listener {
         string = String.valueOf(charArray);
     	return string;
     }
+    
+    
+    @EventHandler
+    public void onItemDrop(PlayerDropItemEvent event) {
+        Item droppedItem = event.getItemDrop();
+        ItemStack item = droppedItem.getItemStack();
+        if(HavenBags.IsBag(item)) {
+        	if(BagData.IsBagOpen(item)) {
+        		event.setCancelled(true);
+        	}
+        }
+    }
+    
+    
     
     /*
     void WriteToServer() {

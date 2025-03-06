@@ -21,19 +21,7 @@ plugins:
   pvp: false
   # Message sent to the player, if they can't use the bag.
   message: '&cYou cannot use this while in PvP.'
-  
- # Oraxen is not yet ready to use.
- # Checks will still run, but no result.
- Oraxen:
-  enabled: false
-  # Let HavenBag's Auto-Pickup feature include Oraxen items.
-  # Oraxen items have their Material ignored, and only looked at by id.
-  auto-pickup: true
-  # Oraxen items to pick up.
-  # Use the Oraxen ID's of the items.
-  items:
-   - 'test_item'
-   
+     
 mods:
  HavenBagsPreview:
   enabled: true

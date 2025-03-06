@@ -28,6 +28,12 @@ weight-size-36: 4600
 weight-size-45: 5700
 weight-size-54: 6800
 
+# Additional lore shown on items in the bag, showing their weight.
+# Placeholders:
+# %weight%
+# Requires ProtocolLib.
+weight-tooltip: '&7Weight: &f%weight%'
+
 # Can players become over-encumbered?
 over-encumber:
  enabled: false

@@ -6,7 +6,7 @@ api-version: 1.17
 website: https://www.spigotmc.org/resources/110420/
 description: Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
 depend: [ValorlessUtils]
-softdepend: [ChestSort, PlaceholderAPI, AngelChest, PvPManager, Minepacks]
+softdepend: [ProtocolLib, ChestSort, PlaceholderAPI, AngelChest, PvPManager, Minepacks]
 # loadbefore: [AdvancedEnchantments]
 commands:
   havenbags:
@@ -94,6 +94,15 @@ permissions:
   havenbags.weight:
     description: Allows you to set the weight limit of bags.
     default: op
+  havenbags.open.*:
+    description: Allows you to open bags of all sizes.
+    children:
+      havenbags.open.9: true
+      havenbags.open.18: true
+      havenbags.open.27: true
+      havenbags.open.36: true
+      havenbags.open.45: true
+      havenbags.open.54: true
   havenbags.open.9:
     description: Allows you to open bags with a size of 9.
     default: op
@@ -138,5 +147,8 @@ permissions:
     default: op
   havenbags.token:
     description: Allows you create skin tokens.
+    default: op
+  havenbags.carry.0:
+    description: Bags carry limit.
     default: op
   
