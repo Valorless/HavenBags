@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import com.google.gson.Gson;
 
 import valorless.havenbags.BagData.Bag;
+import valorless.havenbags.BagData.Data;
 import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.features.AutoPickup;
@@ -238,7 +239,7 @@ public class HavenBags {
 		String uuid = NBT.GetString(bag, "bag-uuid");
 		//String display = bag.getItemMeta().getDisplayName();
 		String id = uuid.replace(".json", "");
-		Config data = BagData.GetBag(id, null).getData();
+		Data data = BagData.GetBag(id, null);
 		//Log.Error(Main.plugin, uuid);
 		//Log.Error(Main.plugin, id);
 		//Log.Error(Main.plugin, data + "");
@@ -255,20 +256,20 @@ public class HavenBags {
 		//NBT.SetString(bag, "bag-uuid", uuid);
 
 		if(bag.getType() == Material.PLAYER_HEAD) {
-			String texture = data.GetString("texture");
+			String texture = data.getTexture();
 			if(!Utils.IsStringNullOrEmpty(texture)) {
 				if(!texture.contains("null")) {
 					BagData.setTextureValue(bag, texture);
 				}
 			}
 		}else {
-			int cmd = data.GetInt("custommodeldata");
+			int cmd = data.getModeldata();
 			if(cmd != 0) {
 				if(bag.hasItemMeta()) {
 					bag.getItemMeta().setCustomModelData(cmd);
 				}
 			}
-			String im = data.GetString("itemmodel");
+			String im = data.getItemmodel();
 			if(!Utils.IsStringNullOrEmpty(im)) {
 				if(bag.hasItemMeta()) {
 					ItemUtils.SetItemModel(bag, im);
@@ -277,34 +278,34 @@ public class HavenBags {
 		}
 		
 		
-		NBT.SetString(bag, "bag-owner", data.GetString("owner"));
+		NBT.SetString(bag, "bag-owner", data.getOwner());
 		
-		if(data.GetString("owner").equalsIgnoreCase("ownerless")) {
+		if(data.getOwner().equalsIgnoreCase("ownerless")) {
 			NBT.SetBool(bag, "bag-canBind", false);
 		} else {
 			NBT.SetBool(bag, "bag-canBind", true);
 		}
-		NBT.SetInt(bag, "bag-size", data.GetInt("size"));
-		if(data.GetString("auto-pickup").equalsIgnoreCase("null")) {
+		NBT.SetInt(bag, "bag-size", data.getSize());
+		if(data.getAutopickup().equalsIgnoreCase("null")) {
 			NBT.SetString(bag, "bag-filter", null);
 		}else {
-			NBT.SetString(bag, "bag-filter", data.GetString("auto-pickup"));
+			NBT.SetString(bag, "bag-filter", data.getAutopickup());
 		}
 		if(Main.weight.GetBool("enabled")){
-			if(data.GetFloat("weight-max") > 0) {
-				NBT.SetDouble(bag, "bag-weight-limit", data.GetFloat("weight-max"));
+			if(data.getWeightMax() > 0) {
+				NBT.SetDouble(bag, "bag-weight-limit", data.getWeightMax());
 			}else {
 				if(Main.weight.GetBool("weight-per-size")) {
-					NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat(String.format("weight-size-%s", data.GetInt("size"))));
-					BagData.SetWeightMax(id, Main.weight.GetFloat(String.format("weight-size-%s", data.GetInt("size"))));
+					NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat(String.format("weight-size-%s", data.getSize())));
+					BagData.SetWeightMax(id, Main.weight.GetFloat(String.format("weight-size-%s", data.getSize())));
 				}else {
 					NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat("weight-limit"));
 					BagData.SetWeightMax(id, Main.weight.GetFloat("weight-limit"));
 				}
 			}
 		}
-		NBT.SetString(bag, "bag-creator", data.GetString("creator"));
-		NBT.SetStringList(bag, "bag-trust", data.GetStringList("trusted"));
+		NBT.SetString(bag, "bag-creator", data.getCreator());
+		NBT.SetStringList(bag, "bag-trust", data.getTrusted());
 	}
 	
 	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, OfflinePlayer player, boolean...preview) {
@@ -318,131 +319,133 @@ public class HavenBags {
 		if(preview.length == 0) {
 			UpdateNBT(bag);
 		}
-		
-    	String owner = NBT.GetString(bag, "bag-owner");
-    	//String owner = BagData.GetOwner(HavenBags.GetBagUUID(bag));
-    	
-    	if(!owner.equalsIgnoreCase("null")) {
-    		if(inventory == null) {
-    			inventory = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
-    		}
-    		if(Main.plugins.GetBool("mods.HavenBagsPreview.enabled")) {
-    			NBT.SetString(bag, "bag-preview-content", gson.toJson(new HavenBagsPreview(inventory)));
-    		}
-    	}
-		
-    	
-    	List<Placeholder> placeholders = new ArrayList<Placeholder>();
 
-    	ItemMeta bagMeta = bag.getItemMeta();
-    	
-    	
+		String owner = NBT.GetString(bag, "bag-owner");
+		//String owner = BagData.GetOwner(HavenBags.GetBagUUID(bag));
+
+		if(!owner.equalsIgnoreCase("null")) {
+			if(inventory == null) {
+				inventory = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
+			}
+			if(Main.plugins.GetBool("mods.HavenBagsPreview.enabled")) {
+				NBT.SetString(bag, "bag-preview-content", gson.toJson(new HavenBagsPreview(inventory)));
+			}
+		}
+
+
+		List<Placeholder> placeholders = new ArrayList<Placeholder>();
+
+		ItemMeta bagMeta = bag.getItemMeta();
+
+
 		List<ItemStack> cont = new ArrayList<ItemStack>();
-        int a = 0;
-        List<String> items = new ArrayList<String>();
-        if(inventory != null) {
-        for(int i = 0; i < inventory.size(); i++) {
-    		cont.add(inventory.get(i));
-    		if(inventory.get(i) != null && inventory.get(i).getType() != Material.AIR) {
-    			List<Placeholder> itemph = new ArrayList<Placeholder>();
-    			if(inventory.get(i).hasItemMeta()) {
-    				if(inventory.get(i).getItemMeta().hasDisplayName()) {
-    					itemph.add(new Placeholder("%item%", inventory.get(i).getItemMeta().getDisplayName()));
-    					itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
-        			
-    					if(inventory.get(i).getAmount() != 1) {
-    						items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
-    						//items.add(Lang.Get("bag-content-item-amount", inventory.get(i).getItemMeta().getDisplayName(), inventory.get(i).getAmount()));
-    					} else {
-    						items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
-    						//items.add(Lang.Get("bag-content-item", inventory.get(i).getItemMeta().getDisplayName()));
-    					}
-    				}
-    				else if(Main.VersionCompare(Main.server, ServerVersion.v1_20_5) >= 0) {
-    					if(ItemUtils.HasItemName(inventory.get(i))) {
-    						itemph.add(new Placeholder("%item%", ItemUtils.GetItemName(inventory.get(i))));
-    						itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
-        			
-    						if(inventory.get(i).getAmount() != 1) {
-    							items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
-    						} else {
-    							items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
-    						}
-    					}
-    					else {
-        	    			itemph.add(new Placeholder("%item%", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
-        	    			itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
-        	    			
-            				if(inventory.get(i).getAmount() != 1) {
-            					items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
-            					//items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(inventory.get(i).getType().getTranslationKey()), inventory.get(i).getAmount()));
-            				} else {
-            					items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
-            					//items.add(Lang.Get("bag-content-item", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
-            				}
-            			}
-    				}
-    				else {
-    	    			itemph.add(new Placeholder("%item%", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
-    	    			itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
-    	    			
-        				if(inventory.get(i).getAmount() != 1) {
-        					items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
-        					//items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(inventory.get(i).getType().getTranslationKey()), inventory.get(i).getAmount()));
-        				} else {
-        					items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
-        					//items.add(Lang.Get("bag-content-item", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
-        				}
-        			}
-    			}else {
-	    			itemph.add(new Placeholder("%item%", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
-	    			itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
-	    			
-    				if(inventory.get(i).getAmount() != 1) {
-    					items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
-    					//items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(inventory.get(i).getType().getTranslationKey()), inventory.get(i).getAmount()));
-    				} else {
-    					items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
-    					//items.add(Lang.Get("bag-content-item", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
-    				}
-    			}
-    			a++;
-    		}
-    	}
-        }
-        List<String> lore = new ArrayList<String>();
-        for (String l : Lang.lang.GetStringList("bag-lore")) {
-        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
-        }
-        if(NBT.GetBool(bag, "bag-canBind") == true && owner.equalsIgnoreCase("null") == false) {
-            placeholders.add(new Placeholder("%owner%", Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()));
-            placeholders.add(new Placeholder("%bound-to%", Lang.Parse(Lang.Get("bound-to"), placeholders, player)));
-            //if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()), player));
-        }
-        if(NBT.Has(bag, "bag-size")) {
-        	placeholders.add(new Placeholder("%size%", NBT.GetInt(bag, "bag-size")));
-        	placeholders.add(new Placeholder("%bag-size%", Lang.Parse(Lang.Get("bag-size"), placeholders, player)));
-        	//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
-        }
-        
-        if(NBT.Has(bag, "bag-filter")) {
-        	placeholders.add(new Placeholder("%filter%", AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))));
-        	placeholders.add(new Placeholder("%bag-auto-pickup%", Lang.Parse(Lang.Get("bag-auto-pickup"), placeholders, player)));
-        	//lore.add(Lang.Parse(Lang.Parse(String.format(Lang.Get("bag-auto-pickup"), AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))), player)));
-        	//lore.add(Lang.Parse("&7Auto Loot: " + AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter")), player));
-        }
-        
-        if(NBT.Has(bag, "bag-weight") && NBT.Has(bag, "bag-weight-limit") && Main.weight.GetBool("enabled")) {
-        	placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(GetWeight(bag), NBT.GetDouble(bag, "bag-weight-limit"), Main.weight.GetInt("bar-length"))));
-        	placeholders.add(new Placeholder("%weight%", TextFeatures.LimitDecimal(String.valueOf(GetWeight(bag)),2)));
-        	placeholders.add(new Placeholder("%limit%", String.valueOf(NBT.GetDouble(bag, "bag-weight-limit").intValue())));
-        	placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(GetWeight(bag), NBT.GetDouble(bag, "bag-weight-limit"))), 2) + "%"));
-        	placeholders.add(new Placeholder("%bag-weight%", Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)));
-        	//lore.add(Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player));
-        }
-        
-        boolean hasTrust = false;
-        if(NBT.Has(bag, "bag-trust")) {
+		int a = 0;
+		List<String> items = new ArrayList<String>();
+		if(inventory != null) {
+			for(int i = 0; i < inventory.size(); i++) {
+				cont.add(inventory.get(i));
+				if(inventory.get(i) != null && inventory.get(i).getType() != Material.AIR) {
+					List<Placeholder> itemph = new ArrayList<Placeholder>();
+					if(inventory.get(i).hasItemMeta()) {
+						if(inventory.get(i).getItemMeta().hasDisplayName()) {
+							itemph.add(new Placeholder("%item%", inventory.get(i).getItemMeta().getDisplayName()));
+							itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
+
+							if(inventory.get(i).getAmount() != 1) {
+								items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+								//items.add(Lang.Get("bag-content-item-amount", inventory.get(i).getItemMeta().getDisplayName(), inventory.get(i).getAmount()));
+							} else {
+								items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+								//items.add(Lang.Get("bag-content-item", inventory.get(i).getItemMeta().getDisplayName()));
+							}
+						}
+						else if(Main.VersionCompare(Main.server, ServerVersion.v1_20_5) >= 0) {
+							if(ItemUtils.HasItemName(inventory.get(i))) {
+								itemph.add(new Placeholder("%item%", ItemUtils.GetItemName(inventory.get(i))));
+								itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
+
+								if(inventory.get(i).getAmount() != 1) {
+									items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+								} else {
+									items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+								}
+							}
+							else {
+								itemph.add(new Placeholder("%item%", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
+								itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
+
+								if(inventory.get(i).getAmount() != 1) {
+									items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+									//items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(inventory.get(i).getType().getTranslationKey()), inventory.get(i).getAmount()));
+								} else {
+									items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+									//items.add(Lang.Get("bag-content-item", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
+								}
+							}
+						}
+						else {
+							itemph.add(new Placeholder("%item%", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
+							itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
+
+							if(inventory.get(i).getAmount() != 1) {
+								items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+								//items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(inventory.get(i).getType().getTranslationKey()), inventory.get(i).getAmount()));
+							} else {
+								items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+								//items.add(Lang.Get("bag-content-item", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
+							}
+						}
+					}else {
+						itemph.add(new Placeholder("%item%", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
+						itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
+
+						if(inventory.get(i).getAmount() != 1) {
+							items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+							//items.add(Lang.Get("bag-content-item-amount", Main.translator.Translate(inventory.get(i).getType().getTranslationKey()), inventory.get(i).getAmount()));
+						} else {
+							items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+							//items.add(Lang.Get("bag-content-item", Main.translator.Translate(inventory.get(i).getType().getTranslationKey())));
+						}
+					}
+					a++;
+				}
+			}
+		}
+		List<String> lore = new ArrayList<String>();
+		for (String l : Lang.lang.GetStringList("bag-lore")) {
+			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
+		}
+		if(NBT.GetBool(bag, "bag-canBind") == true && owner.equalsIgnoreCase("null") == false) {
+			placeholders.add(new Placeholder("%owner%", Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()));
+			placeholders.add(new Placeholder("%bound-to%", Lang.Parse(Lang.Get("bound-to"), placeholders, player)));
+			//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()), player));
+		}
+		if(NBT.Has(bag, "bag-size")) {
+			placeholders.add(new Placeholder("%size%", NBT.GetInt(bag, "bag-size")));
+			placeholders.add(new Placeholder("%slots_used%", items.size()));
+			placeholders.add(new Placeholder("%slots_free%", NBT.GetInt(bag, "bag-size") - items.size()));
+			placeholders.add(new Placeholder("%bag-size%", Lang.Parse(Lang.Get("bag-size"), placeholders, player)));
+			//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
+		}
+
+		if(NBT.Has(bag, "bag-filter")) {
+			placeholders.add(new Placeholder("%filter%", AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))));
+			placeholders.add(new Placeholder("%bag-auto-pickup%", Lang.Parse(Lang.Get("bag-auto-pickup"), placeholders, player)));
+			//lore.add(Lang.Parse(Lang.Parse(String.format(Lang.Get("bag-auto-pickup"), AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))), player)));
+			//lore.add(Lang.Parse("&7Auto Loot: " + AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter")), player));
+		}
+
+		if(NBT.Has(bag, "bag-weight") && NBT.Has(bag, "bag-weight-limit") && Main.weight.GetBool("enabled")) {
+			placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(GetWeight(bag), NBT.GetDouble(bag, "bag-weight-limit"), Main.weight.GetInt("bar-length"))));
+			placeholders.add(new Placeholder("%weight%", TextFeatures.LimitDecimal(String.valueOf(GetWeight(bag)),2)));
+			placeholders.add(new Placeholder("%limit%", String.valueOf(NBT.GetDouble(bag, "bag-weight-limit").intValue())));
+			placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(GetWeight(bag), NBT.GetDouble(bag, "bag-weight-limit"))), 2) + "%"));
+			placeholders.add(new Placeholder("%bag-weight%", Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)));
+			//lore.add(Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player));
+		}
+
+		boolean hasTrust = false;
+		if(NBT.Has(bag, "bag-trust")) {
 			List<String> trust = NBT.GetStringList(bag, "bag-trust");
 			String trusted = "";
 			if(trust.size() != 0) {
@@ -454,14 +457,12 @@ public class HavenBags {
 					}
 				}
 			}
-        	placeholders.add(new Placeholder("%trusted%", trusted));
-        	placeholders.add(new Placeholder("%bag-trusted%", Lang.Parse(Lang.Get("bag-trusted"), placeholders, player)));
-        	
-        	if(!Utils.IsStringNullOrEmpty(trusted)) hasTrust = true;
-        }
-        
-        
-        
+			placeholders.add(new Placeholder("%trusted%", trusted));
+			placeholders.add(new Placeholder("%bag-trusted%", Lang.Parse(Lang.Get("bag-trusted"), placeholders, player)));
+
+			if(!Utils.IsStringNullOrEmpty(trusted)) hasTrust = true;
+		}
+
         for(String line : Lang.lang.GetStringList("bag-lore-add")) {
         	if(owner.equalsIgnoreCase("null") == false) {
         		if(line.contains("%bound-to%") && !NBT.GetBool(bag, "bag-canBind")) continue;
@@ -615,7 +616,7 @@ public class HavenBags {
 					weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
 				}
 				NBT.SetDouble(bag, "bag-weight", weight);
-				BagData.GetBag(uuid, bag).getData().Set("weight", weight);
+				BagData.GetBag(uuid, bag).setWeight(weight);
 				return weight;
 			} catch(Exception e) {
 				return (double) 0;
@@ -710,10 +711,10 @@ public class HavenBags {
 		}else {
 			if(Main.weight.GetBool("weight-per-size")) {
 				NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat("weight-size-" + NBT.GetInt(bag, "bag-size")));
-				BagData.GetBag(HavenBags.GetBagUUID(bag), bag).getData().Set("weight", Main.weight.GetFloat("weight-size-" + NBT.GetInt(bag, "bag-size")));
+				BagData.GetBag(HavenBags.GetBagUUID(bag), bag).setWeight(Main.weight.GetFloat("weight-size-" + NBT.GetInt(bag, "bag-size")));
 			}else {
 				NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat("weight-limit"));
-				BagData.GetBag(HavenBags.GetBagUUID(bag), bag).getData().Set("weight", Main.weight.GetFloat("weight-limit"));
+				BagData.GetBag(HavenBags.GetBagUUID(bag), bag).setWeight(Main.weight.GetFloat("weight-limit"));
 			}
 		}
 		return false;
@@ -1059,4 +1060,38 @@ public class HavenBags {
 		}
 		return bags;
 	}
+	
+    public static int countItems(List<ItemStack> items, Material material) {
+        int count = 0;
+        for (ItemStack item : items) {
+            if (item != null && item.getType() == material) {
+                count += item.getAmount();
+            }
+        }
+        return count;
+    }
+    
+    public static int GetBagSlotsInInventory(Player player) {
+		int count = 0;
+
+		for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
+			count += BagData.GetBag(HavenBags.GetBagUUID(bag.item), null).getSize();
+		}
+
+		return count;
+    }
+    
+    public static boolean HasOthersBag(Player player) {
+    	boolean access = false;
+    	String uuid = player.getUniqueId().toString();
+    	for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
+    		if(BagData.GetBag(HavenBags.GetBagUUID(bag.item), null).getOwner().equalsIgnoreCase(uuid)) access = true;
+    		for(String trusted : BagData.GetBag(HavenBags.GetBagUUID(bag.item), null).getTrusted()) {
+    			if(trusted.equalsIgnoreCase(uuid)) access = true;
+    		}
+    		if(player.hasPermission("havenbags.bypass")) access = true;
+		}
+
+		return !access;
+    }
 }

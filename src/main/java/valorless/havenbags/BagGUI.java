@@ -19,10 +19,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
 import valorless.havenbags.BagData.Data;
+import valorless.havenbags.database.DatabaseType;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
@@ -41,9 +43,12 @@ public class BagGUI implements Listener {
 	String bag = "";
 	boolean preview;
 	public int size;
+	boolean ready = false;
 	
     public BagGUI(JavaPlugin plugin, int size, Player player, ItemStack bagItem, ItemMeta bagMeta, boolean... preview) {
     	if(preview.length != 0) this.preview = preview[0];
+    	
+    	ready = false;
     	
     	try {
     		// Try get owner's name on the server.
@@ -106,17 +111,54 @@ public class BagGUI implements Listener {
         //this.content = JsonUtils.fromJson(Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "content", PersistentDataType.STRING).toString());
 		//player.sendMessage(content.toString());
 
-        try {
-        	this.content = LoadContent();
-        }catch(Exception e) {
-        	e.printStackTrace();
-        	inv = null;
-        	bagItem.setAmount(0);
-        	player.sendMessage(Lang.Parse(Lang.Get("bag-does-not-exist"), player));
-        	return;
-        }
+		if(BagData.database == DatabaseType.MYSQLPLUS) {
+			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+				try {
+		        	this.content = LoadContent();
+		        	ready = true;
+		        }catch(Exception e) {
+		        	e.printStackTrace();
+		        	inv = null;
+		        	bagItem.setAmount(0);
+		        	player.sendMessage(Lang.Parse(Lang.Get("bag-does-not-exist"), player));
+		        	return;
+		        }
+			});
+		}else {
+			try {
+	        	this.content = LoadContent();
+	        	ready = true;
+	        }catch(Exception e) {
+	        	e.printStackTrace();
+	        	inv = null;
+	        	bagItem.setAmount(0);
+	        	player.sendMessage(Lang.Parse(Lang.Get("bag-does-not-exist"), player));
+	        	return;
+	        }
+		}
+
+		BukkitRunnable task = new BukkitRunnable() {
+		    @Override
+		    public void run() {
+		    	if(ready) {
+		    		if(content == null) {
+		    			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-already-open"), null));
+		    			this.cancel();
+		    			return;
+		    		}
+		    		
+		    		InitializeItems();
+		    	
+					OpenInventory(player);
+					this.cancel();
+		    	}
+		    }
+		};
+
+		task.runTaskTimer(Main.plugin, 1, 1);
+		
+    	
         
-        InitializeItems();
         //LoadContent();
         
         if(!this.preview) HavenBags.BagHashes.Add(inv.hashCode());
@@ -191,7 +233,15 @@ public class BagGUI implements Listener {
     	}
 				
 		//return HavenBags.LoadBagContentFromServer(uuid, owner, player);
-		return BagData.GetBag(uuid, this.bagItem).getContent();
+		
+		if(BagData.database == DatabaseType.MYSQLPLUS) {
+			Data data = BagData.mysql.loadBag(uuid);
+			if(data.isOpen()) return null;
+			List<ItemStack> content = data.getContent();
+			BagData.MarkBagOpen(uuid, bagItem, player, this);
+	    	return content;
+		}
+		else return BagData.GetBag(uuid, this.bagItem).getContent();
 	}
 
     public void OpenInventory(final HumanEntity ent) {
@@ -252,7 +302,7 @@ public class BagGUI implements Listener {
         	}
         }
         
-        if(clickedItem.isSimilar(bagItem)) {
+        if(clickedItem != null && clickedItem.isSimilar(bagItem)) {
         	e.setCancelled(true);
         	return;
         }

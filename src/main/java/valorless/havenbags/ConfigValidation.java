@@ -30,6 +30,12 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("debug", false);
 	Main.config.AddValidationEntry("config-version", 2);
 	Main.config.AddValidationEntry("check-updates", true);
+	Main.config.AddValidationEntry("save-type", "files");
+	Main.config.AddValidationEntry("mysql.host", "localhost");
+	Main.config.AddValidationEntry("mysql.port", 3306);
+	Main.config.AddValidationEntry("mysql.name", "minecraft");
+	Main.config.AddValidationEntry("mysql.user", "admin");
+	Main.config.AddValidationEntry("mysql.password", "pass");
 	Main.config.AddValidationEntry("auto-save-interval", 1200);
 	Main.config.AddValidationEntry("auto-save-message", true);
 	Main.config.AddValidationEntry("language", "en_us");
@@ -83,6 +89,7 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("bags-in-bags", false);
 	Main.config.AddValidationEntry("bags-in-shulkers", true);
 	Main.config.AddValidationEntry("keep-bags", true);
+	Main.config.AddValidationEntry("soulbound", false);
 	Main.config.AddValidationEntry("old-help-menu", false);
 	Main.config.AddValidationEntry("auto-pickup", true);
 	Main.config.AddValidationEntry("auto-pickup-sound", "ENTITY_ITEM_PICKUP");

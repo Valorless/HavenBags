@@ -2,11 +2,13 @@ package valorless.havenbags;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -77,6 +79,9 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (sender.hasPermission("havenbags.token")) {
 				subCommands.add("token");
+			}
+			if (sender.hasPermission("havenbags.database")) {
+				subCommands.add("convertdatabase");
 			}
 			if(Main.plugins.GetBool("mods.HavenBagsPreview.enable-command")) {
 				subCommands.add("mod");
@@ -150,6 +155,14 @@ public class TabCompletion implements TabCompleter {
 				cmds.add("custommodeldata");
 				StringUtil.copyPartialMatches(cmd, cmds, completions);
 			}
+			if (args[0].equalsIgnoreCase("convertdatabase") && sender.hasPermission("havenbags.database")) {
+				List<String> cmds = new ArrayList<String>();
+				cmds.add("FILES");
+				cmds.add("MYSQL");
+				cmds.add("MYSQLPLUS");
+				cmds.add("SQLITE");
+				StringUtil.copyPartialMatches(cmd, cmds, completions);
+			}
 			/*
 			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.open")) {
 				Player player = (Player)sender;
@@ -200,6 +213,12 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (args[0].equalsIgnoreCase("token") && args[1].equalsIgnoreCase("texture") && sender.hasPermission("havenbags.token")) {
 				StringUtil.copyPartialMatches(cmd, getTextures(), completions);
+			}
+			if (args[0].equalsIgnoreCase("modeldata") && sender.hasPermission("havenbags.modeldata")) {
+				List<String> materialNames = Arrays.stream(Material.values())
+				        .map(material -> material.name().toLowerCase())
+				        .collect(Collectors.toList());
+				StringUtil.copyPartialMatches(cmd, materialNames, completions);
 			}
 		} 
 		else if(args.length == 4) {

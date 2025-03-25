@@ -117,7 +117,8 @@ public class BagUpgrade implements Listener{
 			}
 			
 			String owner = NBT.GetString(clicked, "bag-owner");
-			BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).getData().Set("size", NBT.GetInt(clicked, "bag-size"));
+			BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setSize(NBT.GetInt(clicked, "bag-size"));
+			//BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).getData().Set("size", NBT.GetInt(clicked, "bag-size"));
 			Log.Debug(Main.plugin, "[DI-83] " + "[BagUpgrade] Size set to " + NBT.GetInt(clicked, "bag-size"));
 
 			if(Main.weight.GetBool("weight-per-size")) {

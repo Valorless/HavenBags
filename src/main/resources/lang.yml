@@ -158,6 +158,9 @@ bag-lore:
 # %bag-auto-pickup%
 # %bag-trusted%
 # %bag-weight% ------- Uses the 'weight-lore' from weight.yml.
+## Extra
+# %slots-used% - How many used slots in the bag.
+# %slots-free% - How many free slots in the bag.
 bag-lore-add:
  - '%bound-to%'
  - '%bag-size%'

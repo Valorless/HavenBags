@@ -13,6 +13,21 @@ debug: false
 # Should we check for plugin updates?
 check-updates: true
 
+# How should HavenBags store the bag data?
+# 'files' - Store each bag as individual files.
+# 'sqlite' - Store all data in a database file.
+# 'mysql' -  Store all data in an external database.
+# 'mysqlplus' -  Store all bags on an external database, loading/saving directly to the database. Can be used to use bags across servers.
+save-type: 'sqlite'
+
+# MySQL database settings.
+mysql:
+ host: 'localhost'
+ port: 3306
+ name: 'minecraft'
+ user: 'admin'
+ password: 'pass'
+
 # How often should we save bags onto the server?
 # In seconds.
 # Default: 1200 = 20min
@@ -151,6 +166,10 @@ bags-in-shulkers: true
 # Keep this 'false' if bags-in-bags is 'true'.
 # Otherwise players can put the bag inside itself, and lose it.
 keep-bags: true
+
+# Should bags be kept through death?
+# May be incompatible with other plugins.
+soulbound: false
 
 # Should /havenbags help, show commands without mouseover text, and the information below each command?
 old-help-menu: false

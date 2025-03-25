@@ -79,7 +79,7 @@ public class BagCarryLimit implements Listener {
 		}
     }
 	
-	public int getBagCarryLimit(Player player) {
+	public static int getBagCarryLimit(Player player) {
 	    for (PermissionAttachmentInfo perm : player.getEffectivePermissions()) {
 	        String permName = perm.getPermission();
 

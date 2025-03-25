@@ -1,10 +1,15 @@
 package valorless.havenbags;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,13 +23,22 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import valorless.havenbags.HavenBags.BagState;
 import valorless.havenbags.Main.ServerVersion;
+import valorless.havenbags.database.DatabaseType;
+import valorless.havenbags.database.Files;
+import valorless.havenbags.database.MySQL;
+import valorless.havenbags.database.SQLite;
 import valorless.havenbags.utils.Reflex;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
@@ -38,9 +52,16 @@ import valorless.havenbags.utils.HeadCreator;
 
 public class BagData {
 	
+	protected static DatabaseType database = DatabaseType.SQLITE;
+	static MySQL mysql;
+	static SQLite sqlite;
+	
+	static BukkitRunnable autosave;
+	
 	public enum UpdateSource { NULL, PLAYER }
 	
 	private static List<Data> data = new ArrayList<Data>();
+	private static HashMap<UUID, Data> changedBags = new HashMap<UUID, Data>();
 	public static long interval;
 	
 	private static boolean ready = false;
@@ -51,15 +72,103 @@ public class BagData {
 	
 	public static void Initiate() {
 		data.clear(); // Just in case
+		DatabaseType type = DatabaseType.get(Main.config.GetString("save-type").toUpperCase());
+		if(type != null) database = type;
+		else {
+			Log.Error(Main.plugin, String.format("Invalid database type \"%s\"\n"
+					+ "Please choose either FILES, MYSQL, or SQLITE.", Main.config.GetString("save-type")));
+			Bukkit.getPluginManager().disablePlugin(Main.plugin);
+		}
+		
+		if(database == DatabaseType.MYSQL || database == DatabaseType.MYSQLPLUS) {
+			mysql = new MySQL();
+		}
+		else if(database == DatabaseType.SQLITE) {
+			sqlite = new SQLite();
+		}
+		
 		interval = Main.config.GetInt("auto-save-interval")*20;
 		LoadData();
+		/*
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
             @Override
             public void run() {
-            	SaveData();
+            	SaveData(false, null);
             }
-        }, interval, interval);
+        }, interval, interval);*/
+		
+		if(database == DatabaseType.MYSQLPLUS) return;
+		
+		autosave = new BukkitRunnable() {
+		    @Override
+		    public void run() {
+            	SaveData(false, null);
+		    }
+		};
+
+		autosave.runTaskTimer(Main.plugin, interval, interval);
 		//Log.Info(Main.plugin, "Loaded bags: " + data.size());
+	}
+	
+	public static void Shutdown() {
+		if(database == DatabaseType.MYSQL) {
+			try {
+				if(mysql != null) {
+					mysql.disconnect();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(database == DatabaseType.SQLITE) {
+			try {
+				if(sqlite != null) {
+					sqlite.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void ChangeDatabase(DatabaseType type) {
+		if(database == DatabaseType.MYSQL || database == DatabaseType.MYSQLPLUS) {
+			try {
+				mysql.disconnect();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(database == DatabaseType.SQLITE) {
+			try {
+				sqlite.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		database = type;
+		autosave = new BukkitRunnable() {
+		    @Override
+		    public void run() {
+            	SaveData(false, null);
+		    }
+		};
+
+		autosave.runTaskTimer(Main.plugin, interval, interval);
+		
+		if(type == DatabaseType.MYSQL || type == DatabaseType.MYSQLPLUS) {
+			mysql = new MySQL();
+			autosave.cancel();
+		}
+		else if(type == DatabaseType.SQLITE) {
+			sqlite = new SQLite();
+		}
+		
+		if(type == DatabaseType.MYSQLPLUS) {
+			autosave.cancel();
+		}
+		
 	}
 	
 	public static void Reload() {
@@ -75,10 +184,22 @@ public class BagData {
 	public static class Data {
 		private String uuid;
 		private String owner;
-		private Config data;
+		private String creator;
+		private int size;
+		private String texture;
+		private int modeldata;
+		private String itemmodel;
+		private List<String> trusted;
+		private String autopickup;
+		private double weight;
+		private double weightMax;
 		private List<ItemStack> content = new ArrayList<ItemStack>();
+
+		//private Config dataFile;
+		
 		private boolean changed = false;
 		private boolean isOpen = false;
+
 		private Player viewer = null;
 		private BagGUI gui;
 		
@@ -86,9 +207,9 @@ public class BagData {
 			this.setUuid(uuid); this.setOwner(owner);
 		}
 		
-		public Data(@NotNull String uuid, @NotNull String owner, @NotNull Config data) {
-			this.setUuid(uuid); this.setOwner(owner); this.SetData(data);
-		}
+		//public Data(@NotNull String uuid, @NotNull String owner, @NotNull Config data) {
+		//	this.setUuid(uuid); this.setOwner(owner); this.SetData(data);
+		//}
 
 		public String getUuid() {
 			return uuid;
@@ -106,25 +227,94 @@ public class BagData {
 			this.owner = owner;
 		}
 		
+		public String getCreator() {
+			return creator;
+		}
+
+		public void setCreator(String creator) {
+			this.creator = creator;
+		}
+
+		public int getSize() {
+			return size;
+		}
+
+		public void setSize(int size) {
+			this.size = size;
+		}
+		
+		public void setContent(List<ItemStack> content){
+			this.content = content;
+			//return JsonUtils.fromJson(data.GetString("content").replace("◊","'"));
+		}
+
 		public List<ItemStack> getContent(){
 			return content;
 			//return JsonUtils.fromJson(data.GetString("content").replace("◊","'"));
 		}
 		
 		public String getTexture() {
-			return data.GetString("texture");
+			return texture;
 		}
 		
 		public void setTexture(String base64) {
-			data.Set("texture", base64);
+			this.texture = base64;
 		}
 
-		public Config getData() {
-			return data;
+		/*public Config getDataFile() {
+			return dataFile;
 		}
 
-		public void SetData(@NotNull Config data) {
-			this.data = data;
+		public void SetDataFile(@NotNull Config data) {
+			this.dataFile = data;
+		}*/
+
+		public int getModeldata() {
+			return modeldata;
+		}
+
+		public void setModeldata(int modeldata) {
+			this.modeldata = modeldata;
+		}
+
+		public String getItemmodel() {
+			return itemmodel;
+		}
+
+		public void setItemmodel(String itemmodel) {
+			this.itemmodel = itemmodel;
+		}
+
+		public List<String> getTrusted() {
+			return trusted;
+		}
+
+		public void setTrusted(List<String> trusted) {
+			this.trusted = trusted;
+		}
+
+		public String getAutopickup() {
+			return autopickup;
+		}
+
+		public void setAutopickup(String autopickup) {
+			this.autopickup = autopickup;
+		}
+
+		public double getWeight() {
+			return weight;
+		}
+
+		public void setWeight(double weight) {
+			this.weight = weight;
+		}
+
+		public double getWeightMax() {
+			return weightMax;
+		}
+
+		public void setWeightMax(double weightMax) {
+			this.weightMax = weightMax;
 		}
 
 		public BagGUI getGui() {
@@ -137,6 +327,18 @@ public class BagData {
 
 		public Player getViewer() {
 			return viewer;
+		}
+
+		public boolean isChanged() {
+			return changed;
+		}
+
+		public boolean isOpen() {
+			return isOpen;
+		}
+
+		public void setOpen(boolean open) {
+			this.isOpen = open;
 		}
 	}
 	
@@ -188,23 +390,23 @@ public class BagData {
 				m_source = source[0];
 			}
 		}
-		for(Data bag : data) {
-			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				try {
-					//bag.setContent(content);
-					bag.content = content;
-					//bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
-					bag.changed = true;
-					if(m_source == UpdateSource.PLAYER) {
-						bag.isOpen = false;
-					}
-				}catch(Exception e) {
-					Log.Error(Main.plugin, String.format("Failed to update bag '%s'.", uuid));
-				}
-				return;
+		
+		Data bag = GetBag(uuid, null);
+		
+		if(bag == null) Log.Error(Main.plugin, String.format("Failed to update bag '%s', this bag was not found.", uuid));
+		
+		try {
+			//bag.setContent(content);
+			bag.content = content;
+			//bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
+			bag.changed = true;
+			if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
+			if(m_source == UpdateSource.PLAYER) {
+				bag.isOpen = false;
 			}
+		}catch(Exception e) {
+			Log.Error(Main.plugin, String.format("Failed to update bag '%s'.", uuid));
 		}
-		Log.Error(Main.plugin, String.format("Failed to update bag '%s', this bag was not found.", uuid));
 	}
 	
 	public static void UpdateBag(@NotNull ItemStack bagItem, @NotNull List<ItemStack> content, UpdateSource... source) {
@@ -215,182 +417,145 @@ public class BagData {
 			}
 		}
 		String uuid = NBT.GetString(bagItem, "bag-uuid");
-		for(Data bag : data) {
-			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				try {
-					//bag.setContent(content);
-					bag.content = content;
-					//bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
-					
-					if(bagItem.getType() == Material.PLAYER_HEAD) {
-						bag.data.Set("texture", getTextureValue(bagItem));
-						bag.data.Set("custommodeldata", 0);
+		
+		Data bag = GetBag(uuid, null);
+		
+		if(bag == null) Log.Error(Main.plugin, String.format("Failed to update bag '%s', this bag was not found.", uuid));
+		
+		try {
+			//bag.setContent(content);
+			bag.content = content;
+			//bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
+			
+			if(bagItem.getType() == Material.PLAYER_HEAD) {
+				bag.setTexture(getTextureValue(bagItem));
+				bag.setModeldata(0);
+			}else {
+				if(bagItem.hasItemMeta()) {
+					if(bagItem.getItemMeta().hasCustomModelData()) {
+						bag.setModeldata(bagItem.getItemMeta().getCustomModelData());
 					}else {
-						if(bagItem.hasItemMeta()) {
-							if(bagItem.getItemMeta().hasCustomModelData()) {
-								bag.data.Set("custommodeldata", bagItem.getItemMeta().getCustomModelData());
-							}else {
-								bag.data.Set("custommodeldata", 0);
-							}
-							if(ItemUtils.GetItemModel(bagItem) != null) {
-								bag.data.Set("itemmodel", ItemUtils.GetItemModel(bagItem).toString());
-							}else {
-								bag.data.Set("itemmodel", "");
-							}
+						bag.setModeldata(0);
+					}
+					if(Main.VersionCompare(Main.server, Main.ServerVersion.v1_21_2) >= 0) {
+						if(ItemUtils.GetItemModel(bagItem) != null) {
+							bag.setItemmodel(ItemUtils.GetItemModel(bagItem).toString());
 						}else {
-							bag.data.Set("custommodeldata", 0);
-							bag.data.Set("itemmodel", "");
+							bag.setItemmodel("");
 						}
-						bag.data.Set("texture", Main.config.GetString("bag-texture"));
+					}else {
+						bag.setItemmodel("");
 					}
-					//bag.data.Set("texture", getTextureValue(bagItem));
-					 
-					 
-					bag.changed = true;
-					if(m_source == UpdateSource.PLAYER) {
-						bag.isOpen = false;
-					}
-					
-
-					if(Main.config.GetBool("capacity-based-textures.enabled")) {
-						bag.data.Set("texture", HavenBags.CapacityTexture(bagItem, content));
-						//bag.setTexture(HavenBags.CapacityTexture(bagItem, content));
-						Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable(){
-				            @Override
-				            public void run(){
-				            	HavenBags.UpdateBagItem(bagItem, content, bag.viewer);
-				            }
-				        }, 1L);
-						
-					}
-				}catch(Exception e) {
-					Log.Error(Main.plugin, String.format("Failed to update bag '%s'.", uuid));
-					if(m_source == UpdateSource.PLAYER) {
-					}
+				}else {
+					bag.setModeldata(0);
+					bag.setItemmodel("");
 				}
-				return;
+				bag.setTexture(Main.config.GetString("bag-texture"));
+			}
+			//bag.data.Set("texture", getTextureValue(bagItem));
+			 
+			 
+			bag.changed = true;
+			if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
+			if(m_source == UpdateSource.PLAYER) {
+				bag.isOpen = false;
+			}
+			
+
+			if(Main.config.GetBool("capacity-based-textures.enabled")) {
+				bag.setTexture(HavenBags.CapacityTexture(bagItem, content));
+				//bag.setTexture(HavenBags.CapacityTexture(bagItem, content));
+				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable(){
+		            @Override
+		            public void run(){
+		            	HavenBags.UpdateBagItem(bagItem, content, bag.viewer);
+		            }
+		        }, 1L);
+				
+			}
+		}catch(Exception e) {
+			Log.Error(Main.plugin, String.format("Failed to update bag '%s'.", uuid));
+			if(m_source == UpdateSource.PLAYER) {
 			}
 		}
-		Log.Error(Main.plugin, String.format("Failed to update bag '%s', this bag was not found.", uuid));
 	}
 	
 	public static void CreateBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content, Player creator, ItemStack bag) {
-		//String config = String.format("/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
-		Config bagData = null;
-		try {
-			try {
-		    	File file = new File(Main.plugin.getDataFolder() + "/bags/", owner + "/" + uuid + ".yml");
-		    	if(!file.exists()) {
-		    		file.getParentFile().mkdirs();
-		    		file.createNewFile();
-		        	Log.Debug(Main.plugin, "[DI-29] " + String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
-		        }
-		    	
-		    	
-				/*
-				Path path = Paths.get(Main.plugin.getDataFolder() + config);
-				List<String> lines = new ArrayList<String>();
-				try {
-					Files.write(path, lines, StandardCharsets.UTF_8);
-				}catch(IOException e){
-					e.printStackTrace();
-					Log.Error(Main.plugin, "(0) Failed to create new bag data: " + owner + "/" + uuid);
-					return;
-				}*/
-			}catch(Exception e){
-				e.printStackTrace();
-				Log.Error(Main.plugin, "(1) Failed to create new bag data: " + owner + "/" + uuid);
-				return;
-			}finally {
-				try {
-					bagData = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
-					bagData.Set("uuid", uuid);
-					bagData.Set("owner", owner);
-					if(creator != null) {
-						bagData.Set("creator", creator.getUniqueId().toString());
-					}else {
-						bagData.Set("creator", owner);
-					}
-					bagData.Set("size", content.size());
-					if(bag.getType() == Material.PLAYER_HEAD) {
-						bagData.Set("texture", getTextureValue(bag));
-						bagData.Set("custommodeldata", 0);
-					}else {
-						if(bag.hasItemMeta()) {
-							if(bag.getItemMeta().hasCustomModelData()) {
-								bagData.Set("custommodeldata", bag.getItemMeta().getCustomModelData());
-							}else {
-								bagData.Set("custommodeldata", 0);
-							}
-						}else {
-							bagData.Set("custommodeldata", 0);
-						}
-						bagData.Set("texture", Main.config.GetString("bag-texture"));
-					}
-					bagData.Set("trusted", new ArrayList<String>());
-					if(NBT.Has(bag, "bag-filter")) {
-						bagData.Set("auto-pickup", NBT.GetString(bag, "bag-filter"));
-					}else {
-						bagData.Set("auto-pickup", "null");
-					}
-					bagData.Set("weight-max", 0);
-					bagData.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
-					bagData.SaveConfig();
-				}catch(Exception E) {
-					E.printStackTrace();
-					// Error: Top level is not a Map.
-					// Unsure why this is thrown, but the file is converted successfully without issues..
-					//Log.Error(plugin, String.format("Something went wrong while converting %s!.", String.format("/bags/%s/%s", owner, bag)));
-				}
-			}
-		} catch(Exception e) {}
-		
-		if(bagData == null) {
-			Log.Error(Main.plugin, "(2) Failed to create new bag data: " + owner + "/" + uuid);
-			return;
-		}
-		Data dat = new Data(uuid, owner, bagData);
-		dat.changed = true;
+		Data dat = new Data(uuid, owner);
 		dat.content = content;
+		dat.creator = creator.getUniqueId().toString();
+		
+		dat.size = NBT.GetInt(bag, "bag-size");
+		if(bag.getType() == Material.PLAYER_HEAD) {
+			dat.texture = getTextureValue(bag);
+			dat.modeldata = 0;
+			dat.itemmodel = null;
+		}else {
+			dat.texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
+			if(bag.hasItemMeta()) {
+				if(bag.getItemMeta().hasCustomModelData()) {
+					dat.modeldata = bag.getItemMeta().getCustomModelData();
+				}
+				try {
+					dat.itemmodel = ItemUtils.GetItemModel(bag).toString();
+				}catch(Exception e) {}
+			}
+		}
+		dat.trusted = new ArrayList<String>();
+		dat.autopickup = "null";
+		
+		dat.changed = true;
 		data.add(dat);
 		Log.Debug(Main.plugin, "[DI-30] " + "New bag data created: " + owner + "/" + uuid);
 	}
 	
 	public static void LoadData(){
 		ready = false;
-		Log.Info(Main.plugin, "Loading bags.");
+		Log.Info(Main.plugin, "Loading bags..");
 		long startTime = System.currentTimeMillis();
 		int i = 0;
-		List<String> owners	= GetBagOwners();
-		for(String owner : owners) {
-			List<String> bags	= GetBags(owner);
-			for(String bag : bags) {
-				String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, bag);
-				
-				File bagData;
-				try {
-					bagData = new File(path);
-				} catch(Exception e) {
-					e.printStackTrace();
-					continue;
-				}
-		        if(!bagData.exists()) {
-		        	continue;
-		        }
-				try {
-					Config d = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, bag));
-					Data bagdata = new Data(bag, owner, d);
-					bagdata.content = JsonUtils.fromJson(bagdata.data.GetString("content").replace("◊","'"));
-					//Path filePath = Path.of(path);
-					//bagdata.setContent(JsonUtils.fromJson(Files.readString(filePath)));
-					//bagdata.SetData();
-					data.add(bagdata);
-					i++;
-				} catch (Exception e) {
-					e.printStackTrace();
-					continue;
+		if(database == DatabaseType.FILES) {
+			List<String> owners	= GetBagOwners();
+			for(String owner : owners) {
+				List<String> bags = Files.GetBags(owner);
+				for(String bag : bags) {
+					String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, bag);
+
+					File bagData;
+					try {
+						bagData = new File(path);
+					} catch(Exception e) {
+						e.printStackTrace();
+						continue;
+					}
+					if(!bagData.exists()) {
+						continue;
+					}
+					try {
+						data.add(Files.loadBag(owner, bag));
+						i++;
+					} catch (Exception e) {
+						e.printStackTrace();
+						continue;
+					}
 				}
 			}
+		}
+		else if(database == DatabaseType.MYSQL) {
+			List<Data> bags = mysql.loadAllBags();
+			data = bags;
+			i = bags.size();
+		}
+		else if(database == DatabaseType.SQLITE) {
+			for(String uuid : sqlite.getAllBagUUIDs()) {
+				data.add(sqlite.loadBag(uuid));
+				i++;
+			}
+		}
+		else if(database == DatabaseType.MYSQLPLUS) {
+			List<Data> bags = mysql.loadAllBags();
+			data = bags;
+			i = bags.size();
 		}
 		long endTime = System.currentTimeMillis();
 		long duration = endTime - startTime;
@@ -398,21 +563,107 @@ public class BagData {
 		ready = true;
 	}
 	
-	public static void SaveData() {
+	public static void SaveData(boolean shutdown, boolean... conversion) {
 		long startTime = System.currentTimeMillis();
-		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, "Saving bags.");
-		for(Data bag : data) {
-			if(!bag.changed) continue;
+		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, "Saving bags..");
+		List<Data> toSave = new ArrayList<>();
+		
+		if(shutdown || conversion != null) {
+			for(Data bag : data) {
+				toSave.add(bag);
+			}
+		}
+		
+		Iterator<Map.Entry<UUID, Data>> iterator = changedBags.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry<UUID, Data> entry = iterator.next();
+			Data bag = entry.getValue();
+		    toSave.add(bag);
+		    iterator.remove();
+		    bag.changed = false;
+		}
+		
+		for(Data bag : toSave) {
 			String uuid = bag.uuid;
 	    	String owner = bag.owner;
-	    	Log.Debug(Main.plugin, "[DI-31] " + "Attempting to write bag " + owner + "/" + uuid + " onto server");
-	    	bag.data.Set("content", JsonUtils.toJson(bag.content).replace("'", "◊"));
-	    	bag.data.SaveConfig();
-	    	bag.changed = false;
+	    	
+	    	if(database == DatabaseType.FILES) {
+	    		Log.Debug(Main.plugin, "[DI-31] " + "Attempting to write bag " + owner + "/" + uuid + " onto server");
+	    		File path = new File(Main.plugin.getDataFolder() + "/bags");
+	    		File path2 = new File(Main.plugin.getDataFolder() + String.format("/bags/%s", owner));
+	    		File path3 = new File(Main.plugin.getDataFolder() + String.format("/bags/%s/%s.yml", owner, uuid));
+	    		
+	    		if(!path.exists()) path.mkdir();
+	    		if(!path2.exists()) path2.mkdir();
+	    		if(!path3.exists())
+					try {
+						path3.createNewFile();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+	    		
+	    		Config file = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
+	    		
+	    		if(!file.HasKey("uuid")) file.Set("uuid", bag.uuid);
+	    		if(!file.HasKey("owner")) file.Set("owner", bag.owner);
+	    		if(!file.HasKey("creator")) file.Set("creator", bag.creator);
+	    		if(!file.HasKey("size")) file.Set("size", bag.size);
+	    		if(!file.HasKey("texture")) file.Set("texture", bag.texture);
+	    		if(!file.HasKey("custommodeldata")) file.Set("custommodeldata", bag.modeldata);
+	    		if(!file.HasKey("itemmodel")) file.Set("itemmodel", bag.itemmodel);
+	    		if(!file.HasKey("trusted")) file.Set("trusted", bag.trusted);
+	    		if(!file.HasKey("auto-pickup")) file.Set("auto-pickup", bag.autopickup);
+	    		if(!file.HasKey("weight")) file.Set("weight", bag.weight);
+	    		if(!file.HasKey("weight-max")) file.Set("weight-max", bag.weightMax);
+	    		
+	    		file.Set("content", JsonUtils.toJson(bag.content).replace("'", "◊"));
+	    		file.SaveConfig();
+	    	}
+	    	else if(database == DatabaseType.SQLITE) {
+	    		Log.Debug(Main.plugin, "[DI-231] " + "Attempting to write bag " + owner + "/" + uuid + " onto database");
+	    		if(shutdown || conversion != null) {
+	    			sqlite.saveBag(bag);
+	    		}else {
+	    			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+	    				sqlite.saveBag(bag);
+	    			});
+	    		}
+	    	}else 
+		    	if(database == DatabaseType.MYSQLPLUS) {
+		    		if(!shutdown && conversion == null) {
+		    			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+		    				mysql.saveBag(bag);
+		    			});
+		    		}
+		    	}
 		}
+		
+		if(!toSave.isEmpty()) {
+	    	if(database == DatabaseType.MYSQL) {
+	    		Log.Debug(Main.plugin, "[DI-232] " + "Attempting to write bags onto database");
+	    		if(shutdown || conversion != null) {
+	    			mysql.saveBags(toSave);
+	    		}else {
+	    			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+	    				mysql.saveBags(toSave);
+	    			});
+	    		}
+	    	}
+	    	else if(database == DatabaseType.MYSQLPLUS) {
+	    		Log.Debug(Main.plugin, "[DI-233] " + "Attempting to write bags onto database");
+	    		if(shutdown || conversion != null) {
+	    			mysql.saveBags(toSave);
+	    		}else {
+	    			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+	    				mysql.saveBags(toSave);
+	    			});
+	    		}
+	    	}
+		}
+		
 		long endTime = System.currentTimeMillis();
 		long duration = endTime - startTime;
-		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, String.format("Bags saved. %sms", duration));
+		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, String.format("Saved %s bags. %sms", toSave.size(), duration));
 	}
 	
 	public static void RemoveBag(@NotNull String uuid) {
@@ -424,6 +675,9 @@ public class BagData {
 				return;
 			}
 		}
+		if(changedBags.containsKey(UUID.fromString(uuid))) {
+			changedBags.remove(UUID.fromString(uuid));
+		}
 		Log.Error(Main.plugin, String.format("Failed to remove cached data for %s.", uuid));
 	}
 	
@@ -432,12 +686,19 @@ public class BagData {
 			Data bag = data.get(i);
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				RemoveBag(uuid);
-				try {
-					bag.data.GetFile().deleteFile();
-				}catch(Exception e) {
-					Log.Error(Main.plugin, String.format("Failed to delete data for %s.", uuid));
-					e.printStackTrace();
-				}
+				if(database == DatabaseType.FILES) {
+					try {
+						Files.deleteFile(bag.getOwner(), uuid);
+					}catch(Exception e) {
+						Log.Error(Main.plugin, String.format("Failed to delete data for %s.", uuid));
+						e.printStackTrace();
+					}
+				}else if(database == DatabaseType.MYSQL) {
+		    		mysql.deleteBag(uuid);
+		    	}
+		    	else if(database == DatabaseType.SQLITE) {
+		    		sqlite.deleteBag(uuid);
+		    	}
 				Log.Info(Main.plugin, String.format("Deleted data for %s.", uuid));
 				return;
 			}
@@ -445,35 +706,36 @@ public class BagData {
 		Log.Error(Main.plugin, String.format("Failed to delete data for %s.", uuid));
 	}
 	
-	protected static List<String> GetBags(@NotNull String playerUUID){
+	public static List<String> GetBags(@NotNull String playerUUID){
 		Log.Debug(Main.plugin, "[DI-32] " + playerUUID);
-		try {
-			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), playerUUID)).listFiles())
-					.filter(file -> !file.isDirectory())
-					.filter(file -> !file.getName().contains(".json"))
-					.map(File::getName)
-					.collect(Collectors.toList());
-			for(int i = 0; i < bags.size(); i++) {
-				//Log.Debug(Main.plugin, bags.get(i));
-				bags.set(i, bags.get(i).replace(".yml", ""));
+		List<String> bags = new ArrayList<String>();
+		for(Data dat : data) {
+			if(dat.owner.equalsIgnoreCase(playerUUID)) {
+				bags.add(dat.uuid);
 			}
-			return bags;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ArrayList<String>();
 		}
+		return bags;
 	}
 	
-	protected static List<String> GetBagOwners(){
-		try {
-			List<String> bagOwners = Stream.of(new File(String.format("%s/bags/", Main.plugin.getDataFolder())).listFiles())
-					.filter(file -> file.isDirectory())
-					.map(File::getName)
-					.collect(Collectors.toList());
-			return bagOwners;
-		} catch (Exception e) {
-			return new ArrayList<String>();
-		}
+	public static List<String> GetBagOwners(){
+		if(database == DatabaseType.FILES) {
+			try {
+				List<String> bagOwners = Stream.of(new File(String.format("%s/bags/", Main.plugin.getDataFolder())).listFiles())
+						.filter(file -> file.isDirectory())
+						.map(File::getName)
+						.collect(Collectors.toList());
+				return bagOwners;
+			} catch (Exception e) {
+				return new ArrayList<String>();
+			}
+		}else if(database == DatabaseType.MYSQL) {
+			return mysql.getBagOwners();
+    	}
+    	else if(database == DatabaseType.SQLITE) {
+    		return sqlite.getBagOwners();
+    	}
+		
+		return new ArrayList<String>();
 	}
 	
 	public static boolean IsBagOpen(@NotNull String uuid,  ItemStack bagItem) {
@@ -516,6 +778,11 @@ public class BagData {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				bag.isOpen = true;
 				bag.viewer = player;
+				if(database == DatabaseType.MYSQLPLUS) {
+					Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+    					mysql.saveBag(bag);
+    				});
+				}
 				return;
 			}
 		}
@@ -529,6 +796,11 @@ public class BagData {
 				bag.isOpen = true;
 				bag.viewer = player;
 				bag.gui = gui;
+				if(database == DatabaseType.MYSQLPLUS) {
+					Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+    					mysql.saveBag(bag);
+    				});
+				}
 				return;
 			}
 		}
@@ -541,6 +813,11 @@ public class BagData {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				bag.isOpen = false;
 				bag.gui = null;
+				if(database == DatabaseType.MYSQLPLUS) {
+					Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+    					mysql.saveBag(bag);
+    				});
+				}
 				return;
 			}
 		}
@@ -550,7 +827,7 @@ public class BagData {
 	public List<String> GetTrusted(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				return bag.data.GetStringList("trusted");
+				return bag.trusted;
 			}
 		}
 		return null;
@@ -559,7 +836,7 @@ public class BagData {
 	public static String GetOwner(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				return bag.data.GetString("owner");
+				return bag.owner;
 			}
 		}
 		return null;
@@ -568,7 +845,7 @@ public class BagData {
 	public static String GetCreator(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				return bag.data.GetString("creator");
+				return bag.creator;
 			}
 		}
 		return null;
@@ -577,11 +854,12 @@ public class BagData {
 	public static void AddTrusted(@NotNull String uuid, @NotNull String player) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				List<String> trusted = bag.data.GetStringList("trusted");
+				List<String> trusted = bag.trusted;
 				if(!trusted.contains(player)) {
 					trusted.add(player);
-					bag.data.Set("trusted", trusted);
+					bag.trusted = trusted;
 					bag.changed = true;
+					if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 				}
 			}
 		}
@@ -590,13 +868,14 @@ public class BagData {
 	public static void RemoveTrusted(@NotNull String uuid, @NotNull String player) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				List<String> trusted = bag.data.GetStringList("trusted");
+				List<String> trusted = bag.trusted;
 				if(trusted.size() == 0) return;
 				for(int i = 0; i < trusted.size(); i++) {
 					if(trusted.get(i).equalsIgnoreCase(player)) {
 						trusted.remove(i);
-						bag.data.Set("trusted", trusted);
+						bag.trusted = trusted;
 						bag.changed = true;
+						if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 					}
 				}
 			}
@@ -606,8 +885,9 @@ public class BagData {
 	public static void SetAutoPickup(@NotNull String uuid, @NotNull String filter) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.data.Set("auto-pickup", filter);
+				bag.autopickup = filter;
 				bag.changed = true;
+				if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			}
 		}
 	}
@@ -615,7 +895,7 @@ public class BagData {
 	public static String GetAutoPickup(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				return bag.data.GetString("auto-pickup");
+				return bag.autopickup;
 			}
 		}
 		return null;
@@ -624,26 +904,29 @@ public class BagData {
 	public static void RemoveAutoPickup(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.data.Set("auto-pickup", "null");
+				bag.autopickup = "null";
 				bag.changed = true;
+				if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			}
 		}	
 	}
 	
-	/*public static void SetWeight(@NotNull String uuid, @NotNull double weight) {
+	public static void SetWeight(@NotNull String uuid, @NotNull double weight) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.data.Set("weight", weight);
+				bag.weight = weight;
 				bag.changed = true;
+				if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			}
 		}
-	}*/
+	}
 	
 	public static void SetWeightMax(@NotNull String uuid, @NotNull double weightmax) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.data.Set("weight-max", weightmax);
+				bag.weightMax = weightmax;
 				bag.changed = true;
+				if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			}
 		}
 	}
@@ -653,6 +936,7 @@ public class BagData {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				bag.changed = true;
+				if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			}
 		}
 	}
@@ -746,4 +1030,19 @@ public class BagData {
 		}
 		return open;
 	}
+	
+	public static List<JsonObject> deserializeItemStackList(String json) {
+        JsonArray jsonArray = JsonParser.parseString(json).getAsJsonArray();
+
+        List<JsonObject> itemList = new ArrayList<>();
+        for (JsonElement element : jsonArray) {
+            if (!element.isJsonNull()) { // Ignore null values
+                itemList.add(element.getAsJsonObject());
+            }else {
+            	itemList.add(null);
+            }
+        }
+
+        return itemList;
+    }
 }

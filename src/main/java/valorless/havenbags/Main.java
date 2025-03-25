@@ -8,6 +8,7 @@ import valorless.havenbags.features.BagUpgrade;
 import valorless.havenbags.features.Crafting;
 import valorless.havenbags.features.Encumbering;
 import valorless.havenbags.features.Quiver;
+import valorless.havenbags.features.Soulbound;
 import valorless.havenbags.features.WeightTooltip;
 import valorless.havenbags.hooks.*;
 import valorless.havenbags.prevention.*;
@@ -79,6 +80,7 @@ public final class Main extends JavaPlugin implements Listener {
 	public static Config blacklist;
 	public static Config plugins;
 	public static Config textures;
+	protected static PlaceholderAPI papi;
 	//public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
 	int newupdate = 9999999;
@@ -157,7 +159,12 @@ public final class Main extends JavaPlugin implements Listener {
 		// Check if a correct version of ValorlessUtils is in use, otherwise don't run the rest of the code.
 		if(!ValorlessUtils()) return;
 		
-		PlaceholderAPIHook.Hook();
+		ConfigValidation.Validate();
+		
+		if(PlaceholderAPIHook.Hook()) {
+			papi = new PlaceholderAPI();
+			papi.register();
+		}
 		ChestSortHook.Hook();
 		PvPManagerHook.Hook();
 		if(ProtocolLibHook.Hook()) {
@@ -166,8 +173,6 @@ public final class Main extends JavaPlugin implements Listener {
 		//OraxenHook.Hook();
 		
 		Log.Debug(plugin, "[DI-1] " +Long.toString(System.currentTimeMillis() / 1000L));
-		
-		ConfigValidation.Validate();
 		
 		translator = new Translator(config.GetString("language"));
 		
@@ -231,7 +236,8 @@ public final class Main extends JavaPlugin implements Listener {
 	@Override
     public void onDisable() {
     	CloseBags();
-    	BagData.SaveData();
+    	BagData.SaveData(true);
+    	BagData.Shutdown();
     	Crafting.RemoveRecipes();
     }
     
@@ -303,6 +309,9 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		Log.Debug(plugin, "[DI-222] Registering BagCarryLimit");
 		getServer().getPluginManager().registerEvents(new BagCarryLimit(), this);
+		
+		Log.Debug(plugin, "[DI-230] Registering Soulbound");
+		getServer().getPluginManager().registerEvents(new Soulbound(), this);
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
     }

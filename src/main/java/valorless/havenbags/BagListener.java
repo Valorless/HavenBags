@@ -14,13 +14,12 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.util.BlockIterator;
 
 import me.NoChance.PvPManager.PvPManager;
 import me.NoChance.PvPManager.PvPlayer;
 import me.NoChance.PvPManager.Managers.PlayerHandler;
-import me.NoChance.PvPManager.Settings.Settings;
-
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;
@@ -67,7 +66,7 @@ public class BagListener implements Listener{
 								PvPlayer pvplayer = playerHandler.get(player);
 								boolean pvp = pvplayer.hasPvPEnabled();
 								boolean tagged = pvplayer.isInCombat();
-								if(!Settings.isGlobalStatus()) pvp = false;
+								//if(!Settings.isGlobalStatus()) pvp = false;
 								//if(PvPManager.getInstance().)  //if global pvp = false, set pvp to false.
 								if(pvp && Main.plugins.GetBool("plugins.PvPManager.pvp") == false) {
 									Log.Debug(Main.plugin, "[DI-48] " + "Pvp.");
@@ -113,16 +112,14 @@ public class BagListener implements Listener{
 						}
 					}
 					
-					if(!ownerless) {
-						if(Main.config.GetInt("max-bags") > 0) {
-							if(!player.hasPermission("havenbags.bypass")) {
-								if(BagData.GetBags(player.getUniqueId().toString()).size() >= Main.config.GetInt("max-bags")) {
-									player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("max-bags"), player));
-									return;
-								}
-							}
+					if(NBT.GetString(hand, "bag-owner").equalsIgnoreCase("null")) {
+						if(creationLimit(player)) {
+							player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("max-bags"), player));
+							event.setCancelled(true);
+							return;
 						}
 					}
+					
 					if(CreateBag(hand, ownerless, player, placeholders)) {
 						Bukkit.getScheduler().runTaskLater(Main.plugin, () -> {
 							OpenBag(hand, ownerless, player, event);
@@ -131,8 +128,6 @@ public class BagListener implements Listener{
 						OpenBag(hand, ownerless, player, event);
 					}
 
-
-					
 				}
 			}
 		}
@@ -211,7 +206,7 @@ public class BagListener implements Listener{
 		return true;
 	}
 	
-	private void OpenBag(ItemStack bag, boolean ownerless, Player player, PlayerInteractEvent event) {
+	private void OpenBag(ItemStack bag, boolean ownerless, Player player, PlayerInteractEvent event) {		
 		String uuid = NBT.GetString(bag, "bag-uuid");
 		Log.Debug(Main.plugin, "[DI-226] " + "Opening " +  uuid);
 		String owner = NBT.GetString(bag, "bag-owner");
@@ -236,12 +231,10 @@ public class BagListener implements Listener{
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, null, player);
 				BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(bag, "bag-size"), player, bag, bag.getItemMeta());
-				BagData.MarkBagOpen(uuid, bag, player, gui);
 				Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
 				if(!Main.config.GetBool("keep-bags")){ 
 					player.getInventory().remove(bag);
 				}
-				gui.OpenInventory(player);
 				SFX.Play(Main.config.GetString("open-sound"), 
 						Main.config.GetFloat("open-volume").floatValue(), 
 						Main.config.GetFloat("open-pitch").floatValue(), player);
@@ -258,12 +251,10 @@ public class BagListener implements Listener{
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, null, player);
 				BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(bag, "bag-size"), player, bag, bag.getItemMeta());
-				BagData.MarkBagOpen(uuid, bag, player, gui);
 				Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
 				if(!Main.config.GetBool("keep-bags")){ 
 					player.getInventory().remove(bag);
 				}
-				gui.OpenInventory(player);
 				SFX.Play(Main.config.GetString("open-sound"), 
 						Main.config.GetFloat("open-volume").floatValue(), 
 						Main.config.GetFloat("open-pitch").floatValue(), player);
@@ -322,6 +313,33 @@ public class BagListener implements Listener{
 			event.setCancelled(true);
 			return;
 		}
+	}
+	
+	public static int getPlayerBagLimit(Player player) {
+	    for (PermissionAttachmentInfo perm : player.getEffectivePermissions()) {
+	        String permName = perm.getPermission();
+
+	        if (permName.startsWith("havenbags.max.")) {
+	            try {
+	                return Integer.parseInt(permName.substring("havenbags.max.".length())); // Extract full number
+	            } catch (NumberFormatException e) {
+	                return Main.config.GetInt("max-bags");
+	            }
+	        }
+	    }
+	    return Main.config.GetInt("max-bags");
+	}
+	
+	public boolean creationLimit(Player player) {
+		if(Main.config.GetInt("max-bags") > 0) {
+			if(!player.hasPermission("havenbags.bypass")) {
+				int limit = getPlayerBagLimit(player);
+				if(BagData.GetBags(player.getUniqueId().toString()).size() >= limit) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }

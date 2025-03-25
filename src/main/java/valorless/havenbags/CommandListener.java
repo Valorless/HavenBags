@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import valorless.havenbags.commands.HBCommand;
 import valorless.havenbags.commands.fun.CommandExplode;
 import valorless.havenbags.commands.CommandAutopickup;
+import valorless.havenbags.commands.CommandConvertDatabase;
 import valorless.havenbags.commands.CommandConvertEpicBackpacks;
 import valorless.havenbags.commands.CommandConvertMinepacks;
 import valorless.havenbags.commands.CommandCreate;
@@ -144,6 +145,10 @@ public class CommandListener implements CommandExecutor {
 				// Not visible in tabcompletion.
 				if(args[0].equalsIgnoreCase("explode") && sender.hasPermission("havenbags.empty")) {
 					return CommandExplode.Run(cmd);
+				}
+				
+				if(args[0].equalsIgnoreCase("convertdatabase") && sender.hasPermission("havenbags.database")) {
+					return CommandConvertDatabase.Run(cmd);
 				}
 				
 			} catch(Exception e) {

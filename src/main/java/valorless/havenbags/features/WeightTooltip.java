@@ -19,10 +19,10 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 
 import valorless.havenbags.BagData;
-import valorless.havenbags.BagData.Data;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.BagData.Data;
 
 public class WeightTooltip {
     public static void registerTooltipListener(Plugin plugin) {

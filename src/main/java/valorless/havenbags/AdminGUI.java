@@ -1,7 +1,5 @@
 package valorless.havenbags;
 
-import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +21,7 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.nbt.NBT;
+import valorless.havenbags.BagData.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.utils.GUI;
 import valorless.havenbags.utils.HeadCreator;
@@ -322,14 +321,14 @@ public class AdminGUI implements Listener {
 				}
         	}
         	
-        	String owner = clickedItem.getItemMeta().getDisplayName();
+        	String owner = NBT.GetString(clickedItem, "bag-owner");
         	Log.Debug(plugin, "[DI-24] " + "Changing Admin target to " + owner);
         	if(owner.equalsIgnoreCase("ownerless")) {
         		target = "ownerless";
         	}else {
-        		target = Bukkit.getPlayer(owner).getUniqueId().toString();
+        		target = owner;
+            	targetPlayer = Bukkit.getPlayer(UUID.fromString(target));
         	}
-        	targetPlayer = Bukkit.getPlayer(UUID.fromString(target));
         	type = GUIType.Player;
         	Reload();
         	e.setCancelled(true);
@@ -373,12 +372,12 @@ public class AdminGUI implements Listener {
 				}
         	}
         	
-        	String owner = clickedItem.getItemMeta().getDisplayName();
+        	String owner = NBT.GetString(clickedItem, "bag-owner");
         	Log.Debug(plugin, "[DI-25] " + "Changing Admin target to " + owner);
         	if(owner.equalsIgnoreCase("ownerless")) {
         		target = "ownerless";
         	}else {
-        		target = Bukkit.getPlayer(owner).getUniqueId().toString();
+        		target = owner;
         	}
         	targetPlayer = Bukkit.getPlayer(UUID.fromString(target));
         	type = GUIType.PreviewPlayer;
@@ -424,12 +423,12 @@ public class AdminGUI implements Listener {
 				}
         	}
         	
-        	String owner = clickedItem.getItemMeta().getDisplayName();
+        	String owner = NBT.GetString(clickedItem, "bag-owner");
         	Log.Debug(plugin, "[DI-26] " + "Changing Admin target to " + owner);
         	if(owner.equalsIgnoreCase("ownerless")) {
         		target = "ownerless";
         	}else {
-        		target = Bukkit.getPlayer(owner).getUniqueId().toString();
+        		target = owner;
         	}
         	targetPlayer = Bukkit.getPlayer(UUID.fromString(target));
         	type = GUIType.DeletionPlayer;
@@ -616,32 +615,9 @@ public class AdminGUI implements Listener {
         	}
         	
         	if(action.equalsIgnoreCase("confirm")){
-        		String owner = NBT.GetString(selectedBag, "bag-owner");
             	String uuid = NBT.GetString(selectedBag, "bag-uuid");
 
-    			String dirPath = String.format("%s/bags/%s/", Main.plugin.getDataFolder(), owner);
-    			File dir = new File(dirPath);
-    			if(!dir.exists()) {
-    				return;
-    			}
-    			String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
-    			File bagData;
-    			try {
-    				bagData = new File(path);
-    			} catch(Exception ex) {
-    				ex.printStackTrace();
-    				return;
-    			}
-    			if(!bagData.exists()) {
-    				return;
-    			}
-    			
-    			if(bagData.delete()) {
-    				Log.Info(plugin, String.format("Bag '%s/%s' successfully deleted.", owner, uuid));
-            		BagData.DeleteBag(uuid);
-    			}else {
-    				Log.Info(plugin, String.format("Could not delete bag '%s/%s'.", owner, uuid));
-    			}
+    			BagData.DeleteBag(uuid);
         		
         		type = GUIType.DeletionPlayer;
             	Reload();
@@ -709,9 +685,6 @@ public class AdminGUI implements Listener {
 		for(String line : Lang.lang.GetStringList("main-preview-lore")) {
 			p_lore.add(Lang.Parse(line, targetPlayer));
 		}
-		/*p_lore.add("§7Preview bags of online players.");
-		p_lore.add("§7You can take items from the preview,");
-		p_lore.add("§7without affecting the real bag.");*/
 		previewMeta.setLore(p_lore);
 		previewItem.setItemMeta(previewMeta);
 		NBT.SetString(previewItem, "bag-action", "preview");
@@ -744,14 +717,6 @@ public class AdminGUI implements Listener {
 		for(String line : Lang.lang.GetStringList("main-info-lore")) {
 			I_lore.add(Lang.Parse(line, targetPlayer));
 		}
-		/*I_lore.add("§7The Admin GUI does not allow restoration of ownerless bags,");
-		I_lore.add("§7you have to do those manually with §e/bags restore§7.");
-		I_lore.add("");
-		I_lore.add("§7If a player has over 53 bags,");
-		I_lore.add("§7you also have to manually restore them.");
-		I_lore.add("");
-		I_lore.add("§7You can also restore bags of offline players,");
-		I_lore.add("§7by using §e/bags gui restore <username>§7.");*/
 		infoMeta.setLore(I_lore);
 		infoItem.setItemMeta(infoMeta);
 		buttons.add(infoItem);
@@ -760,23 +725,12 @@ public class AdminGUI implements Listener {
 	}
     
     public void modifyMaxStack(ItemStack item, int amount) {
-    	/*
-    	try {
-    		
-    		Field f = ItemStack.class.getDeclaredField("maxStackSize");
-    		f.setAccessible(true);
-    		f.setInt(item, amount);
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    		return;
+    	if(Main.VersionCompare(Main.server, Main.ServerVersion.v1_20_5) >= 0){
+    		ItemUtils.SetMaxStackSize(item, amount);
     	}
-    	*/
     }
 
 	ArrayList<ItemStack> PrepareTemplates() {
-    	for(Field f : ItemStack.class.getDeclaredFields()) {
-    		Log.Debug(plugin, "[DI-27] " + f.getName() + " - " + f.getType());
-    	}
 		ArrayList<ItemStack> templates = new ArrayList<ItemStack>();
 		
 		//Bound
@@ -784,8 +738,6 @@ public class AdminGUI implements Listener {
 			List<Placeholder> placeholders = new ArrayList<Placeholder>();
 			String bagTexture = Main.config.GetString("bag-texture");
 			ItemStack bagItem = new ItemStack(Material.AIR);
-			
-			modifyMaxStack(bagItem, 1);
 			
 			int size = i*9;
 			
@@ -806,13 +758,13 @@ public class AdminGUI implements Listener {
 				player.closeInventory();
 			}
 			ItemMeta bagMeta = bagItem.getItemMeta();
-			if(Main.config.GetInt("bag-custom-model-data") != 0) {
+			if(Main.config.GetInt("bag-custom-model-data") != 0 && Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 				bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
-			}
-			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
-				for(int s = 9; s <= 54; s += 9) {
-					if(size == s) {
-						bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
+				if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+					for(int s = 9; s <= 54; s += 9) {
+						if(size == s) {
+							bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
+						}
 					}
 				}
 			}
@@ -830,8 +782,11 @@ public class AdminGUI implements Listener {
 			bagMeta.setLore(lore);
 			bagItem.setItemMeta(bagMeta);
 			
+			modifyMaxStack(bagItem, 1);
+			
 			if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-custom-model-data")) && 
-					!Main.config.GetString("bag-custom-model-data").matches("-?\\d+(\\.\\d+)?")) {
+					!Main.config.GetString("bag-custom-model-data").matches("-?\\d+(\\.\\d+)?") &&
+					Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 				ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-custom-model-data"));
 			}
 			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
@@ -884,16 +839,17 @@ public class AdminGUI implements Listener {
 				player.closeInventory();
 			}
 			ItemMeta bagMeta = bagItem.getItemMeta();
-			if(Main.config.GetInt("bag-custom-model-data") != 0) {
+			if(Main.config.GetInt("bag-custom-model-data") != 0 && Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 				bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
-			}
-			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
-				for(int s = 9; s <= 54; s += 9) {
-					if(size == s) {
-						bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + size));
+				if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+					for(int s = 9; s <= 54; s += 9) {
+						if(size == s) {
+							bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + size));
+						}
 					}
 				}
 			}
+			
 			bagMeta.setDisplayName(Lang.Get("bag-ownerless-unused"));
 			List<String> lore = new ArrayList<String>();
 			for (String l : Lang.lang.GetStringList("bag-lore")) {
@@ -907,8 +863,11 @@ public class AdminGUI implements Listener {
 			bagMeta.setLore(lore);
 			bagItem.setItemMeta(bagMeta);
 			
+			modifyMaxStack(bagItem, 1);
+			
 			if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-custom-model-data")) && 
-					!Main.config.GetString("bag-custom-model-data").matches("-?\\d+(\\.\\d+)?")) {
+					!Main.config.GetString("bag-custom-model-data").matches("-?\\d+(\\.\\d+)?") &&
+					Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 				ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-custom-model-data"));
 			}
 			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
@@ -956,27 +915,20 @@ public class AdminGUI implements Listener {
 		//Collection<? extends Player> p = Bukkit.getOnlinePlayers();
 		//List<Player> players = new ArrayList<>(p);
 		
-		String bagTexture = Main.config.GetString("bag-texture");
-		ItemStack ownerless = HeadCreator.itemFromBase64(bagTexture);
-		ItemMeta ownerlessmeta = ownerless.getItemMeta();
-		ownerlessmeta.setDisplayName("Ownerless");
-		ownerless.setItemMeta(ownerlessmeta);
-		NBT.SetString(ownerless, "bag-owner", "ownerless");
-		bags.add(ownerless);
-		
-		/*for(int i = 0; i < players.size(); i++) {
-			ItemStack entry = HeadCreator.itemFromUuid(players.get(i).getUniqueId());
-			ItemMeta meta = entry.getItemMeta();
-			meta.setDisplayName(players.get(i).getName());
-			entry.setItemMeta(meta);
-			NBT.SetString(entry, "bag-owner", players.get(i).getUniqueId().toString());
-			bags.add(entry);
-		}*/
+		if(BagData.GetBags("ownerless").size() > 0) {
+			String bagTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
+			ItemStack ownerless = HeadCreator.itemFromBase64(bagTexture);
+			ItemMeta ownerlessmeta = ownerless.getItemMeta();
+			ownerlessmeta.setDisplayName("§f" + "Ownerless");
+			ownerless.setItemMeta(ownerlessmeta);
+			NBT.SetString(ownerless, "bag-owner", "ownerless");
+			bags.add(ownerless);
+		}
 		
 		for(Player p : Bukkit.getOnlinePlayers()){
 			ItemStack entry = HeadCreator.itemFromUuid(p.getUniqueId());
 			ItemMeta meta = entry.getItemMeta();
-			meta.setDisplayName(p.getName());
+			meta.setDisplayName("§f" + p.getName());
 			entry.setItemMeta(meta);
 			NBT.SetString(entry, "bag-owner", p.getUniqueId().toString());
 			bags.add(entry);
@@ -989,104 +941,28 @@ public class AdminGUI implements Listener {
 		List<ItemStack> bags = new ArrayList<ItemStack>();
 		List<String> bagfiles = BagData.GetBags(playeruuid);
 		
-		//if(!playeruuid.equalsIgnoreCase("ownerless")) {
 		for(String bagUUID : bagfiles){
-			List<ItemStack> Content  = LoadContent(playeruuid, bagUUID);
+			Data data = BagData.GetBag(bagUUID, null);
+			List<ItemStack> Content  = data.getContent();
 			if (Content == null) continue;
-			List<Placeholder> placeholders = new ArrayList<Placeholder>();
 			
 			String bagTexture = Main.config.GetString("bag-texture");
 			ItemStack bagItem = new ItemStack(Material.AIR);
-			int size = Content.size();
 			
 			if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-				bagItem = HeadCreator.itemFromBase64(bagTexture);
+				if(!Utils.IsStringNullOrEmpty(data.getTexture())) {
+					bagItem = HeadCreator.itemFromBase64(data.getTexture());
+				}else {
+					bagItem = HeadCreator.itemFromBase64(bagTexture);
+				}
 			} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
 				bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 			}
 			
-			NBT.SetString(bagItem, "bag-uuid", bagUUID);
-			NBT.SetString(bagItem, "bag-owner", playeruuid);
-			NBT.SetInt(bagItem, "bag-size", size);
-			if(playeruuid.equalsIgnoreCase("ownerless")) {
-				NBT.SetBool(bagItem, "bag-canBind", false);
-			}else {
-				NBT.SetBool(bagItem, "bag-canBind", true);
-			}
+			NBT.SetString(bagItem, "bag-uuid", data.getUuid());
+			// No need to set more, will be added automatically by HavenBags.UpdateBagItem(), which runs HavenBags.UpdateNBT();
 			
-			ItemMeta bagMeta = bagItem.getItemMeta();
-			if(Main.config.GetInt("bag-custom-model-data") != 0) {
-				bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
-			}
-			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
-				for(int s = 9; s <= 54; s += 9) {
-					if(size == s) {
-						if(NBT.GetBool(bagItem, "bag-canBind")) {
-							bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
-						}else {
-							bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + size));
-						}
-					}
-				}
-			}
-			
-			if(NBT.GetBool(bagItem, "bag-canBind")) {
-				bagMeta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), targetPlayer));
-			}else {
-				bagMeta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-ownerless-used"), targetPlayer));
-			}
-			List<String> lore = new ArrayList<String>();
-			for (String l : Lang.lang.GetStringList("bag-lore")) {
-				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, targetPlayer));
-			}
-			if(NBT.GetBool(bagItem, "bag-canBind")) {
-				placeholders.add(new Placeholder("%owner%", player.getName()));
-	            lore.add(Lang.Parse(Lang.Get("bound-to"), placeholders, targetPlayer));
-	        }
-			
-            placeholders.add(new Placeholder("%size%", size));
-            lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, targetPlayer));
-			
-			List<ItemStack> cont = new ArrayList<ItemStack>();
-	        int a = 0;
-			List<String> items = new ArrayList<String>();
-	        for(int i = 0; i < Content.size(); i++) {
-	    		cont.add(Content.get(i));
-	    		if(Content.get(i) != null) {
-	    			List<Placeholder> itemph = new ArrayList<Placeholder>();
-	    			if(Content.get(i).getItemMeta().hasDisplayName()) {
-    					itemph.add(new Placeholder("%item%", Content.get(i).getItemMeta().getDisplayName()));
-    					itemph.add(new Placeholder("%amount%", Content.get(i).getAmount()));
-    					if(Content.get(i).getAmount() != 1) {
-    						items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, targetPlayer));
-    					} else {
-    						items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, targetPlayer));
-    					}
-	    			}else {
-    	    			itemph.add(new Placeholder("%item%", Main.translator.Translate(Content.get(i).getType().getTranslationKey())));
-    	    			itemph.add(new Placeholder("%amount%", Content.get(i).getAmount()));
-    	    			if(Content.get(i).getAmount() != 1) {
-        					items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, targetPlayer));
-        				} else {
-        					items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, targetPlayer));
-        				}
-	    			}
-	    			a++;
-	    		}
-	    	}
-	        if(a > 0 && Lang.lang.GetBool("show-bag-content")) {
-	        	lore.add(Lang.Get("bag-content-title"));
-	        	for(int k = 0; k < items.size(); k++) {
-	        		if(k < Lang.lang.GetInt("bag-content-preview-size")) {
-	        			lore.add("  " + items.get(k));
-	        		}
-	        	}
-	        	if(a > Lang.lang.GetInt("bag-content-preview-size")) {
-	        		lore.add(Lang.Get("bag-content-and-more"));
-	        	}
-	        }
-			bagMeta.setLore(lore);
-			bagItem.setItemMeta(bagMeta);
+			modifyMaxStack(bagItem, 1);
 			
 			try {
 				HavenBags.UpdateBagItem(bagItem, Content, targetPlayer);
@@ -1096,7 +972,6 @@ public class AdminGUI implements Listener {
 			
 			bags.add(bagItem);
 		}
-		//}
 		
 		return bags;
 	}
@@ -1143,42 +1018,5 @@ public class AdminGUI implements Listener {
 		buttons.add(confirmItem);
 		
 		return buttons;
-	}
-
-	
-	List<ItemStack> LoadContent(String owner, String uuid) {
-		String id = uuid.replace(".json", "");
-		id = id.replace(".yml", "");
-		//Log.Error(plugin, "id: " + id);
-		return BagData.GetBag(id, null).getContent();
-		//Config data = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
-		
-
-		//return JsonUtils.fromJson(data.Get("content").toString());
-		/*
-		String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, uuid);
-		
-		File bagData;
-		try {
-			bagData = new File(path);
-		} catch(Exception e) {
-			player.sendMessage(e.toString());
-			e.printStackTrace();
-			return new ArrayList<ItemStack>();
-		}
-        if(!bagData.exists()) {
-        //	return new ArrayList<ItemStack>();
-        }
-        String content = "";
-		try {
-			Path filePath = Path.of(path);
-			content = Files.readString(filePath);
-			return JsonUtils.fromJson(content);
-		} catch (IOException e) {
-			player.sendMessage(Name + "§c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:LoadContent()§f'. \nThank you! §4❤§r");
-			e.printStackTrace();
-			return new ArrayList<ItemStack>();
-		}
-		*/
 	}
 }
