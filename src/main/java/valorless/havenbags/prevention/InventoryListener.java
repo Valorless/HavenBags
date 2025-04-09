@@ -153,7 +153,7 @@ public class InventoryListener implements Listener {
             	}
         	}
         }
-        
+        /*
         if (event.getInventory().getType() == InventoryType.CHEST) {
     		if (Main.config.GetBool("bags-in-bags") == true) return;
         
@@ -169,7 +169,7 @@ public class InventoryListener implements Listener {
         			HavenBags.ReturnBag(Return, (Player)event.getPlayer());
             	}
         	}
-        }
+        }*/
     }
 	
 	public InventoryType GetInventoryType(String string) {

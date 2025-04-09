@@ -6,6 +6,7 @@ import valorless.havenbags.features.BagCarryLimit;
 import valorless.havenbags.features.BagSkin;
 import valorless.havenbags.features.BagUpgrade;
 import valorless.havenbags.features.Crafting;
+import valorless.havenbags.features.CustomBags;
 import valorless.havenbags.features.Encumbering;
 import valorless.havenbags.features.Quiver;
 import valorless.havenbags.features.Soulbound;
@@ -192,6 +193,8 @@ public final class Main extends JavaPlugin implements Listener {
 		BagData.Initiate();
 		
 		AutoPickup.Initiate();
+		
+		CustomBags.Initiate();
 
 		RegisterListeners();
 				

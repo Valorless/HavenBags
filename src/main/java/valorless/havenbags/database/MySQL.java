@@ -8,8 +8,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.gson.JsonObject;
@@ -226,7 +228,7 @@ public class MySQL {
     		stmt.setDouble(24, data.getWeightMax());
     		stmt.setString(25, JsonUtils.toJson(data.getContent()));
     		stmt.setBoolean(26, data.isOpen());
-    		stmt.setString(27, "null");
+    		stmt.setString(27, DatabaseUtils.Extra(data));
 
 			stmt.executeUpdate();
 		} catch (SQLException e) {
@@ -284,7 +286,7 @@ public class MySQL {
 	            stmt.setDouble(index++, bag.getWeightMax());
 	            stmt.setString(index++, JsonUtils.toJson(bag.getContent()));
 	            stmt.setBoolean(index++, bag.isOpen());
-	            stmt.setString(index++, "null");
+	            stmt.setString(index++, DatabaseUtils.Extra(bag));
 	        }
 	        stmt.executeUpdate();
 	    } catch (SQLException e) {
@@ -327,6 +329,11 @@ public class MySQL {
 	                data.setContent(loadContent(rs.getString("content"), data.getUuid()));
 	                data.setOpen(rs.getBoolean("open"));
 	                
+	                Map<String, Object> extra = DatabaseUtils.ParseExtra(rs.getString("extra"));
+	                if(extra.containsKey("autosort")) data.setAutoSort((Boolean) extra.get("autosort"));
+	                if(extra.containsKey("material")) data.setMaterial((String)extra.get("material"));
+	                if(extra.containsKey("name")) data.setName((String) extra.get("name"));
+	                
 	                return data;
 			}
 		} catch (SQLException e) {
@@ -366,6 +373,12 @@ public class MySQL {
 	                data.setWeightMax(rs.getDouble("weight_max"));
 	                data.setContent(loadContent(rs.getString("content"), data.getUuid()));
 	                data.setOpen(rs.getBoolean("open"));
+	                
+	                Map<String, Object> extra = DatabaseUtils.ParseExtra(rs.getString("extra"));
+	                if(extra.containsKey("autosort")) data.setAutoSort(Boolean.valueOf((String) extra.get("autosort")));
+	                if(extra.containsKey("material")) data.setMaterial((String)extra.get("material"));
+	                if(extra.containsKey("name")) data.setName((String) extra.get("name"));
+	                
 	                bags.add(data);
 	        }
 

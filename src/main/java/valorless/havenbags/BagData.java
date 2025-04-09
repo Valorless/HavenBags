@@ -187,6 +187,8 @@ public class BagData {
 		private String creator;
 		private int size;
 		private String texture;
+		private Material material;
+		private String name = "";
 		private int modeldata;
 		private String itemmodel;
 		private List<String> trusted;
@@ -194,6 +196,7 @@ public class BagData {
 		private double weight;
 		private double weightMax;
 		private List<ItemStack> content = new ArrayList<ItemStack>();
+		private boolean autosort;
 
 		//private Config dataFile;
 		
@@ -207,6 +210,10 @@ public class BagData {
 			this.setUuid(uuid); this.setOwner(owner);
 		}
 		
+		public Data(@NotNull String uuid, @NotNull String owner, @NotNull Material material) {
+			this.setUuid(uuid); this.setOwner(owner); this.setMaterial(material);
+		}
+		
 		//public Data(@NotNull String uuid, @NotNull String owner, @NotNull Config data) {
 		//	this.setUuid(uuid); this.setOwner(owner); this.SetData(data);
 		//}
@@ -216,6 +223,7 @@ public class BagData {
 		}
 
 		public void setUuid(@NotNull String uuid) {
+			this.changed = true;
 			this.uuid = uuid;
 		}
 
@@ -224,6 +232,7 @@ public class BagData {
 		}
 
 		public void setOwner(@NotNull String owner) {
+			this.changed = true;
 			this.owner = owner;
 		}
 		
@@ -232,6 +241,7 @@ public class BagData {
 		}
 
 		public void setCreator(String creator) {
+			this.changed = true;
 			this.creator = creator;
 		}
 
@@ -240,10 +250,12 @@ public class BagData {
 		}
 
 		public void setSize(int size) {
+			this.changed = true;
 			this.size = size;
 		}
 		
 		public void setContent(List<ItemStack> content){
+			this.changed = true;
 			this.content = content;
 			//return JsonUtils.fromJson(data.GetString("content").replace("◊","'"));
 		}
@@ -258,6 +270,7 @@ public class BagData {
 		}
 		
 		public void setTexture(String base64) {
+			this.changed = true;
 			this.texture = base64;
 		}
 
@@ -274,6 +287,7 @@ public class BagData {
 		}
 
 		public void setModeldata(int modeldata) {
+			this.changed = true;
 			this.modeldata = modeldata;
 		}
 
@@ -282,14 +296,26 @@ public class BagData {
 		}
 
 		public void setItemmodel(String itemmodel) {
+			this.changed = true;
 			this.itemmodel = itemmodel;
 		}
 
 		public List<String> getTrusted() {
 			return trusted;
 		}
+		
+		public boolean isPlayerTrusted(String uuid) {
+			if(trusted.isEmpty()) return false;
+			for(int i = 0; i < trusted.size(); i++) {
+				if(trusted.get(i).equalsIgnoreCase(uuid)) {
+					return true;
+				}
+			}
+			return false;
+		}
 
 		public void setTrusted(List<String> trusted) {
+			this.changed = true;
 			this.trusted = trusted;
 		}
 
@@ -298,6 +324,7 @@ public class BagData {
 		}
 
 		public void setAutopickup(String autopickup) {
+			this.changed = true;
 			this.autopickup = autopickup;
 		}
 
@@ -306,6 +333,7 @@ public class BagData {
 		}
 
 		public void setWeight(double weight) {
+			this.changed = true;
 			this.weight = weight;
 		}
 
@@ -314,6 +342,7 @@ public class BagData {
 		}
 
 		public void setWeightMax(double weightMax) {
+			this.changed = true;
 			this.weightMax = weightMax;
 		}
 
@@ -322,6 +351,7 @@ public class BagData {
 		}
 
 		public void setGui(BagGUI gui) {
+			this.changed = true;
 			this.gui = gui;
 		}
 
@@ -338,7 +368,44 @@ public class BagData {
 		}
 
 		public void setOpen(boolean open) {
+			this.changed = true;
 			this.isOpen = open;
+		}
+
+		public boolean hasAutoSort() {
+			return autosort;
+		}
+
+		public void setAutoSort(boolean autosort) {
+			this.changed = true;
+			this.autosort = autosort;
+		}
+
+		public Material getMaterial() {
+			return material;
+		}
+
+		public void setMaterial(Material material) {
+			this.changed = true;
+			this.material = material;
+		}
+
+		public void setMaterial(String material) {
+			this.changed = true;
+			if(material.equalsIgnoreCase("null")) {
+				this.material = null;
+				return;
+			}
+			this.material = Material.valueOf(material.toUpperCase());
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.changed = true;
+			this.name = name;
 		}
 	}
 	
@@ -359,6 +426,15 @@ public class BagData {
 		else return false;
 	}
 	
+	public static Boolean BagExists(@NotNull String uuid) {
+		for(Data bag : data) {
+			if(bag.getUuid().equalsIgnoreCase(uuid)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static Data GetBag(@NotNull String uuid,  @Nullable ItemStack bagItem, @Nullable UpdateSource... source) {
 		UpdateSource m_source = UpdateSource.NULL;
 		if(source != null) {
@@ -368,7 +444,7 @@ public class BagData {
 		}
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				Log.Debug(Main.plugin, "[DI-28] " + bag.uuid);
+				//Log.Debug(Main.plugin, "[DI-28] " + bag.uuid);
 				//Log.Debug(Main.plugin, bag.owner);
 				if(m_source == UpdateSource.PLAYER) {
 					bag.isOpen = true;
@@ -377,9 +453,9 @@ public class BagData {
 				return bag;
 			}
 		}
-		Log.Error(Main.plugin, String.format("Failed to load bag '%s', this bag was not found.", uuid));
-		Log.Error(Main.plugin, "If you keep seeing this error, please replace the bag causing it.");
-		if(bagItem != null) bagItem.setAmount(0);
+		Log.Debug(Main.plugin, String.format("Failed to get bag '%s', this bag was not found.", uuid));
+		Log.Debug(Main.plugin, "If you keep seeing this error, please replace the bag causing it.");
+		//if(bagItem != null) bagItem.setAmount(0);
 		return null;
 	}
 	
@@ -481,7 +557,7 @@ public class BagData {
 	}
 	
 	public static void CreateBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content, Player creator, ItemStack bag) {
-		Data dat = new Data(uuid, owner);
+		Data dat = new Data(uuid, owner, bag.getType());
 		dat.content = content;
 		dat.creator = creator.getUniqueId().toString();
 		
@@ -496,9 +572,16 @@ public class BagData {
 				if(bag.getItemMeta().hasCustomModelData()) {
 					dat.modeldata = bag.getItemMeta().getCustomModelData();
 				}
-				try {
-					dat.itemmodel = ItemUtils.GetItemModel(bag).toString();
-				}catch(Exception e) {}
+
+				if(Main.VersionCompare(Main.server, Main.ServerVersion.v1_21_2) >= 0) {
+					if(ItemUtils.GetItemModel(bag) != null) {
+						dat.itemmodel = ItemUtils.GetItemModel(bag).toString();
+					}else {
+						dat.setItemmodel("");
+					}
+				}else {
+					dat.setItemmodel("");
+				}
 			}
 		}
 		dat.trusted = new ArrayList<String>();
@@ -588,36 +671,8 @@ public class BagData {
 	    	String owner = bag.owner;
 	    	
 	    	if(database == DatabaseType.FILES) {
-	    		Log.Debug(Main.plugin, "[DI-31] " + "Attempting to write bag " + owner + "/" + uuid + " onto server");
-	    		File path = new File(Main.plugin.getDataFolder() + "/bags");
-	    		File path2 = new File(Main.plugin.getDataFolder() + String.format("/bags/%s", owner));
-	    		File path3 = new File(Main.plugin.getDataFolder() + String.format("/bags/%s/%s.yml", owner, uuid));
-	    		
-	    		if(!path.exists()) path.mkdir();
-	    		if(!path2.exists()) path2.mkdir();
-	    		if(!path3.exists())
-					try {
-						path3.createNewFile();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-	    		
-	    		Config file = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
-	    		
-	    		if(!file.HasKey("uuid")) file.Set("uuid", bag.uuid);
-	    		if(!file.HasKey("owner")) file.Set("owner", bag.owner);
-	    		if(!file.HasKey("creator")) file.Set("creator", bag.creator);
-	    		if(!file.HasKey("size")) file.Set("size", bag.size);
-	    		if(!file.HasKey("texture")) file.Set("texture", bag.texture);
-	    		if(!file.HasKey("custommodeldata")) file.Set("custommodeldata", bag.modeldata);
-	    		if(!file.HasKey("itemmodel")) file.Set("itemmodel", bag.itemmodel);
-	    		if(!file.HasKey("trusted")) file.Set("trusted", bag.trusted);
-	    		if(!file.HasKey("auto-pickup")) file.Set("auto-pickup", bag.autopickup);
-	    		if(!file.HasKey("weight")) file.Set("weight", bag.weight);
-	    		if(!file.HasKey("weight-max")) file.Set("weight-max", bag.weightMax);
-	    		
-	    		file.Set("content", JsonUtils.toJson(bag.content).replace("'", "◊"));
-	    		file.SaveConfig();
+	        	Log.Debug(Main.plugin, "[DI-31] " + "Attempting to write bag " + owner + "/" + uuid + " onto server");
+	    		Files.saveBag(bag);
 	    	}
 	    	else if(database == DatabaseType.SQLITE) {
 	    		Log.Debug(Main.plugin, "[DI-231] " + "Attempting to write bag " + owner + "/" + uuid + " onto database");

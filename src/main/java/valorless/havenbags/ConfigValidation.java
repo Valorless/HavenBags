@@ -88,7 +88,7 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("protect-bags-players", false);
 	Main.config.AddValidationEntry("bags-in-bags", false);
 	Main.config.AddValidationEntry("bags-in-shulkers", true);
-	Main.config.AddValidationEntry("keep-bags", true);
+	//Main.config.AddValidationEntry("keep-bags", true);
 	Main.config.AddValidationEntry("soulbound", false);
 	Main.config.AddValidationEntry("old-help-menu", false);
 	Main.config.AddValidationEntry("auto-pickup", true);
@@ -185,6 +185,7 @@ public class ConfigValidation {
 				add("%bag-size%"); 
 				add("%bag-auto-pickup%"); 
 				add("%bag-trusted%"); 
+				add("%bag-autosort%"); 
 				add("%bag-weight%"); 
 				}
 			} 
@@ -199,6 +200,10 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("bag-content-and-more", "&7And more..");
 		Lang.lang.AddValidationEntry("bag-auto-pickup", "&7Auto Loot: %filter%");
 		Lang.lang.AddValidationEntry("bag-trusted", "&7Trusted: %trusted%");
+		Lang.lang.AddValidationEntry("bag-autosort", "&7Auto-Sort: %sorting%");
+		Lang.lang.AddValidationEntry("bag-autosort-on", "&aOn");
+		Lang.lang.AddValidationEntry("bag-autosort-off", "&cOff");
+		Lang.lang.AddValidationEntry("bag-autosort-off-hidden", false);
 		
 		// Admin GUI
 		Lang.lang.AddValidationEntry("too-many-bags", "&cThis player has over 53 bags.\\nPlease restore their bags through &e/bags restore&c!");

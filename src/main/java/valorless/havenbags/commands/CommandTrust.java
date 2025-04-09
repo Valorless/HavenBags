@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import valorless.havenbags.BagData;
+import valorless.havenbags.BagData.Data;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -26,8 +27,9 @@ public class CommandTrust {
 		if(command.args.length >= 2) {
 			ItemStack item = player.getInventory().getItemInMainHand();
 			if(HavenBags.IsBag(item)) {
+				Data data = BagData.GetBag(HavenBags.GetBagUUID(item), item);
 				if(HavenBags.IsOwner(item, player)) {
-					if(HavenBags.IsPlayerTrusted(item, command.args[1])) {
+					if(data.isPlayerTrusted(command.args[1])) {
 						return true;
 					}
 					try {

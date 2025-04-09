@@ -49,6 +49,9 @@ public class BagSkin implements Listener{
 		
 		if(!HavenBags.IsBag(bag)) return;
 		Log.Debug(Main.plugin, "[DI-66] " + "[BagSkin] Was bag.");
+		if(NBT.GetBool(bag, "bag-skin") == false) {
+			return;
+		}
 		if(HavenBags.BagState(bag) == BagState.New) return;
 		Log.Debug(Main.plugin, "[DI-67] " + "[BagSkin] BagState.Used");
 		if(!NBT.Has(skin, "bag-token-skin")) return;

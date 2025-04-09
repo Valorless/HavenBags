@@ -20,6 +20,7 @@ import org.bukkit.util.BlockIterator;
 import me.NoChance.PvPManager.PvPManager;
 import me.NoChance.PvPManager.PvPlayer;
 import me.NoChance.PvPManager.Managers.PlayerHandler;
+import valorless.havenbags.BagData.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;
@@ -183,7 +184,7 @@ public class BagListener implements Listener{
 
 		bag.setItemMeta(meta);
 		NBT.SetString(bag, "bag-owner", ownerless ? "ownerless" : player.getUniqueId().toString());
-		NBT.SetString(bag, "bag-creator", player.getUniqueId().toString());
+		//NBT.SetString(bag, "bag-creator", player.getUniqueId().toString());
 		NBT.SetDouble(bag, "bag-weight", 0.0);
 
 		List<ItemStack> cont = new ArrayList<ItemStack>();
@@ -207,34 +208,35 @@ public class BagListener implements Listener{
 	}
 	
 	private void OpenBag(ItemStack bag, boolean ownerless, Player player, PlayerInteractEvent event) {		
-		String uuid = NBT.GetString(bag, "bag-uuid");
+		//String uuid = NBT.GetString(bag, "bag-uuid");
+		if(bag.getType() == Material.AIR) return;
+		String uuid = HavenBags.GetBagUUID(bag);
 		Log.Debug(Main.plugin, "[DI-226] " + "Opening " +  uuid);
-		String owner = NBT.GetString(bag, "bag-owner");
+		Data data = BagData.GetBag(uuid, bag);
+		//String owner = NBT.GetString(bag, "bag-owner");
 
 		if(BagData.BagOpenBy(uuid, bag) == player) {
 			Log.Debug(Main.plugin, "[DI-227] " + "This bag is already open by " + player.getName() + ".");
 			event.setCancelled(true);
 			return;
 		}
-		if(BagData.IsBagOpen(uuid, bag)) {
-			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-already-open"), null));
-			Log.Debug(Main.plugin, "[DI-60] " + "This bag is already open.");
-			event.setCancelled(true);
-			return;
+		if(data.isOpen()) {
+			if(BagData.BagOpenBy(uuid, bag) != player) {
+				player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-already-open"), null));
+				Log.Debug(Main.plugin, "[DI-60] " + "This bag is already open.");
+				event.setCancelled(true);
+				return;
+			}
 		}
-		if(bag.getType() == Material.AIR) return;
-		if(owner.equalsIgnoreCase(player.getUniqueId().toString())) {
+		if(data.getOwner().equalsIgnoreCase(player.getUniqueId().toString())) {
 			Log.Debug(Main.plugin, "[DI-64] " + "Attempting to open bag");
 			
 			try {
 				event.setCancelled(true);
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, null, player);
-				BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(bag, "bag-size"), player, bag, bag.getItemMeta());
+				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
-				if(!Main.config.GetBool("keep-bags")){ 
-					player.getInventory().remove(bag);
-				}
 				SFX.Play(Main.config.GetString("open-sound"), 
 						Main.config.GetFloat("open-volume").floatValue(), 
 						Main.config.GetFloat("open-pitch").floatValue(), player);
@@ -250,11 +252,8 @@ public class BagListener implements Listener{
 				event.setCancelled(true);
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, null, player);
-				BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(bag, "bag-size"), player, bag, bag.getItemMeta());
+				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
-				if(!Main.config.GetBool("keep-bags")){ 
-					player.getInventory().remove(bag);
-				}
 				SFX.Play(Main.config.GetString("open-sound"), 
 						Main.config.GetFloat("open-volume").floatValue(), 
 						Main.config.GetFloat("open-pitch").floatValue(), player);
@@ -269,13 +268,9 @@ public class BagListener implements Listener{
 				event.setCancelled(true);
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, null, player);
-				BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(bag, "bag-size"), player, bag, bag.getItemMeta());
-				BagData.MarkBagOpen(uuid, bag, player, gui);
+				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
+				//BagData.MarkBagOpen(uuid, bag, player, gui);
 				Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
-				if(!Main.config.GetBool("keep-bags")){ 
-					player.getInventory().remove(bag);
-				}
-				gui.OpenInventory(player);
 				SFX.Play(Main.config.GetString("open-sound"), 
 						Main.config.GetFloat("open-volume").floatValue(), 
 						Main.config.GetFloat("open-pitch").floatValue(), player);
@@ -286,18 +281,14 @@ public class BagListener implements Listener{
 			}
 			return;
 		}
-		else if(HavenBags.IsPlayerTrusted(bag, player.getName()) && !ownerless) {
+		else if(data.isPlayerTrusted(player.getName()) && !ownerless) {
 			try {
 				event.setCancelled(true);
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, null, player);
-				BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(bag, "bag-size"), player, bag, bag.getItemMeta());
-				BagData.MarkBagOpen(uuid, bag, player, gui);
+				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
+				//BagData.MarkBagOpen(uuid, bag, player, gui);
 				Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
-				if(!Main.config.GetBool("keep-bags")){ 
-					player.getInventory().remove(bag);
-				}
-				gui.OpenInventory(player);
 				SFX.Play(Main.config.GetString("open-sound"), 
 						Main.config.GetFloat("open-volume").floatValue(), 
 						Main.config.GetFloat("open-pitch").floatValue(), player);

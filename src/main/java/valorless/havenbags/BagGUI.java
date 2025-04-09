@@ -24,6 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
 import valorless.havenbags.BagData.Data;
+import valorless.havenbags.BagData.UpdateSource;
 import valorless.havenbags.database.DatabaseType;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -240,15 +241,16 @@ public class BagGUI implements Listener {
 			List<ItemStack> content = data.getContent();
 			BagData.MarkBagOpen(uuid, bagItem, player, this);
 	    	return content;
+		}else {
+			return BagData.GetBag(uuid, this.bagItem, UpdateSource.PLAYER).getContent();
 		}
-		else return BagData.GetBag(uuid, this.bagItem).getContent();
 	}
 
     public void OpenInventory(final HumanEntity ent) {
     	try {
     		ent.openInventory(inv);
     	} catch (Exception e) {
-    		
+    		e.printStackTrace();
     	}
     }
     
@@ -384,15 +386,13 @@ public class BagGUI implements Listener {
     		//return;
     	}
     	
-    	if(Main.config.GetBool("keep-bags")){ 
-    		for(ItemStack item : player.getInventory().getContents()) {
-    			if(HavenBags.IsBag(item)) {
-    				if(uuid.equalsIgnoreCase(HavenBags.GetBagUUID(item))) {
-    					bagItem = item;
-    				}
-    			}
-    		}
-    	}
+    	for(ItemStack item : player.getInventory().getContents()) {
+			if(HavenBags.IsBag(item)) {
+				if(uuid.equalsIgnoreCase(HavenBags.GetBagUUID(item))) {
+					bagItem = item;
+				}
+			}
+		}
     	
     	//if(!HavenBags.IsBagOpen(bagItem)) return;
     	if(!BagData.IsBagOpen(uuid, bagItem)) return;
@@ -419,7 +419,7 @@ public class BagGUI implements Listener {
         }
         
         HavenBags.UpdateBagItem(bagItem, cont, player);
-		GivePlayerBagBack();
+		//GivePlayerBagBack();
 		try {
 			BagData.UpdateBag(bagItem, cont);
 		}catch(Exception e) {
@@ -452,11 +452,12 @@ public class BagGUI implements Listener {
     	Main.timeTable.SaveConfig();
     }*/
     
-    void GivePlayerBagBack() {
+    // Obsolete, removed feature.
+    /*void GivePlayerBagBack() {
     	if(!Main.config.GetBool("keep-bags")){ 
     		HavenBags.ReturnBag(bagItem, player);
     	}
-    }
+    }*/
     
     String FixMaterialName(String string) {
     	string = string.replace('_', ' ');

@@ -17,6 +17,7 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.havenbags.BagData.Bag;
 
 public class Quiver implements Listener {
@@ -42,6 +43,8 @@ public class Quiver implements Listener {
     		if(cross.hasChargedProjectiles()) return;
     	}
     	
+		Log.Debug(Main.plugin, "[DI-235] Fetching bags.");
+		Log.Debug(Main.plugin, "[DI-236] " + player.getName());
     	bags = HavenBags.GetBagsDataInInventory(player);
     	if(bags.size() == 0) return;
     	

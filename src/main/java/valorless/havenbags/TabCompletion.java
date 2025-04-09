@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.StringUtil;
 
 import valorless.havenbags.features.AutoPickup;
+import valorless.havenbags.features.CustomBags;
 import valorless.valorlessutils.nbt.NBT;
 
 public class TabCompletion implements TabCompleter {
@@ -82,6 +83,12 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (sender.hasPermission("havenbags.database")) {
 				subCommands.add("convertdatabase");
+			}
+			if (sender.hasPermission("havenbags.editor")) {
+				subCommands.add("customcontent");
+			}
+			if (sender.hasPermission("havenbags.autosort")) {
+				subCommands.add("autosort");
 			}
 			if(Main.plugins.GetBool("mods.HavenBagsPreview.enable-command")) {
 				subCommands.add("mod");
@@ -163,6 +170,19 @@ public class TabCompletion implements TabCompleter {
 				cmds.add("SQLITE");
 				StringUtil.copyPartialMatches(cmd, cmds, completions);
 			}
+			if (args[0].equalsIgnoreCase("customcontent") && sender.hasPermission("havenbags.editor")) {
+				List<String> cmds = new ArrayList<String>();
+				cmds.add("edit");
+				cmds.add("load");
+				cmds.add("save");
+				StringUtil.copyPartialMatches(cmd, cmds, completions);
+			}
+			if (args[0].equalsIgnoreCase("autosort") && sender.hasPermission("havenbags.autosort")) {
+				List<String> cmds = new ArrayList<String>();
+				cmds.add("on");
+				cmds.add("off");
+				StringUtil.copyPartialMatches(cmd, cmds, completions);
+			}
 			/*
 			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.open")) {
 				Player player = (Player)sender;
@@ -195,6 +215,7 @@ public class TabCompletion implements TabCompleter {
 				sizes.add("4");
 				sizes.add("5");
 				sizes.add("6");
+				sizes.addAll(CustomBags.List());
 				StringUtil.copyPartialMatches(cmd, sizes, completions);
 			}
 			if (args[0].equalsIgnoreCase("restore") && sender.hasPermission("havenbags.restore")) {
@@ -220,6 +241,17 @@ public class TabCompletion implements TabCompleter {
 				        .collect(Collectors.toList());
 				StringUtil.copyPartialMatches(cmd, materialNames, completions);
 			}
+
+			if (args[0].equalsIgnoreCase("customcontent") && sender.hasPermission("havenbags.editor")) {
+				if(args[1].equalsIgnoreCase("load")) {
+					StringUtil.copyPartialMatches(cmd, ListCustomContent(), completions);
+				}
+				if(args[1].equalsIgnoreCase("save")) {
+					List<String> cmds = new ArrayList<String>();
+					cmds.add("<FileName>");
+					StringUtil.copyPartialMatches(cmd, cmds, completions);
+				}
+			}
 		} 
 		else if(args.length == 4) {
 			String cmd = args[3];
@@ -233,6 +265,9 @@ public class TabCompletion implements TabCompleter {
 				sizes.add("5");
 				sizes.add("6");
 				StringUtil.copyPartialMatches(cmd, sizes, completions);
+			}
+			if (args[0].equalsIgnoreCase("token") && sender.hasPermission("havenbags.token")) {
+				StringUtil.copyPartialMatches(cmd, getOnlinePlayerNames(), completions);
 			}
 		} 
 		else {
@@ -284,4 +319,22 @@ public class TabCompletion implements TabCompleter {
 			return new ArrayList<String>();
 		}
 	}
+	
+	public List<String> ListCustomContent(){
+		try {
+			List<String> files = Stream.of(new File(String.format("%s/customcontent/", Main.plugin.getDataFolder())).listFiles())
+					.filter(file -> !file.isDirectory())
+					.filter(file -> file.getName().contains(".yml"))
+					.map(File::getName)
+					.collect(Collectors.toList());
+			for(int i = 0; i < files.size(); i++) {
+				files.set(i, files.get(i).replace(".yml", ""));
+			}
+			return files;
+		} catch (Exception e) {
+			return new ArrayList<String>();
+		}
+	}
+	
+	
 }

@@ -11,11 +11,13 @@ import org.bukkit.command.CommandSender;
 
 import valorless.havenbags.commands.HBCommand;
 import valorless.havenbags.commands.fun.CommandExplode;
+import valorless.havenbags.commands.CommandAutoSort;
 import valorless.havenbags.commands.CommandAutopickup;
 import valorless.havenbags.commands.CommandConvertDatabase;
 import valorless.havenbags.commands.CommandConvertEpicBackpacks;
 import valorless.havenbags.commands.CommandConvertMinepacks;
 import valorless.havenbags.commands.CommandCreate;
+import valorless.havenbags.commands.CommandCustomContent;
 import valorless.havenbags.commands.CommandEmpty;
 import valorless.havenbags.commands.CommandGUI;
 import valorless.havenbags.commands.CommandGive;
@@ -141,6 +143,10 @@ public class CommandListener implements CommandExecutor {
 				if(args[0].equalsIgnoreCase("convertepicbackpacks") && sender.isOp()) {
 					return CommandConvertEpicBackpacks.Run(cmd);
 				}
+				
+				if(args[0].equalsIgnoreCase("customcontent") && sender.isOp()) {
+					return CommandCustomContent.Run(cmd);
+				}
 
 				// Not visible in tabcompletion.
 				if(args[0].equalsIgnoreCase("explode") && sender.hasPermission("havenbags.empty")) {
@@ -149,6 +155,10 @@ public class CommandListener implements CommandExecutor {
 				
 				if(args[0].equalsIgnoreCase("convertdatabase") && sender.hasPermission("havenbags.database")) {
 					return CommandConvertDatabase.Run(cmd);
+				}
+				
+				if(args[0].equalsIgnoreCase("autosort") && sender.hasPermission("havenbags.autosort")) {
+					return CommandAutoSort.Run(cmd);
 				}
 				
 			} catch(Exception e) {

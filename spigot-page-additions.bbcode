@@ -1,53 +1,13 @@
 # FEATURES
 
-[B][SIZE=5]▶ Soulbound[/SIZE][/B]
-Keep bags through death.
-[I]*Likely not compatible with plugins like GravesX and AngelChest[/I]
-
-[B][SIZE=5]▶ Cross-Server Bags[/SIZE][/B]
-Choosing the database type "MySQLPlus" allows bags to be used across servers.
-Loading and saving the bag data when needed, rather than auto-saving every so often.
-(Will require both servers to use the same database type and database.)
-
-[B][SIZE=5]▶ Seamless Database Conversion[/SIZE][/B]
-Seamlessly convert how the plugin stores data between:
-[B]Files[/B] - Each bag is stored in their own data file.(Pro: Easy to edit. Con: Slower loading/saving.)
-[B]SQLite[/B] - Store all bags in a single local database file. (Recommended. Pro: Fast loading/saving. Con: Hard to edit.)
-[B]MySQL[/B] - Store all bags on an external database. (Pro: Saves space locally.  Con: Very slow loading/saving)
-[B]MySQLPlus[/B] - Store all bags on an external database, loading/saving directly to the database. Can be used to use bags across servers.
-(Pro: Cross-server bags. Con: Constantly saves and loads bag data.)
-
-[B][SIZE=5]▶ PAPI Placeholders[/SIZE][/B]
-Here's a list of placeholders from HavenBags you can use with PlaceholderAPI:
-[SPOILER="View Placeholders"]
-[B]%havenbags_bags_current%[/B] - How many bags the player owns.
-[B]%havenbags_bags_max%[/B] - How many bags the player can own.
-[B]%havenbags_bags_items_MATERIAL%[/B] - How many items of a specific material, are in all the player's bags. (Does not count ownerless bags)
-[B]%havenbags_bags_inv_items_MATERIAL%[/B] - How many items of a specific material, are in all the player's bags in their inventory. (Counts all bags)
-[B]%havenbags_player_has_bag%[/B] - Returns true or false, depending if a player owns a bag or not.
-[B]%havenbags_carry%[/B] - How many bags the player is carrying.
-[B]%havenbags_carry_max%[/B] - How many bags the player can carry at once.
-[B]%havenbags_bags_slots_total%[/B] - Total amount of slots of all bags in the player's inventory.
-[B]%havenbags_bags_slots_used%[/B] - How many slots are used in all bags in the player's inventory.
-[B]%havenbags_bags_slots_free%[/B] - How many slots are free in all bags in the player's inventory.
-[B]%havenbags_bags_others%[/B] - Returns true or false, if the player has a bag they can't use.
-[/SPOILER]
-
-
+[B][SIZE=5]▶ Per-Player Optional Auto-Sorting[/SIZE][/B]
+Have bags automatically sort their content alphabetically.
 
 
 
 #FAQ
 
-[SPOILER="How can i edit bag data on SQLite?"]
-In order to load and edit the .db file, you need a program called "DB Browser (SQLite)".
-Here's how to get it: [URL]https://sqlitebrowser.org[/URL]
+[SPOILER=""]
 
-Disclaimer: Shut down the plugin (or server,) before editing the database.
-If you're not hosting the server locally, you'll have to download the database file.
 [/SPOILER]
 
-[SPOILER="How can i edit bag data on MySQL?"]
-There are many ways to do it, but the way I do it is with a program called "MySQL Workbench" by ORACLE.
-Here's how to get it: [URL]https://dev.mysql.com/downloads/workbench/[/URL]
-[/SPOILER]

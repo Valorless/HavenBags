@@ -157,6 +157,7 @@ bag-lore:
 # %bag-size%
 # %bag-auto-pickup%
 # %bag-trusted%
+# %bag-autosort%
 # %bag-weight% ------- Uses the 'weight-lore' from weight.yml.
 ## Extra
 # %slots-used% - How many used slots in the bag.
@@ -166,6 +167,7 @@ bag-lore-add:
  - '%bag-size%'
  - '%bag-auto-pickup%'
  - '%bag-trusted%'
+ - '%bag-autosort%'
  - '%bag-weight%'
  # Bag content will always be at the bottom.
 
@@ -206,6 +208,15 @@ bag-auto-pickup: '&7Auto Loot: %filter%'
 # If bag has trusted players.
 # %trusted% - trusted players.
 bag-trusted: '&7Trusted: %trusted%'
+
+# If the bag has auto-sort enabled.
+# %sorting% - bag-autosort-on or bag-autosort-off, depending on on/off.
+bag-autosort: '&7Auto-Sort: %sorting%'
+bag-autosort-on: '&aOn'
+bag-autosort-off: '&cOff'
+
+# Should the be hidden if 'off' ?
+bag-autosort-off-hide: false
 
 ############################################################
 # +------------------------------------------------------+ #

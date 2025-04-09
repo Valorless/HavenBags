@@ -154,6 +154,9 @@ permissions:
   havenbags.max.0:
     description: Bags creation limit.
     default: op
+  havenbags.autosort:
+    description: Allows you to use the auto-sort feature.
+    default: op
   havenbags.database:
     description: Allows you to change the database type.
     default: op

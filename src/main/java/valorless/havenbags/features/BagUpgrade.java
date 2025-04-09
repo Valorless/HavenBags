@@ -35,20 +35,37 @@ public class BagUpgrade implements Listener{
 		ItemStack bag = null;
 		ItemStack upgrade = null;
 		try {
+			Log.Debug(Main.plugin, "[DI-237] [BagUpgrade] Checking items.");
+			int i = 0;
 			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(0), event.getInventory().getItem(1)))) {
-				if(HavenBags.IsBag(item)) bag = item;
+				if(HavenBags.IsBag(item)) {
+					Log.Debug(Main.plugin, "[DI-237] [BagUpgrade] Bag in slot " + i + ".");
+					bag = item;
+				}
 				else upgrade = item;
+				i++;
 			}
 		}
-		catch(Exception e) {}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 		if(bag == null || upgrade == null) return;
+		Log.Debug(Main.plugin, "[DI-238] [BagUpgrade] Is non-bag item a token?");
 		if(NBT.Has(upgrade, "bag-token-skin")) return; // If the item in slot 2 is a skin token, return.
 		//Log.Debug(Main.plugin, bag.toString());
 		//Log.Debug(Main.plugin, upgrade.toString());
-		if(!HavenBags.IsBag(bag)) return;
+		if(NBT.Has(bag, "bag-upgrade")) {
+			if(NBT.GetBool(bag, "bag-upgrade") == false) {
+				Log.Debug(Main.plugin, "[DI-239] [BagUpgrade] Bag cannot upgrade.");
+				return;
+			}
+		}
 		int size = NBT.GetInt(bag, "bag-size");
+		Log.Debug(Main.plugin, "[DI-240] [BagUpgrade] Is bag max size?");
 		if(size == 54) return;
+		Log.Debug(Main.plugin, "[DI-241] [BagUpgrade] Is bag used?");
 		if(HavenBags.BagState(bag) == BagState.New) return;
+		Log.Debug(Main.plugin, "[DI-242] [BagUpgrade] Is player allowed to upgrade this size?");
 		if(!event.getView().getPlayer().hasPermission(String.format("havenbags.upgrade.%s", size))) return;
 
 		String[] split = Main.config.GetString(String.format("upgrades.from-%s-to-%s", size, size+9)).split(":");

@@ -9,6 +9,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import valorless.havenbags.BagData;
+import valorless.havenbags.BagData.Data;
+import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.nbt.NBT;
@@ -22,8 +25,15 @@ public class CommandRename {
 		
 		List<Placeholder> placeholders = new ArrayList<Placeholder>();
     	placeholders.add(new Placeholder("%bag-content-title%", null));
+		ItemStack hand = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand();
+		Data data = null;
+    	if(HavenBags.IsBag(hand)){
+    		if(BagData.BagExists(HavenBags.GetBagUUID(hand))) {
+    			data = BagData.GetBag(HavenBags.GetBagUUID(hand), null);
+    		}
+    	}
+    		
 		if (command.args.length >= 2){ // New Name
-			ItemStack hand = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand();
 			ItemMeta meta = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand().getItemMeta();
 			//player.sendMessage("has meta: " + hand.hasItemMeta());
 			if(meta == null) return true;
@@ -43,11 +53,11 @@ public class CommandRename {
 				placeholders.add(new Placeholder("%name%", rename));
 				command.sender.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("bag-rename"), placeholders, (OfflinePlayer)command.sender));
 				hand.setItemMeta(meta);
+				if(data != null) data.setName(rename);
 			} else {
 				command.sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-rename"));
 			}
 		}else {
-			ItemStack hand = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand();
 			ItemMeta meta = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand().getItemMeta();
 			//player.sendMessage("has meta: " + hand.hasItemMeta());
 			if(meta == null) return true;
@@ -71,6 +81,7 @@ public class CommandRename {
 						meta.setDisplayName(Lang.Parse(Lang.Get("bag-bound-name"),  placeholders, (OfflinePlayer)command.sender));
 					}
 					hand.setItemMeta(meta);
+					if(data != null) data.setName(null);
 					command.sender.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("bag-rename-reset"), (OfflinePlayer)command.sender));
 				}
 				else {
@@ -81,6 +92,7 @@ public class CommandRename {
 						meta.setDisplayName(Lang.Parse(Lang.Get("bag-ownerless-used"),  placeholders, (OfflinePlayer)command.sender));
 					}
 					hand.setItemMeta(meta);
+					if(data != null) data.setName(null);
 					command.sender.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("bag-rename-reset"), (OfflinePlayer)command.sender));
 				}
 			} else {

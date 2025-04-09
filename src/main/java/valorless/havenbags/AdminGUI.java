@@ -22,6 +22,7 @@ import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.havenbags.BagData.Data;
+import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.utils.GUI;
 import valorless.havenbags.utils.HeadCreator;
@@ -376,10 +377,11 @@ public class AdminGUI implements Listener {
         	Log.Debug(plugin, "[DI-25] " + "Changing Admin target to " + owner);
         	if(owner.equalsIgnoreCase("ownerless")) {
         		target = "ownerless";
+            	//targetPlayer = player;
         	}else {
         		target = owner;
+            	targetPlayer = Bukkit.getPlayer(UUID.fromString(target));
         	}
-        	targetPlayer = Bukkit.getPlayer(UUID.fromString(target));
         	type = GUIType.PreviewPlayer;
         	Reload();
         	e.setCancelled(true);
@@ -427,10 +429,11 @@ public class AdminGUI implements Listener {
         	Log.Debug(plugin, "[DI-26] " + "Changing Admin target to " + owner);
         	if(owner.equalsIgnoreCase("ownerless")) {
         		target = "ownerless";
+            	//targetPlayer = player;
         	}else {
         		target = owner;
+            	targetPlayer = Bukkit.getPlayer(UUID.fromString(target));
         	}
-        	targetPlayer = Bukkit.getPlayer(UUID.fromString(target));
         	type = GUIType.DeletionPlayer;
         	Reload();
         	e.setCancelled(true);
@@ -948,15 +951,39 @@ public class AdminGUI implements Listener {
 			
 			String bagTexture = Main.config.GetString("bag-texture");
 			ItemStack bagItem = new ItemStack(Material.AIR);
-			
-			if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
-				if(!Utils.IsStringNullOrEmpty(data.getTexture())) {
-					bagItem = HeadCreator.itemFromBase64(data.getTexture());
-				}else {
-					bagItem = HeadCreator.itemFromBase64(bagTexture);
+
+			if(data.getMaterial() != null) {
+				bagItem.setType(data.getMaterial());
+				if(data.getMaterial() == Material.PLAYER_HEAD) {
+					if(!Utils.IsStringNullOrEmpty(data.getTexture())) {
+						BagData.setTextureValue(bagItem, data.getTexture());
+					}else {
+						BagData.setTextureValue(bagItem, bagTexture);
+					}
 				}
-			} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-				bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+			}
+			else {
+				if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+					if(!Utils.IsStringNullOrEmpty(data.getTexture())) {
+						bagItem = HeadCreator.itemFromBase64(data.getTexture());
+					}else {
+						bagItem = HeadCreator.itemFromBase64(bagTexture);
+					}
+				} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
+					bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+				}
+			}
+			
+			ItemMeta meta = bagItem.getItemMeta();
+			if(!Utils.IsStringNullOrEmpty(data.getName()) && !data.getName().equalsIgnoreCase("null")) {
+				meta.setDisplayName(Lang.Parse(data.getName(), targetPlayer));
+			}else {
+				meta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), targetPlayer));
+			}
+			bagItem.setItemMeta(meta);
+			
+			if(Main.VersionCompare(Main.server, Main.ServerVersion.v1_21_2) >= 0) {
+				ItemUtils.SetItemName(bagItem, Lang.Parse(Lang.lang.GetString("bag-bound-name"), targetPlayer));
 			}
 			
 			NBT.SetString(bagItem, "bag-uuid", data.getUuid());

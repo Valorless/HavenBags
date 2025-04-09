@@ -452,7 +452,7 @@ public class AutoPickup implements Listener {
 			//Log.Debug(Main.plugin, HavenBags.BagState(i).toString());
 			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
 				if(NBT.Has(i, "bag-filter")) {
-					bags.add(new Bag(i, HavenBags.LoadBagContentFromServer(i, null)));
+					bags.add(new Bag(i, HavenBags.LoadBagContentFromServer(i)));
 				}
 			}
 		}

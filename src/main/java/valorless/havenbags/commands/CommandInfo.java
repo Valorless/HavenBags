@@ -8,6 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import valorless.havenbags.BagData;
+import valorless.havenbags.BagData.Data;
+import valorless.havenbags.HavenBags.BagState;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.utils.TextFeatures;
 import valorless.valorlessutils.nbt.NBT;
@@ -22,13 +25,15 @@ public class CommandInfo {
 		ItemStack hand = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand();
 		ItemMeta meta = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand().getItemMeta();
 			
-		if(HavenBags.IsBag(hand)) {
-			String uuid = NBT.GetString(hand, "bag-uuid");
-			String owner = NBT.GetString(hand, "bag-owner");
-			String creator = NBT.GetString(hand, "bag-creator");
-			Boolean canBind = NBT.GetBool(hand, "bag-canBind");
-			Integer size = NBT.GetInt(hand, "bag-size");
-			String filter = NBT.GetString(hand, "bag-filter");
+		if(HavenBags.IsBag(hand) && HavenBags.BagState(hand) == BagState.Used) {
+			Data data = BagData.GetBag(HavenBags.GetBagUUID(hand), hand);
+			
+			String uuid = data.getUuid();
+			String owner = data.getOwner();
+			String creator = data.getCreator();
+			Boolean canBind = (!owner.equalsIgnoreCase("ownerless")) ? true : false;
+			Integer size = data.getSize();
+			String filter = data.getAutopickup();
 			List<String> trust = new ArrayList<String>();
 			String trusted = "";
 			String weight = "";
@@ -47,9 +52,9 @@ public class CommandInfo {
 			
 			if(!Utils.IsStringNullOrEmpty(uuid)) { info = info + "\n  §fUUID: §e" + uuid; }
 			if(!Utils.IsStringNullOrEmpty(owner)) { 
-				if (!owner.equalsIgnoreCase("ownerless") && !owner.equalsIgnoreCase("null")) {
+				if (canBind) {
 					try {
-						info = info + String.format("\n  §fOwner: §e%s (%s)", owner, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()); 
+						info = info + String.format("\n  §fOwner: §e%s (%s)", Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName(), owner); 
 					} catch(Exception e) {
 						info = info + "\n  §fOwner: §4Error";
 					}
@@ -59,7 +64,7 @@ public class CommandInfo {
 			}
 			if(!Utils.IsStringNullOrEmpty(creator) && !creator.equalsIgnoreCase("null")) {
 				try {
-					info = info + String.format("\n  §fCreator: §e%s (%s)", creator, Bukkit.getOfflinePlayer(UUID.fromString(creator)).getName());
+					info = info + String.format("\n  §fCreator: §e%s (%s)", Bukkit.getOfflinePlayer(UUID.fromString(creator)).getName(), creator);
 				} catch(Exception e) {
 					info = info + "\n  §fCreator: §4Error";
 				}
@@ -76,9 +81,9 @@ public class CommandInfo {
 			}
 			
 			if(NBT.Has(hand, "bag-trust")) {
-				trust = NBT.GetStringList(hand, "bag-trust");
+				trust = data.getTrusted();
 			}
-			if(trust.size() != 0) {
+			if(!trust.isEmpty()) {
 				for(int i = 0; i < trust.size(); i++) { 
 					if(i != 0) {
 						trusted = trusted + ", " + trust.get(i); 

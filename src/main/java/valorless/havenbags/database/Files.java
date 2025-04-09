@@ -6,6 +6,7 @@ import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.utils.FoodComponentFixer;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +26,44 @@ import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 
 public class Files {
+	
+	public static void saveBag(Data data) {
+		String uuid = data.getUuid();
+    	String owner = data.getOwner();
+    	
+		File path = new File(Main.plugin.getDataFolder() + "/bags");
+		File path2 = new File(Main.plugin.getDataFolder() + String.format("/bags/%s", owner));
+		File path3 = new File(Main.plugin.getDataFolder() + String.format("/bags/%s/%s.yml", owner, uuid));
+		
+		if(!path.exists()) path.mkdir();
+		if(!path2.exists()) path2.mkdir();
+		if(!path3.exists())
+			try {
+				path3.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		
+		Config file = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
+		
+		if(!file.HasKey("uuid")) file.Set("uuid", data.getUuid());
+		if(!file.HasKey("owner")) file.Set("owner", data.getOwner());
+		if(!file.HasKey("creator")) file.Set("creator", data.getCreator());
+		file.Set("size", data.getSize());
+		file.Set("texture", data.getTexture());
+		file.Set("custommodeldata", data.getModeldata());
+		file.Set("itemmodel", data.getItemmodel());
+		file.Set("trusted", data.getTrusted());
+		file.Set("auto-pickup", data.getAutopickup());
+		file.Set("weight", data.getWeight());
+		file.Set("weight-max", data.getWeightMax());
+		file.Set("autosort", data.hasAutoSort());
+		if(data.getMaterial() != null) file.Set("material", data.getMaterial());
+		if(data.getName() != null) file.Set("name", data.getName());
+		
+		file.Set("content", JsonUtils.toJson(data.getContent()).replace("'", "◊"));
+		file.SaveConfig();
+	}
 
 	public static Data loadBag(String owner, String uuid) {
 		Data data = new Data(uuid, owner);
@@ -40,6 +79,9 @@ public class Files {
 		data.setWeight(file.GetInt("weight"));
 		data.setWeightMax(file.GetInt("weight-max"));
 		data.setContent(loadContent(file));
+		data.setAutoSort((file.HasKey("autosort")) ? file.GetBool("autosort") : false);
+		data.setMaterial((file.HasKey("material")) ? Material.valueOf(file.GetString("material").toUpperCase()) : null);
+		data.setName((file.HasKey("name")) ? JsonUtils.fromJson(file.GetString("name")) : null);
 		
 		return data;
 		
@@ -115,6 +157,7 @@ public class Files {
 		}
 		bagData.Set("weight-max", 0);
 		bagData.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
+		bagData.Set("autosort", false);
 		bagData.SaveConfig();
 		return bagData;
 	}

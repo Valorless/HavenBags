@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.features.CustomBags;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;
@@ -26,13 +27,29 @@ public class CommandGive {
 		
 		ItemStack bagItem = new ItemStack(Material.DIRT);
 		bagTexture = Main.config.GetString("bag-texture");
+		Player receiver = Bukkit.getPlayer(command.args[1]);
+		int size;
+		
+		try {
+			size = Integer.parseInt(command.args[2]);
+		}catch(Exception e) {
+			try {
+				size = Integer.parseInt(command.args[3]);
+			}catch(Exception E) {
+				try {
+					CustomBags.Give(receiver, command.args[2]);
+					return true;
+				}catch(Exception é) {
+					return false;
+				}
+			}
+		}
 		
 		if (command.args.length >= 3){
 			List<Placeholder> placeholders = new ArrayList<Placeholder>();
-			Player receiver = Bukkit.getPlayer(command.args[1]);
 			if(command.args[2].equalsIgnoreCase("ownerless")) {
 				if (command.args.length >= 3){
-					int size = Utils.Clamp(Integer.parseInt(command.args[3]), 1, 6);
+					size = Utils.Clamp(Integer.parseInt(command.args[3]), 1, 6);
 
 						//String uuid = UUID.randomUUID().toString();
 						//final Bag bag = new Bag(uuid, null, number*9, true);
@@ -101,7 +118,7 @@ public class CommandGive {
 			}
 			else {
 				try{
-					int size = Utils.Clamp(Integer.parseInt(command.args[2]), 1, 6);
+					 size = Utils.Clamp(Integer.parseInt(command.args[2]), 1, 6);
 						//String uuid = UUID.randomUUID().toString();
 						//final Bag bag = new Bag(uuid, null, number*9, true); //<-- Remove this & Bag.java
 						if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){

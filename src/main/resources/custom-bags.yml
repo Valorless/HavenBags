@@ -1,4 +1,5 @@
-special_bag_1:
+bags:
+ special_bag_1:
   displayname: '&6Special Bag 1'
   material: PLAYER_HEAD
   texture: ''
@@ -6,20 +7,21 @@ special_bag_1:
    - ''
    - ''
   properties:
-    allow-skin-token: true 
-    upgradeable: false
-    size: 27
-    ownerless: true
-
-special_bag_2:
+   allow-skin-token: true 
+   upgradeable: false
+   size: 27
+   ownerless: true
+ 
+ special_bag_2:
   displayname: '&6Special Bag 2'
   material: ENDER_CHEST
   modeldata: 123
+  custom-content: fileNameTest3 # Use '/havenbags customcontent edit/save'
   lore:
    - ''
    - ''
   properties:
-    allow-skin-token: false
-    upgradeable: true
-    size: 45
-    ownerless: false 
+   allow-skin-token: false
+   upgradeable: true
+   size: 45
+   ownerless: false 

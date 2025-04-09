@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.bukkit.inventory.ItemStack;
 
 import com.google.gson.JsonObject;
@@ -166,7 +169,7 @@ public class SQLite {
             stmt.setDouble(10, data.getWeight());
             stmt.setDouble(11, data.getWeightMax());
             stmt.setString(12, JsonUtils.toJson(data.getContent()));
-            stmt.setString(13, "null");
+            stmt.setString(13, DatabaseUtils.Extra(data));
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -285,6 +288,11 @@ public class SQLite {
                 data.setWeight(rs.getDouble("weight"));
                 data.setWeightMax(rs.getDouble("weight_max"));
                 data.setContent(loadContent(rs.getString("content"), data.getUuid()));
+                
+                Map<String, Object> extra = DatabaseUtils.ParseExtra(rs.getString("extra"));
+                if(extra.containsKey("autosort")) data.setAutoSort((Boolean) extra.get("autosort"));
+                if(extra.containsKey("material")) data.setMaterial((String) extra.get("material"));
+                if(extra.containsKey("name")) data.setName((String) extra.get("name"));
                 
                 return data;
             }
