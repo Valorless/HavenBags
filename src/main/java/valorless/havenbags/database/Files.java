@@ -58,7 +58,7 @@ public class Files {
 		file.Set("weight", data.getWeight());
 		file.Set("weight-max", data.getWeightMax());
 		file.Set("autosort", data.hasAutoSort());
-		if(data.getMaterial() != null) file.Set("material", data.getMaterial());
+		if(data.getMaterial() != null) file.Set("material", data.getMaterial().toString());
 		if(data.getName() != null) file.Set("name", data.getName());
 		
 		file.Set("content", JsonUtils.toJson(data.getContent()).replace("'", "◊"));
