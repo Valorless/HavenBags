@@ -9,10 +9,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.havenbags.BagData;
-import valorless.havenbags.BagData.Data;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.Main.ServerVersion;
+import valorless.havenbags.datamodels.Data;
 import valorless.valorlessutils.items.ItemUtils;
 
 public class AutoSorter {

@@ -1,8 +1,8 @@
 package valorless.havenbags.database;
 
 import valorless.havenbags.BagData;
-import valorless.havenbags.BagData.Data;
 import valorless.havenbags.Main.ServerVersion;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.utils.FoodComponentFixer;
 
 import java.io.File;
@@ -60,6 +60,9 @@ public class Files {
 		file.Set("autosort", data.hasAutoSort());
 		if(data.getMaterial() != null) file.Set("material", data.getMaterial().toString());
 		if(data.getName() != null) file.Set("name", data.getName());
+		file.Set("blacklist", data.getBlacklist());
+		file.Set("whitelist", data.isWhitelist());
+		file.Set("ignoreglobalblacklist", data.isIngoreGlobalBlacklist());
 		
 		file.Set("content", JsonUtils.toJson(data.getContent()).replace("'", "◊"));
 		file.SaveConfig();
@@ -82,6 +85,9 @@ public class Files {
 		data.setAutoSort((file.HasKey("autosort")) ? file.GetBool("autosort") : false);
 		data.setMaterial((file.HasKey("material")) ? Material.valueOf(file.GetString("material").toUpperCase()) : null);
 		data.setName((file.HasKey("name")) ? JsonUtils.fromJson(file.GetString("name")) : null);
+		data.setBlacklist(file.GetStringList("blacklist"));
+		data.setWhitelist(file.GetBool("whitelist"));
+		data.setIgnoreGlobalBlacklist(file.GetBool("ignoreglobalblacklist"));
 		
 		return data;
 		
@@ -158,6 +164,9 @@ public class Files {
 		bagData.Set("weight-max", 0);
 		bagData.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
 		bagData.Set("autosort", false);
+		bagData.Set("blacklist", new ArrayList<String>());
+		bagData.Set("whitelist", false);
+		bagData.Set("ignoreglobalblacklist", false);
 		bagData.SaveConfig();
 		return bagData;
 	}

@@ -17,7 +17,7 @@ import valorless.havenbags.BagGUI;
 import valorless.havenbags.CommandListener;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.BagData.Data;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.ValorlessUtils.Log;

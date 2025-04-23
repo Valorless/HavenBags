@@ -27,6 +27,7 @@ import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.Main.ServerVersion;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Message;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.utils.TextFeatures;
@@ -442,9 +443,8 @@ public class AutoPickup implements Listener {
 			Log.Debug(Main.plugin, "[DI-155] " + "false");
 			//return false;
 		}
-
+		
         if(item.getType() == Material.AIR) return false;
-		if(HavenBags.IsItemBlacklisted(item)) return false;
 	
 		List<Bag> bags = new ArrayList<Bag>();
 		Log.Debug(Main.plugin, "[DI-156] " + "Checking for bags.");
@@ -458,7 +458,10 @@ public class AutoPickup implements Listener {
 		}
 		Log.Debug(Main.plugin, "[DI-157] " + "bags:" + bags.size());
 		Log.Debug(Main.plugin, "[DI-158] " + "Checking bag filters.");
+		//if(HavenBags.IsItemBlacklisted(item)) return false;
 		for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
+			Data data = BagData.GetBag(HavenBags.GetBagUUID(bag.item), null);
+			if(HavenBags.IsItemBlacklisted(item, data)) continue;
 			Log.Debug(Main.plugin, "[DI-159] " + "bag: " + NBT.GetString(bag.item, "bag-uuid"));
 			if(BagData.IsBagOpen(NBT.GetString(bag.item, "bag-uuid"), bag.item)) continue;
 			if(HavenBags.IsBagFull(bag.item)) continue;

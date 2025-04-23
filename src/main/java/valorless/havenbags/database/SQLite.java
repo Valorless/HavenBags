@@ -10,7 +10,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -18,8 +17,8 @@ import com.google.gson.JsonObject;
 
 import valorless.havenbags.BagData;
 import valorless.havenbags.Main;
-import valorless.havenbags.BagData.Data;
 import valorless.havenbags.Main.ServerVersion;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.utils.FoodComponentFixer;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.json.JsonUtils;
@@ -293,6 +292,9 @@ public class SQLite {
                 if(extra.containsKey("autosort")) data.setAutoSort((Boolean) extra.get("autosort"));
                 if(extra.containsKey("material")) data.setMaterial((String) extra.get("material"));
                 if(extra.containsKey("name")) data.setName((String) extra.get("name"));
+                if(extra.containsKey("blacklist")) data.setBlacklist(DatabaseUtils.parseBlacklist((String) extra.get("blacklist")));
+                if(extra.containsKey("whitelist")) data.setWhitelist((Boolean) extra.get("whitelist"));
+                if(extra.containsKey("ignoreglobalblacklist")) data.setIgnoreGlobalBlacklist((Boolean) extra.get("ignoreglobalblacklist"));
                 
                 return data;
             }

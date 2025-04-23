@@ -42,6 +42,7 @@ public class BagSkin implements Listener{
 			}
 		}
 		catch(Exception e) {}
+		
 		if(bag == null || skin == null) return;
 		if(bag.getType() == Material.AIR || skin.getType() == Material.AIR) return;
 		//Log.Debug(Main.plugin, bag.toString());
@@ -49,8 +50,11 @@ public class BagSkin implements Listener{
 		
 		if(!HavenBags.IsBag(bag)) return;
 		Log.Debug(Main.plugin, "[DI-66] " + "[BagSkin] Was bag.");
-		if(NBT.GetBool(bag, "bag-skin") == false) {
-			return;
+		if(NBT.Has(bag, "bag-skin")) {
+			if(NBT.GetBool(bag, "bag-skin") == false) {
+				Log.Debug(Main.plugin, "[DI-247] [BagUpgrade] Bag cannot be skinned.");
+				return;
+			}
 		}
 		if(HavenBags.BagState(bag) == BagState.New) return;
 		Log.Debug(Main.plugin, "[DI-67] " + "[BagSkin] BagState.Used");

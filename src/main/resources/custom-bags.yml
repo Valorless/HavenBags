@@ -24,4 +24,11 @@ bags:
    allow-skin-token: false
    upgradeable: true
    size: 45
-   ownerless: false 
+   ownerless: false
+   autopickup: mining # Use filters defined in filtering.yml
+   blacklist:
+    - DIAMOND
+    - EMERALD-12345
+    - DIRT:44453 # Define CustomModelData with either - or :
+   whitelist: true # Should we treat the blacklist as a whitelist?
+   ignoreglobalblacklist: true # Should we ignore the blacklist from blacklist.yml?

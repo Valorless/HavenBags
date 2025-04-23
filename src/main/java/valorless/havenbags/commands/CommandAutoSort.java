@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
-import valorless.havenbags.BagData.Data;
+import valorless.havenbags.datamodels.Data;
 
 public class CommandAutoSort {
 	

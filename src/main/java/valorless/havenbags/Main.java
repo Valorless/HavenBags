@@ -1,6 +1,6 @@
 package valorless.havenbags;
 
-import valorless.havenbags.BagData.Data;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.BagCarryLimit;
 import valorless.havenbags.features.BagSkin;

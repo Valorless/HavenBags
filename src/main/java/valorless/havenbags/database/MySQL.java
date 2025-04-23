@@ -11,13 +11,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.gson.JsonObject;
 
-import valorless.havenbags.BagData.Data;
 import valorless.havenbags.Main.ServerVersion;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.utils.FoodComponentFixer;
 import valorless.havenbags.BagData;
 import valorless.havenbags.Main;
@@ -333,6 +332,9 @@ public class MySQL {
 	                if(extra.containsKey("autosort")) data.setAutoSort((Boolean) extra.get("autosort"));
 	                if(extra.containsKey("material")) data.setMaterial((String)extra.get("material"));
 	                if(extra.containsKey("name")) data.setName((String) extra.get("name"));
+	                if(extra.containsKey("blacklist")) data.setBlacklist(DatabaseUtils.parseBlacklist((String) extra.get("blacklist")));
+	                if(extra.containsKey("whitelist")) data.setWhitelist((Boolean) extra.get("whitelist"));
+	                if(extra.containsKey("ignoreglobalblacklist")) data.setIgnoreGlobalBlacklist((Boolean) extra.get("ignoreglobalblacklist"));
 	                
 	                return data;
 			}
@@ -375,9 +377,12 @@ public class MySQL {
 	                data.setOpen(rs.getBoolean("open"));
 	                
 	                Map<String, Object> extra = DatabaseUtils.ParseExtra(rs.getString("extra"));
-	                if(extra.containsKey("autosort")) data.setAutoSort(Boolean.valueOf((String) extra.get("autosort")));
+	                if(extra.containsKey("autosort")) data.setAutoSort((Boolean) extra.get("autosort"));
 	                if(extra.containsKey("material")) data.setMaterial((String)extra.get("material"));
 	                if(extra.containsKey("name")) data.setName((String) extra.get("name"));
+	                if(extra.containsKey("blacklist")) data.setBlacklist(DatabaseUtils.parseBlacklist((String) extra.get("blacklist")));
+	                if(extra.containsKey("whitelist")) data.setWhitelist((Boolean) extra.get("whitelist"));
+	                if(extra.containsKey("ignoreglobalblacklist")) data.setIgnoreGlobalBlacklist((Boolean) extra.get("ignoreglobalblacklist"));
 	                
 	                bags.add(data);
 	        }

@@ -22,7 +22,7 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.BagData.Data;
+import valorless.havenbags.datamodels.Data;
 
 public class WeightTooltip {
     public static void registerTooltipListener(Plugin plugin) {

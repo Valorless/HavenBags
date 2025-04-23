@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -20,7 +21,7 @@ import org.bukkit.util.BlockIterator;
 import me.NoChance.PvPManager.PvPManager;
 import me.NoChance.PvPManager.PvPlayer;
 import me.NoChance.PvPManager.Managers.PlayerHandler;
-import valorless.havenbags.BagData.Data;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;
@@ -30,15 +31,19 @@ public class BagListener implements Listener{
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		if(event.getHand() != EquipmentSlot.HAND) return;
 		if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Player player = event.getPlayer();
 
 			// Since 1.20 players can now edit signs. Block bag interaction if a sign is clicked.
 			try {
-				if(getTargetBlock(player, 5).getType().toString().contains("SIGN")) { 
+				if(getTargetBlock(player, 5).getType().toString().contains("SIGN")) { // My old way, before i learned about the reach attribute.
 					return; 
 				}
 			}catch(Exception e) {}
+			if(event.getClickedBlock() != null || event.getClickedBlock().getType().toString().contains("SIGN")) {
+				return;
+			}
 
 			ItemStack hand = player.getInventory().getItemInMainHand();
 
@@ -215,13 +220,13 @@ public class BagListener implements Listener{
 		Data data = BagData.GetBag(uuid, bag);
 		//String owner = NBT.GetString(bag, "bag-owner");
 
-		if(BagData.BagOpenBy(uuid, bag) == player) {
+		if(data.getViewer() == player) {
 			Log.Debug(Main.plugin, "[DI-227] " + "This bag is already open by " + player.getName() + ".");
 			event.setCancelled(true);
 			return;
 		}
 		if(data.isOpen()) {
-			if(BagData.BagOpenBy(uuid, bag) != player) {
+			if(data.getViewer() != player) {
 				player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-already-open"), null));
 				Log.Debug(Main.plugin, "[DI-60] " + "This bag is already open.");
 				event.setCancelled(true);

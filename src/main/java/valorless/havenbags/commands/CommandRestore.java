@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.BagData.Data;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.BagData;
 import valorless.havenbags.CommandListener;

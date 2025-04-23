@@ -24,8 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import com.google.gson.Gson;
 
 import valorless.havenbags.BagData.Bag;
-import valorless.havenbags.BagData.Data;
 import valorless.havenbags.Main.ServerVersion;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.AutoSorter;
@@ -815,8 +815,47 @@ public class HavenBags {
 	    location.getWorld().dropItemNaturally(location, itemStack);
 	}
 	
-	public static boolean IsItemBlacklisted(ItemStack item) {
+	public static boolean IsItemBlacklisted(ItemStack item, Data... bagData) {
 		if(item == null) return false;
+		
+		// Check bag's own blacklist
+		if(bagData != null && bagData.length != 0) {
+			Data data = bagData[0];
+			if(data.getBlacklist() != null && !data.getBlacklist().isEmpty()) {
+				Log.Debug(Main.plugin, "[DI-243] " + "Checking bag's whitelist.");	
+				boolean whitelist = data.isWhitelist();
+				if(whitelist) Log.Debug(Main.plugin, "[DI-244] " + "Treating blacklist as whitelist!");	
+				for(String entry : data.getBlacklist()) {
+					Log.Debug(Main.plugin, entry);
+					Material mat = null;
+					int cmd = 0;
+					if(entry.contains(":")) {
+						mat = Material.valueOf(entry.split(":")[0]);
+						cmd = Integer.valueOf(entry.split(":")[1]);
+					}else if(entry.contains("-")) {
+						mat = Material.valueOf(entry.split("-")[0]);
+						cmd = Integer.valueOf(entry.split("-")[1]);
+					}
+					if(item.getType() == mat) {
+						Log.Debug(Main.plugin, "[DI-245] " + "Material blacklisted!");	
+						if(whitelist) return false;
+						return true;
+					}
+					if(item.hasItemMeta()) {					
+						if(item.getItemMeta().hasCustomModelData()) {
+							if(cmd == item.getItemMeta().getCustomModelData()) {
+								Log.Debug(Main.plugin, "[DI-246] " + "CustomModelData blacklisted!");	
+								if(whitelist) return false;
+								return true;
+							}
+						}
+					}
+				}
+				if(data.isIngoreGlobalBlacklist()) return false;
+			}
+		}
+		
+		
 		Config blacklist = Main.blacklist;
 		if(!blacklist.GetBool("enabled")) {
 			return false;

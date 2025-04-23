@@ -23,9 +23,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
-import valorless.havenbags.BagData.Data;
 import valorless.havenbags.BagData.UpdateSource;
 import valorless.havenbags.database.DatabaseType;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
@@ -168,7 +168,7 @@ public class BagGUI implements Listener {
     
     void CheckInstances() {
     	List<BagGUI> thisUUID = new ArrayList<BagGUI>();
-    	for (BagData.Data openBag : BagData.GetOpenBags()) {
+    	for (Data openBag : BagData.GetOpenBags()) {
     		Log.Debug(plugin, "[DI-34] " + "Open Bag: " + openBag.getUuid() + " - " + NBT.GetString(bagItem, "bag-uuid"));
     		if(openBag.getUuid().equalsIgnoreCase(NBT.GetString(bagItem, "bag-uuid"))) {
     			thisUUID.add(openBag.getGui());
@@ -240,6 +240,7 @@ public class BagGUI implements Listener {
 			if(data.isOpen()) return null;
 			List<ItemStack> content = data.getContent();
 			BagData.MarkBagOpen(uuid, bagItem, player, this);
+			data.setViewer(player); //Extra just to be sure
 	    	return content;
 		}else {
 			return BagData.GetBag(uuid, this.bagItem, UpdateSource.PLAYER).getContent();
@@ -329,14 +330,15 @@ public class BagGUI implements Listener {
             e.setCancelled(true);
         }
         
+		Data data = BagData.GetBag(uuid, null);
         
         //if (Main.config.GetBool("bags-in-bags") == true) return;
-    	if(e.getRawSlot() < inv.getSize() && HavenBags.IsItemBlacklisted(cursorItem)) {
+    	if(e.getRawSlot() < inv.getSize() && HavenBags.IsItemBlacklisted(cursorItem, data)) {
         	e.setCancelled(true);
     		e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("item-blacklisted"), player));
     		return;
     	}
-		else if(e.getRawSlot() > inv.getSize() && e.isShiftClick() && HavenBags.IsItemBlacklisted(clickedItem)){
+		else if(e.getRawSlot() > inv.getSize() && e.isShiftClick() && HavenBags.IsItemBlacklisted(clickedItem, data)){
             e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
             e.setCancelled(true);
         }

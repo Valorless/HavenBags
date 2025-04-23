@@ -10,9 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.havenbags.BagData;
-import valorless.havenbags.BagData.Data;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.uuid.UUIDFetcher;

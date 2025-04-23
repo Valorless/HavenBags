@@ -1,7 +1,6 @@
 package valorless.havenbags;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.sql.SQLException;
@@ -39,11 +38,10 @@ import valorless.havenbags.database.DatabaseType;
 import valorless.havenbags.database.Files;
 import valorless.havenbags.database.MySQL;
 import valorless.havenbags.database.SQLite;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.utils.Reflex;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.items.ItemUtils;
-import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.nbtapi.iface.ReadWriteNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBT;
@@ -181,234 +179,6 @@ public class BagData {
 		LoadData();
 	}
 	
-	public static class Data {
-		private String uuid;
-		private String owner;
-		private String creator;
-		private int size;
-		private String texture;
-		private Material material;
-		private String name = "";
-		private int modeldata;
-		private String itemmodel;
-		private List<String> trusted;
-		private String autopickup;
-		private double weight;
-		private double weightMax;
-		private List<ItemStack> content = new ArrayList<ItemStack>();
-		private boolean autosort;
-
-		//private Config dataFile;
-		
-		private boolean changed = false;
-		private boolean isOpen = false;
-
-		private Player viewer = null;
-		private BagGUI gui;
-		
-		public Data(@NotNull String uuid, @NotNull String owner) {
-			this.setUuid(uuid); this.setOwner(owner);
-		}
-		
-		public Data(@NotNull String uuid, @NotNull String owner, @NotNull Material material) {
-			this.setUuid(uuid); this.setOwner(owner); this.setMaterial(material);
-		}
-		
-		//public Data(@NotNull String uuid, @NotNull String owner, @NotNull Config data) {
-		//	this.setUuid(uuid); this.setOwner(owner); this.SetData(data);
-		//}
-
-		public String getUuid() {
-			return uuid;
-		}
-
-		public void setUuid(@NotNull String uuid) {
-			this.changed = true;
-			this.uuid = uuid;
-		}
-
-		public String getOwner() {
-			return owner;
-		}
-
-		public void setOwner(@NotNull String owner) {
-			this.changed = true;
-			this.owner = owner;
-		}
-		
-		public String getCreator() {
-			return creator;
-		}
-
-		public void setCreator(String creator) {
-			this.changed = true;
-			this.creator = creator;
-		}
-
-		public int getSize() {
-			return size;
-		}
-
-		public void setSize(int size) {
-			this.changed = true;
-			this.size = size;
-		}
-		
-		public void setContent(List<ItemStack> content){
-			this.changed = true;
-			this.content = content;
-			//return JsonUtils.fromJson(data.GetString("content").replace("◊","'"));
-		}
-
-		public List<ItemStack> getContent(){
-			return content;
-			//return JsonUtils.fromJson(data.GetString("content").replace("◊","'"));
-		}
-		
-		public String getTexture() {
-			return texture;
-		}
-		
-		public void setTexture(String base64) {
-			this.changed = true;
-			this.texture = base64;
-		}
-
-		/*public Config getDataFile() {
-			return dataFile;
-		}
-
-		public void SetDataFile(@NotNull Config data) {
-			this.dataFile = data;
-		}*/
-
-		public int getModeldata() {
-			return modeldata;
-		}
-
-		public void setModeldata(int modeldata) {
-			this.changed = true;
-			this.modeldata = modeldata;
-		}
-
-		public String getItemmodel() {
-			return itemmodel;
-		}
-
-		public void setItemmodel(String itemmodel) {
-			this.changed = true;
-			this.itemmodel = itemmodel;
-		}
-
-		public List<String> getTrusted() {
-			return trusted;
-		}
-		
-		public boolean isPlayerTrusted(String uuid) {
-			if(trusted.isEmpty()) return false;
-			for(int i = 0; i < trusted.size(); i++) {
-				if(trusted.get(i).equalsIgnoreCase(uuid)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		public void setTrusted(List<String> trusted) {
-			this.changed = true;
-			this.trusted = trusted;
-		}
-
-		public String getAutopickup() {
-			return autopickup;
-		}
-
-		public void setAutopickup(String autopickup) {
-			this.changed = true;
-			this.autopickup = autopickup;
-		}
-
-		public double getWeight() {
-			return weight;
-		}
-
-		public void setWeight(double weight) {
-			this.changed = true;
-			this.weight = weight;
-		}
-
-		public double getWeightMax() {
-			return weightMax;
-		}
-
-		public void setWeightMax(double weightMax) {
-			this.changed = true;
-			this.weightMax = weightMax;
-		}
-
-		public BagGUI getGui() {
-			return gui;
-		}
-
-		public void setGui(BagGUI gui) {
-			this.changed = true;
-			this.gui = gui;
-		}
-
-		public Player getViewer() {
-			return viewer;
-		}
-
-		public boolean isChanged() {
-			return changed;
-		}
-
-		public boolean isOpen() {
-			return isOpen;
-		}
-
-		public void setOpen(boolean open) {
-			this.changed = true;
-			this.isOpen = open;
-		}
-
-		public boolean hasAutoSort() {
-			return autosort;
-		}
-
-		public void setAutoSort(boolean autosort) {
-			this.changed = true;
-			this.autosort = autosort;
-		}
-
-		public Material getMaterial() {
-			return material;
-		}
-
-		public void setMaterial(Material material) {
-			this.changed = true;
-			this.material = material;
-		}
-
-		public void setMaterial(String material) {
-			this.changed = true;
-			if(material.equalsIgnoreCase("null")) {
-				this.material = null;
-				return;
-			}
-			this.material = Material.valueOf(material.toUpperCase());
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.changed = true;
-			this.name = name;
-		}
-	}
-	
 	public static class Bag {
 		public ItemStack item;
 		public List<ItemStack> content = new ArrayList<ItemStack>();
@@ -447,7 +217,7 @@ public class BagData {
 				//Log.Debug(Main.plugin, "[DI-28] " + bag.uuid);
 				//Log.Debug(Main.plugin, bag.owner);
 				if(m_source == UpdateSource.PLAYER) {
-					bag.isOpen = true;
+					bag.setOpen(true);
 				}
 				//Log.Debug(Main.plugin, bag.content.toString());
 				return bag;
@@ -473,12 +243,12 @@ public class BagData {
 		
 		try {
 			//bag.setContent(content);
-			bag.content = content;
+			bag.setContent(content);
 			//bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
-			bag.changed = true;
+			bag.setChanged(true);
 			if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			if(m_source == UpdateSource.PLAYER) {
-				bag.isOpen = false;
+				bag.setOpen(false);
 			}
 		}catch(Exception e) {
 			Log.Error(Main.plugin, String.format("Failed to update bag '%s'.", uuid));
@@ -500,7 +270,7 @@ public class BagData {
 		
 		try {
 			//bag.setContent(content);
-			bag.content = content;
+			bag.setContent(content);
 			//bag.data.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
 			
 			if(bagItem.getType() == Material.PLAYER_HEAD) {
@@ -531,10 +301,10 @@ public class BagData {
 			//bag.data.Set("texture", getTextureValue(bagItem));
 			 
 			 
-			bag.changed = true;
+			bag.setChanged(true);
 			if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			if(m_source == UpdateSource.PLAYER) {
-				bag.isOpen = false;
+				bag.setOpen(false);
 			}
 			
 
@@ -544,7 +314,7 @@ public class BagData {
 				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable(){
 		            @Override
 		            public void run(){
-		            	HavenBags.UpdateBagItem(bagItem, content, bag.viewer);
+		            	HavenBags.UpdateBagItem(bagItem, content, bag.getViewer());
 		            }
 		        }, 1L);
 				
@@ -556,26 +326,26 @@ public class BagData {
 		}
 	}
 	
-	public static void CreateBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content, Player creator, ItemStack bag) {
+	public static Data CreateBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content, Player creator, ItemStack bag) {
 		Data dat = new Data(uuid, owner, bag.getType());
-		dat.content = content;
-		dat.creator = creator.getUniqueId().toString();
+		dat.setContent(content);
+		dat.setCreator(creator.getUniqueId().toString());
 		
-		dat.size = NBT.GetInt(bag, "bag-size");
+		dat.setSize(NBT.GetInt(bag, "bag-size"));
 		if(bag.getType() == Material.PLAYER_HEAD) {
-			dat.texture = getTextureValue(bag);
-			dat.modeldata = 0;
-			dat.itemmodel = null;
+			dat.setTexture(getTextureValue(bag));
+			dat.setModeldata(0);
+			dat.setItemmodel(null);
 		}else {
-			dat.texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
+			dat.setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=");
 			if(bag.hasItemMeta()) {
 				if(bag.getItemMeta().hasCustomModelData()) {
-					dat.modeldata = bag.getItemMeta().getCustomModelData();
+					dat.setModeldata(bag.getItemMeta().getCustomModelData());
 				}
 
 				if(Main.VersionCompare(Main.server, Main.ServerVersion.v1_21_2) >= 0) {
 					if(ItemUtils.GetItemModel(bag) != null) {
-						dat.itemmodel = ItemUtils.GetItemModel(bag).toString();
+						dat.setItemmodel(ItemUtils.GetItemModel(bag).toString());
 					}else {
 						dat.setItemmodel("");
 					}
@@ -584,12 +354,24 @@ public class BagData {
 				}
 			}
 		}
-		dat.trusted = new ArrayList<String>();
-		dat.autopickup = "null";
+		dat.setTrusted(new ArrayList<String>());
 		
-		dat.changed = true;
+		if(NBT.Has(bag, "bag-filter")) {
+			dat.setAutopickup(NBT.GetString(bag, "bag-filter"));
+		}else {
+			dat.setAutopickup("null");
+		}
+		
+		if(NBT.Has(bag, "bag-blacklist")) {
+			dat.setBlacklist(NBT.GetStringList(bag, "bag-blacklist"));
+			dat.setWhitelist(NBT.GetBool(bag, "bag-whitelist"));
+			dat.setIgnoreGlobalBlacklist(NBT.GetBool(bag, "bag-igb"));
+		}
+		
+		dat.setChanged(true);
 		data.add(dat);
 		Log.Debug(Main.plugin, "[DI-30] " + "New bag data created: " + owner + "/" + uuid);
+		return dat;
 	}
 	
 	public static void LoadData(){
@@ -663,12 +445,12 @@ public class BagData {
 			Data bag = entry.getValue();
 		    toSave.add(bag);
 		    iterator.remove();
-		    bag.changed = false;
+		    bag.setChanged(false);
 		}
 		
 		for(Data bag : toSave) {
-			String uuid = bag.uuid;
-	    	String owner = bag.owner;
+			String uuid = bag.getUuid();
+	    	String owner = bag.getOwner();
 	    	
 	    	if(database == DatabaseType.FILES) {
 	        	Log.Debug(Main.plugin, "[DI-31] " + "Attempting to write bag " + owner + "/" + uuid + " onto server");
@@ -765,8 +547,8 @@ public class BagData {
 		Log.Debug(Main.plugin, "[DI-32] " + playerUUID);
 		List<String> bags = new ArrayList<String>();
 		for(Data dat : data) {
-			if(dat.owner.equalsIgnoreCase(playerUUID)) {
-				bags.add(dat.uuid);
+			if(dat.getOwner().equalsIgnoreCase(playerUUID)) {
+				bags.add(dat.getUuid());
 			}
 		}
 		return bags;
@@ -796,7 +578,7 @@ public class BagData {
 	public static boolean IsBagOpen(@NotNull String uuid,  ItemStack bagItem) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				return bag.isOpen;
+				return bag.isOpen();
 			}
 		}
 		Log.Error(Main.plugin, String.format("Failed to check if bag '%s' is open, this bag was not found.", uuid));
@@ -809,7 +591,7 @@ public class BagData {
 		String uuid = HavenBags.GetBagUUID(bagItem);
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				return bag.isOpen;
+				return bag.isOpen();
 			}
 		}
 		return false;
@@ -819,7 +601,7 @@ public class BagData {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				if(IsBagOpen(uuid, bagItem)) {
-					return bag.viewer;
+					return bag.getViewer();
 				}else return null;
 			}
 		}
@@ -831,8 +613,8 @@ public class BagData {
 	public static void MarkBagOpen(@NotNull String uuid, ItemStack bagItem, Player player) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.isOpen = true;
-				bag.viewer = player;
+				bag.setOpen(true);
+				bag.setViewer(player);
 				if(database == DatabaseType.MYSQLPLUS) {
 					Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
     					mysql.saveBag(bag);
@@ -848,9 +630,9 @@ public class BagData {
 	public static void MarkBagOpen(@NotNull String uuid, ItemStack bagItem, Player player, BagGUI gui) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.isOpen = true;
-				bag.viewer = player;
-				bag.gui = gui;
+				bag.setOpen(true);
+				bag.setViewer(player);
+				bag.setGui(gui);
 				if(database == DatabaseType.MYSQLPLUS) {
 					Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
     					mysql.saveBag(bag);
@@ -866,8 +648,8 @@ public class BagData {
 	public static void MarkBagClosed(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.isOpen = false;
-				bag.gui = null;
+				bag.setOpen(false);
+				bag.setGui(null);
 				if(database == DatabaseType.MYSQLPLUS) {
 					Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
     					mysql.saveBag(bag);
@@ -882,7 +664,7 @@ public class BagData {
 	public List<String> GetTrusted(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				return bag.trusted;
+				return bag.getTrusted();
 			}
 		}
 		return null;
@@ -891,7 +673,7 @@ public class BagData {
 	public static String GetOwner(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				return bag.owner;
+				return bag.getOwner();
 			}
 		}
 		return null;
@@ -900,7 +682,7 @@ public class BagData {
 	public static String GetCreator(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				return bag.creator;
+				return bag.getCreator();
 			}
 		}
 		return null;
@@ -909,11 +691,11 @@ public class BagData {
 	public static void AddTrusted(@NotNull String uuid, @NotNull String player) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				List<String> trusted = bag.trusted;
+				List<String> trusted = bag.getTrusted();
 				if(!trusted.contains(player)) {
 					trusted.add(player);
-					bag.trusted = trusted;
-					bag.changed = true;
+					bag.setTrusted(trusted);
+					bag.setChanged(true);
 					if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 				}
 			}
@@ -923,13 +705,13 @@ public class BagData {
 	public static void RemoveTrusted(@NotNull String uuid, @NotNull String player) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				List<String> trusted = bag.trusted;
+				List<String> trusted = bag.getTrusted();
 				if(trusted.size() == 0) return;
 				for(int i = 0; i < trusted.size(); i++) {
 					if(trusted.get(i).equalsIgnoreCase(player)) {
 						trusted.remove(i);
-						bag.trusted = trusted;
-						bag.changed = true;
+						bag.setTrusted(trusted);
+						bag.setChanged(true);
 						if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 					}
 				}
@@ -940,8 +722,8 @@ public class BagData {
 	public static void SetAutoPickup(@NotNull String uuid, @NotNull String filter) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.autopickup = filter;
-				bag.changed = true;
+				bag.setAutopickup(filter);
+				bag.setChanged(true);
 				if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			}
 		}
@@ -950,7 +732,7 @@ public class BagData {
 	public static String GetAutoPickup(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				return bag.autopickup;
+				return bag.getAutopickup();
 			}
 		}
 		return null;
@@ -959,8 +741,8 @@ public class BagData {
 	public static void RemoveAutoPickup(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.autopickup = "null";
-				bag.changed = true;
+				bag.setAutopickup("null");
+				bag.setChanged(true);
 				if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			}
 		}	
@@ -969,8 +751,8 @@ public class BagData {
 	public static void SetWeight(@NotNull String uuid, @NotNull double weight) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.weight = weight;
-				bag.changed = true;
+				bag.setWeight(weight);
+				bag.setChanged(true);
 				if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			}
 		}
@@ -979,8 +761,8 @@ public class BagData {
 	public static void SetWeightMax(@NotNull String uuid, @NotNull double weightmax) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.weightMax = weightmax;
-				bag.changed = true;
+				bag.setWeightMax(weightmax);
+				bag.setChanged(true);
 				if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			}
 		}
@@ -990,7 +772,7 @@ public class BagData {
 	private void MarkBagChanged(@NotNull String uuid) {
 		for(Data bag : data) {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.changed = true;
+				bag.setChanged(true);
 				if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
 			}
 		}
@@ -1081,7 +863,7 @@ public class BagData {
 	public static List<Data> GetOpenBags(){
 		List<Data> open = new ArrayList<>();
 		for(Data bag : data) {
-			if(bag.isOpen) open.add(bag);
+			if(bag.isOpen()) open.add(bag);
 		}
 		return open;
 	}

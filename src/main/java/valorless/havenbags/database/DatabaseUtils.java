@@ -1,13 +1,13 @@
 package valorless.havenbags.database;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import valorless.havenbags.Main;
-import valorless.havenbags.BagData.Data;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.havenbags.datamodels.Data;
 import valorless.valorlessutils.utils.Utils;
 
 public class DatabaseUtils {
@@ -27,11 +27,31 @@ public class DatabaseUtils {
 			text += String.format(", name:%s", safeName);
 		}
 		
+		if(data.getBlacklist() != null) {
+			text += String.format(", blacklist:%s", formatBlacklist(data.getBlacklist()));
+			text += String.format(", whitelist:%s", data.isWhitelist());
+			text += String.format(", ignoreglobalblacklist:%s", data.isIngoreGlobalBlacklist());
+		}
+		
 		text += "}";
 		//Log.Info(Main.plugin, text);
 		return text;
 	}
 	
+	public static Object formatBlacklist(List<String> blacklist) {
+		if(blacklist.isEmpty()) return "[]";
+		return String.join("=", blacklist);
+	}
+	
+	public static List<String> parseBlacklist(String text){
+		if(text.equalsIgnoreCase("[]")) return new ArrayList<String>();
+		List<String> blacklist = new ArrayList<>();
+		for(String entry : text.split("=")) {
+			blacklist.add(entry);
+		}
+		return blacklist;
+	}
+
 	// I hate Regex, I just do not understand it..
 	// So I had AI do some grunt work, and I did some touch-ups to make sure it works.
 	

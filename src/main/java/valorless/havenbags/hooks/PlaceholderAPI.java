@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import valorless.havenbags.BagData;
 import valorless.havenbags.BagData.Bag;
-import valorless.havenbags.BagData.Data;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.BagListener;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;

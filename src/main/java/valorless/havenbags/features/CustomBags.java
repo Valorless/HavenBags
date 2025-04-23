@@ -15,7 +15,6 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.utils.HeadCreator;
-import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
@@ -71,6 +70,10 @@ public class CustomBags {
 			if(file.HasKey(String.format("bags.%s.custom-content", key))) {
 				NBT.SetString(item, "bag-predefined", file.GetString(String.format("bags.%s.custom-content", key)));
 			}
+			NBT.SetStringList(item, "bag-blacklist", file.GetStringList(String.format("bags.%s.properties.blacklist", key)));
+			NBT.SetBool(item, "bag-whitelist", file.GetBool(String.format("bags.%s.properties.whitelist", key)));
+			NBT.SetBool(item, "bag-igb", file.GetBool(String.format("bags.%s.properties.ignoreglobalblacklist", key)));
+			NBT.SetString(item, "bag-filter", file.GetString(String.format("bags.%s.properties.autopickup", key)));
 			
 			bags.put(key, item);
 		}
@@ -96,6 +99,7 @@ public class CustomBags {
 		
 		BagData.CreateBag(uuid, owner, content, player, bagItem);
 		HavenBags.UpdateBagLore(bagItem, player);
+		
 		
 		player.getInventory().addItem(bagItem);
 		
