@@ -41,10 +41,13 @@ public class BagListener implements Listener{
 					return; 
 				}
 			}catch(Exception e) {}
-			if(event.getClickedBlock() != null || event.getClickedBlock().getType().toString().contains("SIGN")) {
-				return;
-			}
 
+			if(event.getClickedBlock() != null) {
+				if(event.getClickedBlock().getType().toString().contains("SIGN")) {
+					return;
+				}
+			}
+			
 			ItemStack hand = player.getInventory().getItemInMainHand();
 
 			//player.sendMessage("Right click");
