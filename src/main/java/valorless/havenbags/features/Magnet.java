@@ -60,7 +60,6 @@ public class Magnet {
 
 			                item.setVelocity(direction);
 			            }
-			            return;
 		        	}
 		        }
 		    }
