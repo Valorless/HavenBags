@@ -32,6 +32,12 @@ public class Crafting implements Listener {
 
 	public static Config config = new Config(Main.plugin, "recipes.yml");
 	public static List<NamespacedKey> Recipes = new ArrayList<NamespacedKey>();
+
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-15] Registering Crafting");
+		Bukkit.getServer().getPluginManager().registerEvents(new Crafting(), Main.plugin);
+		PrepareRecipes();
+	}
 	
 	public static void PrepareRecipes() {
 		if(config.GetBool("enabled") == false) return;

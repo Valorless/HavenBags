@@ -23,9 +23,11 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
+import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class WeightTooltip {
     public static void registerTooltipListener(Plugin plugin) {
+    	Log.Debug(Main.plugin, "[DI-251] Registering WeightTooltip");
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
         protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, 

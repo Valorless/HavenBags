@@ -33,9 +33,24 @@ public class DatabaseUtils {
 			text += String.format(", ignoreglobalblacklist:%s", data.isIngoreGlobalBlacklist());
 		}
 		
+		text += String.format(", magnet:%s", data.hasMagnet());
+		text += String.format(", refill:%s", data.hasRefill());
+		
 		text += "}";
 		//Log.Info(Main.plugin, text);
 		return text;
+	}
+	
+	public static void ApplyExtra(Data data, String datastring) {
+		Map<String, Object> extra = DatabaseUtils.ParseExtra(datastring);
+        if(extra.containsKey("autosort")) data.setAutoSort((Boolean) extra.get("autosort"));
+        if(extra.containsKey("material")) data.setMaterial((String) extra.get("material"));
+        if(extra.containsKey("name")) data.setName((String) extra.get("name"));
+        if(extra.containsKey("blacklist")) data.setBlacklist(DatabaseUtils.parseBlacklist((String) extra.get("blacklist")));
+        if(extra.containsKey("whitelist")) data.setWhitelist((Boolean) extra.get("whitelist"));
+        if(extra.containsKey("ignoreglobalblacklist")) data.setIgnoreGlobalBlacklist((Boolean) extra.get("ignoreglobalblacklist"));
+        if(extra.containsKey("magnet")) data.setMagnet((Boolean) extra.get("magnet"));
+        if(extra.containsKey("refill")) data.setRefill((Boolean) extra.get("refill"));
 	}
 	
 	public static Object formatBlacklist(List<String> blacklist) {

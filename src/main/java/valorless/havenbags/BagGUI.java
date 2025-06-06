@@ -250,6 +250,7 @@ public class BagGUI implements Listener {
     public void OpenInventory(final HumanEntity ent) {
     	try {
     		ent.openInventory(inv);
+    		BagData.GetBag(uuid, bagItem).setGui(this);
     	} catch (Exception e) {
     		e.printStackTrace();
     	}
@@ -420,7 +421,13 @@ public class BagGUI implements Listener {
         	NBT.SetDouble(bagItem, "bag-weight", HavenBags.GetWeight(cont));
         }
         
-        HavenBags.UpdateBagItem(bagItem, cont, player);
+        //HavenBags.UpdateBagItem(bagItem, cont, player);
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable(){
+            @Override
+            public void run(){
+            	HavenBags.UpdateBagItem(bagItem, cont, player);
+            }
+        }, 1L);
 		//GivePlayerBagBack();
 		try {
 			BagData.UpdateBag(bagItem, cont);
@@ -440,6 +447,7 @@ public class BagGUI implements Listener {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}*/
+		BagData.GetBag(uuid, bagItem).setGui(null);
 		BagData.MarkBagClosed(uuid);
 		Log.Debug(plugin, "[DI-46] " + "Remaining Open Bags: " + BagData.GetOpenBags().size());
 		

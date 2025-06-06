@@ -63,6 +63,8 @@ public class Files {
 		file.Set("blacklist", data.getBlacklist());
 		file.Set("whitelist", data.isWhitelist());
 		file.Set("ignoreglobalblacklist", data.isIngoreGlobalBlacklist());
+		file.Set("magnet", data.hasMagnet());
+		file.Set("refill", data.hasRefill());
 		
 		file.Set("content", JsonUtils.toJson(data.getContent()).replace("'", "◊"));
 		file.SaveConfig();
@@ -88,9 +90,10 @@ public class Files {
 		data.setBlacklist(file.GetStringList("blacklist"));
 		data.setWhitelist(file.GetBool("whitelist"));
 		data.setIgnoreGlobalBlacklist(file.GetBool("ignoreglobalblacklist"));
+		data.setMagnet(file.GetBool("magnet"));
+		data.setRefill(file.GetBool("refill"));
 		
 		return data;
-		
 	}
 	
 	private static List<ItemStack> loadContent(Config file) {
@@ -167,6 +170,8 @@ public class Files {
 		bagData.Set("blacklist", new ArrayList<String>());
 		bagData.Set("whitelist", false);
 		bagData.Set("ignoreglobalblacklist", false);
+		bagData.Set("magnet", false);
+		bagData.Set("refill", false);
 		bagData.SaveConfig();
 		return bagData;
 	}

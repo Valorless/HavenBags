@@ -25,17 +25,19 @@ public class CommandAutoSort {
 						Data data = BagData.GetBag(uuid, null);
 						data.setAutoSort(value);
 						HavenBags.UpdateBagItem(item, null, player);
+						player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-sort-command").replace("%value%", command.args[1]), player));
 						return true;
 					}
 				}else {
 					Data data = BagData.GetBag(uuid, null);
 					data.setAutoSort(false);
 					HavenBags.UpdateBagItem(item, null, player);
+					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-sort-command").replace("%value%", "off"), player));
 					return true;
 
 				}
 			}else {
-				player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+				player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-cannot-use"), player));
 			}
 		}
 		return true;

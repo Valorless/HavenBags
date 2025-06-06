@@ -8,11 +8,13 @@ import java.util.stream.Stream;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 
 import valorless.havenbags.commands.HBCommand;
 import valorless.havenbags.commands.fun.CommandExplode;
 import valorless.havenbags.commands.CommandAutoSort;
 import valorless.havenbags.commands.CommandAutopickup;
+import valorless.havenbags.commands.CommandClearContent;
 import valorless.havenbags.commands.CommandConvertDatabase;
 import valorless.havenbags.commands.CommandConvertEpicBackpacks;
 import valorless.havenbags.commands.CommandConvertMinepacks;
@@ -22,6 +24,8 @@ import valorless.havenbags.commands.CommandEmpty;
 import valorless.havenbags.commands.CommandGUI;
 import valorless.havenbags.commands.CommandGive;
 import valorless.havenbags.commands.CommandInfo;
+import valorless.havenbags.commands.CommandItemModel;
+import valorless.havenbags.commands.CommandMagnet;
 import valorless.havenbags.commands.CommandMod;
 import valorless.havenbags.commands.CommandModelData;
 import valorless.havenbags.commands.CommandPreview;
@@ -129,6 +133,10 @@ public class CommandListener implements CommandExecutor {
 					return CommandModelData.Run(cmd);
 				}
 				
+				if(args[0].equalsIgnoreCase("itemmodel") && sender.hasPermission("havenbags.modeldata")) {
+					return CommandItemModel.Run(cmd);
+				}
+				
 				if(args[0].equalsIgnoreCase("token") && sender.hasPermission("havenbags.token")) {
 					return CommandToken.Run(cmd);
 				}
@@ -160,6 +168,24 @@ public class CommandListener implements CommandExecutor {
 				if(args[0].equalsIgnoreCase("autosort") && sender.hasPermission("havenbags.autosort")) {
 					return CommandAutoSort.Run(cmd);
 				}
+				
+				if(args[0].equalsIgnoreCase("clearcontent") && sender.hasPermission("havenbags.autosort")) {
+					if(sender instanceof ConsoleCommandSender) {
+						return CommandClearContent.Run(cmd);
+					}else {
+						sender.sendMessage(Lang.Get("prefix") + "§cYou must run this command from the console.");
+						return true;
+					}
+				}
+				
+				if(args[0].equalsIgnoreCase("magnet") && sender.hasPermission("havenbags.magnet")) {
+					return CommandMagnet.Run(cmd);
+				}
+				
+				if(args[0].equalsIgnoreCase("refill") && sender.hasPermission("havenbags.refill")) {
+					return CommandMagnet.Run(cmd);
+				}
+				
 				
 			} catch(Exception e) {
 				sender.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));

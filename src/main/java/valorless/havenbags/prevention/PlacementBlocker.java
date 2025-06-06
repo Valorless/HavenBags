@@ -3,6 +3,8 @@ package valorless.havenbags.prevention;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.*;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -12,6 +14,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class PlacementBlocker implements Listener {
+	
+	public static void init() {
+    	Log.Debug(Main.plugin, "[DI-7] Registering PlacementBlocker");
+		Bukkit.getServer().getPluginManager().registerEvents(new PlacementBlocker(), Main.plugin);
+	}
 	
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
@@ -60,4 +67,20 @@ public class PlacementBlocker implements Listener {
 			} 
 		}
 	}
+	
+	/*
+	@EventHandler (priority = EventPriority.LOWEST)
+	public void onRightClickDisplay(PlayerInteractAtEntityEvent event) {
+		Player player = event.getPlayer();
+		event.setCancelled(true);
+		if (event.getRightClicked() instanceof Interaction inter) {
+	        event.getPlayer().sendMessage("PlayerInteractAtEntityEvent");
+	        event.getPlayer().sendMessage(inter.getType().toString());
+	        if(HavenBags.IsBag(player.getInventory().getItemInMainHand())) {
+		        event.getPlayer().sendMessage("Cancelled");
+	        	event.setCancelled(true);
+	        }
+	    }
+	}
+	*/
 }

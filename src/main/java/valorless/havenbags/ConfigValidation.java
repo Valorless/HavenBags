@@ -42,6 +42,7 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("bag-type", "HEAD");
 	Main.config.AddValidationEntry("bag-material", "ENDER_CHEST");
 	Main.config.AddValidationEntry("bag-custom-model-data", 0);
+	Main.config.AddValidationEntry("bag-item-model", "");
 	Main.config.AddValidationEntry("bag-custom-model-datas.enabled", false);
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-9", 0);
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-18", 0);
@@ -89,6 +90,7 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("bags-in-bags", false);
 	Main.config.AddValidationEntry("bags-in-shulkers", true);
 	//Main.config.AddValidationEntry("keep-bags", true);
+	Main.config.AddValidationEntry("inventory-lock", false);
 	Main.config.AddValidationEntry("soulbound", false);
 	Main.config.AddValidationEntry("old-help-menu", false);
 	Main.config.AddValidationEntry("auto-pickup", true);
@@ -101,6 +103,20 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("auto-pickup-inventory.events.onItemPickup", true);
 	Main.config.AddValidationEntry("trusting", true);
 	Main.config.AddValidationEntry("quiver-bags", true);
+	Main.config.AddValidationEntry("quiver-shield-fix", 2);
+	//Main.config.AddValidationEntry("back-bag.enabled", true);
+	//Main.config.AddValidationEntry("back-bag.scale", 0.8);
+	//Main.config.AddValidationEntry("back-bag.show-own", false);
+	//Main.config.AddValidationEntry("back-bag.offset.position.x", 0.0);
+	//Main.config.AddValidationEntry("back-bag.offset.position.y", -0.15);
+	//Main.config.AddValidationEntry("back-bag.offset.position.z", -0.4);
+	//Main.config.AddValidationEntry("back-bag.offset.rotation", 180.0);
+	//Main.config.AddValidationEntry("back-bag.offset.pitch", 0.0);
+	Main.config.AddValidationEntry("magnet.enabled", true);
+	Main.config.AddValidationEntry("magnet.range", 5.0);
+	Main.config.AddValidationEntry("magnet.speed", 0.1);
+	Main.config.AddValidationEntry("magnet.require-autopickup", false);
+	Main.config.AddValidationEntry("magnet.only-autopickup-items", false);
 	Main.config.AddValidationEntry("upgrades.enabled", false);
 	Main.config.AddValidationEntry("upgrades.keep-texture", false);
 	Main.config.AddValidationEntry("upgrades.from-9-to-18", "EMERALD:5:90000");
@@ -146,6 +162,9 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("player-untrusted", "&eRemoved %trusted% as trusted.");
 		Lang.lang.AddValidationEntry("quiver-no-space", "&cNo space available in inventory, cannot draw arrow!");
 		Lang.lang.AddValidationEntry("carry-limit", "&cSorry, you cannot carry more than %max% bags.");
+		Lang.lang.AddValidationEntry("auto-pickup-command", "&fAuto-pickup has been set to: %value%.");
+		Lang.lang.AddValidationEntry("auto-sort-command", "&fAuto-sort has been set to: %value%.");
+		Lang.lang.AddValidationEntry("magnet-command", "&fMagnetic has been set to: %value%.");
 		
 		// Admin Lang
 		//Lang.lang.AddValidationEntry("bag-create", ""); //unsure wtf this was for
@@ -186,6 +205,7 @@ public class ConfigValidation {
 				add("%bag-auto-pickup%"); 
 				add("%bag-trusted%"); 
 				add("%bag-autosort%"); 
+				add("%bag-magnet%"); 
 				add("%bag-weight%"); 
 				}
 			} 
@@ -204,6 +224,14 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("bag-autosort-on", "&aOn");
 		Lang.lang.AddValidationEntry("bag-autosort-off", "&cOff");
 		Lang.lang.AddValidationEntry("bag-autosort-off-hidden", false);
+		Lang.lang.AddValidationEntry("bag-magnet", "&7Magnetic: %magnet%");
+		Lang.lang.AddValidationEntry("bag-magnet-on", "&aOn");
+		Lang.lang.AddValidationEntry("bag-magnet-off", "&cOff");
+		Lang.lang.AddValidationEntry("bag-magnet-off-hidden", false);
+		Lang.lang.AddValidationEntry("bag-refill", "&7Refilling: %refill%");
+		Lang.lang.AddValidationEntry("bag-refill-on", "&aOn");
+		Lang.lang.AddValidationEntry("bag-refill-off", "&cOff");
+		Lang.lang.AddValidationEntry("bag-refill-off-hidden", false);
 		
 		// Admin GUI
 		Lang.lang.AddValidationEntry("too-many-bags", "&cThis player has over 53 bags.\\nPlease restore their bags through &e/bags restore&c!");

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,6 +22,11 @@ import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.nbt.NBT;
 
 public class CloneListener implements Listener{
+
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-10] Registering CloneListener");
+		Bukkit.getServer().getPluginManager().registerEvents(new CloneListener(), Main.plugin);
+	}
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event){

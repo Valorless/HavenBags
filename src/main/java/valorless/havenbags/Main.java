@@ -8,8 +8,12 @@ import valorless.havenbags.features.BagUpgrade;
 import valorless.havenbags.features.Crafting;
 import valorless.havenbags.features.CustomBags;
 import valorless.havenbags.features.Encumbering;
+import valorless.havenbags.features.InventoryLock;
+import valorless.havenbags.features.Magnet;
 import valorless.havenbags.features.Quiver;
+import valorless.havenbags.features.Refill;
 import valorless.havenbags.features.Soulbound;
+import valorless.havenbags.features.BackBag;
 import valorless.havenbags.features.WeightTooltip;
 import valorless.havenbags.hooks.*;
 import valorless.havenbags.prevention.*;
@@ -40,6 +44,7 @@ import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -171,6 +176,9 @@ public final class Main extends JavaPlugin implements Listener {
 		if(ProtocolLibHook.Hook()) {
 			WeightTooltip.registerTooltipListener(this);
 		}
+		
+		EssentialsHook.Hook();
+		
 		//OraxenHook.Hook();
 		
 		Log.Debug(plugin, "[DI-1] " +Long.toString(System.currentTimeMillis() / 1000L));
@@ -237,8 +245,14 @@ public final class Main extends JavaPlugin implements Listener {
     }
     
 	@Override
-    public void onDisable() {
+    public void onDisable() {		
     	CloseBags();
+    	if(!BackBag.tracking.isEmpty()) {
+    		for(Player player : BackBag.tracking.keySet()) {
+    			BackBag.tracking.get(player).despawn();
+    		}
+    	}
+    	if(BackBag.cleantask != null) BackBag.cleantask.cancel();
     	BagData.SaveData(true);
     	BagData.Shutdown();
     	Crafting.RemoveRecipes();
@@ -267,54 +281,28 @@ public final class Main extends JavaPlugin implements Listener {
     }
     
 	protected void RegisterListeners() {
-    	Log.Debug(plugin, "[DI-7] Registering PlacementListener");
-		getServer().getPluginManager().registerEvents(new PlacementBlocker(), this);
-		Log.Debug(plugin, "[DI-8] Registering BagDamagePrevention");
-		getServer().getPluginManager().registerEvents(new BagDamagePrevention(), this);
-		Log.Debug(plugin, "[DI-9] Registering BagListener");
-		getServer().getPluginManager().registerEvents(new BagListener(), this);
-		Log.Debug(plugin, "[DI-10] Registering CloneListener");
-		getServer().getPluginManager().registerEvents(new CloneListener(), this);
-		Log.Debug(plugin, "[DI-11] Registering InventoryListener");
-		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
-		Log.Debug(plugin, "[DI-12] Registering PickupPrevention");
-		getServer().getPluginManager().registerEvents(new PickupPrevention(), this);
-		Log.Debug(plugin, "[DI-13] Registering CraftPrevention");
-		getServer().getPluginManager().registerEvents(new CraftPrevention(), this);
-		Log.Debug(plugin, "[DI-14] Registering EquipPrevention");
-		getServer().getPluginManager().registerEvents(new EquipPrevention(), this);
-		
-		Log.Debug(plugin, "[DI-15] Registering Crafting");
-		getServer().getPluginManager().registerEvents(new Crafting(), this);
-		Crafting.PrepareRecipes();
-
-		Log.Debug(plugin, "[DI-16] Registering AutoPickup");
-		getServer().getPluginManager().registerEvents(new AutoPickup(), this);
-
-		Log.Debug(plugin, "[DI-17] Registering Encumbering");
-		getServer().getPluginManager().registerEvents(new Encumbering(), this);
-		Encumbering.Reload();
-		
-		Log.Debug(plugin, "[DI-18] Registering BagUpgrade");
-		getServer().getPluginManager().registerEvents(new BagUpgrade(), this);
-		
-		Log.Debug(plugin, "[DI-19] Registering BagSkin");
-		getServer().getPluginManager().registerEvents(new BagSkin(), this);
-		
-		Log.Debug(plugin, "[DI-211] Registering MinepacksBagRestore");
-		getServer().getPluginManager().registerEvents(new MinepacksBagRestore(), this);
-		
-		Log.Debug(plugin, "[DI-220] Registering EpicBackpacksBagRestore");
-		getServer().getPluginManager().registerEvents(new EpicBackpacksBagRestore(), this);
-		
-		Log.Debug(plugin, "[DI-221] Registering Quiver");
-		getServer().getPluginManager().registerEvents(new Quiver(), this);
-		
-		Log.Debug(plugin, "[DI-222] Registering BagCarryLimit");
-		getServer().getPluginManager().registerEvents(new BagCarryLimit(), this);
-		
-		Log.Debug(plugin, "[DI-230] Registering Soulbound");
-		getServer().getPluginManager().registerEvents(new Soulbound(), this);
+    	PlacementBlocker.init();
+		BagDamagePrevention.init();
+		BagListener.init();
+		CloneListener.init();
+		InventoryListener.init();
+		PickupPrevention.init();
+		CraftPrevention.init();
+		EquipPrevention.init();
+		Crafting.init();
+		AutoPickup.init();
+		Encumbering.init();
+		BagUpgrade.init();
+		BagSkin.init();
+		MinepacksBagRestore.init();
+		EpicBackpacksBagRestore.init();
+		Quiver.init();
+		BagCarryLimit.init();
+		Soulbound.init();
+		InventoryLock.init();
+		//BackBag.init(); needs a lil work
+		Magnet.init();
+		Refill.init();
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
     }

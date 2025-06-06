@@ -6,7 +6,19 @@ api-version: 1.17
 website: https://www.spigotmc.org/resources/110420/
 description: Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
 depend: [ValorlessUtils]
-softdepend: [ProtocolLib, ChestSort, PlaceholderAPI, AngelChest, PvPManager, Minepacks]
+softdepend:
+  - ProtocolLib
+  - ChestSort
+  - PlaceholderAPI
+  - AngelChest
+  - PvPManager
+  - Minepacks
+  - ProtocolSupport
+  - ViaVersion
+  - ViaBackwards
+  - ViaRewind
+  - Geyser-Spigot
+  - Essentials
 # loadbefore: [AdvancedEnchantments]
 commands:
   havenbags:
@@ -33,6 +45,9 @@ permissions:
       havenbags.upgrade.27: true
       havenbags.upgrade.36: true
       havenbags.upgrade.45: true
+      havenbags.autosort: true
+      havenbags.magnet: true
+      havenbags.refill: true
   havenbags.admin:
     description: Gives access to all admin commands.
     children:
@@ -156,6 +171,12 @@ permissions:
     default: op
   havenbags.autosort:
     description: Allows you to use the auto-sort feature.
+    default: op
+  havenbags.magnet:
+    description: Allows you to use the magnet feature.
+    default: op
+  havenbags.refill:
+    description: Allows you to use the refill feature.
     default: op
   havenbags.database:
     description: Allows you to change the database type.

@@ -38,6 +38,7 @@ public class CommandReload {
 			Main.weight.Reload();
 			Encumbering.Reload();
 			CustomBags.file.Reload();
+			CustomBags.Initiate();
 			Main.textures.Reload();
 			Main.translator = new Translator(Main.config.GetString("language"));
 

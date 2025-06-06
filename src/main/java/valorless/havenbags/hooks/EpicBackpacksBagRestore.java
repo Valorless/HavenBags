@@ -29,6 +29,11 @@ import valorless.valorlessutils.utils.Utils;
 
 public class EpicBackpacksBagRestore implements Listener{
 	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-220] Registering EpicBackpacksBagRestore");
+		Bukkit.getServer().getPluginManager().registerEvents(new EpicBackpacksBagRestore(), Main.plugin);
+	}
+	
 	Boolean playersRemain = true;
 
 	@EventHandler

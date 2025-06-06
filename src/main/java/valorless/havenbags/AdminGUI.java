@@ -21,14 +21,13 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.utils.Utils;
 import valorless.valorlessutils.nbt.NBT;
-import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.utils.GUI;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.havenbags.utils.GUI.GUIAction;
 
-public class AdminGUI implements Listener {
+public class AdminGUI implements Listener {	
 	public enum GUIType { Main, Creation, Restoration, Player, Preview, PreviewPlayer, Deletion, DeletionPlayer, Confirmation, Content }
 	
 	public JavaPlugin plugin;
@@ -787,11 +786,6 @@ public class AdminGUI implements Listener {
 			
 			modifyMaxStack(bagItem, 1);
 			
-			if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-custom-model-data")) && 
-					!Main.config.GetString("bag-custom-model-data").matches("-?\\d+(\\.\\d+)?") &&
-					Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-				ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-custom-model-data"));
-			}
 			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
 				for(int s = 9; s <= 54; s += 9) {
 					if(size == s) {
@@ -802,6 +796,10 @@ public class AdminGUI implements Listener {
 						//bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
 					}
 				}
+			}
+			
+			if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-item-model"))) {
+				ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-item-model"));
 			}
 			
 			//Log.Warning(plugin, bagItem.toString());
@@ -990,6 +988,10 @@ public class AdminGUI implements Listener {
 			// No need to set more, will be added automatically by HavenBags.UpdateBagItem(), which runs HavenBags.UpdateNBT();
 			
 			modifyMaxStack(bagItem, 1);
+			
+			if(!Utils.IsStringNullOrEmpty(data.getItemmodel())) {
+				ItemUtils.SetItemModel(bagItem, data.getItemmodel());
+			}
 			
 			try {
 				HavenBags.UpdateBagItem(bagItem, Content, targetPlayer);

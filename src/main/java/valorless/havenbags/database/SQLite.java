@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -288,13 +287,7 @@ public class SQLite {
                 data.setWeightMax(rs.getDouble("weight_max"));
                 data.setContent(loadContent(rs.getString("content"), data.getUuid()));
                 
-                Map<String, Object> extra = DatabaseUtils.ParseExtra(rs.getString("extra"));
-                if(extra.containsKey("autosort")) data.setAutoSort((Boolean) extra.get("autosort"));
-                if(extra.containsKey("material")) data.setMaterial((String) extra.get("material"));
-                if(extra.containsKey("name")) data.setName((String) extra.get("name"));
-                if(extra.containsKey("blacklist")) data.setBlacklist(DatabaseUtils.parseBlacklist((String) extra.get("blacklist")));
-                if(extra.containsKey("whitelist")) data.setWhitelist((Boolean) extra.get("whitelist"));
-                if(extra.containsKey("ignoreglobalblacklist")) data.setIgnoreGlobalBlacklist((Boolean) extra.get("ignoreglobalblacklist"));
+                DatabaseUtils.ApplyExtra(data, rs.getString("extra"));
                 
                 return data;
             }

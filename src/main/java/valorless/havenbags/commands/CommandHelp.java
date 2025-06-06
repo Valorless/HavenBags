@@ -61,8 +61,13 @@ public class CommandHelp {
 		}
 		if(player.hasPermission("havenbags.texture") || player.hasPermission("havenbags.help")) {
 			message.AddNewLine(" &e/bags texture <texture or base64>",
-					"&e Set the texture of the bag you're holding."
+					"&eSet the texture of the bag you're holding.\n"
 					+ "You can only change textures of bags you own.");
+		}
+		if(player.hasPermission("havenbags.modeldata") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags texture <texture or base64>",
+					"&eSet the CustomModelData of the bag you're holding.\n"
+					+ "You can only change modeldata of bags you own.");
 		}
 		if(player.hasPermission("havenbags.gui") || player.hasPermission("havenbags.help")) {
 			message.AddNewLine(" &e/bags gui",
@@ -111,11 +116,24 @@ public class CommandHelp {
 		}
 		if(player.hasPermission("havenbags.token") || player.hasPermission("havenbags.help")) {
 			message.AddNewLine(" &e/bags token <type> <value>",
-					"&eCreate a skin token of the chosen type");
+					"&eCreate a skin token of the chosen type.");
+		}
+		if(player.hasPermission("havenbags.autosort") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags autosort <on/off>",
+					"&eAutomatically sort the contents of a bag.");
+		}
+		if(player.hasPermission("havenbags.database") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags convertdatabase <files/sqlite/mysql>",
+					"&eSeamlessly change & convert how the plugin stores it's data.");
 		}
 		if(player.hasPermission("havenbags.reload") || player.hasPermission("havenbags.help")) {
 			message.AddNewLine(" &e/bags reload",
 					"&eReloads config files.");
+		}
+		if(player.hasPermission("havenbags.reload") || player.hasPermission("havenbags.help")) {
+			message.AddNewLine(" &e/bags reload force",
+					"&eReload all config files AND force load all bags from the server.\n"
+					+ "(Any unsaved bags be reset to last save).");
 		}
 		message.AddNewLine(" &e/bags help",
 				"&eYou are here.");

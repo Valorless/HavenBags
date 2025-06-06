@@ -1,5 +1,6 @@
 package valorless.havenbags.features;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,9 +15,15 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;
 
 public class BagCarryLimit implements Listener {
+	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-222] Registering BagCarryLimit");
+		Bukkit.getServer().getPluginManager().registerEvents(new BagCarryLimit(), Main.plugin);
+	}
 
 	@EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {

@@ -15,7 +15,9 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.utils.HeadCreator;
+import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
+import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
@@ -52,17 +54,17 @@ public class CustomBags {
 			ItemMeta meta = item.getItemMeta();
 			if(file.HasKey(String.format("bags.%s.displayname", key)))
 				meta.setDisplayName(Lang.Parse(file.GetString(String.format("bags.%s.displayname", key)), null));
-			if(file.HasKey(String.format("bags.%s.lore", key))) {
-				List<String> lore = new ArrayList<>();
-				for(String line : file.GetStringList(String.format("bags.%s.lore", key))) {
-					lore.add(Lang.Parse(line, null));
-				}
-			}
 			if(file.HasKey(String.format("bags.%s.modeldata", key)))
 				meta.setCustomModelData(file.GetInt(String.format("bags.%s.modeldata", key)));
 			item.setItemMeta(meta);
 			
+			if(file.HasKey(String.format("bags.%s.itemmodel", key)))
+				ItemUtils.SetItemModel(item, file.GetString(String.format("bags.%s.itemmodel", key)));
+			
 			NBT.SetString(item, "bag-uuid", "null");
+			NBT.SetString(item, "bag-owner", "null");
+			NBT.SetStringList(item, "bag-lore", file.GetStringList(String.format("bags.%s.lore", key)));
+			NBT.SetString(item, "bag-name", file.GetString(String.format("bags.%s.displayname", key)));
 			NBT.SetInt(item, "bag-size", file.GetInt(String.format("bags.%s.properties.size", key)));
 			NBT.SetBool(item, "bag-canBind", !file.GetBool(String.format("bags.%s.properties.ownerless", key)));
 			NBT.SetBool(item, "bag-upgrade", file.GetBool(String.format("bags.%s.properties.upgradeable", key)));
@@ -86,20 +88,19 @@ public class CustomBags {
 
 	public static void Give(Player player, String value) {
 		ItemStack bagItem = CustomBags.bags.get(value);
-		String uuid = UUID.randomUUID().toString();
-		NBT.SetString(bagItem, "bag-uuid", uuid);
 		String owner = NBT.GetBool(bagItem, "bag-canBind") ? player.getUniqueId().toString() : "ownerless";
 		List<ItemStack> content = new ArrayList<>();
 		
 		if(NBT.Has(bagItem, "bag-predefined")) {
+			String uuid = UUID.randomUUID().toString();
+			NBT.SetString(bagItem, "bag-uuid", uuid);
 			for(int i = 0; i < NBT.GetInt(bagItem, "bag-size"); i++) {
 				content.add(CustomContent.load(NBT.GetString(bagItem, "bag-predefined")).get(i));
 			}
+			BagData.CreateBag(uuid, owner, content, player, bagItem);
 		}
 		
-		BagData.CreateBag(uuid, owner, content, player, bagItem);
 		HavenBags.UpdateBagLore(bagItem, player);
-		
 		
 		player.getInventory().addItem(bagItem);
 		

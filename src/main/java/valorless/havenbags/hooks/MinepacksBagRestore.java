@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
@@ -28,6 +27,11 @@ import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
 public class MinepacksBagRestore implements Listener{
+	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-211] Registering MinepacksBagRestore");
+		Bukkit.getServer().getPluginManager().registerEvents(new MinepacksBagRestore(), Main.plugin);
+	}
 	
 	Boolean playersRemain = true;
 

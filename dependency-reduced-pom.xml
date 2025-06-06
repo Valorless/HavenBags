@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
-  <version>1.35.1</version>
+  <version>1.36.0</version>
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -183,6 +183,14 @@
       <id>dmulloy2-repo</id>
       <url>https://repo.dmulloy2.net/repository/public/</url>
     </repository>
+    <repository>
+      <id>essentials-releases</id>
+      <url>https://repo.essentialsx.net/releases/</url>
+    </repository>
+    <repository>
+      <id>paper-repo</id>
+      <url>https://papermc.io/repo/repository/maven-public/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -250,6 +258,12 @@
       <artifactId>sqlite-jdbc</artifactId>
       <version>3.42.0.0</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.essentialsx</groupId>
+      <artifactId>EssentialsX</artifactId>
+      <version>2.19.0</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

@@ -2,6 +2,8 @@ package valorless.havenbags.features;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,6 +22,11 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;
 
 public class BagUpgrade implements Listener{
+	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-18] Registering BagUpgrade");
+		Bukkit.getServer().getPluginManager().registerEvents(new BagUpgrade(), Main.plugin);
+	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPrepareAnvilMonitor(PrepareAnvilEvent event) {

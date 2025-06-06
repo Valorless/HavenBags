@@ -29,7 +29,7 @@ public class CommandToken {
 				if(command.args[1].equalsIgnoreCase("texture")) {
 					if(command.args[2].chars().count() > 30) {
 						if(Base64Validator.isValidBase64(command.args[2])) {
-							ItemStack token = HavenBags.CreateToken(command.args[2]);
+							ItemStack token = HavenBags.CreateToken(command.args[2], "texture");
 							if(target != null) {
 								if(target.getInventory().firstEmpty() != -1) {
 									target.getInventory().addItem(token);
@@ -64,7 +64,7 @@ public class CommandToken {
 					}
 				}else {
 					if(command.args[1].equalsIgnoreCase("custommodeldata")) {
-						ItemStack token = HavenBags.CreateToken(command.args[2]);
+						ItemStack token = HavenBags.CreateToken(command.args[2], "modeldata");
 						if(target != null) {
 							if(target.getInventory().firstEmpty() != -1) {
 								target.getInventory().addItem(token);
@@ -77,6 +77,20 @@ public class CommandToken {
 						}
 						//player.getInventory().addItem(HavenBags.CreateToken(command.args[2]));
 					}
+					else if(command.args[1].equalsIgnoreCase("itemmodel")) {
+							ItemStack token = HavenBags.CreateToken(command.args[2], "itemmodel");
+							if(target != null) {
+								if(target.getInventory().firstEmpty() != -1) {
+									target.getInventory().addItem(token);
+								} else {
+									target.getWorld().dropItem(player.getLocation(), token);
+								}
+								Log.Info(Main.plugin, String.format("Gave token %s to %s.", command.args[2], command.args[3]));
+							}else {
+								player.getInventory().addItem(token);
+							}
+							//player.getInventory().addItem(HavenBags.CreateToken(command.args[2]));
+						}
 				}
 				return true;
 			}

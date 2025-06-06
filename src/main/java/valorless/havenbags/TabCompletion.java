@@ -77,6 +77,7 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (sender.hasPermission("havenbags.modeldata")) {
 				subCommands.add("modeldata");
+				subCommands.add("itemmodel");
 			}
 			if (sender.hasPermission("havenbags.token")) {
 				subCommands.add("token");
@@ -89,6 +90,12 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (sender.hasPermission("havenbags.autosort")) {
 				subCommands.add("autosort");
+			}
+			if (sender.hasPermission("havenbags.magnet")) {
+				subCommands.add("magnet");
+			}
+			if (sender.hasPermission("havenbags.refill")) {
+				subCommands.add("refill");
 			}
 			if(Main.plugins.GetBool("mods.HavenBagsPreview.enable-command")) {
 				subCommands.add("mod");
@@ -160,6 +167,7 @@ public class TabCompletion implements TabCompleter {
 				List<String> cmds = new ArrayList<String>();
 				cmds.add("texture");
 				cmds.add("custommodeldata");
+				cmds.add("itemmodel");
 				StringUtil.copyPartialMatches(cmd, cmds, completions);
 			}
 			if (args[0].equalsIgnoreCase("convertdatabase") && sender.hasPermission("havenbags.database")) {
@@ -178,6 +186,18 @@ public class TabCompletion implements TabCompleter {
 				StringUtil.copyPartialMatches(cmd, cmds, completions);
 			}
 			if (args[0].equalsIgnoreCase("autosort") && sender.hasPermission("havenbags.autosort")) {
+				List<String> cmds = new ArrayList<String>();
+				cmds.add("on");
+				cmds.add("off");
+				StringUtil.copyPartialMatches(cmd, cmds, completions);
+			}
+			if (args[0].equalsIgnoreCase("magnet") && sender.hasPermission("havenbags.magnet")) {
+				List<String> cmds = new ArrayList<String>();
+				cmds.add("on");
+				cmds.add("off");
+				StringUtil.copyPartialMatches(cmd, cmds, completions);
+			}
+			if (args[0].equalsIgnoreCase("refill") && sender.hasPermission("havenbags.refill")) {
 				List<String> cmds = new ArrayList<String>();
 				cmds.add("on");
 				cmds.add("off");
@@ -236,6 +256,12 @@ public class TabCompletion implements TabCompleter {
 				StringUtil.copyPartialMatches(cmd, getTextures(), completions);
 			}
 			if (args[0].equalsIgnoreCase("modeldata") && sender.hasPermission("havenbags.modeldata")) {
+				List<String> materialNames = Arrays.stream(Material.values())
+				        .map(material -> material.name().toLowerCase())
+				        .collect(Collectors.toList());
+				StringUtil.copyPartialMatches(cmd, materialNames, completions);
+			}
+			if (args[0].equalsIgnoreCase("itemmodel") && sender.hasPermission("havenbags.modeldata")) {
 				List<String> materialNames = Arrays.stream(Material.values())
 				        .map(material -> material.name().toLowerCase())
 				        .collect(Collectors.toList());

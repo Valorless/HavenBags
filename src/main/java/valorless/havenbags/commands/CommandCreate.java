@@ -14,6 +14,7 @@ import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
@@ -70,6 +71,11 @@ public class CommandCreate {
 					//}
 					bagMeta.setLore(lore);
 					bagItem.setItemMeta(bagMeta);
+					
+					if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-item-model"))) {
+						ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-item-model"));
+					}
+					
 					//NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
 					NBT.SetString(bagItem, "bag-uuid", "null");
 					NBT.SetString(bagItem, "bag-owner", "null");

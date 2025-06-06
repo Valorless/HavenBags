@@ -84,6 +84,9 @@ bag-custom-model-datas:
  size-ownerless-45: 0
  size-ownerless-54: 0
 
+# Item Model if the bag-type is 'ITEM'
+bag-item-model: ''
+
 # Texture of the bag. Must be Base64 format.
 # You can get textures from https://minecraft-heads.com/
 # The texture by default: https://minecraft-heads.com/custom-heads/decoration/1906-bag
@@ -162,10 +165,9 @@ bags-in-bags: false
 # Can bags be put inside shulkers?
 bags-in-shulkers: true
 
-# Should bag remain in the player's inventory when opened?
-# Keep this 'false' if bags-in-bags is 'true'.
-# Otherwise players can put the bag inside itself, and lose it.
-keep-bags: true
+# Should bags always remain in the player's inventory?
+# Good to use alongside Soulbound, otherwise death will drop the item.
+inventory-lock: false
 
 # Should bags be kept through death?
 # May be incompatible with other plugins.
@@ -194,6 +196,22 @@ trusting: true
 # Should bags be able to used as quivers?
 # Will prioritize offhand over inventory.
 quiver-bags: true
+
+# Holding a shield while using the quiver feature tends to bug out.
+# Here are a few fixes you can choose:
+# 0 - No fix
+# 1 - Semi fix, shield animation blocked and arrow gets drawn, but bow/crossbow isnt charged.
+# 2 - Quivers are disabled if holding a shield.
+quiver-shield-fix: 2
+
+# Should players be able to magnify their bags?
+# If enabled, nearby drops will move towards the player.
+magnet:
+ enabled: true
+ range: 5.0
+ speed: 0.1
+ require-autopickup: false
+ only-autopickup-items: false
 
 # Bag Upgrades
 # If enabled, remember to allow "ANVIL" in 'allowed-containers'.

@@ -3,6 +3,7 @@ package valorless.havenbags.prevention;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,20 +19,10 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class InventoryListener implements Listener {
 	
-	/*final private List<InventoryType> allowedContainers = new ArrayList<InventoryType>() {
-			private static final long serialVersionUID = 1L;
-		{ 
-			add(InventoryType.CHEST);
-			add(InventoryType.ENDER_CHEST);
-			add(InventoryType.BARREL);
-			add(InventoryType.CREATIVE);
-			add(InventoryType.PLAYER);
-			add(InventoryType.SHULKER_BOX);
-			add(InventoryType.MERCHANT);
-			add(InventoryType.CRAFTING);
-			add(InventoryType.HOPPER);
-			}
-		};*/
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-11] Registering InventoryListener");
+		Bukkit.getServer().getPluginManager().registerEvents(new InventoryListener(), Main.plugin);
+	}
 		
 	final private List<InventoryType> allowedContainers = PrepareAllowedContainers();
 		
@@ -148,8 +139,9 @@ public class InventoryListener implements Listener {
         	for (ItemStack item : event.getInventory().getContents()) {
         		if(HavenBags.IsBag(item)) {
         			ItemStack Return = item.clone();
-        			event.getInventory().remove(item);
+        			//event.getInventory().remove(item);
         			HavenBags.ReturnBag(Return, (Player)event.getPlayer());
+        			item.setAmount(0);
             	}
         	}
         }

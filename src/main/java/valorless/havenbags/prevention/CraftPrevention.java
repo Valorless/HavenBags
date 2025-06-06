@@ -1,5 +1,6 @@
 package valorless.havenbags.prevention;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -14,6 +15,11 @@ import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class CraftPrevention implements Listener {
+
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-13] Registering CraftPrevention");
+		Bukkit.getServer().getPluginManager().registerEvents(new CraftPrevention(), Main.plugin);
+	}
 	
 	@EventHandler
 	void onPrepareItemCraft(PrepareItemCraftEvent e) {

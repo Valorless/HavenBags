@@ -61,6 +61,11 @@ public class AutoPickup implements Listener {
 	
 	private static List<String> oraxenIDs = new ArrayList<String>();
 	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-16] Registering AutoPickup");
+		Bukkit.getServer().getPluginManager().registerEvents(new AutoPickup(), Main.plugin);
+	}
+	
 	public static void Initiate() {
 		enabled = Main.config.GetBool("auto-pickup");
 		if(!enabled) return;
@@ -599,8 +604,8 @@ public class AutoPickup implements Listener {
 		return null;
 	}
 	
-	boolean IsItemInFilter(String filter, ItemStack item) {
-		Log.Debug(Main.plugin, "[DI-175] " + "IsItemInFilter?");
+	public static boolean IsItemInFilter(String filter, ItemStack item) {
+		//Log.Debug(Main.plugin, "[DI-175] " + "IsItemInFilter?");
 		int cmd = 0;
 		if(item.hasItemMeta() && item.getItemMeta().hasCustomModelData()) {
 			cmd = item.getItemMeta().getCustomModelData();
@@ -622,27 +627,27 @@ public class AutoPickup implements Listener {
 			if(f.name.equalsIgnoreCase(filter)) {
 				if(cmd != 0) {
 					if(f.entries.contains(item.getType().toString() + "-" + cmd)){
-						Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
+						//Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
 						return true;
 					}else if(f.entries.contains(item.getType().toString() + ":" + cmd)){
-						Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
+						//Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
 						return true;
 					}else{
 						if(f.entries.contains(item.getType().toString())){
-							Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
+							//Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
 							return true;
 						}
 					}
 				}else {
 					if(f.entries.contains(item.getType().toString())){
-						Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
+						//Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
 						return true;
 					}
 				}
 			}
 		}
 
-		Log.Debug(Main.plugin, "[DI-177] " + "IsItemInFilter false");
+		//Log.Debug(Main.plugin, "[DI-177] " + "IsItemInFilter false");
 		return false;
 	}
 	

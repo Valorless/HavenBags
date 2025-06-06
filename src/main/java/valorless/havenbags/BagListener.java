@@ -28,6 +28,11 @@ import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
 
 public class BagListener implements Listener{
+	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-9] Registering BagListener");
+		Bukkit.getServer().getPluginManager().registerEvents(new BagListener(), Main.plugin);
+	}
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
@@ -90,6 +95,7 @@ public class BagListener implements Listener{
 								Log.Debug(Main.plugin, "[DI-50] " + "No pvp.");
 							}catch (Exception e) {
 								Log.Error(Main.plugin, "[DI-51] " + "Failed to get PvPManager's API. Is it up to date?");
+								e.printStackTrace();
 							}
 						}
 					}
@@ -171,6 +177,7 @@ public class BagListener implements Listener{
 		ItemMeta meta = bag.getItemMeta();
 		
 		meta.setDisplayName(ownerless ? Lang.Get("bag-ownerless-used") : Lang.Parse(Lang.lang.GetString("bag-bound-name"), player));
+		if(NBT.Has(bag, "bag-name")) meta.setDisplayName(Lang.Parse(NBT.GetString(bag, "bag-name"), player));
 		
 		List<String> lore = new ArrayList<String>() ;
 
@@ -222,6 +229,15 @@ public class BagListener implements Listener{
 		Log.Debug(Main.plugin, "[DI-226] " + "Opening " +  uuid);
 		Data data = BagData.GetBag(uuid, bag);
 		//String owner = NBT.GetString(bag, "bag-owner");
+		
+		if(data == null) {
+			// This bag doesnt exist and has possibly been removed.
+			// Removing the item to prevent further issues.
+			Log.Error(Main.plugin, String.format("Player %s tried opening a removed bag, removing the item. (uuid: %s)", 
+					player.getName(), uuid));
+			bag.setAmount(0);
+			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-does-not-exist"), null));
+		}
 
 		if(data.getViewer() == player) {
 			Log.Debug(Main.plugin, "[DI-227] " + "This bag is already open by " + player.getName() + ".");

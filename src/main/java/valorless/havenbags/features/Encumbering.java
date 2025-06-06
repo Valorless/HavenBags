@@ -26,6 +26,13 @@ import valorless.valorlessutils.utils.Utils;
 
 public class Encumbering implements Listener {
 	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-17] Registering Encumbering");
+		Bukkit.getServer().getPluginManager().registerEvents(new Encumbering(), Main.plugin);
+		
+		Reload();
+	}
+	
 	private static List<PotionEffect> effects = new ArrayList<PotionEffect>();
 	private static Double percent = 0.0;
 	private static String message;

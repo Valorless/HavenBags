@@ -75,7 +75,17 @@ quiver-no-space: '&cNo space available in inventory, cannot draw arrow!'
 # %max% - Carry limit
 carry-limit: '&cSorry, you cannot carry more than %max% bags.'
 
+# Message sent when the player toggles auto-pickup.
+auto-pickup-command: '&fAuto-pickup has been set to: %value%.'
 
+# Message sent when the player toggles auto-sorting.
+auto-sort-command: '&fAuto-sort has been set to: %value%.'
+
+# Message sent when the player toggles magnet.
+magnet-command: '&fMagnetic has been set to: %value%.'
+
+# Message sent when the player toggles refill.
+refill-command: '&fRefill has been set to: %value%.'
 
 ### Admin ###
 
@@ -158,6 +168,7 @@ bag-lore:
 # %bag-auto-pickup%
 # %bag-trusted%
 # %bag-autosort%
+# %bag-magnet%
 # %bag-weight% ------- Uses the 'weight-lore' from weight.yml.
 ## Extra
 # %slots-used% - How many used slots in the bag.
@@ -168,6 +179,8 @@ bag-lore-add:
  - '%bag-auto-pickup%'
  - '%bag-trusted%'
  - '%bag-autosort%'
+ - '%bag-magnet%'
+ - '%bag-refill%'
  - '%bag-weight%'
  # Bag content will always be at the bottom.
 
@@ -217,6 +230,24 @@ bag-autosort-off: '&cOff'
 
 # Should the be hidden if 'off' ?
 bag-autosort-off-hide: false
+
+# If the bag has magnet enabled.
+# %magnet% - bag-magnet-on or bag-magnet-off, depending on on/off.
+bag-magnet: '&7Magnetic: %magnet%'
+bag-magnet-on: '&aOn'
+bag-magnet-off: '&cOff'
+
+# Should the be hidden if 'off' ?
+bag-magnet-off-hide: false
+
+# If the bag has refill enabled.
+# %refill% - bag-refill-on or bag-refill-off, depending on on/off.
+bag-refill: '&7Refilling: %refill%'
+bag-refill-on: '&aOn'
+bag-refill-off: '&cOff'
+
+# Should the be hidden if 'off' ?
+bag-refill-off-hide: false
 
 ############################################################
 # +------------------------------------------------------+ #

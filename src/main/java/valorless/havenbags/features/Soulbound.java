@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,9 +18,15 @@ import org.bukkit.inventory.ItemStack;
 
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
+import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class Soulbound implements Listener {
     private final Map<UUID, List<ItemStack>> savedItems = new HashMap<>();
+	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-230] Registering Soulbound");
+		Bukkit.getServer().getPluginManager().registerEvents(new Soulbound(), Main.plugin);
+	}
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {

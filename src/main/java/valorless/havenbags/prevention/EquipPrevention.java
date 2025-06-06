@@ -1,5 +1,6 @@
 package valorless.havenbags.prevention;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -15,6 +16,11 @@ import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class EquipPrevention implements Listener {
+	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-14] Registering EquipPrevention");
+		Bukkit.getServer().getPluginManager().registerEvents(new EquipPrevention(), Main.plugin);
+	}
 
 	@EventHandler
     public void onInventoryClick(InventoryClickEvent event) {

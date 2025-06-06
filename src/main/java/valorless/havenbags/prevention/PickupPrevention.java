@@ -2,6 +2,7 @@ package valorless.havenbags.prevention;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -11,11 +12,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.havenbags.*;
+import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;
 
 public class PickupPrevention implements Listener {
 	public static JavaPlugin plugin;
 	String Name = "§7[§aHaven§bBags§7]§r";
+	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-12] Registering PickupPrevention");
+		Bukkit.getServer().getPluginManager().registerEvents(new PickupPrevention(), Main.plugin);
+	}
 	
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
@@ -28,21 +35,6 @@ public class PickupPrevention implements Listener {
 			event.getItemDrop().setOwner(UUID.fromString(owner));
 		}catch(Exception e) {}
 	}
-
-	// NOT IN USE!
-	
-	/*
-    @EventHandler
-    public void onEntityPickupItem(EntityPickupItemEvent event) {
-    	ItemStack bag = event.getItem().getItemStack();
-    	SkullMeta bagMeta = (SkullMeta)bag.getItemMeta();
-    	if(Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING) == null) return;
-    	String owner = (String)Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "owner", PersistentDataType.STRING);
-		if(!owner.equalsIgnoreCase(Bukkit.getPlayer(event.getEntity().getName()).getUniqueId().toString()) && Tags.Get(plugin, bagMeta.getPersistentDataContainer(), "canbind", PersistentDataType.STRING) == "true") {
-			event.setCancelled(true);
-		}
-    }
-	*/
 	
 	@EventHandler
 	public void onHopperPickup(InventoryMoveItemEvent e) {		

@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -882,4 +883,45 @@ public class BagData {
 
         return itemList;
     }
+	
+	public static Boolean ClearAllBagContents() {
+		try {
+			for(Data dat : data) {
+				ClearBagContent(dat.getUuid());
+			}
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public static Boolean ClearBagContentPlayer(@NotNull String playeruuid) {
+		try {
+			for(String bag : GetBags(playeruuid)) {
+				ClearBagContent(bag);
+			}
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public static Boolean ClearBagContent(@NotNull String uuid) {
+		for(int i = 0; i < data.size(); i++) {
+			Data dat = data.get(i);
+			if(dat.getUuid().equalsIgnoreCase(uuid)) {
+				if(dat.getGui() != null) {
+					dat.getGui().Close(true);
+				}
+				
+				dat.setContent(new ArrayList<>(Collections.nCopies(dat.getContent().size(), null)));
+				Log.Info(Main.plugin, String.format("Cleared content for %s.", uuid));
+				return true;
+			}
+		}
+		Log.Error(Main.plugin, String.format("Failed to clear content for %s.", uuid));
+		return false;
+	}
 }

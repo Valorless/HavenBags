@@ -29,6 +29,8 @@ public class Data {
 	private List<String> blacklist;
 	private boolean whitelist;
 	private boolean ignoreglobalblacklist;
+	private boolean magnet;
+	private boolean refill;
 	
 	boolean changed = false;
 	boolean isOpen = false;
@@ -268,5 +270,22 @@ public class Data {
 
 	public void setChanged(boolean changed) {
 		this.changed = changed;
+	}
+
+	public boolean hasMagnet() {
+		return magnet;
+	}
+
+	public void setMagnet(boolean magnet) {
+		this.changed = true;
+		this.magnet = magnet;
+	}
+
+	public boolean hasRefill() {
+		return refill;
+	}
+
+	public void setRefill(boolean refill) {
+		this.refill = refill;
 	}
 }

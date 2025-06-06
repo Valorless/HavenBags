@@ -3,6 +3,7 @@ package valorless.havenbags.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,9 +20,15 @@ import valorless.havenbags.Main;
 import valorless.havenbags.HavenBags.BagState;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.nbt.NBT;
 
 public class BagSkin implements Listener{
+	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-19] Registering BagSkin");
+		Bukkit.getServer().getPluginManager().registerEvents(new BagSkin(), Main.plugin);
+	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPrepareAnvilMonitor(PrepareAnvilEvent event) {
@@ -108,21 +115,51 @@ public class BagSkin implements Listener{
 		Log.Debug(Main.plugin, "[DI-73] " + "[BagSkin] Preparing Result.");
 		ItemMeta meta = item.getItemMeta();
 		String value = NBT.GetString(skin, "bag-token-skin");
-		try {
-			int cmd = Integer.valueOf(value);
-			if(value != null) {
-				Log.Debug(Main.plugin, "[DI-74] " + "[BagSkin] CustomModelData Skin.");
-				meta.setCustomModelData(cmd);
-				item.setItemMeta(meta);
+		String type = NBT.Has(skin, "bag-token-type") ? NBT.GetString(skin, "bag-token-type") : null;
+		
+		if(type != null) {
+			if(type.equalsIgnoreCase("texture")) {
+				if(Base64Validator.isValidBase64(value)) {
+					Log.Debug(Main.plugin, "[DI-75] " + "[BagSkin] Texture Skin.");
+					BagData.setTextureValue(item, value);
+				}else {
+					Log.Debug(Main.plugin, "[DI-76] " + "[BagSkin] Invalid Skin.");
+					item = new ItemStack(Material.AIR);
+				}
 			}
-		}catch(Exception e) {
-			if(Base64Validator.isValidBase64(value)) {
-				Log.Debug(Main.plugin, "[DI-75] " + "[BagSkin] Texture Skin.");
-				BagData.setTextureValue(item, value);
-			}else {
-				Log.Debug(Main.plugin, "[DI-76] " + "[BagSkin] Invalid Skin.");
-				item = new ItemStack(Material.AIR);
+			else if(type.equalsIgnoreCase("modeldata")) {
+				try {
+					int cmd = Integer.valueOf(value);
+					if(value != null) {
+						Log.Debug(Main.plugin, "[DI-74] " + "[BagSkin] CustomModelData Skin.");
+						meta.setCustomModelData(cmd);
+						item.setItemMeta(meta);
+					}
+				}catch(Exception e) {}
 			}
+			else if(type.equalsIgnoreCase("itemmodel")) {
+				Log.Debug(Main.plugin, "[DI-249] " + "[BagSkin] ItemModel Skin.");
+				ItemUtils.SetItemModel(item, value);
+			}
+			
+		}else { // Handle old tokens
+			try {
+				int cmd = Integer.valueOf(value);
+				if(value != null) {
+					Log.Debug(Main.plugin, "[DI-74] " + "[BagSkin] CustomModelData Skin.");
+					meta.setCustomModelData(cmd);
+					item.setItemMeta(meta);
+				}
+			}catch(Exception e) {
+				if(Base64Validator.isValidBase64(value)) {
+					Log.Debug(Main.plugin, "[DI-75] " + "[BagSkin] Texture Skin.");
+					BagData.setTextureValue(item, value);
+				}else {
+					Log.Debug(Main.plugin, "[DI-76] " + "[BagSkin] Invalid Skin.");
+					item = new ItemStack(Material.AIR);
+				}
+			}
+
 		}
 		
 		return item;

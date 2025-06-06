@@ -32,3 +32,16 @@ bags:
     - DIRT:44453 # Define CustomModelData with either - or :
    whitelist: true # Should we treat the blacklist as a whitelist?
    ignoreglobalblacklist: true # Should we ignore the blacklist from blacklist.yml?
+   
+ special_bag_1:
+  displayname: '&6Special Bag 3 :O'
+  material: PAPER
+  itemmodel: "blue_bag"
+  lore:
+   - ''
+   - ''
+  properties:
+   allow-skin-token: true 
+   upgradeable: true
+   size: 27
+   ownerless: true

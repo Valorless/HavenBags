@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -313,12 +311,13 @@ public class HavenBags {
 					+ "It's possible they have a mod allowing them to move the item away.", player.getName()));
 			return;
 		}
-		if(preview.length == 0) {
-			UpdateNBT(bag);
-		}
+		
 		String uuid = HavenBags.GetBagUUID(bag);
 
 		if(BagState(bag) == BagState.Used) {
+			if(preview.length == 0) {
+				UpdateNBT(bag);
+			}
 			UpdateUsed(bag, BagData.GetBag(uuid, bag), player);
 		}else if (BagState(bag) == BagState.New) {
 			UpdateNew(bag, player);
@@ -334,20 +333,33 @@ public class HavenBags {
 		for (String l : Lang.lang.GetStringList("bag-lore")) {
 			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 		}
-		
+		if(NBT.Has(bag, "bag-lore")) {
+			lore.clear();
+			for (String l : NBT.GetStringList(bag, "bag-lore")) {
+				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
+			}
+		}
 		if(NBT.Has(bag, "bag-size")) {
 			placeholders.add(new Placeholder("%size%", NBT.GetInt(bag, "bag-size")));
 			placeholders.add(new Placeholder("%bag-size%", Lang.Parse(Lang.Get("bag-size"), placeholders, player)));
+			//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
 		}
 
 		if(NBT.Has(bag, "bag-filter")) {
 			placeholders.add(new Placeholder("%filter%", AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))));
 			placeholders.add(new Placeholder("%bag-auto-pickup%", Lang.Parse(Lang.Get("bag-auto-pickup"), placeholders, player)));
+			//lore.add(Lang.Parse(Lang.Parse(String.format(Lang.Get("bag-auto-pickup"), AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))), player)));
+			//lore.add(Lang.Parse("&7Auto Loot: " + AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter")), player));
 		}
-
+		
         for(String line : Lang.lang.GetStringList("bag-lore-add")) {
-        	if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
-        	lore.add(Lang.Parse(line, placeholders, player));
+        	if(line.contains("%bag-auto-pickup%")) {
+        		if(!NBT.Has(bag, "bag-filter")) continue;
+        		lore.add(Lang.Parse(line, placeholders, player));
+        	}
+        	if(line.contains("%bag-size%")) {
+        		lore.add(Lang.Parse(line, placeholders, player));
+        	}
         }
         
         bagMeta.setLore(lore);
@@ -433,9 +445,16 @@ public class HavenBags {
 				}
 			}
 		}
+		
 		List<String> lore = new ArrayList<String>();
 		for (String l : Lang.lang.GetStringList("bag-lore")) {
 			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
+		}
+		if(NBT.Has(bag, "bag-lore")) {
+			lore.clear();
+			for (String l : NBT.GetStringList(bag, "bag-lore")) {
+				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
+			}
 		}
 		if(NBT.GetBool(bag, "bag-canBind") == true) {
 			placeholders.add(new Placeholder("%owner%", Bukkit.getOfflinePlayer(UUID.fromString(data.getOwner())).getName()));
@@ -492,12 +511,28 @@ public class HavenBags {
 		}
 		placeholders.add(new Placeholder("%bag-autosort%", Lang.Parse(Lang.Get("bag-autosort"), placeholders, player)));
 
+		if(data.hasMagnet()) {
+			placeholders.add(new Placeholder("%magnet%", Lang.Parse(Lang.Get("bag-magnet-on"), placeholders, player)));
+		}else {
+			placeholders.add(new Placeholder("%magnet%", Lang.Parse(Lang.Get("bag-magnet-off"), placeholders, player)));
+		}
+		placeholders.add(new Placeholder("%bag-magnet%", Lang.Parse(Lang.Get("bag-magnet"), placeholders, player)));
+
+		if(data.hasRefill()) {
+			placeholders.add(new Placeholder("%refill%", Lang.Parse(Lang.Get("bag-refill-on"), placeholders, player)));
+		}else {
+			placeholders.add(new Placeholder("%refill%", Lang.Parse(Lang.Get("bag-refill-off"), placeholders, player)));
+		}
+		placeholders.add(new Placeholder("%bag-refill%", Lang.Parse(Lang.Get("bag-refill"), placeholders, player)));
+		
         for(String line : Lang.lang.GetStringList("bag-lore-add")) {
         	if(line.contains("%bound-to%") && !NBT.GetBool(bag, "bag-canBind")) continue;
     		if(line.contains("%bag-trusted%") && !hasTrust) continue;
     		if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
     		if(line.contains("%bag-weight%") && !Main.weight.GetBool("enabled")) continue;
     		if(line.contains("%bag-autosort%") && Lang.lang.GetBool("bag-autosort-off-hidden")) continue;
+    		if(line.contains("%bag-magnet%") && Lang.lang.GetBool("bag-magnet-off-hidden")) continue;
+    		if(line.contains("%bag-refill%") && Lang.lang.GetBool("bag-refill-off-hidden")) continue;
         	lore.add(Lang.Parse(line, placeholders, player));
         }
         
@@ -965,7 +1000,7 @@ public class HavenBags {
 		return false;
 	}*/
 	
-	public static ItemStack CreateToken(String value, String...skin) {
+	public static ItemStack CreateToken(String value, String type, String...skin) {
 		String name = Main.config.GetString("skin-token.display-name");
 		Material material = Main.config.GetMaterial("skin-token.material");
 		int cmd = Main.config.GetInt("skin-token.custommodeldata");
@@ -981,6 +1016,7 @@ public class HavenBags {
 		
 		ItemStack item = new ItemStack(material);
 		NBT.SetString(item, "bag-token-skin", value); // Set this first to give the item ItemMeta
+		NBT.SetString(item, "bag-token-type", type);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(Lang.Parse(name, ph));
 		if(cmd > 0) {
@@ -988,7 +1024,11 @@ public class HavenBags {
 		}else {
 			try {
 				meta.setCustomModelData(Integer.valueOf(value));
-			}catch(Exception e) {}
+			}catch(Exception e) {
+				try {
+					ItemUtils.SetItemModel(item, value);
+				}catch(Exception E) {}
+			}
 		}
 		List<String> l = new ArrayList<String>();
 		for (String line : lore) {

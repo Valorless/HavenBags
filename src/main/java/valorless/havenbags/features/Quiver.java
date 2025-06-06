@@ -3,6 +3,7 @@ package valorless.havenbags.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,6 +27,11 @@ public class Quiver implements Listener {
 	
 	public static final List<Material> Projectiles = List.of(Material.ARROW, Material.SPECTRAL_ARROW, Material.TIPPED_ARROW);
 	
+	public static void init() {
+		Log.Debug(Main.plugin, "[DI-221] Registering Quiver");
+		Bukkit.getServer().getPluginManager().registerEvents(new Quiver(), Main.plugin);
+	}
+	
 	@EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
 		if(Main.config.GetBool("quiver-bags") == false) return;
@@ -47,6 +53,22 @@ public class Quiver implements Listener {
 		Log.Debug(Main.plugin, "[DI-236] " + player.getName());
     	bags = HavenBags.GetBagsDataInInventory(player);
     	if(bags.size() == 0) return;
+
+    	if(Main.config.GetInt("quiver-shield-fix") == 1){ // Semi-fix
+    		if(offhand != null && offhand.getType() != Material.AIR && !hasProjectile(player)) {
+    			if (offhand.getType() == Material.SHIELD && hand.getType() == Material.BOW ||
+    					offhand.getType() == Material.SHIELD && hand.getType() == Material.CROSSBOW) {
+    				event.setCancelled(true);
+    			}
+    		}
+    	}
+    	else if(Main.config.GetInt("quiver-shield-fix") == 2){ // Disable quiver
+    		if(offhand != null && offhand.getType() != Material.AIR) {
+    			if (offhand.getType() == Material.SHIELD) {
+    				return;
+    			}
+    		}
+    	}
     	
     	if(offhand != null && offhand.getType() != Material.AIR) {
     		if(HavenBags.IsBag(offhand) && !hasProjectile(player)) {
@@ -81,8 +103,6 @@ public class Quiver implements Listener {
 				return;
 			}
 		}
-        //if(hand.getType() == Material.BOW) handleBow(event);
-        //if(hand.getType() == Material.CROSSBOW) handleCrossbow(event);
     }
 
     @SuppressWarnings("unused")
