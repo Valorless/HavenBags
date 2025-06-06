@@ -67,6 +67,7 @@ public class BagArmorStand {
         Tags.Set(Main.plugin, armorStand.getPersistentDataContainer(), "HavenBags", "back-bag", PersistentDataType.STRING);
         Bukkit.getScheduler().runTaskLater(Main.plugin, () -> {
         	if(!Main.config.GetBool("back-bag.show-own")) trackedPlayer.hideEntity(plugin, armorStand);
+        	// Was still showing for some reason
 		}, 1L);
         
     }
