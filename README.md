@@ -5,11 +5,6 @@
 
 Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
 
-## Configuration
-[config.yml](/src/main/resources/config.yml)
+## Config Files
+[/resources](/src/main/resources)
 
-## Lang
-[lang.yml](/src/main/resources/lang.yml)
-
-## Recipes
-[recipes.yml](/src/main/resources/recipes.yml)
