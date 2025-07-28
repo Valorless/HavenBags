@@ -3,6 +3,7 @@
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
   <version>0.0.0</version>
+  
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -116,11 +117,11 @@
             <id>install-external</id>
             <phase>clean</phase>
             <configuration>
-                <file>${basedir}\dependencies/ValorlessUtils-1.11.0.248.jar</file>
+                <file>${basedir}\dependencies/ValorlessUtils-1.12.0.259.jar</file>
                 <repositoryLayout>default</repositoryLayout>
                 <groupId>valorless.valorlessutils</groupId>
                 <artifactId>ValorlessUtils</artifactId>
-                <version>1.11.0.248</version>
+                <version>1.12.0.259</version>
                 <packaging>jar</packaging>
                 <generatePom>true</generatePom>
             </configuration>
@@ -151,7 +152,7 @@
             </executions>
         </plugin>
       </plugins>
-      <finalName>${project.artifactId}</finalName>
+      <finalName>${project.artifactId}-${project.version}.${buildNumber}</finalName>
   </build>
   <repositories>
        <repository>
@@ -179,14 +180,21 @@
     <url>https://repo.codemc.org/repository/maven-public/</url>
 </repository>
 <repository>
-  <id>oraxen</id>
-  <name>Oraxen Repository</name>
-  <url>https://repo.oraxen.com/releases</url>
-</repository>
-<repository>
 	<id>pcgf-repo</id>
 	<url>https://repo.pcgamingfreaks.at/repository/maven-everything</url>
 </repository>
+  <repository>
+    <id>dmulloy2-repo</id>
+    <url>https://repo.dmulloy2.net/repository/public/</url>
+  </repository>
+    <repository>
+        <id>essentials-releases</id>
+        <url>https://repo.essentialsx.net/releases/</url>
+    </repository>
+    <repository>
+        <id>paper-repo</id>
+        <url>https://papermc.io/repo/repository/maven-public/</url>
+    </repository>
    </repositories>
   <dependencies>
        <dependency>
@@ -199,24 +207,26 @@
        <dependency>
 		<groupId>valorless.valorlessutils</groupId>
 		<artifactId>ValorlessUtils</artifactId>
-		<version>1.11.0.248</version>
-    <scope>provided</scope>
+		<version>1.12.0.259</version>
+        <scope>provided</scope>
 	</dependency>
 	<dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
             <version>1.5.25</version>
-    <scope>provided</scope>
+        <scope>provided</scope>
         </dependency>
         <dependency>
     <groupId>org.json</groupId>
     <artifactId>json</artifactId>
     <version>20211205</version>
+        <scope>compile</scope>
 </dependency>
 <dependency>
     <groupId>org.yaml</groupId>
     <artifactId>snakeyaml</artifactId>
     <version>2.0</version>
+        <scope>provided</scope>
 </dependency>
 	<dependency>
 		<groupId>de.jeff_media</groupId>
@@ -237,62 +247,49 @@
     <scope>provided</scope>
 </dependency>
 <dependency>
-    <groupId>io.th0rgal</groupId>
-    <artifactId>oraxen</artifactId>
-    <version>1.167.0</version>
-    <exclusions>
-        <exclusion>
-            <groupId>me.gabytm.util</groupId>
-            <artifactId>actions-spigot</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>com.ticxo</groupId>
-            <artifactId>PlayerAnimator</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
-            <artifactId>IF</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>io.th0rgal</groupId>
-            <artifactId>protectionlib</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>dev.triumphteam</groupId>
-            <artifactId>triumph-gui</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>com.jeff-media</groupId>
-            <artifactId>custom-block-data</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>com.jeff-media</groupId>
-            <artifactId>persistent-data-serializer</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>com.jeff_media</groupId>
-            <artifactId>MorePersistentDataTypes</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>gs.mclo</groupId>
-            <artifactId>java</artifactId>
-        </exclusion>
-    </exclusions>
-    <scope>provided</scope>
-</dependency>
-<dependency>
     <groupId>at.pcgamingfreaks</groupId>
     <artifactId>Minepacks-API</artifactId>
     <version>2.2</version><!-- Check api-version shield for newest version -->
-    <scope>provided</scope>
+        <scope>provided</scope>
 </dependency>
+  <dependency>
+    <groupId>com.comphenix.protocol</groupId>
+    <artifactId>ProtocolLib</artifactId>
+    <version>4.8.0</version>
+        <scope>provided</scope>
+  </dependency>
+  <dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.33</version> <!-- Check for the latest version -->
+    <scope>compile</scope>
+</dependency>
+<dependency>
+    <groupId>org.xerial</groupId>
+    <artifactId>sqlite-jdbc</artifactId>
+    <version>3.42.0.0</version> <!-- Update to latest version -->
+    <scope>compile</scope>
+</dependency>
+    <dependency>
+        <groupId>net.essentialsx</groupId>
+        <artifactId>EssentialsX</artifactId>
+        <version>2.19.0</version>
+        <scope>provided</scope>
+    </dependency>
+    <!--
+    <dependency>
+    <groupId>com.ssomar.executableblocks</groupId>
+    <artifactId>ExecutableBlocks</artifactId>
+    <version>5.25.6.1</version>
+    <scope>system</scope>
+    <systemPath>${basedir}\dependencies\ExecutableBlocks.jar</systemPath>
+</dependency>
+    <dependency>
+    <groupId>com.ssomar.executableblocks</groupId>
+    <artifactId>ExecutableBlocks</artifactId>
+    <version>5.25.6.1</version>
+    <scope>system</scope>
+    <systemPath>${basedir}\dependencies\SCore.jar</systemPath>
+</dependency> -->
    </dependencies>
 </project>
