@@ -195,6 +195,11 @@
         <id>paper-repo</id>
         <url>https://papermc.io/repo/repository/maven-public/</url>
     </repository>
+	  <repository>
+  <id>helpchat-repo-releases</id>
+  <name>HelpChat Maven Repository</name>
+  <url>https://repo.helpch.at/releases</url>
+</repository>
    </repositories>
   <dependencies>
        <dependency>
