@@ -207,21 +207,25 @@
 		<groupId>valorless.valorlessutils</groupId>
 		<artifactId>ValorlessUtils</artifactId>
 		<version>1.12.0.259</version>
+        <scope>provided</scope>
 	</dependency>
 	<dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
             <version>1.5.25</version>
+        <scope>provided</scope>
         </dependency>
         <dependency>
     <groupId>org.json</groupId>
     <artifactId>json</artifactId>
     <version>20211205</version>
+        <scope>compile</scope>
 </dependency>
 <dependency>
     <groupId>org.yaml</groupId>
     <artifactId>snakeyaml</artifactId>
     <version>2.0</version>
+        <scope>provided</scope>
 </dependency>
 	<dependency>
 		<groupId>de.jeff_media</groupId>
@@ -245,11 +249,13 @@
     <groupId>at.pcgamingfreaks</groupId>
     <artifactId>Minepacks-API</artifactId>
     <version>2.2</version><!-- Check api-version shield for newest version -->
+        <scope>provided</scope>
 </dependency>
   <dependency>
     <groupId>com.comphenix.protocol</groupId>
     <artifactId>ProtocolLib</artifactId>
     <version>4.8.0</version>
+        <scope>provided</scope>
   </dependency>
   <dependency>
     <groupId>mysql</groupId>
@@ -261,6 +267,7 @@
     <groupId>org.xerial</groupId>
     <artifactId>sqlite-jdbc</artifactId>
     <version>3.42.0.0</version> <!-- Update to latest version -->
+    <scope>compile</scope>
 </dependency>
     <dependency>
         <groupId>net.essentialsx</groupId>
