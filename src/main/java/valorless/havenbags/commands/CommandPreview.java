@@ -13,17 +13,23 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.havenbags.BagData;
-import valorless.havenbags.BagGUI;
 import valorless.havenbags.CommandListener;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.gui.BagGUI;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
+/**
+ * @Deprecated To be removed due to the addition of {@link valorless.havenbags.gui.AdminGUI valorless.havenbags.AdminGUI},
+ * and the additional of multiple database types.
+ */
+@Deprecated
 public class CommandPreview {
 	
 	final static String Name = "§7[§aHaven§bBags§7]§r";
@@ -79,14 +85,14 @@ public class CommandPreview {
 					command.sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
 					return true;
 				}
-				NBT.SetString(bagItem, "bag-uuid", uuid);
-				NBT.SetInt(bagItem, "bag-size", contSize.size());
+				PDC.SetString(bagItem, "uuid", uuid);
+				PDC.SetInteger(bagItem, "size", contSize.size());
 				if(owner.equalsIgnoreCase("ownerless")) {
-					NBT.SetString(bagItem, "bag-owner", owner);
-					NBT.SetBool(bagItem, "bag-canBind", false);
+					PDC.SetString(bagItem, "owner", owner);
+					PDC.SetBoolean(bagItem, "binding", false);
 				}else {
-					NBT.SetString(bagItem, "bag-owner", owner);
-					NBT.SetBool(bagItem, "bag-canBind", true);
+					PDC.SetString(bagItem, "owner", owner);
+					PDC.SetBoolean(bagItem, "binding", true);
 				}
 				ItemMeta bagMeta = bagItem.getItemMeta();
 				if(Main.config.GetInt("bag-custom-model-data") != 0) {
@@ -144,13 +150,13 @@ public class CommandPreview {
 							
 						}
 					}
-					//if(NBT.GetBool(bagItem, "bag-canBind")) {
+					//if(PDC.GetBool(bagItem, "bag-canBind")) {
 					//	//lore.add(Lang.Get("bound-to", owner));
 					//	for (String l : Lang.lang.GetStringList("bound-to")) {
 					//		if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer().getName())));
 					//	}
 					//}
-					if(NBT.GetBool(bagItem, "bag-canBind")) {
+					if(PDC.GetBoolean(bagItem, "binding")) {
 						placeholders.add(new Placeholder("%owner%", player.getName()));
 			            lore.add(Lang.Parse(Lang.Get("bound-to"), placeholders, player));
 			        }
@@ -176,7 +182,7 @@ public class CommandPreview {
 
 				bagItem.setItemMeta(bagMeta);
 
-				BagGUI gui = new BagGUI(Main.plugin, NBT.GetInt(bagItem, "bag-size"), Bukkit.getPlayer(command.sender.getName()), bagItem, bagItem.getItemMeta(), true);
+				BagGUI gui = new BagGUI(Main.plugin, PDC.GetInteger(bagItem, "size"), Bukkit.getPlayer(command.sender.getName()), bagItem, bagItem.getItemMeta(), true);
 				//Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
 				gui.OpenInventory(Bukkit.getPlayer(command.sender.getName()));
 				//HavenBags.activeBags.remove(gui);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -11,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.havenbags.Lang;
 import valorless.havenbags.datamodels.Placeholder;
-import valorless.valorlessutils.nbt.NBT;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.utils.Utils;
 
 public class GUI {
@@ -86,7 +87,7 @@ public class GUI {
         button.setItemMeta(meta);
         
         // Store GUI action in NBT
-        NBT.SetString(button, "bag-action", action.toString());
+        PDC.SetString(button, "bag-action", action.toString());
         
         return button;
     }
@@ -94,18 +95,20 @@ public class GUI {
     private static ItemStack CreatePageButton(int page) {
     	List<Placeholder> placeholders = new ArrayList<Placeholder>();
 		placeholders.add(new Placeholder("%page%", page));
-		ItemStack button = HeadCreator.itemFromBase64(PageNumberTextures.get(page));
+		ItemStack button = new ItemStack(Material.AIR);
 		if(page > 31) {
 			// PageNumberTextures only contains 31 numbers textures.
 			// Beyond this, set the texture to the page 0 texture.
 			button = HeadCreator.itemFromBase64(PageNumberTextures.get(0));
+		}else {
+			button = HeadCreator.itemFromBase64(PageNumberTextures.get(page));
 		}
         ItemMeta meta = button.getItemMeta();
         meta.setDisplayName(Lang.Parse(Lang.Get("page"), placeholders));
         button.setItemMeta(meta);
         
         // Store GUI action in NBT
-        NBT.SetString(button, "bag-action", GUIAction.NONE.toString());
+        PDC.SetString(button, "bag-action", GUIAction.NONE.toString());
         
         return button;
     }
@@ -138,7 +141,7 @@ public class GUI {
 			/*23*/add("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzU2NjU2OTlmNmM3N2NhYjUyNmIyZmQ1MmRhNzIwYmJlNGJmYWNkZmJkNTZjOTZkYTEwYTA1ZTUxNzFlNzkyZiJ9fX0="); 
 			/*24*/add("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODUwNjBmODZmOWY2MjMyOWFiYmQxMjg0MmQ1Njk5ZjhkNWI4ZWE5NzExMjI3YzBkNmU3NmY1MWJmYTRlYjNmZiJ9fX0="); 
 			/*25*/add("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmJkNDRmNTdhZTMxZWFlMmU3NDgyMGYyNjk0MDE5MmMzM2QxMmNhNjNlZmY3MDc5ODM3OWRiNzdlYTlmNDM4MiJ9fX0="); 
-			/*26*/add("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdiZTBiYmIyZmZmNDJmNzViYjYyMDcxMzVlYjI1NTlmMTdkNjBlMDEzYmZjN2JjMTE3YmJhOTlmM2Q3YjgifX19"); 
+			/*26*/add("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdiZTBiYmIyZmZmNDJmNzViYjYyMDcxMzVlYjI1NTlmMTdkNjBlMDEzYmZjN2JjMTE3YmJhOTlmM2Q3YjgifX19fX0="); 
 			/*27*/add("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM3NzNlMDUyZDM5MWU4NjllMGFmYWIyYTM0NTVmNDgwMzU0ZTQ4YWM0NjUyOGIxNDM4N2JjNjI4NDliMDYwZCJ9fX0="); 
 			/*28*/add("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWJkOGRmYThiODViZGQ2MGY4MGU4ZjBhYTI0MGQ3NDU2ZGFmZjM0YjhhZDYxYTQxZjMzNzE0NTVkZTE1YmVkNyJ9fX0="); 
 			/*29*/add("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRjY2I4NDUwZTljZTcwNjlmOGFjNTI5NmQzNWMxN2UzYmI3ZGQ3MWNhMjQ2NzExMTU5MTY4ZGE5NGFkZjRjYyJ9fX0="); 

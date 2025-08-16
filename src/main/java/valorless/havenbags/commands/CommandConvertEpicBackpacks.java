@@ -17,10 +17,10 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
 public class CommandConvertEpicBackpacks {
@@ -107,7 +107,7 @@ public class CommandConvertEpicBackpacks {
 		}
 		ItemMeta bagMeta = bagItem.getItemMeta();
 		if (bagMeta == null) {
-			NBT.SetString(bagItem, "bag-uuid", uuid);
+			PDC.SetString(bagItem, "uuid", uuid);
 			bagMeta = bagItem.getItemMeta();
         }
 		if(Main.config.GetInt("bag-custom-model-data") != 0) {
@@ -132,11 +132,11 @@ public class CommandConvertEpicBackpacks {
 		//}
 		bagMeta.setLore(lore);
 		bagItem.setItemMeta(bagMeta);
-		//NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
-		NBT.SetString(bagItem, "bag-uuid", uuid);
-		NBT.SetString(bagItem, "bag-owner", owner.getUniqueId().toString());
-		NBT.SetInt(bagItem, "bag-size", size*9);
-		NBT.SetBool(bagItem, "bag-canBind", true);
+		//PDC.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+		PDC.SetString(bagItem, "uuid", uuid);
+		PDC.SetString(bagItem, "owner", owner.getUniqueId().toString());
+		PDC.SetInteger(bagItem, "size", size*9);
+		PDC.SetBoolean(bagItem, "binding", true);
 		//Bukkit.getPlayer(command.sender.getName()).getInventory().addItem(bagItem);
 		//Log.Debug(Main.plugin, "[DI-139] " + String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
 		

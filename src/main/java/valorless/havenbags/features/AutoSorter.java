@@ -11,8 +11,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
-import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.datamodels.Data;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.items.ItemUtils;
 
 public class AutoSorter {
@@ -68,7 +69,7 @@ public class AutoSorter {
     }
 
     private static String getCustomItemName(ItemStack item) {
-    	if(Main.VersionCompare(Main.server, ServerVersion.v1_20_5) >= 0) {
+    	if(Server.VersionHigherOrEqualTo(Version.v1_20_5)) {
     		if(ItemUtils.HasItemName(item)) {
     			return ItemUtils.GetItemName(item);
     		}

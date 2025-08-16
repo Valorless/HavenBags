@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.havenbags.utils.HeadCreator;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
 public class CustomRecipes {
@@ -228,10 +228,10 @@ public class CustomRecipes {
 	    bag.setItemMeta(bagMeta);
 
 	    // Set custom NBT data for the bag (UUID, owner, size, and binding capability)
-	    NBT.SetString(bag, "bag-uuid", "null");
-	    NBT.SetString(bag, "bag-owner", "null");
-	    NBT.SetInt(bag, "bag-size", size);
-	    NBT.SetBool(bag, "bag-canBind", template.isCanBind());
+	    PDC.SetString(bag, "uuid", "null");
+	    PDC.SetString(bag, "owner", "null");
+	    PDC.SetInteger(bag, "size", size);
+	    PDC.SetBoolean(bag, "binding", template.isCanBind());
 
 	    // Return the created ItemStack representing the bag
 	    return bag;

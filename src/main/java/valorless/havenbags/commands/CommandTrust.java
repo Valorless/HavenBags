@@ -34,11 +34,11 @@ public class CommandTrust {
 					}
 					try {
 						//List<String> list = new ArrayList<String>();
-						//if(NBT.Has(item, "bag-trust")) {
-							//list = NBT.GetStringList(item, "bag-trust");
+						//if(PDC.Has(item, "bag-trust")) {
+							//list = PDC.GetStringList(item, "bag-trust");
 						//}
 						//list.add(args[1]);
-						//NBT.SetStringList(item, "bag-trust", list);
+						//PDC.SetStringList(item, "bag-trust", list);
 						BagData.AddTrusted(HavenBags.GetBagUUID(item), command.args[1]);
 						HavenBags.UpdateBagItem(item, null, player);
 						

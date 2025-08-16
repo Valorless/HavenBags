@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import valorless.havenbags.BagGUI;
+import valorless.havenbags.gui.BagGUI;
 
 public class Data {
 	String uuid;
@@ -31,6 +31,7 @@ public class Data {
 	private boolean ignoreglobalblacklist;
 	private boolean magnet;
 	private boolean refill;
+	private String effect;
 	
 	boolean changed = false;
 	boolean isOpen = false;
@@ -268,6 +269,9 @@ public class Data {
 		this.ignoreglobalblacklist = useglobalblacklist;
 	}
 
+	/***
+	 * Marking a bag as "changed" will force it to save during the next auto-save, or shutdown.
+	 */
 	public void setChanged(boolean changed) {
 		this.changed = changed;
 	}
@@ -287,5 +291,44 @@ public class Data {
 
 	public void setRefill(boolean refill) {
 		this.refill = refill;
+		this.changed = true;
+	}
+
+	public String getEffect() {
+		return effect;
+	}
+
+	public void setEffect(String effect) {
+		this.effect = effect;
+		this.changed = true;
+	}
+	
+	@Override
+	public String toString() {
+	    return "Bag{" +
+	            "uuid='" + uuid + '\'' +
+	            ", owner='" + owner + '\'' +
+	            ", creator='" + creator + '\'' +
+	            ", size=" + size +
+	            ", texture='" + texture + '\'' +
+	            ", material=" + (material != null ? material.name() : "null") +
+	            ", name='" + name + '\'' +
+	            ", modeldata=" + modeldata +
+	            ", itemmodel='" + itemmodel + '\'' +
+	            ", trusted=" + trusted +
+	            ", autopickup='" + autopickup + '\'' +
+	            ", weight=" + weight +
+	            ", weightMax=" + weightMax +
+	            ", autosort=" + autosort +
+	            ", blacklist=" + blacklist +
+	            ", whitelist=" + whitelist +
+	            ", ignoreglobalblacklist=" + ignoreglobalblacklist +
+	            ", magnet=" + magnet +
+	            ", refill=" + refill +
+	            ", effect=" + effect +
+	            ", changed=" + changed +
+	            ", isOpen=" + isOpen +
+	            ", viewer=" + (viewer != null ? viewer.getName() : "null") +
+	            '}';
 	}
 }

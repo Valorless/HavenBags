@@ -13,7 +13,7 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.commands.HBCommand;
-import valorless.valorlessutils.nbt.NBT;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.sound.SFX;
 
 public class CommandExplode {
@@ -36,7 +36,7 @@ public class CommandExplode {
 	
 	public static void Explode(ItemStack bag, Player player) {
 		Random random = new Random();
-		String uuid = NBT.GetString(bag, "bag-uuid");
+		String uuid = PDC.GetString(bag, "uuid");
 		List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
 		SFX.Play(Sound.ENTITY_GENERIC_EXPLODE.toString(), 1.0f, 1.0f, player);
 		for(int i = 0; i < content.size(); i++) {

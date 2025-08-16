@@ -8,7 +8,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -16,12 +15,14 @@ import org.bukkit.util.Vector;
 
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
-import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.hooks.Essentials;
 import valorless.havenbags.hooks.EssentialsHook;
-import valorless.valorlessutils.ValorlessUtils.Tags;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
+import valorless.valorlessutils.tags.TagType;
+import valorless.valorlessutils.tags.Tags;
 
-@SuppressWarnings("deprecation")
+//@SuppressWarnings("deprecation")
 public class BagArmorStand {
 
     private final Plugin plugin;
@@ -51,7 +52,7 @@ public class BagArmorStand {
         armorStand.setInvulnerable(true);
         armorStand.setCollidable(false);
 
-        if(Main.VersionCompare(Main.server, ServerVersion.v1_19) >= 0) {
+        if(Server.VersionHigherOrEqualTo(Version.v1_19)) {
         	Attribute scaleAttribute = Attribute.valueOf("GENERIC_SCALE");
         	if (scaleAttribute == null) {
         		scaleAttribute = Attribute.valueOf("SCALE");
@@ -59,12 +60,12 @@ public class BagArmorStand {
         	if (scaleAttribute != null) {
         		AttributeInstance instance = armorStand.getAttribute(scaleAttribute);
         		if (instance != null) {
-        			instance.setBaseValue(Main.config.GetFloat("back-bag.scale"));
+        			instance.setBaseValue(Main.config.GetDouble("back-bag.scale"));
         		}
         	}
         }
         
-        Tags.Set(Main.plugin, armorStand.getPersistentDataContainer(), "HavenBags", "back-bag", PersistentDataType.STRING);
+        Tags.Set(Main.plugin, armorStand.getPersistentDataContainer(), "HavenBags", "back-bag", TagType.STRING);
         Bukkit.getScheduler().runTaskLater(Main.plugin, () -> {
         	if(!Main.config.GetBool("back-bag.show-own")) trackedPlayer.hideEntity(plugin, armorStand);
         	// Was still showing for some reason
@@ -103,9 +104,9 @@ public class BagArmorStand {
 
         Vector right = forward.clone().crossProduct(new Vector(0, 1, 0)).normalize();
         
-        Vector offset = new Vector(Main.config.GetFloat("back-bag.offset.position.x"), 
-				Main.config.GetFloat("back-bag.offset.position.y"), 
-				Main.config.GetFloat("back-bag.offset.position.z"));
+        Vector offset = new Vector(Main.config.GetDouble("back-bag.offset.position.x"), 
+				Main.config.GetDouble("back-bag.offset.position.y"), 
+				Main.config.GetDouble("back-bag.offset.position.z"));
 
         Vector adjusted = forward.multiply(offset.getZ())
                                 .add(right.multiply(offset.getX()))
@@ -119,18 +120,18 @@ public class BagArmorStand {
 
         Location loc = getOffsetLocation();
 
-        float combinedYaw = normalizeYaw(trackedPlayer.getLocation().getYaw() + Main.config.GetFloat("back-bag.offset.rotation").floatValue());
+        float combinedYaw = normalizeYaw(trackedPlayer.getLocation().getYaw() + Main.config.GetDouble("back-bag.offset.rotation").floatValue());
         loc.setYaw(combinedYaw);
-        loc.setPitch(Main.config.GetFloat("back-bag.offset.pitch").floatValue());
+        loc.setPitch(Main.config.GetDouble("back-bag.offset.pitch").floatValue());
 
         armorStand.teleport(loc);
-        armorStand.setHeadPose(armorStand.getHeadPose().setX((float) Math.toRadians(Main.config.GetFloat("back-bag.offset.pitch").floatValue())));
+        armorStand.setHeadPose(armorStand.getHeadPose().setX((float) Math.toRadians(Main.config.GetDouble("back-bag.offset.pitch").floatValue())));
     }
     
     private void updateScale() {
         if (armorStand == null || armorStand.isDead()) return;
 
-        if(Main.VersionCompare(Main.server, ServerVersion.v1_19) >= 0) {
+        if(Server.VersionHigherOrEqualTo(Version.v1_19)) {
         	Attribute scaleAttribute = Attribute.valueOf("GENERIC_SCALE");
         	if (scaleAttribute == null) {
         		scaleAttribute = Attribute.valueOf("SCALE");
@@ -141,7 +142,7 @@ public class BagArmorStand {
 
                 if (playerScale != null && standScale != null) {
                     double playerValue = playerScale.getValue();
-                    standScale.setBaseValue(Main.config.GetFloat("back-bag.scale") * playerValue);
+                    standScale.setBaseValue(Main.config.GetDouble("back-bag.scale") * playerValue);
                 }
         	}
         }

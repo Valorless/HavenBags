@@ -19,8 +19,8 @@ import org.bukkit.potion.PotionEffectType;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
 
@@ -76,7 +76,7 @@ public class Encumbering implements Listener {
 		Log.Debug(Main.plugin, "[DI-91] " + "[Encumbering] Reloading.");
 		enabled = Main.weight.GetBool("over-encumber.enabled");
 		Log.Debug(Main.plugin, "[DI-92] " + "[Encumbering] " + enabled);
-		percent = Main.weight.GetFloat("over-encumber.percent");
+		percent = Main.weight.GetDouble("over-encumber.percent");
 		Log.Debug(Main.plugin, "[DI-93] " + "[Encumbering] " + percent);
 		message = Lang.Parse(Lang.Get("prefix") + Main.weight.GetString("over-encumber.message"), null);
 		Log.Debug(Main.plugin, "[DI-94] " + "[Encumbering] " + message);
@@ -163,12 +163,12 @@ public class Encumbering implements Listener {
 		for(ItemStack i : player.getInventory().getContents()) {
 			//Log.Debug(Main.plugin, HavenBags.BagState(i).toString());
 			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
-				String uuid = NBT.GetString(i, "bag-uuid");
+				String uuid = PDC.GetString(i, "uuid");
 				if(uuid.equalsIgnoreCase("null")) continue;
-				if(NBT.Has(i, "bag-weight")) {
-					Double weight = Utils.Percent(NBT.GetDouble(i, "bag-weight"), NBT.GetDouble(i, "bag-weight-limit"));
+				if(PDC.Has(i, "weight")) {
+					Double weight = Utils.Percent(PDC.GetDouble(i, "weight"), PDC.GetDouble(i, "weight-limit"));
 					Log.Debug(Main.plugin, "[DI-99] " + "[Encumbering] " + weight);
-					//bagWeights.add(new Bag(uuid, Utils.Percent(NBT.GetDouble(i, "bag-weight"), NBT.GetDouble(i, "bag-weight-limit"))));
+					//bagWeights.add(new Bag(uuid, Utils.Percent(PDC.GetDouble(i, "bag-weight"), PDC.GetDouble(i, "bag-weight-limit"))));
 					if(!Contains(player)) {
 						BagWeight bag = new BagWeight(player, weight);
 						bagWeights.add(bag);

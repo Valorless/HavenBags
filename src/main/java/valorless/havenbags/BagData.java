@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -24,35 +23,39 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import valorless.havenbags.HavenBags.BagState;
-import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.database.DatabaseType;
 import valorless.havenbags.database.Files;
 import valorless.havenbags.database.MySQL;
 import valorless.havenbags.database.SQLite;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.gui.BagGUI;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Reflex;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.items.ItemUtils;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.nbtapi.iface.ReadWriteNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBTList;
-import valorless.havenbags.utils.HeadCreator;
 
 public class BagData {
 	
-	protected static DatabaseType database = DatabaseType.SQLITE;
-	static MySQL mysql;
+	private static DatabaseType database = DatabaseType.SQLITE;
+	private static MySQL mysql;
 	static SQLite sqlite;
 	
 	static BukkitRunnable autosave;
@@ -72,17 +75,17 @@ public class BagData {
 	public static void Initiate() {
 		data.clear(); // Just in case
 		DatabaseType type = DatabaseType.get(Main.config.GetString("save-type").toUpperCase());
-		if(type != null) database = type;
+		if(type != null) setDatabase(type);
 		else {
 			Log.Error(Main.plugin, String.format("Invalid database type \"%s\"\n"
 					+ "Please choose either FILES, MYSQL, or SQLITE.", Main.config.GetString("save-type")));
 			Bukkit.getPluginManager().disablePlugin(Main.plugin);
 		}
 		
-		if(database == DatabaseType.MYSQL || database == DatabaseType.MYSQLPLUS) {
-			mysql = new MySQL();
+		if(getDatabase() == DatabaseType.MYSQL || getDatabase() == DatabaseType.MYSQLPLUS) {
+			setMysql(new MySQL());
 		}
-		else if(database == DatabaseType.SQLITE) {
+		else if(getDatabase() == DatabaseType.SQLITE) {
 			sqlite = new SQLite();
 		}
 		
@@ -96,7 +99,7 @@ public class BagData {
             }
         }, interval, interval);*/
 		
-		if(database == DatabaseType.MYSQLPLUS) return;
+		if(getDatabase() == DatabaseType.MYSQLPLUS) return;
 		
 		autosave = new BukkitRunnable() {
 		    @Override
@@ -110,16 +113,16 @@ public class BagData {
 	}
 	
 	public static void Shutdown() {
-		if(database == DatabaseType.MYSQL) {
+		if(getDatabase() == DatabaseType.MYSQL) {
 			try {
-				if(mysql != null) {
-					mysql.disconnect();
+				if(getMysql() != null) {
+					getMysql().disconnect();
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
-		else if(database == DatabaseType.SQLITE) {
+		else if(getDatabase() == DatabaseType.SQLITE) {
 			try {
 				if(sqlite != null) {
 					sqlite.close();
@@ -131,14 +134,14 @@ public class BagData {
 	}
 	
 	public static void ChangeDatabase(DatabaseType type) {
-		if(database == DatabaseType.MYSQL || database == DatabaseType.MYSQLPLUS) {
+		if(getDatabase() == DatabaseType.MYSQL || getDatabase() == DatabaseType.MYSQLPLUS) {
 			try {
-				mysql.disconnect();
+				getMysql().disconnect();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
-		else if(database == DatabaseType.SQLITE) {
+		else if(getDatabase() == DatabaseType.SQLITE) {
 			try {
 				sqlite.close();
 			} catch (SQLException e) {
@@ -146,7 +149,7 @@ public class BagData {
 			}
 		}
 		
-		database = type;
+		setDatabase(type);
 		autosave = new BukkitRunnable() {
 		    @Override
 		    public void run() {
@@ -157,7 +160,7 @@ public class BagData {
 		autosave.runTaskTimer(Main.plugin, interval, interval);
 		
 		if(type == DatabaseType.MYSQL || type == DatabaseType.MYSQLPLUS) {
-			mysql = new MySQL();
+			setMysql(new MySQL());
 			autosave.cancel();
 		}
 		else if(type == DatabaseType.SQLITE) {
@@ -263,7 +266,7 @@ public class BagData {
 				m_source = source[0];
 			}
 		}
-		String uuid = NBT.GetString(bagItem, "bag-uuid");
+		String uuid = PDC.GetString(bagItem, "uuid");
 		
 		Data bag = GetBag(uuid, null);
 		
@@ -284,7 +287,7 @@ public class BagData {
 					}else {
 						bag.setModeldata(0);
 					}
-					if(Main.VersionCompare(Main.server, Main.ServerVersion.v1_21_2) >= 0) {
+					if(Server.VersionHigherOrEqualTo(Version.v1_21_2)) {
 						if(ItemUtils.GetItemModel(bagItem) != null) {
 							bag.setItemmodel(ItemUtils.GetItemModel(bagItem).toString());
 						}else {
@@ -332,7 +335,7 @@ public class BagData {
 		dat.setContent(content);
 		dat.setCreator(creator.getUniqueId().toString());
 		
-		dat.setSize(NBT.GetInt(bag, "bag-size"));
+		dat.setSize(PDC.GetInteger(bag, "size"));
 		if(bag.getType() == Material.PLAYER_HEAD) {
 			dat.setTexture(getTextureValue(bag));
 			dat.setModeldata(0);
@@ -344,7 +347,7 @@ public class BagData {
 					dat.setModeldata(bag.getItemMeta().getCustomModelData());
 				}
 
-				if(Main.VersionCompare(Main.server, Main.ServerVersion.v1_21_2) >= 0) {
+				if(Server.VersionHigherOrEqualTo(Version.v1_21_2)) {
 					if(ItemUtils.GetItemModel(bag) != null) {
 						dat.setItemmodel(ItemUtils.GetItemModel(bag).toString());
 					}else {
@@ -357,16 +360,16 @@ public class BagData {
 		}
 		dat.setTrusted(new ArrayList<String>());
 		
-		if(NBT.Has(bag, "bag-filter")) {
-			dat.setAutopickup(NBT.GetString(bag, "bag-filter"));
+		if(PDC.Has(bag, "bag-filter")) {
+			dat.setAutopickup(PDC.GetString(bag, "filter"));
 		}else {
 			dat.setAutopickup("null");
 		}
 		
-		if(NBT.Has(bag, "bag-blacklist")) {
-			dat.setBlacklist(NBT.GetStringList(bag, "bag-blacklist"));
-			dat.setWhitelist(NBT.GetBool(bag, "bag-whitelist"));
-			dat.setIgnoreGlobalBlacklist(NBT.GetBool(bag, "bag-igb"));
+		if(PDC.Has(bag, "bag-blacklist")) {
+			dat.setBlacklist(PDC.GetStringList(bag, "blacklist"));
+			dat.setWhitelist(PDC.GetBoolean(bag, "whitelist"));
+			dat.setIgnoreGlobalBlacklist(PDC.GetBoolean(bag, "igb"));
 		}
 		
 		dat.setChanged(true);
@@ -380,7 +383,7 @@ public class BagData {
 		Log.Info(Main.plugin, "Loading bags..");
 		long startTime = System.currentTimeMillis();
 		int i = 0;
-		if(database == DatabaseType.FILES) {
+		if(getDatabase() == DatabaseType.FILES) {
 			List<String> owners	= GetBagOwners();
 			for(String owner : owners) {
 				List<String> bags = Files.GetBags(owner);
@@ -401,25 +404,26 @@ public class BagData {
 						data.add(Files.loadBag(owner, bag));
 						i++;
 					} catch (Exception e) {
+						Log.Error(Main.plugin, bag);
 						e.printStackTrace();
 						continue;
 					}
 				}
 			}
 		}
-		else if(database == DatabaseType.MYSQL) {
-			List<Data> bags = mysql.loadAllBags();
+		else if(getDatabase() == DatabaseType.MYSQL) {
+			List<Data> bags = getMysql().loadAllBags();
 			data = bags;
 			i = bags.size();
 		}
-		else if(database == DatabaseType.SQLITE) {
+		else if(getDatabase() == DatabaseType.SQLITE) {
 			for(String uuid : sqlite.getAllBagUUIDs()) {
 				data.add(sqlite.loadBag(uuid));
 				i++;
 			}
 		}
-		else if(database == DatabaseType.MYSQLPLUS) {
-			List<Data> bags = mysql.loadAllBags();
+		else if(getDatabase() == DatabaseType.MYSQLPLUS) {
+			List<Data> bags = getMysql().loadAllBags();
 			data = bags;
 			i = bags.size();
 		}
@@ -453,12 +457,12 @@ public class BagData {
 			String uuid = bag.getUuid();
 	    	String owner = bag.getOwner();
 	    	
-	    	if(database == DatabaseType.FILES) {
-	        	Log.Debug(Main.plugin, "[DI-31] " + "Attempting to write bag " + owner + "/" + uuid + " onto server");
+	    	if(getDatabase() == DatabaseType.FILES) {
+	        	Log.Debug(Main.plugin, "[DI-31] [FILES] " + "Attempting to write bag " + owner + "/" + uuid + " onto server");
 	    		Files.saveBag(bag);
 	    	}
-	    	else if(database == DatabaseType.SQLITE) {
-	    		Log.Debug(Main.plugin, "[DI-231] " + "Attempting to write bag " + owner + "/" + uuid + " onto database");
+	    	else if(getDatabase() == DatabaseType.SQLITE) {
+	    		Log.Debug(Main.plugin, "[DI-231] [SQLITE] " + "Attempting to write bag " + owner + "/" + uuid + " onto database");
 	    		if(shutdown || conversion != null) {
 	    			sqlite.saveBag(bag);
 	    		}else {
@@ -467,33 +471,33 @@ public class BagData {
 	    			});
 	    		}
 	    	}else 
-		    	if(database == DatabaseType.MYSQLPLUS) {
+		    	if(getDatabase() == DatabaseType.MYSQLPLUS) {
 		    		if(!shutdown && conversion == null) {
 		    			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
-		    				mysql.saveBag(bag);
+		    				getMysql().saveBag(bag);
 		    			});
 		    		}
 		    	}
 		}
 		
 		if(!toSave.isEmpty()) {
-	    	if(database == DatabaseType.MYSQL) {
-	    		Log.Debug(Main.plugin, "[DI-232] " + "Attempting to write bags onto database");
+	    	if(getDatabase() == DatabaseType.MYSQL) {
+	    		Log.Debug(Main.plugin, "[DI-232] [MYSQL] " + "Attempting to write bags onto database");
 	    		if(shutdown || conversion != null) {
-	    			mysql.saveBags(toSave);
+	    			getMysql().saveBags(toSave);
 	    		}else {
 	    			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
-	    				mysql.saveBags(toSave);
+	    				getMysql().saveBags(toSave);
 	    			});
 	    		}
 	    	}
-	    	else if(database == DatabaseType.MYSQLPLUS) {
-	    		Log.Debug(Main.plugin, "[DI-233] " + "Attempting to write bags onto database");
+	    	else if(getDatabase() == DatabaseType.MYSQLPLUS) {
+	    		Log.Debug(Main.plugin, "[DI-233] [MYSQLPLUS] " + "Attempting to write bags onto database");
 	    		if(shutdown || conversion != null) {
-	    			mysql.saveBags(toSave);
+	    			getMysql().saveBags(toSave);
 	    		}else {
 	    			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
-	    				mysql.saveBags(toSave);
+	    				getMysql().saveBags(toSave);
 	    			});
 	    		}
 	    	}
@@ -509,12 +513,12 @@ public class BagData {
 			Data bag = data.get(i);
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				data.remove(i);
+				if(changedBags.containsKey(UUID.fromString(uuid))) {
+					changedBags.remove(UUID.fromString(uuid));
+				}
 				Log.Info(Main.plugin, String.format("Removed cached data for %s.", uuid));
 				return;
 			}
-		}
-		if(changedBags.containsKey(UUID.fromString(uuid))) {
-			changedBags.remove(UUID.fromString(uuid));
 		}
 		Log.Error(Main.plugin, String.format("Failed to remove cached data for %s.", uuid));
 	}
@@ -524,17 +528,20 @@ public class BagData {
 			Data bag = data.get(i);
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				RemoveBag(uuid);
-				if(database == DatabaseType.FILES) {
+				if(changedBags.containsKey(UUID.fromString(uuid))) {
+					changedBags.remove(UUID.fromString(uuid));
+				}
+				if(getDatabase() == DatabaseType.FILES) {
 					try {
 						Files.deleteFile(bag.getOwner(), uuid);
 					}catch(Exception e) {
 						Log.Error(Main.plugin, String.format("Failed to delete data for %s.", uuid));
 						e.printStackTrace();
 					}
-				}else if(database == DatabaseType.MYSQL) {
-		    		mysql.deleteBag(uuid);
+				}else if(getDatabase() == DatabaseType.MYSQL) {
+		    		getMysql().deleteBag(uuid);
 		    	}
-		    	else if(database == DatabaseType.SQLITE) {
+		    	else if(getDatabase() == DatabaseType.SQLITE) {
 		    		sqlite.deleteBag(uuid);
 		    	}
 				Log.Info(Main.plugin, String.format("Deleted data for %s.", uuid));
@@ -544,32 +551,36 @@ public class BagData {
 		Log.Error(Main.plugin, String.format("Failed to delete data for %s.", uuid));
 	}
 	
-	public static List<String> GetBags(@NotNull String playerUUID){
-		Log.Debug(Main.plugin, "[DI-32] " + playerUUID);
-		List<String> bags = new ArrayList<String>();
-		for(Data dat : data) {
-			if(dat.getOwner().equalsIgnoreCase(playerUUID)) {
-				bags.add(dat.getUuid());
-			}
-		}
-		return bags;
+	public static List<String> GetBags(@NotNull String playerUUID) {
+	    Log.Debug(Main.plugin, "[DI-32] " + playerUUID);
+	    return data.stream()
+	        .filter(dat -> dat.getOwner().equals(playerUUID))
+	        .map(Data::getUuid)
+	        .toList();
+	}
+	
+	public static List<Data> GetBagsData(@NotNull String playerUUID) {
+	    Log.Debug(Main.plugin, "[DI-260] " + playerUUID);
+	    return data.stream()
+	        .filter(dat -> dat.getOwner().equals(playerUUID))
+	        .toList();
 	}
 	
 	public static List<String> GetBagOwners(){
-		if(database == DatabaseType.FILES) {
+		if(getDatabase() == DatabaseType.FILES) {
 			try {
 				List<String> bagOwners = Stream.of(new File(String.format("%s/bags/", Main.plugin.getDataFolder())).listFiles())
 						.filter(file -> file.isDirectory())
 						.map(File::getName)
-						.collect(Collectors.toList());
+						.toList();
 				return bagOwners;
 			} catch (Exception e) {
 				return new ArrayList<String>();
 			}
-		}else if(database == DatabaseType.MYSQL) {
-			return mysql.getBagOwners();
+		}else if(getDatabase() == DatabaseType.MYSQL) {
+			return getMysql().getBagOwners();
     	}
-    	else if(database == DatabaseType.SQLITE) {
+    	else if(getDatabase() == DatabaseType.SQLITE) {
     		return sqlite.getBagOwners();
     	}
 		
@@ -616,9 +627,9 @@ public class BagData {
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
 				bag.setOpen(true);
 				bag.setViewer(player);
-				if(database == DatabaseType.MYSQLPLUS) {
+				if(getDatabase() == DatabaseType.MYSQLPLUS) {
 					Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
-    					mysql.saveBag(bag);
+    					getMysql().saveBag(bag);
     				});
 				}
 				return;
@@ -634,9 +645,9 @@ public class BagData {
 				bag.setOpen(true);
 				bag.setViewer(player);
 				bag.setGui(gui);
-				if(database == DatabaseType.MYSQLPLUS) {
+				if(getDatabase() == DatabaseType.MYSQLPLUS) {
 					Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
-    					mysql.saveBag(bag);
+    					getMysql().saveBag(bag);
     				});
 				}
 				return;
@@ -647,19 +658,19 @@ public class BagData {
 	}
 	
 	public static void MarkBagClosed(@NotNull String uuid) {
-		for(Data bag : data) {
-			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				bag.setOpen(false);
-				bag.setGui(null);
-				if(database == DatabaseType.MYSQLPLUS) {
-					Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
-    					mysql.saveBag(bag);
-    				});
-				}
-				return;
-			}
+		Data bag = GetBag(uuid, null); // This will throw an error if the bag does not exist, which is fine.
+		if(bag == null) {
+			Log.Error(Main.plugin, String.format("Failed to mark bag '%s' as closed, this bag was not found.", uuid));
+			return;
 		}
-		Log.Error(Main.plugin, String.format("Failed to mark bag '%s' as closed, this bag was not found.", uuid));
+		bag.setOpen(false);
+		bag.setViewer(null);
+		bag.setGui(null);
+		if(getDatabase() == DatabaseType.MYSQLPLUS) {
+			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+				getMysql().saveBag(bag);
+			});
+		}
 	}
 	
 	public List<String> GetTrusted(@NotNull String uuid) {
@@ -784,7 +795,7 @@ public class BagData {
             throw new IllegalArgumentException("ItemStack must be a Player Head");
         }
         
-        if(Main.VersionCompare(Main.server, ServerVersion.v1_21_1) >= 0) {
+        if(Server.VersionHigherOrEqualTo(Version.v1_21_1)) {
         	SkullMeta meta = (SkullMeta) head.getItemMeta();
         	return HeadCreator.convertUrlToBase64(meta.getOwnerProfile().getTextures().getSkin().toString());
         }else {
@@ -831,7 +842,7 @@ public class BagData {
         
         UUID uuid = UUID.nameUUIDFromBytes(value.getBytes());
         
-        if(Main.VersionCompare(Main.server, ServerVersion.v1_21_1) >= 0 || Main.server == ServerVersion.NULL) {
+        if(Server.VersionHigherOrEqualTo(Version.v1_21_1) || Server.VersionEqualTo(Version.NULL)) {
         	try {
             	// Create a new GameProfile with a random UUID and apply the texture
             	PlayerProfile profile = Bukkit.getServer().createPlayerProfile(uuid, "bag");
@@ -861,12 +872,10 @@ public class BagData {
         item.setItemMeta(meta);
     }
 	
-	public static List<Data> GetOpenBags(){
-		List<Data> open = new ArrayList<>();
-		for(Data bag : data) {
-			if(bag.isOpen()) open.add(bag);
-		}
-		return open;
+	public static List<Data> GetOpenBags() {
+	    return data.stream()
+	               .filter(Data::isOpen)
+	               .toList();
 	}
 	
 	public static List<JsonObject> deserializeItemStackList(String json) {
@@ -923,5 +932,21 @@ public class BagData {
 		}
 		Log.Error(Main.plugin, String.format("Failed to clear content for %s.", uuid));
 		return false;
+	}
+
+	public static DatabaseType getDatabase() {
+		return database;
+	}
+
+	protected static void setDatabase(DatabaseType database) {
+		BagData.database = database;
+	}
+
+	public static MySQL getMysql() {
+		return mysql;
+	}
+
+	protected static void setMysql(MySQL mysql) {
+		BagData.mysql = mysql;
 	}
 }

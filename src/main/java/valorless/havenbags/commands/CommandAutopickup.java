@@ -13,8 +13,8 @@ import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.features.AutoPickup;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.nbt.NBT;
 
 public class CommandAutopickup {
 	
@@ -32,7 +32,7 @@ public class CommandAutopickup {
 			if(HavenBags.IsBag(item)) {
 				if(HavenBags.IsOwner(item, player)) {
 					if(command.args[1].equalsIgnoreCase("none")) {
-						//NBT.SetString(item, "bag-filter", null);
+						//PDC.SetString(item, "bag-filter", null);
 						BagData.SetAutoPickup(HavenBags.GetBagUUID(item), "null");
 						player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
 								"none"), player));
@@ -61,8 +61,8 @@ public class CommandAutopickup {
 									}
 								}
 							}
-							if(NBT.GetString(item, "bag-uuid").equalsIgnoreCase("null")) {
-								NBT.SetString(item, "bag-filter", filter);
+							if(PDC.GetString(item, "uuid").equalsIgnoreCase("null")) {
+								PDC.SetString(item, "filter", filter);
 								List<Placeholder> ph = new ArrayList<>();
 								ph.add(new Placeholder("%filter%", AutoPickup.GetFilterDisplayname(filter)));
 								ItemMeta meta = item.getItemMeta();
@@ -77,7 +77,7 @@ public class CommandAutopickup {
 							BagData.SetAutoPickup(HavenBags.GetBagUUID(item), filter);
 							player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
 									AutoPickup.GetFilterDisplayname(filter)), player));
-							//NBT.SetString(item, "bag-filter", args[1]);
+							//PDC.SetString(item, "bag-filter", args[1]);
 							HavenBags.UpdateBagItem(item, null, player);
 							c = true; // Future Valor: why this? // Future Future Valor: I still have no clue.
 							return true;
@@ -96,9 +96,9 @@ public class CommandAutopickup {
 			ItemStack item = player.getInventory().getItemInMainHand();
 			if(HavenBags.IsBag(item)) {
 				if(HavenBags.IsOwner(item, player)) {
-					//NBT.SetString(item, "bag-filter", null);
-					if(NBT.GetString(item, "bag-uuid") == "null") {
-						NBT.SetString(item, "bag-filter", "null");
+					//PDC.SetString(item, "bag-filter", null);
+					if(PDC.GetString(item, "uuid") == "null") {
+						PDC.SetString(item, "filter", "null");
 						List<Placeholder> ph = new ArrayList<>();
 						ph.add(new Placeholder("%filter%", "null"));
 						ItemMeta meta = item.getItemMeta();

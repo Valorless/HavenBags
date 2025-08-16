@@ -2,6 +2,7 @@ package valorless.havenbags.prevention;
 
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
+import valorless.havenbags.database.BagCache.Observer;
 import valorless.valorlessutils.ValorlessUtils.*;
 
 import org.bukkit.Bukkit;
@@ -22,12 +23,6 @@ public class PlacementBlocker implements Listener {
 	
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		
-		if(HavenBags.IsBag(event.getItemInHand())) {
-			event.setCancelled(true); 
-			return;
-		}
-		
 		Block block = event.getBlockPlaced();
 		ItemStack item = event.getItemInHand();
 		ItemMeta nbt = item.getItemMeta();
@@ -35,6 +30,15 @@ public class PlacementBlocker implements Listener {
 		//ItemMeta offMeta = offItem.getItemMeta();
 		Log.Debug(Main.plugin, "[PlacementBlocker][DI-201] " + "Block Placed: " + block.getType().toString());
 		Log.Debug(Main.plugin, "[PlacementBlocker][DI-202] " + "Player Holding: " + item.getType().toString());
+		
+		if(nbt != null) {
+			Observer.CheckItem(event.getItemInHand());
+		}
+		
+		if(HavenBags.IsBag(event.getItemInHand())) {
+			event.setCancelled(true); 
+			return;
+		}
 		
 		if(nbt != null) {
 			Log.Debug(Main.plugin, "[PlacementBlocker][DI-203] " + "Block has ItemMeta.");

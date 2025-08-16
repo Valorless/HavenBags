@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,25 +20,28 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatMessageType;
+
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.BagData.Bag;
-import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Message;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.TextFeatures;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.ValorlessUtils.Tags;
 import valorless.valorlessutils.config.Config;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
+import valorless.valorlessutils.tags.TagType;
+import valorless.valorlessutils.tags.Tags;
 import valorless.valorlessutils.utils.Utils;
 
 @SuppressWarnings("deprecation")
@@ -64,11 +70,40 @@ public class AutoPickup implements Listener {
 	public static void init() {
 		Log.Debug(Main.plugin, "[DI-16] Registering AutoPickup");
 		Bukkit.getServer().getPluginManager().registerEvents(new AutoPickup(), Main.plugin);
+		
+
+		if(!Main.config.GetBool("auto-pickup")) return;
+		Integer ticks = 10;
+		new BukkitRunnable() {
+		    @Override
+		    public void run() {
+		        for (Player player : Bukkit.getOnlinePlayers()) {
+		        	if (player.getInventory().firstEmpty() != -1) continue; // Inventory isn't full
+		        	for (Entity entity : player.getNearbyEntities(1, 1, 1)) {
+		                if (!(entity instanceof Item)) continue;
+		                Item dropped = (Item) entity;
+		                if (dropped.isDead() || !dropped.isValid()) continue;
+		                if (dropped.getOwner() != null && dropped.getOwner() != player.getUniqueId()) continue;
+		                if (dropped.getPickupDelay() > 0) continue;
+		                
+		        		if(HavenBags.InventoryContainsBag(player) == false) continue;
+		        		ItemStack item = dropped.getItemStack();
+		        		
+		        		Log.Debug(Main.plugin, "[DI-153] " + item.getType().toString());
+		        		boolean cancel = PutItemInBag(item, player);
+		        		Log.Debug(Main.plugin, "[DI-154] " + "Cancelled: " + cancel);
+		        		if(cancel) {
+		        			PickupParticles(player, dropped.getLocation(), item);
+		        			dropped.remove();
+		        		}
+		            }	
+		        }
+		    }
+		}.runTaskTimer(Main.plugin, ticks, ticks);
 	}
 	
 	public static void Initiate() {
-		enabled = Main.config.GetBool("auto-pickup");
-		if(!enabled) return;
+		if(!Main.config.GetBool("auto-pickup")) return;
 		filters.clear();
 		Object[] f = filter.GetConfigurationSection("filters").getKeys(false).toArray();
 		Log.Debug(Main.plugin, "[DI-145] " + "Filters: " + f.length);
@@ -213,50 +248,16 @@ public class AutoPickup implements Listener {
 		if(event.getItem().getOwner() != null) {
 			if(event.getItem().getOwner() != player.getUniqueId()) return;
 		}
-		Log.Debug(Main.plugin, "[DI-149] " + "AutoPickup");
-		List<String> blacklist = Main.config.GetStringList("blacklist");
-		if(blacklist != null) {
-			if(blacklist.size() != 0) {
-				Log.Debug(Main.plugin, "[DI-150] " + "Player World: " + player.getWorld().getName());
-				for(String world : blacklist) {
-					Log.Debug(Main.plugin, "[DI-151] " + "Blacklist: " + world);
-					if(player.getWorld().getName().equalsIgnoreCase(world)) return;
-				}
-			}
-		}
+		
 		if(HavenBags.InventoryContainsBag(player) == false) return;
 		ItemStack item = event.getItem().getItemStack();
-		/*
-		if(HavenBags.IsBag(item)) {
-			if(!HavenBags.CanCarryMoreBags(player)) {
-				event.setCancelled(true);
-				return;
-			}
-		}
-		*/
 		
-		// For some reason handling ExecutableItems items, would duplicate the item.
-		if (Bukkit.getPluginManager().getPlugin("ExecutableItems") != null) {
-			if(Tags.Has((JavaPlugin)Bukkit.getPluginManager().getPlugin("ExecutableItems"), item.getItemMeta().getPersistentDataContainer(), "ei-id", PersistentDataType.STRING)) {
-				Log.Debug(Main.plugin, "[DI-152] " + "Item is ExecutableItem, skipping.");
-				return;
-			}
-		}
-		
-		if(HavenBags.IsBag(item)) return;
 		Log.Debug(Main.plugin, "[DI-153] " + item.getType().toString());
 		boolean cancel = PutItemInBag(item, player);
 		Log.Debug(Main.plugin, "[DI-154] " + "Cancelled: " + cancel);
 		if(cancel) {
 			event.setCancelled(true);
-			int count = 10;
-			double force = 0.1;
-			try {
-				player.spawnParticle(Particle.BLOCK_DUST, event.getItem().getLocation(), count, 0, 0.1, 0, force, item.getType().createBlockData());
-			} catch (Exception e) {
-				player.spawnParticle(Particle.ITEM_CRACK, event.getItem().getLocation(), count, 0, 0.1, 0, force, item);
-			}
-			player.spawnParticle(Particle.SMOKE_NORMAL, event.getItem().getLocation(), 5, 0, 0.1, 0, 0.02);
+			PickupParticles(player, event.getItem().getLocation(), item);
 			event.getItem().remove();
 		}
 
@@ -285,7 +286,7 @@ public class AutoPickup implements Listener {
 		for(ItemStack i : player.getInventory().getContents()) {
 			//Log.Debug(Main.plugin, HavenBags.BagState(i).toString());
 			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
-				if(NBT.Has(i, "bag-filter")) {
+				if(PDC.Has(i, "bag-filter")) {
 					bags.add(new Bag(i, HavenBags.LoadBagContentFromServer(i, null)));
 				}
 			}
@@ -293,12 +294,12 @@ public class AutoPickup implements Listener {
 		Log.Debug(Main.plugin, "bags:" + bags.size());
 		Log.Debug(Main.plugin, "Checking bag filters.");
 		for(Bag bag : bags) {
-			Log.Debug(Main.plugin, "bag: " + NBT.GetString(bag.item, "bag-uuid"));
+			Log.Debug(Main.plugin, "bag: " + PDC.GetString(bag.item, "bag-uuid"));
 			boolean c = false;
 			for(Filter f : filters) {
 				//Log.Debug(Main.plugin, "Filter: " + f.name);
-				//Log.Debug(Main.plugin, "Bag Filter: " + NBT.GetString(bag.item, "bag-filter"));
-				if(f.name.equalsIgnoreCase(NBT.GetString(bag.item, "bag-filter"))) {
+				//Log.Debug(Main.plugin, "Bag Filter: " + PDC.GetString(bag.item, "bag-filter"));
+				if(f.name.equalsIgnoreCase(PDC.GetString(bag.item, "bag-filter"))) {
 					c = true;
 					break;
 				}
@@ -309,23 +310,23 @@ public class AutoPickup implements Listener {
 				continue;
 			}
 			
-			if(!IsItemInFilter(NBT.GetString(bag.item, "bag-filter"), item)) {
+			if(!IsItemInFilter(PDC.GetString(bag.item, "bag-filter"), item)) {
 				Log.Debug(Main.plugin, "Item " + item.getType().toString() + " is not in the filter. Skipping.");
 				continue;
 			}
 			
 
 	    	List<Placeholder> placeholders = new ArrayList<Placeholder>();
-	        if(NBT.Has(bag.item, "bag-weight") && NBT.Has(bag.item, "bag-weight-limit") && Main.weight.GetBool("enabled")) {
-	        	placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(HavenBags.GetWeight(bag.item), NBT.GetDouble(bag.item, "bag-weight-limit"), Main.weight.GetInt("bar-length"))));
+	        if(PDC.Has(bag.item, "bag-weight") && PDC.Has(bag.item, "bag-weight-limit") && Main.weight.GetBool("enabled")) {
+	        	placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(HavenBags.GetWeight(bag.item), PDC.GetDouble(bag.item, "bag-weight-limit"), Main.weight.GetInt("bar-length"))));
 	        	placeholders.add(new Placeholder("%weight%", TextFeatures.LimitDecimal(String.valueOf(HavenBags.GetWeight(bag.item)),2)));
-	        	placeholders.add(new Placeholder("%limit%", String.valueOf(NBT.GetDouble(bag.item, "bag-weight-limit").intValue())));
-	        	placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(HavenBags.GetWeight(bag.item), NBT.GetDouble(bag.item, "bag-weight-limit"))), 2) + "%"));
+	        	placeholders.add(new Placeholder("%limit%", String.valueOf(PDC.GetDouble(bag.item, "bag-weight-limit").intValue())));
+	        	placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(HavenBags.GetWeight(bag.item), PDC.GetDouble(bag.item, "bag-weight-limit"))), 2) + "%"));
 	        	placeholders.add(new Placeholder("%bag-weight%", Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)));
 	        }
 			
 			
-			int maxContent = NBT.GetInt(bag.item, "bag-size");
+			int maxContent = PDC.GetInt(bag.item, "bag-size");
 			Log.Debug(Main.plugin, "cont:" + bag.content.size());
 			int contSize = 0;
 //			for(int i = 0; i < bag.content.size(); i++) {
@@ -364,7 +365,7 @@ public class AutoPickup implements Listener {
 								i.setAmount(i.getAmount() + item.getAmount());
 								Log.Debug(Main.plugin, bag.content.toString());
 								if(Main.weight.GetBool("enabled")) {
-						        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+						        	PDC.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
 									if(Main.weight.GetBool("weight-text-pickup")) {
 										Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
 												Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
@@ -388,7 +389,7 @@ public class AutoPickup implements Listener {
 								bag.content.set(is, item);
 								Log.Debug(Main.plugin, bag.content.toString());
 								if(Main.weight.GetBool("enabled")) {
-						        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+						        	PDC.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
 									if(Main.weight.GetBool("weight-text-pickup")) {
 										Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
 												Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
@@ -437,10 +438,32 @@ public class AutoPickup implements Listener {
 	}
 	*/
 	
-	boolean PutItemInBag(ItemStack item, Player player){
+	static boolean PutItemInBag(ItemStack item, Player player){
 		if(BagData.isReady() == false) {
 			return false;
 		}
+		
+		Log.Debug(Main.plugin, "[DI-149] " + "AutoPickup");
+		List<String> blacklist = Main.config.GetStringList("blacklist");
+		if(blacklist != null) {
+			if(blacklist.size() != 0) {
+				Log.Debug(Main.plugin, "[DI-150] " + "Player World: " + player.getWorld().getName());
+				for(String world : blacklist) {
+					Log.Debug(Main.plugin, "[DI-151] " + "Blacklist: " + world);
+					if(player.getWorld().getName().equalsIgnoreCase(world)) return false;
+				}
+			}
+		}
+		
+		// For some reason handling ExecutableItems items, would duplicate the item.
+		if (Bukkit.getPluginManager().getPlugin("ExecutableItems") != null) {
+			if(Tags.Has((JavaPlugin)Bukkit.getPluginManager().getPlugin("ExecutableItems"), item.getItemMeta().getPersistentDataContainer(), "ei-id", TagType.STRING)) {
+				Log.Debug(Main.plugin, "[DI-152] " + "Item is ExecutableItem, skipping.");
+				return false;
+			}
+		}
+		
+		if(HavenBags.IsBag(item)) return false;
 		
 		Log.Debug(Main.plugin, "[DI-154] " + "PutItemInBag?");
 		
@@ -456,7 +479,7 @@ public class AutoPickup implements Listener {
 		for(ItemStack i : player.getInventory().getContents()) {
 			//Log.Debug(Main.plugin, HavenBags.BagState(i).toString());
 			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
-				if(NBT.Has(i, "bag-filter")) {
+				if(PDC.Has(i, "filter")) {
 					bags.add(new Bag(i, HavenBags.LoadBagContentFromServer(i)));
 				}
 			}
@@ -467,14 +490,14 @@ public class AutoPickup implements Listener {
 		for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
 			Data data = BagData.GetBag(HavenBags.GetBagUUID(bag.item), null);
 			if(HavenBags.IsItemBlacklisted(item, data)) continue;
-			Log.Debug(Main.plugin, "[DI-159] " + "bag: " + NBT.GetString(bag.item, "bag-uuid"));
-			if(BagData.IsBagOpen(NBT.GetString(bag.item, "bag-uuid"), bag.item)) continue;
+			Log.Debug(Main.plugin, "[DI-159] " + "bag: " + PDC.GetString(bag.item, "uuid"));
+			if(BagData.IsBagOpen(PDC.GetString(bag.item, "uuid"), bag.item)) continue;
 			if(HavenBags.IsBagFull(bag.item)) continue;
 			boolean c = false;
 			for(Filter f : filters) {
 				//Log.Debug(Main.plugin, "Filter: " + f.name);
-				//Log.Debug(Main.plugin, "Bag Filter: " + NBT.GetString(bag.item, "bag-filter"));
-				if(f.name.equalsIgnoreCase(NBT.GetString(bag.item, "bag-filter"))) {
+				//Log.Debug(Main.plugin, "Bag Filter: " + PDC.GetString(bag.item, "bag-filter"));
+				if(f.name.equalsIgnoreCase(PDC.GetString(bag.item, "filter"))) {
 					if(AutoPickup.filter.HasKey("filters." + f.name + ".permission.node")) {
 						Log.Debug(Main.plugin, "[DI-160] " + "[AutoPickup] Permission");
 						if(!AutoPickup.filter.GetString("filters." + f.name + ".permission.node").equalsIgnoreCase("none")) {
@@ -503,23 +526,23 @@ public class AutoPickup implements Listener {
 				continue;
 			}
 			
-			if(!IsItemInFilter(NBT.GetString(bag.item, "bag-filter"), item)) {
+			if(!IsItemInFilter(PDC.GetString(bag.item, "filter"), item)) {
 				Log.Debug(Main.plugin, "[DI-167] " + "Item " + item.getType().toString() + " is not in the filter. Skipping.");
 				continue;
 			}
 			
 
 	    	List<Placeholder> placeholders = new ArrayList<Placeholder>();
-	        if(NBT.Has(bag.item, "bag-weight") && NBT.Has(bag.item, "bag-weight-limit") && Main.weight.GetBool("enabled")) {
-	        	placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(HavenBags.GetWeight(bag.item), NBT.GetDouble(bag.item, "bag-weight-limit"), Main.weight.GetInt("bar-length"))));
+	        if(PDC.Has(bag.item, "weight") && PDC.Has(bag.item, "weight-limit") && Main.weight.GetBool("enabled")) {
+	        	placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(HavenBags.GetWeight(bag.item), PDC.GetDouble(bag.item, "weight-limit"), Main.weight.GetInt("bar-length"))));
 	        	placeholders.add(new Placeholder("%weight%", TextFeatures.LimitDecimal(String.valueOf(HavenBags.GetWeight(bag.item)),2)));
-	        	placeholders.add(new Placeholder("%limit%", String.valueOf(NBT.GetDouble(bag.item, "bag-weight-limit").intValue())));
-	        	placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(HavenBags.GetWeight(bag.item), NBT.GetDouble(bag.item, "bag-weight-limit"))), 2) + "%"));
+	        	placeholders.add(new Placeholder("%limit%", String.valueOf(PDC.GetDouble(bag.item, "weight-limit").intValue())));
+	        	placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(HavenBags.GetWeight(bag.item), PDC.GetDouble(bag.item, "weight-limit"))), 2) + "%"));
 	        	placeholders.add(new Placeholder("%bag-weight%", Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)));
 	        }
 			
 			
-			int maxContent = NBT.GetInt(bag.item, "bag-size");
+			int maxContent = PDC.GetInteger(bag.item, "size");
 			Log.Debug(Main.plugin, "[DI-168] " + "cont:" + bag.content.size());
 			int contSize = 0;
 //			for(int i = 0; i < bag.content.size(); i++) {
@@ -554,7 +577,7 @@ public class AutoPickup implements Listener {
 					bag.content.set(0, item);
 				}else bag.content.add(item);
 				if(Main.weight.GetBool("enabled")) {
-		        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+		        	PDC.SetDouble(bag.item, "weight", HavenBags.GetWeight(bag.content));
 					if(Main.weight.GetBool("weight-text-pickup")) {
 						Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
 								Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
@@ -570,9 +593,9 @@ public class AutoPickup implements Listener {
 			}
 			
 			// Can't deal with empty bags.
-			if(HavenBags.AddItemToInventory(bag.content, NBT.GetInt(bag.item, "bag-size"), item, player)) {
+			if(HavenBags.AddItemToInventory(bag.content, PDC.GetInteger(bag.item, "size"), item, player)) {
 				if(Main.weight.GetBool("enabled")) {
-		        	NBT.SetDouble(bag.item, "bag-weight", HavenBags.GetWeight(bag.content));
+		        	PDC.SetDouble(bag.item, "weight", HavenBags.GetWeight(bag.content));
 					if(Main.weight.GetBool("weight-text-pickup")) {
 						Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
 								Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)
@@ -595,7 +618,7 @@ public class AutoPickup implements Listener {
 		return false;
 	}
 	
-	String ItemFilter(ItemStack item) {
+	static String ItemFilter(ItemStack item) {
 		for(Filter f : filters) {
 			if(f.entries.contains(item.getType().toString())){
 				return f.name;
@@ -614,8 +637,8 @@ public class AutoPickup implements Listener {
 			if(Bukkit.getPluginManager().getPlugin("Oraxen") != null) {
 				if(item.hasItemMeta()) {
 					JavaPlugin oraxen = (JavaPlugin)Bukkit.getPluginManager().getPlugin("Oraxen");
-					if(Tags.Has(oraxen, item.getItemMeta().getPersistentDataContainer(), "id", PersistentDataType.STRING)) {
-						if(oraxenIDs.contains(Tags.Get(oraxen, item.getItemMeta().getPersistentDataContainer(), "id", PersistentDataType.STRING))) {
+					if(Tags.Has(oraxen, item.getItemMeta().getPersistentDataContainer(), "id", TagType.STRING)) {
+						if(oraxenIDs.contains(Tags.Get(oraxen, item.getItemMeta().getPersistentDataContainer(), "id", TagType.STRING))) {
 							//return true;
 							// Not ready yet.
 						}
@@ -672,14 +695,14 @@ public class AutoPickup implements Listener {
 		return false;
 	}
 	
-	void PickupSound(Player player) {
+	static void PickupSound(Player player) {
 		Double pitch = 1.0;
-		if(Main.server != ServerVersion.v1_17 && Main.server != ServerVersion.v1_17_1) {
-			pitch = Utils.RandomRange(Main.config.GetFloat("auto-pickup-pitch-min"), Main.config.GetFloat("auto-pickup-pitch-max"));
+		if(!Server.VersionEqualTo(Version.v1_17) && !Server.VersionEqualTo(Version.v1_17_1)) {
+			pitch = Utils.RandomRange(Main.config.GetDouble("auto-pickup-pitch-min"), Main.config.GetDouble("auto-pickup-pitch-max"));
 		}
 		
 		SFX.Play(Main.config.GetString("auto-pickup-sound"), 
-				Main.config.GetFloat("auto-pickup-volume").floatValue(), 
+				Main.config.GetDouble("auto-pickup-volume").floatValue(), 
 				pitch.floatValue(), player);
 		
 	}
@@ -736,5 +759,16 @@ public class AutoPickup implements Listener {
 				inv.setItem(i, new ItemStack(Material.AIR));
 			}
 		}
+	}
+	
+	public static void PickupParticles(Player player, Location loc, ItemStack item) {
+		int count = 10;
+		double force = 0.1;
+		try {
+			player.spawnParticle(Particle.BLOCK_DUST, loc, count, 0, 0.1, 0, force, item.getType().createBlockData());
+		} catch (Exception e) {
+			player.spawnParticle(Particle.ITEM_CRACK, loc, count, 0, 0.1, 0, force, item);
+		}
+		player.spawnParticle(Particle.SMOKE_NORMAL, loc, 5, 0, 0.1, 0, 0.02);
 	}
 }

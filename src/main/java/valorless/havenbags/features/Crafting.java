@@ -20,10 +20,10 @@ import org.bukkit.permissions.Permission;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.utils.Utils;
 
@@ -108,13 +108,13 @@ public class Crafting implements Listener {
 		//}
 		bagMeta.setLore(lore);
 		bagItem.setItemMeta(bagMeta);
-		//NBT.SetString(bagItem, "bag-uuid", "null");
-		//NBT.SetString(bagItem, "bag-owner", "null");
-		NBT.SetInt(bagItem, "bag-size", size*9);
+		//PDC.SetString(bagItem, "bag-uuid", "null");
+		//PDC.SetString(bagItem, "bag-owner", "null");
+		PDC.SetInteger(bagItem, "size", size*9);
 		if(config.GetString("recipes." + recipe + ".type").equalsIgnoreCase("bound")) {
-			NBT.SetBool(bagItem, "bag-canBind", true);
+			PDC.SetBoolean(bagItem, "binding", true);
 		} else if(config.GetString("recipes." + recipe + ".type").equalsIgnoreCase("ownerless")) {
-			NBT.SetBool(bagItem, "bag-canBind", false);
+			PDC.SetBoolean(bagItem, "binding", false);
 		}
 		return bagItem;
 	}
@@ -196,11 +196,11 @@ public class Crafting implements Listener {
 				return;
 			}
 			ItemStack item = event.getInventory().getResult();
-			NBT.SetString(item, "bag-uuid", "null");
-			NBT.SetString(item, "bag-owner", "null");
+			PDC.SetString(item, "uuid", "null");
+			PDC.SetString(item, "owner", "null");
 			if(item.getItemMeta() != null) {
-				if(NBT.Has(item, "bag-uuid")) {
-					NBT.SetString(event.getInventory().getResult(), "bag-uuid", UUID.randomUUID().toString());
+				if(PDC.Has(item, "uuid")) {
+					PDC.SetString(event.getInventory().getResult(), "uuid", UUID.randomUUID().toString());
 				}
 			}
 		} catch(Exception e) {}

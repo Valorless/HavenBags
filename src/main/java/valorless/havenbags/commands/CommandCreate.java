@@ -12,10 +12,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.items.ItemUtils;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
 public class CommandCreate {
@@ -76,11 +76,11 @@ public class CommandCreate {
 						ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-item-model"));
 					}
 					
-					//NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
-					NBT.SetString(bagItem, "bag-uuid", "null");
-					NBT.SetString(bagItem, "bag-owner", "null");
-					NBT.SetInt(bagItem, "bag-size", size*9);
-					NBT.SetBool(bagItem, "bag-canBind", false);
+					//PDC.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+					PDC.SetString(bagItem, "uuid", "null");
+					PDC.SetString(bagItem, "owner", "null");
+					PDC.SetInteger(bagItem, "size", size*9);
+					PDC.SetBoolean(bagItem, "binding", false);
 					Bukkit.getPlayer(command.sender.getName()).getInventory().addItem(bagItem);
 					Log.Debug(Main.plugin, "[DI-138] " + String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size*9, "false"));
 					//sender.sendMessage(JsonUtils.toJson(bagItem));
@@ -109,7 +109,7 @@ public class CommandCreate {
 					}
 					ItemMeta bagMeta = bagItem.getItemMeta();
 					if (bagMeta == null) {
-						NBT.SetString(bagItem, "bag-uuid", "null");
+						PDC.SetString(bagItem, "uuid", "null");
 						bagMeta = bagItem.getItemMeta();
 			        }
 					if(Main.config.GetInt("bag-custom-model-data") != 0) {
@@ -134,11 +134,11 @@ public class CommandCreate {
 					//}
 					bagMeta.setLore(lore);
 					bagItem.setItemMeta(bagMeta);
-					//NBT.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
-					NBT.SetString(bagItem, "bag-uuid", "null");
-					NBT.SetString(bagItem, "bag-owner", "null");
-					NBT.SetInt(bagItem, "bag-size", size*9);
-					NBT.SetBool(bagItem, "bag-canBind", true);
+					//PDC.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+					PDC.SetString(bagItem, "uuid", "null");
+					PDC.SetString(bagItem, "owner", "null");
+					PDC.SetInteger(bagItem, "size", size*9);
+					PDC.SetBoolean(bagItem, "binding", true);
 					Bukkit.getPlayer(command.sender.getName()).getInventory().addItem(bagItem);
 					Log.Debug(Main.plugin, "[DI-139] " + String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
 				}

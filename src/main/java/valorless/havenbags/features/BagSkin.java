@@ -18,10 +18,10 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.HavenBags.BagState;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.items.ItemUtils;
-import valorless.valorlessutils.nbt.NBT;
 
 public class BagSkin implements Listener{
 	
@@ -45,7 +45,7 @@ public class BagSkin implements Listener{
 		try {
 			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(0), event.getInventory().getItem(1)))) {
 				if(HavenBags.IsBag(item)) bag = item;
-				if(NBT.Has(item, "bag-token-skin")) skin = item;
+				if(PDC.Has(item, "token-skin")) skin = item;
 			}
 		}
 		catch(Exception e) {}
@@ -57,15 +57,15 @@ public class BagSkin implements Listener{
 		
 		if(!HavenBags.IsBag(bag)) return;
 		Log.Debug(Main.plugin, "[DI-66] " + "[BagSkin] Was bag.");
-		if(NBT.Has(bag, "bag-skin")) {
-			if(NBT.GetBool(bag, "bag-skin") == false) {
+		if(PDC.Has(bag, "skin")) {
+			if(PDC.GetBoolean(bag, "skin") == false) {
 				Log.Debug(Main.plugin, "[DI-247] [BagUpgrade] Bag cannot be skinned.");
 				return;
 			}
 		}
 		if(HavenBags.BagState(bag) == BagState.New) return;
 		Log.Debug(Main.plugin, "[DI-67] " + "[BagSkin] BagState.Used");
-		if(!NBT.Has(skin, "bag-token-skin")) return;
+		if(!PDC.Has(skin, "token-skin")) return;
 		Log.Debug(Main.plugin, "[DI-68] " + "[BagSkin] Found skin.");
 		
 		ItemStack result = bag.clone();
@@ -85,16 +85,16 @@ public class BagSkin implements Listener{
 		ItemStack skin = null;
 		try {
 			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(0), event.getInventory().getItem(1)))) {
-				if(NBT.Has(item, "bag-token-skin")) skin = item;
+				if(PDC.Has(item, "token-skin")) skin = item;
 			}
 		}
 		catch(Exception e) {}
 		if(clicked == null || skin == null) return;
-		if(!NBT.Has(skin, "bag-token-skin")) return; // If the item in slot 2 isnt a skin token, return.
+		if(!PDC.Has(skin, "token-skin")) return; // If the item in slot 2 isnt a skin token, return.
 		Log.Debug(Main.plugin, "[DI-69] " + "[BagSkin] is bag?");
 		if(HavenBags.IsBag(clicked)) {
 			ItemMeta meta = clicked.getItemMeta();
-			String value = NBT.GetString(skin, "bag-token-skin");
+			String value = PDC.GetString(skin, "token-skin");
 			try {
 				int cmd = Integer.valueOf(value);
 				if(value != null && meta.hasCustomModelData()) {
@@ -114,8 +114,8 @@ public class BagSkin implements Listener{
 	ItemStack GetResult(ItemStack item, ItemStack skin) {
 		Log.Debug(Main.plugin, "[DI-73] " + "[BagSkin] Preparing Result.");
 		ItemMeta meta = item.getItemMeta();
-		String value = NBT.GetString(skin, "bag-token-skin");
-		String type = NBT.Has(skin, "bag-token-type") ? NBT.GetString(skin, "bag-token-type") : null;
+		String value = PDC.GetString(skin, "token-skin");
+		String type = PDC.Has(skin, "token-type") ? PDC.GetString(skin, "token-type") : null;
 		
 		if(type != null) {
 			if(type.equalsIgnoreCase("texture")) {

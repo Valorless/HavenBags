@@ -28,7 +28,7 @@ public class CommandUntrust {
 			if(HavenBags.IsBag(item)) {
 				if(HavenBags.IsOwner(item, player)) {
 					try {
-						//List<String> list = NBT.GetStringList(item, "bag-trust");
+						//List<String> list = PDC.GetStringList(item, "bag-trust");
 						//for(int i = 0; i < list.size(); i++) {
 							//if(list.get(i).equalsIgnoreCase(args[1])) {
 								//list.remove(i);

@@ -1,7 +1,6 @@
 package valorless.havenbags.prevention;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
@@ -12,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.nbt.NBT;
 
 public class BagDamagePrevention implements Listener{
 	String Name = "§7[§aHaven§bBags§7]§r";
@@ -24,7 +22,7 @@ public class BagDamagePrevention implements Listener{
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
-		if(e.getEntity().getType()==EntityType.DROPPED_ITEM) {
+		if(e.getEntity().getType() == EntityType.DROPPED_ITEM) {
 	    // Log.Debug(HavenBags.plugin, "Dropped item: " + e.getEntity().getName());
 	    	if(e.getEntity() instanceof Item dropped){
 		    	//Log.Debug(HavenBags.plugin, "Dropped item can be Item.");

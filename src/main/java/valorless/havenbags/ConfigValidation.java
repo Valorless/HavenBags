@@ -89,6 +89,7 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("protect-bags-players", false);
 	Main.config.AddValidationEntry("bags-in-bags", false);
 	Main.config.AddValidationEntry("bags-in-shulkers", true);
+	Main.config.AddValidationEntry("bags-in-bundles", false);
 	//Main.config.AddValidationEntry("keep-bags", true);
 	Main.config.AddValidationEntry("inventory-lock", false);
 	Main.config.AddValidationEntry("soulbound", false);
@@ -113,10 +114,15 @@ public class ConfigValidation {
 	//Main.config.AddValidationEntry("back-bag.offset.rotation", 180.0);
 	//Main.config.AddValidationEntry("back-bag.offset.pitch", 0.0);
 	Main.config.AddValidationEntry("magnet.enabled", true);
+	Main.config.AddValidationEntry("magnet.tick-rate", 2);
 	Main.config.AddValidationEntry("magnet.range", 5.0);
 	Main.config.AddValidationEntry("magnet.speed", 0.1);
 	Main.config.AddValidationEntry("magnet.require-autopickup", false);
 	Main.config.AddValidationEntry("magnet.only-autopickup-items", false);
+	Main.config.AddValidationEntry("magnet.instant", false);
+	
+	Main.config.AddValidationEntry("effects.refresh-rate", 100);
+	
 	Main.config.AddValidationEntry("upgrades.enabled", false);
 	Main.config.AddValidationEntry("upgrades.keep-texture", false);
 	Main.config.AddValidationEntry("upgrades.from-9-to-18", "EMERALD:5:90000");
@@ -131,6 +137,24 @@ public class ConfigValidation {
 		private static final long serialVersionUID = 1L;
 	{ add("&7Combine with a bag in an anvil to apply."); add("&7Skin: &e%skin%"); }} );
 	
+	Main.config.AddValidationEntry("bag-upgrades-anvil", false);
+	Main.config.AddValidationEntry("upgrade-gui.enabled", true);
+	Main.config.AddValidationEntry("upgrade-gui.block", "FLETCHING_TABLE");
+	Main.config.AddValidationEntry("upgrade-gui.noteblock.instrument", "BASS_DRUM");
+	Main.config.AddValidationEntry("upgrade-gui.noteblock.note", 0);
+	Main.config.AddValidationEntry("upgrade-gui.title", "&eBag Upgrade");
+	Main.config.AddValidationEntry("upgrade-gui.gui-size", 27);
+	Main.config.AddValidationEntry("upgrade-gui.slots.bag", 10);
+	Main.config.AddValidationEntry("upgrade-gui.slots.token", 12);
+	Main.config.AddValidationEntry("upgrade-gui.slots.result", 15);
+	Main.config.AddValidationEntry("upgrade-gui.filler", "GRAY_STAINED_GLASS_PANE");
+	if(!Main.config.HasKey("upgrade-gui.custom-filler")) {
+		Main.config.AddValidationEntry("upgrade-gui.custom-filler.0", "LIME_STAINED_GLASS_PANE");
+		Main.config.AddValidationEntry("upgrade-gui.custom-filler.8", "LIME_STAINED_GLASS_PANE");
+		Main.config.AddValidationEntry("upgrade-gui.custom-filler.18", "LIME_STAINED_GLASS_PANE");
+		Main.config.AddValidationEntry("upgrade-gui.custom-filler.26", "LIME_STAINED_GLASS_PANE");
+	}
+	Main.config.AddValidationEntry("upgrade-gui.success-sound", "ENTITY_VILLAGER_WORK_FLETCHER");
 	
 	Main.config.AddValidationEntry("blacklist", new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
@@ -138,6 +162,10 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("allowed-containers", new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
 	{ add("CHEST"); add("ENDER_CHEST"); add("BARREL"); add("SHULKER_BOX"); add("MERCHANT"); }} );
+	
+	Main.config.AddValidationEntry("player-gui.enabled", false);
+	Main.config.AddValidationEntry("player-gui.self-restore", true);
+	Main.config.AddValidationEntry("player-gui.self-delete", true);
 	Log.Debug(Main.plugin, "[DI-2] Validating config.yml");
 	Main.config.Validate();
 	}
@@ -157,6 +185,7 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("max-bags", "&cSorry, you cannot make any more bags.");
 		Lang.lang.AddValidationEntry("bag-in-bag-error", "&cBags cannot be put inside other bags.");
 		Lang.lang.AddValidationEntry("bag-in-shulker-error", "&cBags cannot be put inside shulker boxes.");
+		Lang.lang.AddValidationEntry("bag-in-bundles-error", "&cBags cannot be put inside bundles.");
 		Lang.lang.AddValidationEntry("item-blacklisted", "&cSorry, this item cannot go into bags.");
 		Lang.lang.AddValidationEntry("player-trusted", "&aAdded %trusted% as trusted.");
 		Lang.lang.AddValidationEntry("player-untrusted", "&eRemoved %trusted% as trusted.");
@@ -165,6 +194,7 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("auto-pickup-command", "&fAuto-pickup has been set to: %value%.");
 		Lang.lang.AddValidationEntry("auto-sort-command", "&fAuto-sort has been set to: %value%.");
 		Lang.lang.AddValidationEntry("magnet-command", "&fMagnetic has been set to: %value%.");
+		Lang.lang.AddValidationEntry("refill-command", "&fRefill has been set to: %value%.");
 		
 		// Admin Lang
 		//Lang.lang.AddValidationEntry("bag-create", ""); //unsure wtf this was for
@@ -173,8 +203,7 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("bag-ownerless-no-size", "&cOwnerless bag must have a size.");
 		Lang.lang.AddValidationEntry("bag-given", "&aYou've been given an %name%!");
 		Lang.lang.AddValidationEntry("number-conversion-error", "&cCannot convert '%value%' to a number!");
-		Lang.lang.AddValidationEntry("player-no-bags", "&cPlayer '%player%' has no bags.");
-		Lang.lang.AddValidationEntry("bags-of", "Bags of %player%:");
+		Lang.lang.AddValidationEntry("effects-command", "&fEffect has been set to: %value%.");
 		
 		// Bag GUI
 		Lang.lang.AddValidationEntry("bag-inventory-title", "");
@@ -202,10 +231,12 @@ public class ConfigValidation {
 			private static final long serialVersionUID = 1L; { 
 				add("%bound-to%"); 
 				add("%bag-size%"); 
+				add("%bag-effect%"); 
 				add("%bag-auto-pickup%"); 
 				add("%bag-trusted%"); 
 				add("%bag-autosort%"); 
 				add("%bag-magnet%"); 
+				add("%bag-refill%"); 
 				add("%bag-weight%"); 
 				}
 			} 
@@ -218,23 +249,24 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("bag-content-item", "&7%item%");
 		Lang.lang.AddValidationEntry("bag-content-item-amount", "&7%item% &7x%amount%");
 		Lang.lang.AddValidationEntry("bag-content-and-more", "&7And more..");
+		Lang.lang.AddValidationEntry("bag-effect", "&7Effect: %effect%");
+		Lang.lang.AddValidationEntry("bag-effect-hide", false);
 		Lang.lang.AddValidationEntry("bag-auto-pickup", "&7Auto Loot: %filter%");
 		Lang.lang.AddValidationEntry("bag-trusted", "&7Trusted: %trusted%");
 		Lang.lang.AddValidationEntry("bag-autosort", "&7Auto-Sort: %sorting%");
 		Lang.lang.AddValidationEntry("bag-autosort-on", "&aOn");
 		Lang.lang.AddValidationEntry("bag-autosort-off", "&cOff");
-		Lang.lang.AddValidationEntry("bag-autosort-off-hidden", false);
+		Lang.lang.AddValidationEntry("bag-autosort-off-hide", false);
 		Lang.lang.AddValidationEntry("bag-magnet", "&7Magnetic: %magnet%");
 		Lang.lang.AddValidationEntry("bag-magnet-on", "&aOn");
 		Lang.lang.AddValidationEntry("bag-magnet-off", "&cOff");
-		Lang.lang.AddValidationEntry("bag-magnet-off-hidden", false);
+		Lang.lang.AddValidationEntry("bag-magnet-off-hide", false);
 		Lang.lang.AddValidationEntry("bag-refill", "&7Refilling: %refill%");
 		Lang.lang.AddValidationEntry("bag-refill-on", "&aOn");
 		Lang.lang.AddValidationEntry("bag-refill-off", "&cOff");
-		Lang.lang.AddValidationEntry("bag-refill-off-hidden", false);
+		Lang.lang.AddValidationEntry("bag-refill-off-hide", false);
 		
 		// Admin GUI
-		Lang.lang.AddValidationEntry("too-many-bags", "&cThis player has over 53 bags.\\nPlease restore their bags through &e/bags restore&c!");
 		Lang.lang.AddValidationEntry("gui-main", "&aHaven&bBags &rGUI");
 		Lang.lang.AddValidationEntry("gui-create", "&aHaven&bBags &eCreation GUI");
 		Lang.lang.AddValidationEntry("gui-restore", "&aHaven&bBags &bRestoration GUI");
@@ -290,14 +322,6 @@ public class ConfigValidation {
 				}
 			} 
 		);
-		Lang.lang.AddValidationEntry("main-info", "&eInformation");
-		Lang.lang.AddValidationEntry("main-info-lore", new ArrayList<String>() {
-			private static final long serialVersionUID = 1L; { 
-				add("&7You can also restore bags of offline players,");
-				add("&7by using &e/bags gui restore <player-uuid>&7.");
-				}
-			} 
-		);
 		Lang.lang.AddValidationEntry("return", "&eReturn");
 		Lang.lang.AddValidationEntry("return-lore", new ArrayList<String>() {
 			private static final long serialVersionUID = 1L; { 
@@ -308,6 +332,44 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("page", "&fPage: %page%");
 		Lang.lang.AddValidationEntry("next-page", "&aNext Page");
 		Lang.lang.AddValidationEntry("prev-page", "&cPrevious Page");
+		
+		
+		Lang.lang.AddValidationEntry("playergui-title-main", "&aHaven&bBags &rPlayer GUI");
+		Lang.lang.AddValidationEntry("playergui-title-confirm", "&aHaven&bBags &4&lDELETE&r this bag?");
+		Lang.lang.AddValidationEntry("playergui-bags-of", "Bags of %player%:");  
+		Lang.lang.AddValidationEntry("playergui-restore", "&bBag Restoration");
+		Lang.lang.AddValidationEntry("playergui-restore-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Restore bags."); 
+				add(""); 
+				add("&7Only the basic bag with it''s content will be restored."); 
+				add("&7Things such as weight and auto-pickup filter, will not be restored."); 
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("playergui-delete", "&4Bag Deletion");
+		Lang.lang.AddValidationEntry("playergui-delete-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Delete bags."); 
+				add("&c&oDeleted bags cannot be restored!"); 
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("playergui-cancel", "&4Cancel");
+		Lang.lang.AddValidationEntry("playergui-cancel-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Cancel deletion of this bag."); 
+				}
+			} 
+		);
+		Lang.lang.AddValidationEntry("playergui-confirm", "&aConfirm");
+		Lang.lang.AddValidationEntry("playergui-confirm-lore", new ArrayList<String>() {
+			private static final long serialVersionUID = 1L; { 
+				add("&7Confirm deletion of this bag."); 
+				add("&7This cannot be undone."); 
+				}
+			} 
+		);
 	
 		Log.Debug(Main.plugin, "[DI-3] Validating lang.yml");
 		Lang.lang.Validate();

@@ -46,7 +46,7 @@ public class CommandToken {
 						}
 					}else {
 						if(Base64Validator.isValidBase64(Main.textures.GetString(String.format("textures.%s", command.args[2])))) {
-							ItemStack token = HavenBags.CreateToken(Main.textures.GetString(String.format("textures.%s", command.args[2])), command.args[2]);
+							ItemStack token = HavenBags.CreateToken(Main.textures.GetString(String.format("textures.%s", command.args[2])), command.args[1], command.args[2]);
 							if(target != null) {
 								if(target.getInventory().firstEmpty() != -1) {
 									target.getInventory().addItem(token);

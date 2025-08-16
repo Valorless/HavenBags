@@ -202,4 +202,9 @@ public class Lang {
         String hexColorRegex = "§x(§[0-9A-Fa-f]){6}";
         return text.replaceAll(hexColorRegex, "");
     }
+	
+	public static char ParsePlaceholderChar(String text) {
+		String parsed = ParsePlaceholderAPI(text, null);
+		return parsed.length() == 1 ? parsed.charAt(0) : '?';
+	}
 }

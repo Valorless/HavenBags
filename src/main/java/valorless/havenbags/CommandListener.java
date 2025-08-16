@@ -9,9 +9,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 import valorless.havenbags.commands.HBCommand;
 import valorless.havenbags.commands.fun.CommandExplode;
+import valorless.havenbags.gui.PlayerGUI;
 import valorless.havenbags.commands.CommandAutoSort;
 import valorless.havenbags.commands.CommandAutopickup;
 import valorless.havenbags.commands.CommandClearContent;
@@ -20,6 +22,7 @@ import valorless.havenbags.commands.CommandConvertEpicBackpacks;
 import valorless.havenbags.commands.CommandConvertMinepacks;
 import valorless.havenbags.commands.CommandCreate;
 import valorless.havenbags.commands.CommandCustomContent;
+import valorless.havenbags.commands.CommandEffect;
 import valorless.havenbags.commands.CommandEmpty;
 import valorless.havenbags.commands.CommandGUI;
 import valorless.havenbags.commands.CommandGive;
@@ -30,6 +33,7 @@ import valorless.havenbags.commands.CommandMod;
 import valorless.havenbags.commands.CommandModelData;
 import valorless.havenbags.commands.CommandPreview;
 import valorless.havenbags.commands.CommandRawInfo;
+import valorless.havenbags.commands.CommandRefill;
 import valorless.havenbags.commands.CommandReload;
 import valorless.havenbags.commands.CommandRename;
 import valorless.havenbags.commands.CommandRestore;
@@ -41,6 +45,7 @@ import valorless.havenbags.commands.CommandWeight;
 
 import valorless.valorlessutils.ValorlessUtils.Log;
 
+@SuppressWarnings("deprecation")
 public class CommandListener implements CommandExecutor {
 	
 	String Name = "§7[§aHaven§bBags§7]§r";
@@ -97,8 +102,17 @@ public class CommandListener implements CommandExecutor {
 				if(args[0].equalsIgnoreCase("rawinfo") && sender.hasPermission("havenbags.info")) {
 					return CommandRawInfo.Run(cmd);
 				}
-				if(args[0].equalsIgnoreCase("gui") && sender.hasPermission("havenbags.gui")) {
-					return CommandGUI.Run(cmd);
+				if(args[0].equalsIgnoreCase("gui")) {
+					if( sender.hasPermission("havenbags.gui")) {
+						return CommandGUI.Run(cmd); // AdminGUI
+					} else {
+						if(Main.config.GetBool("player-gui.enabled")) {
+							Player player = (Player) cmd.sender; 
+							PlayerGUI gui = new PlayerGUI(player); // PlayerGUI
+							gui.OpenInventory(player);
+							return true;
+						}
+					}
 				}
 
 				if(args[0].equalsIgnoreCase("empty") && sender.hasPermission("havenbags.empty")) {
@@ -183,7 +197,11 @@ public class CommandListener implements CommandExecutor {
 				}
 				
 				if(args[0].equalsIgnoreCase("refill") && sender.hasPermission("havenbags.refill")) {
-					return CommandMagnet.Run(cmd);
+					return CommandRefill.Run(cmd);
+				}
+				
+				if(args[0].equalsIgnoreCase("effect") && sender.hasPermission("havenbags.effects")) {
+					return CommandEffect.Run(cmd);
 				}
 				
 				

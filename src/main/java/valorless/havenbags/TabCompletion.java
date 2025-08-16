@@ -16,9 +16,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.StringUtil;
 
+import valorless.havenbags.HavenBags.BagState;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.features.AutoPickup;
+import valorless.havenbags.features.BagEffects;
 import valorless.havenbags.features.CustomBags;
-import valorless.valorlessutils.nbt.NBT;
 
 public class TabCompletion implements TabCompleter {
 
@@ -42,10 +44,10 @@ public class TabCompletion implements TabCompleter {
 				subCommands.add("give");
 			}
 			if (sender.hasPermission("havenbags.restore")) {
-				subCommands.add("restore");
+				//subCommands.add("restore");
 			}
 			if (sender.hasPermission("havenbags.preview")) {
-				subCommands.add("preview");
+				//subCommands.add("preview");
 			}
 			if (sender.hasPermission("havenbags.rename")) {
 				subCommands.add("rename");
@@ -55,6 +57,8 @@ public class TabCompletion implements TabCompleter {
 				subCommands.add("rawinfo");
 			}
 			if (sender.hasPermission("havenbags.gui")) {
+				subCommands.add("gui");
+			}else if(Main.config.GetBool("player-gui.enabled")){
 				subCommands.add("gui");
 			}
 			if (sender.hasPermission("havenbags.empty")) {
@@ -96,6 +100,9 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (sender.hasPermission("havenbags.refill")) {
 				subCommands.add("refill");
+			}
+			if (sender.hasPermission("havenbags.effects")) {
+				subCommands.add("effect");
 			}
 			if(Main.plugins.GetBool("mods.HavenBagsPreview.enable-command")) {
 				subCommands.add("mod");
@@ -155,8 +162,11 @@ public class TabCompletion implements TabCompleter {
 				ItemStack item = player.getInventory().getItemInMainHand();
 				if(item != null) {
 					if(HavenBags.IsBag(item)) {
-						List<String> list = NBT.GetStringList(item, "bag-trust");
-						StringUtil.copyPartialMatches(cmd, list, completions);
+						if(HavenBags.BagState(item) == BagState.Used) {
+							Data data = BagData.GetBag(HavenBags.GetBagUUID(item), null);
+							List<String> list = data.getTrusted();
+							StringUtil.copyPartialMatches(cmd, list, completions);
+						}
 					}
 				}
 			}
@@ -202,6 +212,11 @@ public class TabCompletion implements TabCompleter {
 				cmds.add("on");
 				cmds.add("off");
 				StringUtil.copyPartialMatches(cmd, cmds, completions);
+			}
+			if (args[0].equalsIgnoreCase("effect") && sender.hasPermission("havenbags.effects")) {
+				List<String> effects = BagEffects.getEffectNames();
+				effects.add("none");
+				StringUtil.copyPartialMatches(cmd, effects, completions);
 			}
 			/*
 			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.open")) {

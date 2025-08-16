@@ -13,10 +13,10 @@ import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.features.CustomBags;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.items.ItemUtils;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
 public class CommandGive {
@@ -109,10 +109,10 @@ public class CommandGive {
 							ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-item-model"));
 						}
 						
-						NBT.SetString(bagItem, "bag-uuid", "null");
-						NBT.SetString(bagItem, "bag-owner", "null");
-						NBT.SetInt(bagItem, "bag-size", size*9);
-						NBT.SetBool(bagItem, "bag-canBind", false);
+						PDC.SetString(bagItem, "uuid", "null");
+						PDC.SetString(bagItem, "owner", "null");
+						PDC.SetInteger(bagItem, "size", size*9);
+						PDC.SetBoolean(bagItem, "binding", false);
 						receiver.getInventory().addItem(bagItem);
 				        placeholders.add(new Placeholder("%name%", Lang.Get("bag-ownerless-unused")));
 						receiver.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("bag-given"), placeholders));
@@ -173,10 +173,10 @@ public class CommandGive {
 						bagMeta.setLore(lore);
 						bagItem.setItemMeta(bagMeta);
 						
-						NBT.SetString(bagItem, "bag-uuid", "null");
-						NBT.SetString(bagItem, "bag-owner", "null");
-						NBT.SetInt(bagItem, "bag-size", size*9);
-						NBT.SetBool(bagItem, "bag-canBind", true);
+						PDC.SetString(bagItem, "uuid", "null");
+						PDC.SetString(bagItem, "owner", "null");
+						PDC.SetInteger(bagItem, "size", size*9);
+						PDC.SetBoolean(bagItem, "binding", true);
 						//Bukkit.getPlayer(sender.getName()).getInventory().addItem(bagItem);
 						receiver.getInventory().addItem(bagItem);
 				        placeholders.add(new Placeholder("%name%", Lang.Get("bag-unbound-name")));

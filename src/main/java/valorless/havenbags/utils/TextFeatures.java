@@ -43,18 +43,23 @@ public class TextFeatures {
 		double filledRatio = (double) progress / total;
 	    int filledLength = (int) (barLength * filledRatio);
 	    int remainingLength = barLength - filledLength;
-		StringBuilder bar = new StringBuilder(Lang.hex(Main.weight.GetString("bar-color")) + Main.weight.GetString("bar-start"));
+	    char fillStyle = Lang.ParsePlaceholderChar(Main.weight.GetString("fill-style"));
+	    char barStyle = Lang.ParsePlaceholderChar(Main.weight.GetString("bar-style"));
+	    String fillColor = Lang.Parse(Main.weight.GetString("fill-color"), null);
+	    String barColor = Lang.Parse(Main.weight.GetString("bar-color"), null);
+	    String barStart = Lang.Parse(Main.weight.GetString("bar-start"), null);
+	    String barEnd = Lang.Parse(Main.weight.GetString("bar-end"), null);
+	    
+		StringBuilder bar = new StringBuilder(barColor + barStart);
 	    for (int i = 0; i < filledLength; i++) {
-	    	bar.append(Lang.hex(Main.weight.GetString("fill-color")));
-	        bar.append(Main.weight.GetString("fill-style").charAt(0));
-	        //bar.append("⬛");
+	    	bar.append(fillColor);
+	        bar.append(fillStyle);
 	    }
 	    for (int i = 0; i < remainingLength; i++) {
-	    	bar.append(Lang.hex(Lang.hex(Main.weight.GetString("bar-color"))));
-	        bar.append(Main.weight.GetString("bar-style").charAt(0));
-	        //bar.append("⬜");
+	    	bar.append(barColor);
+	        bar.append(barStyle);
 	    }
-	    bar.append(Lang.hex(Lang.hex(Main.weight.GetString("bar-color")) + Main.weight.GetString("bar-end") + "&r"));
+	    bar.append(barColor + barEnd + "§r");
 	    return bar.toString();
 	}
 	

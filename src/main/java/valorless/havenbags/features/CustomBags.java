@@ -14,11 +14,11 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
-import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.items.ItemUtils;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
 public class CustomBags {
@@ -61,21 +61,21 @@ public class CustomBags {
 			if(file.HasKey(String.format("bags.%s.itemmodel", key)))
 				ItemUtils.SetItemModel(item, file.GetString(String.format("bags.%s.itemmodel", key)));
 			
-			NBT.SetString(item, "bag-uuid", "null");
-			NBT.SetString(item, "bag-owner", "null");
-			NBT.SetStringList(item, "bag-lore", file.GetStringList(String.format("bags.%s.lore", key)));
-			NBT.SetString(item, "bag-name", file.GetString(String.format("bags.%s.displayname", key)));
-			NBT.SetInt(item, "bag-size", file.GetInt(String.format("bags.%s.properties.size", key)));
-			NBT.SetBool(item, "bag-canBind", !file.GetBool(String.format("bags.%s.properties.ownerless", key)));
-			NBT.SetBool(item, "bag-upgrade", file.GetBool(String.format("bags.%s.properties.upgradeable", key)));
-			NBT.SetBool(item, "bag-skin", file.GetBool(String.format("bags.%s.properties.allow-skin-token", key)));
+			PDC.SetString(item, "uuid", "null");
+			PDC.SetString(item, "owner", "null");
+			PDC.SetStringList(item, "lore", file.GetStringList(String.format("bags.%s.lore", key)));
+			PDC.SetString(item, "name", file.GetString(String.format("bags.%s.displayname", key)));
+			PDC.SetInteger(item, "size", file.GetInt(String.format("bags.%s.properties.size", key)));
+			PDC.SetBoolean(item, "binding", !file.GetBool(String.format("bags.%s.properties.ownerless", key)));
+			PDC.SetBoolean(item, "upgrade", file.GetBool(String.format("bags.%s.properties.upgradeable", key)));
+			PDC.SetBoolean(item, "skin", file.GetBool(String.format("bags.%s.properties.allow-skin-token", key)));
 			if(file.HasKey(String.format("bags.%s.custom-content", key))) {
-				NBT.SetString(item, "bag-predefined", file.GetString(String.format("bags.%s.custom-content", key)));
+				PDC.SetString(item, "predefined", file.GetString(String.format("bags.%s.custom-content", key)));
 			}
-			NBT.SetStringList(item, "bag-blacklist", file.GetStringList(String.format("bags.%s.properties.blacklist", key)));
-			NBT.SetBool(item, "bag-whitelist", file.GetBool(String.format("bags.%s.properties.whitelist", key)));
-			NBT.SetBool(item, "bag-igb", file.GetBool(String.format("bags.%s.properties.ignoreglobalblacklist", key)));
-			NBT.SetString(item, "bag-filter", file.GetString(String.format("bags.%s.properties.autopickup", key)));
+			PDC.SetStringList(item, "blacklist", file.GetStringList(String.format("bags.%s.properties.blacklist", key)));
+			PDC.SetBoolean(item, "whitelist", file.GetBool(String.format("bags.%s.properties.whitelist", key)));
+			PDC.SetBoolean(item, "igb", file.GetBool(String.format("bags.%s.properties.ignoreglobalblacklist", key)));
+			PDC.SetString(item, "filter", file.GetString(String.format("bags.%s.properties.autopickup", key)));
 			
 			bags.put(key, item);
 		}
@@ -88,16 +88,17 @@ public class CustomBags {
 
 	public static void Give(Player player, String value) {
 		ItemStack bagItem = CustomBags.bags.get(value);
-		String owner = NBT.GetBool(bagItem, "bag-canBind") ? player.getUniqueId().toString() : "ownerless";
+		String owner = PDC.GetBoolean(bagItem, "binding") ? player.getUniqueId().toString() : "ownerless";
 		List<ItemStack> content = new ArrayList<>();
 		
-		if(NBT.Has(bagItem, "bag-predefined")) {
+		if(PDC.Has(bagItem, "predefined")) {
 			String uuid = UUID.randomUUID().toString();
-			NBT.SetString(bagItem, "bag-uuid", uuid);
-			for(int i = 0; i < NBT.GetInt(bagItem, "bag-size"); i++) {
-				content.add(CustomContent.load(NBT.GetString(bagItem, "bag-predefined")).get(i));
+			PDC.SetString(bagItem, "uuid", uuid);
+			for(int i = 0; i < PDC.GetInteger(bagItem, "size"); i++) {
+				content.add(CustomContent.load(PDC.GetString(bagItem, "predefined")).get(i));
 			}
-			BagData.CreateBag(uuid, owner, content, player, bagItem);
+			Data data = BagData.CreateBag(uuid, owner, content, player, bagItem);
+			data.setName(PDC.GetString(bagItem, "name"));
 		}
 		
 		HavenBags.UpdateBagLore(bagItem, player);

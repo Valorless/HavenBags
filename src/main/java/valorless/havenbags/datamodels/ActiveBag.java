@@ -2,7 +2,7 @@ package valorless.havenbags.datamodels;
 
 import org.bukkit.entity.Player;
 
-import valorless.havenbags.BagGUI;
+import valorless.havenbags.gui.BagGUI;
 
 @Deprecated(forRemoval = true, since = "1.32.0.1888")
 public class ActiveBag {

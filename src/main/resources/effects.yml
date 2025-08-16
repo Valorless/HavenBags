@@ -1,0 +1,20 @@
+### Used for the BagEffects feature.
+# You can add more effects yourself.
+
+effects:
+ # effect name, as shown when typing the command.
+ dragonscale:
+  # Display name, shown in the bag's lore.
+  displayname: '&6Dragon Scale'
+  # potions that this effect will give.
+  # https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
+  # Effects are often refreshed, so things like absorption may be a bad idea.
+  potions:
+   'FIRE_RESISTANCE': 1
+   'RESISTANCE': 1
+    
+ herosblessing:
+  displayname: '&aHero''s Blessing'
+  potions:
+   'HERO_OF_THE_VILLAGE': 1
+   'STRENGTH': 2

@@ -17,9 +17,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
-import valorless.valorlessutils.nbt.NBT;
 
 public class CloneListener implements Listener{
 
@@ -55,7 +55,7 @@ public class CloneListener implements Listener{
 			if(item == null) continue;
 			if(item.getItemMeta() == null) { return; }
 			
-			if(NBT.Has(item, "bag-uuid")) {
+			if(PDC.Has(item, "uuid")) {
 				while(item.getAmount() > 1) {
 					Log.Debug(Main.plugin, "[DI-191] " + "Stacked bag found!");
 					
@@ -65,16 +65,16 @@ public class CloneListener implements Listener{
 					ItemMeta meta = clone.getItemMeta();
 					
 					List<Placeholder> placeholders = new ArrayList<Placeholder>();
-	            	placeholders.add(new Placeholder("%size%", NBT.GetInt(clone, "bag-size")));
+	            	placeholders.add(new Placeholder("%size%", PDC.GetInteger(clone, "size")));
 					
-					boolean canbind = NBT.GetBool(clone, "bag-canBind");
+					boolean canbind = PDC.GetBoolean(clone, "binding");
 					if(canbind) {
 						meta.setDisplayName(Lang.Get("bag-unbound-name"));
 						List<String> lore = new ArrayList<String>();
 						for (String l : Lang.lang.GetStringList("bag-lore")) {
 				        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 				        }
-				        if(NBT.Has(clone, "bag-size")) {
+				        if(PDC.Has(clone, "size")) {
 				        	lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
 				        }
 						meta.setLore(lore);
@@ -85,7 +85,7 @@ public class CloneListener implements Listener{
 						for (String l : Lang.lang.GetStringList("bag-lore")) {
 				        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 				        }
-				        if(NBT.Has(clone, "bag-size")) {
+				        if(PDC.Has(clone, "size")) {
 				        	lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
 				        }
 						meta.setLore(lore);
@@ -94,8 +94,8 @@ public class CloneListener implements Listener{
 					
 					
 					Log.Debug(Main.plugin, "[DI-192] " + "Giving cloned bag a new id");
-					NBT.SetString(clone, "bag-uuid", UUID.randomUUID().toString());
-					NBT.SetString(clone, "bag-owner", "null");
+					PDC.SetString(clone, "uuid", UUID.randomUUID().toString());
+					PDC.SetString(clone, "owner", "null");
 
 					Log.Debug(Main.plugin, "[DI-193] " + "Splitting bags apart");
 					item.setAmount(item.getAmount() - 1);

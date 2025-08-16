@@ -2,7 +2,7 @@ name: HavenBags
 main: valorless.havenbags.Main
 version: version-number
 author: Valorless
-api-version: 1.17
+api-version: 1.17 # 1.20 kept not being accepted, so 1.17 it is!
 website: https://www.spigotmc.org/resources/110420/
 description: Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
 depend: [ValorlessUtils]
@@ -64,6 +64,7 @@ permissions:
       havenbags.texture: true
       havenbags.modeldata: true
       havenbags.token: true
+      havenbags.effects: true
   havenbags.reload:
     description: Allows you to reload the configuration.
     default: op
@@ -177,6 +178,9 @@ permissions:
     default: op
   havenbags.refill:
     description: Allows you to use the refill feature.
+    default: op
+  havenbags.effects:
+    description: Allows you to set bag effects.
     default: op
   havenbags.database:
     description: Allows you to change the database type.

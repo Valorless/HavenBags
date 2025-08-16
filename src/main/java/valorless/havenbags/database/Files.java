@@ -1,8 +1,8 @@
 package valorless.havenbags.database;
 
 import valorless.havenbags.BagData;
-import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.FoodComponentFixer;
 
 import java.io.File;
@@ -20,10 +20,11 @@ import org.jetbrains.annotations.NotNull;
 import com.google.gson.JsonObject;
 
 import valorless.havenbags.Main;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
-import valorless.valorlessutils.nbt.NBT;
 
 public class Files {
 	
@@ -65,6 +66,7 @@ public class Files {
 		file.Set("ignoreglobalblacklist", data.isIngoreGlobalBlacklist());
 		file.Set("magnet", data.hasMagnet());
 		file.Set("refill", data.hasRefill());
+		file.Set("effect", data.getEffect());
 		
 		file.Set("content", JsonUtils.toJson(data.getContent()).replace("'", "◊"));
 		file.SaveConfig();
@@ -86,12 +88,13 @@ public class Files {
 		data.setContent(loadContent(file));
 		data.setAutoSort((file.HasKey("autosort")) ? file.GetBool("autosort") : false);
 		data.setMaterial((file.HasKey("material")) ? Material.valueOf(file.GetString("material").toUpperCase()) : null);
-		data.setName((file.HasKey("name")) ? JsonUtils.fromJson(file.GetString("name")) : null);
+		data.setName((file.HasKey("name")) ? file.GetString("name") : null);
 		data.setBlacklist(file.GetStringList("blacklist"));
 		data.setWhitelist(file.GetBool("whitelist"));
 		data.setIgnoreGlobalBlacklist(file.GetBool("ignoreglobalblacklist"));
 		data.setMagnet(file.GetBool("magnet"));
 		data.setRefill(file.GetBool("refill"));
+		data.setEffect(file.GetString("effect"));
 		
 		return data;
 	}
@@ -114,7 +117,7 @@ public class Files {
 				items.add(null); 
 				continue;
 			}
-			if(Main.VersionCompare(Main.server, ServerVersion.v1_21_4) >= 0) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
 				try {
 					item = JsonUtils.fromJson(
 							FoodComponentFixer.fixFoodJson(entry)
@@ -159,8 +162,8 @@ public class Files {
 			bagData.Set("texture", Main.config.GetString("bag-texture"));
 		}
 		bagData.Set("trusted", new ArrayList<String>());
-		if(NBT.Has(bag, "bag-filter")) {
-			bagData.Set("auto-pickup", NBT.GetString(bag, "bag-filter"));
+		if(PDC.Has(bag, "filter")) {
+			bagData.Set("auto-pickup", PDC.GetString(bag, "filter"));
 		}else {
 			bagData.Set("auto-pickup", "null");
 		}

@@ -1,8 +1,10 @@
 package valorless.havenbags;
 
+import valorless.havenbags.database.BagCache;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.BagCarryLimit;
+import valorless.havenbags.features.BagEffects;
 import valorless.havenbags.features.BagSkin;
 import valorless.havenbags.features.BagUpgrade;
 import valorless.havenbags.features.Crafting;
@@ -14,11 +16,15 @@ import valorless.havenbags.features.Quiver;
 import valorless.havenbags.features.Refill;
 import valorless.havenbags.features.Soulbound;
 import valorless.havenbags.features.BackBag;
-import valorless.havenbags.features.WeightTooltip;
+import valorless.havenbags.features.WeightTooltipProtocollib;
+import valorless.havenbags.gui.UpgradeGUI;
 import valorless.havenbags.hooks.*;
 import valorless.havenbags.prevention.*;
 import valorless.havenbags.utils.Metrics;
+import valorless.havenbags.utils.NoteBlockUtils;
 import valorless.havenbags.utils.UpdateChecker;
+
+import valorless.valorlessutils.Server;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
@@ -50,35 +56,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")
 public final class Main extends JavaPlugin implements Listener {
-	public enum ServerVersion { 
-		NULL, 
-		v1_17, 
-		v1_17_1, 
-		v1_18, 
-		v1_18_1, 
-		v1_18_2, 
-		v1_19, 
-		v1_19_1, 
-		v1_19_2, 
-		v1_19_3, 
-		v1_19_4, 
-		v1_20, 
-		v1_20_1, 
-		v1_20_3, 
-		v1_20_4, 
-		v1_20_5, 
-		v1_20_6, 
-		v1_21, 
-		v1_21_1, 
-		v1_21_2, 
-		v1_21_3, 
-		v1_21_4,
-		v1_22
-	}
 	public static JavaPlugin plugin;
 	public static Config config;
 	//public static Config timeTable;
@@ -86,31 +68,13 @@ public final class Main extends JavaPlugin implements Listener {
 	public static Config blacklist;
 	public static Config plugins;
 	public static Config textures;
+	public static Config effects;
 	protected static PlaceholderAPI papi;
 	//public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
 	int newupdate = 9999999;
 	String newVersion = null;
 	public static Translator translator;
-	public static ServerVersion server;
-	
-	/**
-	 * Compares two ServerVersion enums to determine their order based on their declaration.
-	 *
-	 * @param version    The ServerVersion to compare.
-	 * @param compareTo  The ServerVersion to compare against.
-	 * @return          A negative integer, zero, or a positive integer as the first argument
-	 *                  is less than, equal to, or greater than the second argument.
-	 */
-	public static int VersionCompare(ServerVersion version, ServerVersion compareTo) {
-	    if (version.ordinal() < compareTo.ordinal()) {
-	        return -1;  // version is less than compareTo
-	    } else if (version.ordinal() > compareTo.ordinal()) {
-	        return 1;   // version is greater than compareTo
-	    } else {
-	        return 0;   // version is equal to compareTo
-	    }
-	}
 	
 	public String[] commands = {
     		"havenbags", "bags", "bag",
@@ -120,7 +84,8 @@ public final class Main extends JavaPlugin implements Listener {
 		plugin = this;
 		Log.Debug(plugin, Bukkit.getVersion());
 		Log.Debug(plugin, Bukkit.getBukkitVersion());
-		ResolveVersion();
+		Server.ResolveVersion();
+		
 		config = new Config(this, "config.yml");
 		Lang.lang = new Config(this, "lang.yml");
 		//timeTable = new Config(this, "timetable.yml");
@@ -129,13 +94,14 @@ public final class Main extends JavaPlugin implements Listener {
 		blacklist = new Config(this, "blacklist.yml");;
 		plugins = new Config(this, "plugins.yml");
 		textures = new Config(this, "textures.yml");
+		effects = new Config(this, "effects.yml");
 	}
 	
 	@SuppressWarnings("unused")
 	boolean ValorlessUtils() {
 		Log.Debug(plugin, "[DI-0] Checking ValorlessUtils");
 		
-		int requiresBuild = 262;
+		int requiresBuild = 295; // The build number of ValorlessUtils that is required for HavenBags to run.
 		
 		String ver = Bukkit.getPluginManager().getPlugin("ValorlessUtils").getDescription().getVersion();
 		//Log.Debug(plugin, ver);
@@ -174,7 +140,7 @@ public final class Main extends JavaPlugin implements Listener {
 		ChestSortHook.Hook();
 		PvPManagerHook.Hook();
 		if(ProtocolLibHook.Hook()) {
-			WeightTooltip.registerTooltipListener(this);
+			WeightTooltipProtocollib.registerTooltipListener(this);
 		}
 		
 		EssentialsHook.Hook();
@@ -193,7 +159,6 @@ public final class Main extends JavaPlugin implements Listener {
         try {
 			DataConversion();
 		} catch (InvalidConfigurationException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
         
@@ -256,6 +221,8 @@ public final class Main extends JavaPlugin implements Listener {
     	BagData.SaveData(true);
     	BagData.Shutdown();
     	Crafting.RemoveRecipes();
+    	BagEffects.shutdown();
+    	UpgradeGUI.OpenGUIs.CloseAll();
     }
     
     public static void CloseBags() {
@@ -281,6 +248,7 @@ public final class Main extends JavaPlugin implements Listener {
     }
     
 	protected void RegisterListeners() {
+		EventListener.init();
     	PlacementBlocker.init();
 		BagDamagePrevention.init();
 		BagListener.init();
@@ -303,8 +271,13 @@ public final class Main extends JavaPlugin implements Listener {
 		//BackBag.init(); needs a lil work
 		Magnet.init();
 		Refill.init();
+		BundlePrevention.init();
+		BagEffects.init();
+		BagCache.Observer.init();
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
+		
+		Bukkit.getPluginManager().registerEvents(new NoteBlockUtils(), this);
     }
 
 
@@ -472,17 +445,6 @@ public final class Main extends JavaPlugin implements Listener {
 			timeTable.SaveConfig();
     	}
     }*/
-    
-    void ResolveVersion() {
-    	try {
-    		String v = Bukkit.getBukkitVersion().split("-")[0];
-    		server = ServerVersion.valueOf("v" + v.replace(".", "_"));
-    		//Log.Debug(plugin, server.toString());
-    	} catch (Exception e) {
-    		server = ServerVersion.NULL;
-    		Log.Error(plugin, "Failed to resolve server version, some functions might not work correctly.");
-    	}
-    }
     
     void ValidateSizeTextures() {
     	if(config.GetBool("bag-textures.enabled")) {

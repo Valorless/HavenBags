@@ -21,10 +21,10 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
 public class EpicBackpacksBagRestore implements Listener{
@@ -38,10 +38,10 @@ public class EpicBackpacksBagRestore implements Listener{
 
 	@EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-		if(!playersRemain) return;
 		playersRemain = PlayersRemaining();
+		if(!playersRemain) return;
         Player player = event.getPlayer();
-        Log.Debug(Main.plugin, "DI-216] [EpicBackpacksBagRestore] " + player.getName());
+        Log.Debug(Main.plugin, "[DI-216] [EpicBackpacksBagRestore] " + player.getName());
         Config config = new Config(Main.plugin, "epicbackpacks/players.yml");
         ConfigurationSection playersSection = config.GetConfigurationSection("players");
         
@@ -55,13 +55,13 @@ public class EpicBackpacksBagRestore implements Listener{
         	return;
         }else {
         	for (String playerKey : playersSection.getKeys(false)) {
-        		Log.Debug(Main.plugin, "DI-217] [EpicBackpacksBagRestore] " + playerKey);
+        		Log.Debug(Main.plugin, "[DI-217] [EpicBackpacksBagRestore] " + playerKey);
         		if(playerKey.equalsIgnoreCase(player.getUniqueId().toString())) {
         			String baguuid = config.GetString(String.format("players.%s", playerKey));
-            		Log.Debug(Main.plugin, "DI-218] [EpicBackpacksBagRestore] " + baguuid);
+            		Log.Debug(Main.plugin, "[DI-218] [EpicBackpacksBagRestore] " + baguuid);
         			ItemStack bag = GetBag(baguuid, playerKey, player);
         			if(bag != null) {
-                		Log.Debug(Main.plugin, "DI-219] [EpicBackpacksBagRestore] " + "BagData found, giving bag.");
+                		Log.Debug(Main.plugin, "[DI-219] [EpicBackpacksBagRestore] " + "BagData found, giving bag.");
         				GiveItem(player, bag);
         				config.Set(String.format("players.%s", playerKey), null);
         				config.SaveConfig();
@@ -135,13 +135,13 @@ public class EpicBackpacksBagRestore implements Listener{
 			bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
 		}
 		
-		NBT.SetString(bagItem, "bag-uuid", baguuid);
-		NBT.SetString(bagItem, "bag-owner", playeruuid);
-		NBT.SetInt(bagItem, "bag-size", size);
+		PDC.SetString(bagItem, "uuid", baguuid);
+		PDC.SetString(bagItem, "owner", playeruuid);
+		PDC.SetInteger(bagItem, "size", size);
 		if(playeruuid.equalsIgnoreCase("ownerless")) {
-			NBT.SetBool(bagItem, "bag-canBind", false);
+			PDC.SetBoolean(bagItem, "binding", false);
 		}else {
-			NBT.SetBool(bagItem, "bag-canBind", true);
+			PDC.SetBoolean(bagItem, "binding", true);
 		}
 		
 		ItemMeta bagMeta = bagItem.getItemMeta();
@@ -151,7 +151,7 @@ public class EpicBackpacksBagRestore implements Listener{
 		if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
 			for(int s = 9; s <= 54; s += 9) {
 				if(size == s) {
-					if(NBT.GetBool(bagItem, "bag-canBind")) {
+					if(PDC.GetBoolean(bagItem, "binding")) {
 						bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
 					}else {
 						bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + size));
@@ -160,7 +160,7 @@ public class EpicBackpacksBagRestore implements Listener{
 			}
 		}
 		
-		if(NBT.GetBool(bagItem, "bag-canBind")) {
+		if(PDC.GetBoolean(bagItem, "binding")) {
 			bagMeta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), target));
 		}else {
 			bagMeta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-ownerless-used"), target));
@@ -169,7 +169,7 @@ public class EpicBackpacksBagRestore implements Listener{
 		for (String l : Lang.lang.GetStringList("bag-lore")) {
 			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, target));
 		}
-		if(NBT.GetBool(bagItem, "bag-canBind")) {
+		if(PDC.GetBoolean(bagItem, "binding")) {
 			placeholders.add(new Placeholder("%owner%", target.getName()));
             lore.add(Lang.Parse(Lang.Get("bound-to"), placeholders, target));
         }

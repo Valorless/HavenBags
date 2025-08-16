@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import valorless.havenbags.AdminGUI;
+import valorless.havenbags.gui.AdminGUI;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
 public class CommandGUI {

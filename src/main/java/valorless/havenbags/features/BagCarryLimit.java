@@ -15,8 +15,8 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.nbt.NBT;
 
 public class BagCarryLimit implements Listener {
 	
@@ -41,7 +41,7 @@ public class BagCarryLimit implements Listener {
 		if(limit == 0) return;
 		if(e.getClickedInventory() == null) return;
 		if(e.getClickedInventory().getType() == InventoryType.PLAYER && holdingBag){
-			int size = NBT.GetInt(e.getCursor(), "bag-size");
+			int size = PDC.GetInteger(e.getCursor(), "size");
 			if(e.getRawSlot() >= size) return;
 			if(HavenBags.GetBagsInInventory(player) >= limit) {
 				//e.setCancelled(true);
@@ -58,6 +58,7 @@ public class BagCarryLimit implements Listener {
 	@EventHandler
     public void onEntityPickupItem(EntityPickupItemEvent e) {
 		if(e.getEntityType() != EntityType.PLAYER) return;
+		if(!HavenBags.IsBag(e.getItem().getItemStack())) return;
 		Player player = (Player)e.getEntity();
 		int limit = getBagCarryLimit(player);
 		if(limit == 0) return;

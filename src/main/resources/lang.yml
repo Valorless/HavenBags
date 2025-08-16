@@ -57,6 +57,9 @@ bag-in-bag-error: '&cBags cannot be put inside other bags.'
 # Message sent if clicking on a bag item, while inside a shulker box.
 bag-in-shulker-error: '&cBags cannot be put inside shulker boxes.'
 
+# Message sent if clicking a bundle with a bag.
+bag-in-bundles-error: '&cBags cannot be put inside bundles.'
+
 # Message sent if item clicked is blacklisted.
 item-blacklisted: '&cSorry, this item cannot go into bags.'
 
@@ -106,11 +109,10 @@ bag-given: '&aYou''ve been given an %name%!'
 # %value% - Size given by command user.
 number-conversion-error: '&cCannot convert ''%value%'' to a number!'
 
-# If a player searched with '/bags restore <player>' has no found bag data.
-# %player% - Player's name.
-player-no-bags: '&cPlayer ''%player%'' has no bags.'
+# Message sent when the player toggles refill.
+effects-command: '&fEffect has been set to: %value%.'
 
-# Bags found of player, using '/bags restore <player>'.
+# Bags found of player'.
 # %player% - Name of the player specified.
 bags-of: 'Bags of %player%:'
 
@@ -165,6 +167,7 @@ bag-lore:
 # Placeholders are connected to the config entries with the same name.
 # %bound-to%
 # %bag-size%
+# %bag-effect%
 # %bag-auto-pickup%
 # %bag-trusted%
 # %bag-autosort%
@@ -176,6 +179,7 @@ bag-lore:
 bag-lore-add:
  - '%bound-to%'
  - '%bag-size%'
+ - '%bag-effect%'
  - '%bag-auto-pickup%'
  - '%bag-trusted%'
  - '%bag-autosort%'
@@ -213,6 +217,13 @@ bag-content-item-amount: '&7%item% &7x%amount%'
 
 # If bag content exceeds the number of bag-content-preview-size.
 bag-content-and-more: '  &7And more..'
+
+# If bag has an effect.
+# %effect% - effect displayname.
+bag-effect: '&7Effect: %effect%'
+
+# Should the effect not be shown on bags?
+bag-effect-hide: false
 
 # If bag has auto-pickup enabled.
 # %filter% - filter displayname.
@@ -254,9 +265,6 @@ bag-refill-off-hide: false
 # |                      Admin GUI                       | #
 # +------------------------------------------------------+ #
 ############################################################
-
-# Message when the player has too many bags.
-too-many-bags: '&cThis player has over 53 bags.\nPlease restore their bags through &e/bags restore&c!'
 
 # Page Titles
 # Title for viewing a player's bags, is the 'bags-of' value, located above.
@@ -305,12 +313,6 @@ confirm-confirm-lore:
  - '&7Confirm deletion of this bag.'
  - '&7This cannot be undone.'
  
-# Information
-main-info: '&eInformation'
-main-info-lore:
- - '&7You can also restore bags of offline players,'
- - '&7by using &e/bags gui restore <player-uuid>&7.'
- 
 # Return
 return: '&eReturn'
 return-lore:
@@ -325,4 +327,44 @@ next-page: '&aNext Page'
 
 # Previous Page
 prev-page: '&cPrevious Page'
+
+############################################################
+# +------------------------------------------------------+ #
+# |                      Player GUI                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Page Titles
+playergui-title-main: '&aHaven&bBags &rPlayer GUI'
+playergui-title-confirm: '&aHaven&bBags &4&lDELETE&r this bag?'
+
+# Bags found of player'.
+# %player% - Name of the player specified.
+playergui-bags-of: 'Bags of %player%:'
+
+ ### GUI Buttons ###
+# Restoration
+playergui-restore: '&bBag Restoration'
+playergui-restore-lore: 
+ - '&7Restore bags.'
+ - ''
+ - '&7Only the basic bag with it''s content will be restored.'
+ - '&7Things such as weight and auto-pickup filter, will not be restored.'
+ 
+# Deletion
+playergui-delete: '&4Bag Deletion'
+playergui-delete-lore: 
+ - '&7Delete bags.'
+ - '&c&oDeleted bags cannot be restored!'
+ 
+# Cancel
+playergui-cancel: '&4Cancel'
+playergui-cancel-lore: 
+ - '&7Cancel deletion of this bag.'
+ 
+# Confirm
+playergui-confirm: '&aConfirm'
+playergui-confirm-lore: 
+ - '&7Confirm deletion of this bag.'
+ - '&7This cannot be undone.'
  

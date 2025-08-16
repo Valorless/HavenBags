@@ -12,8 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.havenbags.*;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.nbt.NBT;
 
 public class PickupPrevention implements Listener {
 	public static JavaPlugin plugin;
@@ -29,7 +29,7 @@ public class PickupPrevention implements Listener {
 		if(!Main.config.GetBool("protect-bags-players")) return;
 		ItemStack item = event.getItemDrop().getItemStack();
 		if(!HavenBags.IsBag(item)) return;
-		String owner = NBT.GetString(item, "bag-owner");
+		String owner = PDC.GetString(item, "owner");
 		if(owner.equalsIgnoreCase("ownerless") && owner.equalsIgnoreCase("null")) return;
 		try {
 			event.getItemDrop().setOwner(UUID.fromString(owner));

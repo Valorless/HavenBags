@@ -14,7 +14,7 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
-import valorless.valorlessutils.nbt.NBT;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
 public class CommandRename {
@@ -38,9 +38,11 @@ public class CommandRename {
 			//player.sendMessage("has meta: " + hand.hasItemMeta());
 			if(meta == null) return true;
 			
-			if(NBT.Has(hand, "bag-uuid")) {
-				String owner = NBT.GetString(hand, "bag-owner");
+			if(PDC.Has(hand, "uuid")) {
+				String owner = PDC.GetString(hand, "owner");
 				if (command.sender.hasPermission("havenbags.bypass")) {
+					//Continue.
+				} else if("ownerless".equalsIgnoreCase(owner)) {
 					//Continue.
 				} else if (!owner.equalsIgnoreCase(Bukkit.getPlayer(command.sender.getName()).getUniqueId().toString())) {
 					command.sender.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("bag-cannot-use"), (OfflinePlayer)command.sender));
@@ -62,10 +64,12 @@ public class CommandRename {
 			//player.sendMessage("has meta: " + hand.hasItemMeta());
 			if(meta == null) return true;
 			
-			if(NBT.Has(hand, "bag-uuid")) {
-				String owner = NBT.GetString(hand, "bag-owner");
+			if(PDC.Has(hand, "uuid")) {
+				String owner = PDC.GetString(hand, "owner");
 				if(!owner.equalsIgnoreCase("ownerless")) {
 					if (command.sender.hasPermission("havenbags.bypass")) {
+						//Continue.
+					} else if("ownerless".equalsIgnoreCase(owner)) {
 						//Continue.
 					} else if (!owner.equalsIgnoreCase(Bukkit.getPlayer(command.sender.getName()).getUniqueId().toString())) {
 						command.sender.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("bag-cannot-use"), (OfflinePlayer)command.sender));

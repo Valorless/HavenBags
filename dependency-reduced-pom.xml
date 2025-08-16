@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
-  <version>1.36.0</version>
+  <version>1.37.0</version>
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -118,11 +118,11 @@
               <goal>install-file</goal>
             </goals>
             <configuration>
-              <file>${basedir}\dependencies/ValorlessUtils-1.12.0.259.jar</file>
+              <file>${basedir}\dependencies/ValorlessUtils-1.15.1.292.jar</file>
               <repositoryLayout>default</repositoryLayout>
               <groupId>valorless.valorlessutils</groupId>
               <artifactId>ValorlessUtils</artifactId>
-              <version>1.12.0.259</version>
+              <version>1.15.1.292</version>
               <packaging>jar</packaging>
               <generatePom>true</generatePom>
             </configuration>
@@ -151,6 +151,10 @@
     </plugins>
   </build>
   <repositories>
+    <repository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </repository>
     <repository>
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/public/</url>
@@ -191,31 +195,39 @@
       <id>paper-repo</id>
       <url>https://papermc.io/repo/repository/maven-public/</url>
     </repository>
+    <repository>
+      <id>codemc-releases</id>
+      <url>https://repo.codemc.io/repository/maven-releases/</url>
+    </repository>
+    <repository>
+      <id>codemc-snapshots</id>
+      <url>https://repo.codemc.io/repository/maven-snapshots/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.19.4-R0.1-SNAPSHOT</version>
+      <version>1.20-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>valorless.valorlessutils</groupId>
       <artifactId>ValorlessUtils</artifactId>
-      <version>1.12.0.259</version>
-      <scope>compile</scope>
+      <version>1.15.1.292</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.mojang</groupId>
       <artifactId>authlib</artifactId>
       <version>1.5.25</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
       <version>2.0</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>de.jeff_media</groupId>
@@ -239,18 +251,18 @@
       <groupId>at.pcgamingfreaks</groupId>
       <artifactId>Minepacks-API</artifactId>
       <version>2.2</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.comphenix.protocol</groupId>
       <artifactId>ProtocolLib</artifactId>
       <version>4.8.0</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.33</version>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>8.2.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -263,6 +275,12 @@
       <groupId>net.essentialsx</groupId>
       <artifactId>EssentialsX</artifactId>
       <version>2.19.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.retrooper</groupId>
+      <artifactId>packetevents-spigot</artifactId>
+      <version>2.9.3</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

@@ -18,8 +18,11 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.HavenBags.BagState;
+import valorless.havenbags.persistentdatacontainer.PDC;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.nbt.NBT;
+import valorless.valorlessutils.items.ItemUtils;
 
 public class BagUpgrade implements Listener{
 	
@@ -58,16 +61,16 @@ public class BagUpgrade implements Listener{
 		}
 		if(bag == null || upgrade == null) return;
 		Log.Debug(Main.plugin, "[DI-238] [BagUpgrade] Is non-bag item a token?");
-		if(NBT.Has(upgrade, "bag-token-skin")) return; // If the item in slot 2 is a skin token, return.
+		if(PDC.Has(upgrade, "token-skin")) return; // If the item in slot 2 is a skin token, return.
 		//Log.Debug(Main.plugin, bag.toString());
 		//Log.Debug(Main.plugin, upgrade.toString());
-		if(NBT.Has(bag, "bag-upgrade")) {
-			if(NBT.GetBool(bag, "bag-upgrade") == false) {
+		if(PDC.Has(bag, "upgrade")) {
+			if(PDC.GetBoolean(bag, "upgrade") == false) {
 				Log.Debug(Main.plugin, "[DI-239] [BagUpgrade] Bag cannot upgrade.");
 				return;
 			}
 		}
-		int size = NBT.GetInt(bag, "bag-size");
+		int size = PDC.GetInteger(bag, "size");
 		Log.Debug(Main.plugin, "[DI-240] [BagUpgrade] Is bag max size?");
 		if(size == 54) return;
 		Log.Debug(Main.plugin, "[DI-241] [BagUpgrade] Is bag used?");
@@ -77,14 +80,25 @@ public class BagUpgrade implements Listener{
 
 		String[] split = Main.config.GetString(String.format("upgrades.from-%s-to-%s", size, size+9)).split(":");
 		int cmd = 0;
+		String model = null;
 		Material requirement = Material.getMaterial(split[0]);
 		int amount = Integer.valueOf(split[1]);
-		if(split.length == 3) {
-			cmd = Integer.valueOf(split[2]);
-			if(upgrade.hasItemMeta()) {
-				if(upgrade.getItemMeta().hasCustomModelData() == false) return;
-				if(upgrade.getItemMeta().getCustomModelData() != cmd) return;
-			}else return;
+		try {
+			if(split.length == 3) {
+				cmd = Integer.valueOf(split[2]);
+				if(upgrade.hasItemMeta()) {
+					if(upgrade.getItemMeta().hasCustomModelData() == false) return;
+					if(upgrade.getItemMeta().getCustomModelData() != cmd) return;
+				}else return;
+			}
+		}catch(Exception e) { //ItemModel
+			if(split.length == 3 && Server.VersionHigherOrEqualTo(Version.v1_20_5)) {
+				model = split[2];
+				if(upgrade.hasItemMeta()) {
+					if(ItemUtils.GetItemModel(upgrade) == null) return;
+					if(!ItemUtils.GetItemModel(upgrade).getKey().equalsIgnoreCase(model)) return;
+				}else return;
+			}
 		}
 		if(upgrade.getType() != requirement || upgrade.getAmount() != amount) return;
 		ItemStack result = bag.clone();
@@ -113,48 +127,61 @@ public class BagUpgrade implements Listener{
 		}
 		catch(Exception e) {}
 		if(clicked == null || upgrade == null || bag == null) return;
-		if(NBT.Has(upgrade, "bag-token-skin")) return; // If the item in slot 2 is a skin token, return.
+		if(PDC.Has(upgrade, "token-skin")) return; // If the item in slot 2 is a skin token, return.
 		Log.Debug(Main.plugin, "[DI-77] " + "[BagUpgrade] is bag?");
 		if(HavenBags.IsBag(clicked)) {
 			Log.Debug(Main.plugin, "[DI-78] " + "[BagUpgrade] was bag");
-			int size = NBT.GetInt(bag, "bag-size");
+			int size = PDC.GetInteger(bag, "size");
 
 			Log.Debug(Main.plugin, "[DI-79] " + "[BagUpgrade] Upgrade item is correct?");
 			String[] split = Main.config.GetString(String.format("upgrades.from-%s-to-%s", size, size+9)).split(":");
 			int cmd = 0;
+			String model = null;
 			Material requirement = Material.getMaterial(split[0]);
 			int amount = Integer.valueOf(split[1]);
 
 
 			Log.Debug(Main.plugin, "[DI-80] " + "[BagUpgrade] Checking Type and Amount");
 			if(upgrade.getType() != requirement || upgrade.getAmount() != amount) return;
-			
-			if(split.length == 3) {
-				Log.Debug(Main.plugin, "[DI-81] " + "[BagUpgrade] Checking CustomModelData");
-				cmd = Integer.valueOf(split[2]);
-				Log.Debug(Main.plugin, "[DI-82] " + "[BagUpgrade] " + cmd);
-				if(upgrade.hasItemMeta()) {
-					if(upgrade.getItemMeta().hasCustomModelData()) {
-						if(upgrade.getItemMeta().getCustomModelData() != cmd) return;
+			try { //CustomModelData
+				if(split.length == 3) {
+					Log.Debug(Main.plugin, "[DI-81] " + "[BagUpgrade] Checking CustomModelData");
+					cmd = Integer.valueOf(split[2]);
+					Log.Debug(Main.plugin, "[DI-82] " + "[BagUpgrade] " + cmd);
+					if(upgrade.hasItemMeta()) {
+						if(upgrade.getItemMeta().hasCustomModelData()) {
+							if(upgrade.getItemMeta().getCustomModelData() != cmd) return;
+						}else return;
 					}else return;
-				}else return;
+				}
+			}catch(Exception e) { //ItemModel
+				if(split.length == 3 && Server.VersionHigherOrEqualTo(Version.v1_20_5)) {
+					Log.Debug(Main.plugin, "[DI-81] " + "[BagUpgrade] Checking ItemModel");
+					model = split[2];
+					Log.Debug(Main.plugin, "[DI-82] " + "[BagUpgrade] " + model);
+					if(upgrade.hasItemMeta()) {
+						if(ItemUtils.GetItemModel(upgrade) != null) {
+							if(!ItemUtils.GetItemModel(upgrade).getKey().equalsIgnoreCase(model)) return;
+						}else return;
+					}else return;
+				}
 			}
 			
-			String owner = NBT.GetString(clicked, "bag-owner");
-			BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setSize(NBT.GetInt(clicked, "bag-size"));
-			//BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).getData().Set("size", NBT.GetInt(clicked, "bag-size"));
-			Log.Debug(Main.plugin, "[DI-83] " + "[BagUpgrade] Size set to " + NBT.GetInt(clicked, "bag-size"));
+			String owner = PDC.GetString(clicked, "owner");
+			BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setSize(PDC.GetInteger(clicked, "size"));
+			//BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).getData().Set("size", PDC.GetInt(clicked, "bag-size"));
+			Log.Debug(Main.plugin, "[DI-83] " + "[BagUpgrade] Size set to " + PDC.GetInteger(clicked, "size"));
 
 			if(Main.weight.GetBool("weight-per-size")) {
-				BagData.SetWeightMax(HavenBags.GetBagUUID(clicked), Main.weight.GetFloat(String.format("weight-size-%s", NBT.GetInt(clicked, "bag-size"))));
-				Log.Debug(Main.plugin, "[DI-84] " + "[BagUpgrade] Weight Limit set to " + Main.weight.GetFloat(String.format("weight-size-%s", NBT.GetInt(clicked, "bag-size"))));
+				BagData.SetWeightMax(HavenBags.GetBagUUID(clicked), Main.weight.GetDouble(String.format("weight-size-%s", PDC.GetInteger(clicked, "size"))));
+				Log.Debug(Main.plugin, "[DI-84] " + "[BagUpgrade] Weight Limit set to " + Main.weight.GetDouble(String.format("weight-size-%s", PDC.GetInteger(clicked, "size"))));
 			}
 			if(clicked.getType() == Material.PLAYER_HEAD) {
 				if(Main.config.GetBool("bag-textures.enabled") && !Main.config.GetBool("upgrades.keep-texture")) {
 					if(!owner.equalsIgnoreCase("ownerless")) {
-						BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(Main.config.GetString(String.format("bag-textures.size-%s", NBT.GetInt(clicked, "bag-size"))));
+						BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(Main.config.GetString(String.format("bag-textures.size-%s", PDC.GetInteger(clicked, "size"))));
 					}else {
-						BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(Main.config.GetString(String.format("bag-textures.size-ownerless-%s", NBT.GetInt(clicked, "bag-size"))));
+						BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(Main.config.GetString(String.format("bag-textures.size-ownerless-%s", PDC.GetInteger(clicked, "size"))));
 					}
 				}
 			}
@@ -168,7 +195,7 @@ public class BagUpgrade implements Listener{
 		ItemMeta meta = item.getItemMeta();
 		//List<String> lore = meta.getLore();
 		List<String> newLore = new ArrayList<String>();
-		String owner = NBT.GetString(bag, "bag-owner");
+		String owner = PDC.GetString(bag, "owner");
 
 		String[] split = Main.config.GetString(String.format("upgrades.from-%s-to-%s", from, to)).split(":");
 		Material requirement = Material.getMaterial(split[0]);
@@ -198,9 +225,9 @@ public class BagUpgrade implements Listener{
 			}*/
 			meta.setLore(newLore);
 			item.setItemMeta(meta);
-			NBT.SetInt(item, "bag-size", to);
+			PDC.SetInteger(item, "size", to);
 			if(Main.weight.GetBool("weight-per-size")) {
-				NBT.SetDouble(item, "bag-weight-limit", Main.weight.GetFloat(String.format("weight-size-%s", to)));
+				PDC.SetDouble(item, "weight-limit", Main.weight.GetDouble(String.format("weight-size-%s", to)));
 			}
 			HavenBags.UpdateBagLore(item, null, true);
 			if(Main.config.GetBool("bag-textures.enabled") && !Main.config.GetBool("upgrades.keep-texture")) {

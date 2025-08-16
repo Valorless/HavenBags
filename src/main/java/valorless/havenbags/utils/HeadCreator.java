@@ -61,6 +61,7 @@ public class HeadCreator {
     	ItemStack item = new ItemStack(Material.PLAYER_HEAD);
     	SkullMeta meta = (SkullMeta) item.getItemMeta();
 		meta.setOwningPlayer(Bukkit.getOfflinePlayer(id));
+		
 		item.setItemMeta(meta);
 
 		return item;

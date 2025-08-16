@@ -28,13 +28,14 @@ public class DatabaseUtils {
 		}
 		
 		if(data.getBlacklist() != null) {
-			text += String.format(", blacklist:%s", formatBlacklist(data.getBlacklist()));
+			text += String.format(", blacklist:%s", formatList(data.getBlacklist()));
 			text += String.format(", whitelist:%s", data.isWhitelist());
 			text += String.format(", ignoreglobalblacklist:%s", data.isIngoreGlobalBlacklist());
 		}
 		
 		text += String.format(", magnet:%s", data.hasMagnet());
 		text += String.format(", refill:%s", data.hasRefill());
+		text += String.format(", effect:%s", data.getEffect());
 		
 		text += "}";
 		//Log.Info(Main.plugin, text);
@@ -46,19 +47,20 @@ public class DatabaseUtils {
         if(extra.containsKey("autosort")) data.setAutoSort((Boolean) extra.get("autosort"));
         if(extra.containsKey("material")) data.setMaterial((String) extra.get("material"));
         if(extra.containsKey("name")) data.setName((String) extra.get("name"));
-        if(extra.containsKey("blacklist")) data.setBlacklist(DatabaseUtils.parseBlacklist((String) extra.get("blacklist")));
+        if(extra.containsKey("blacklist")) data.setBlacklist(parseList((String) extra.get("blacklist")));
         if(extra.containsKey("whitelist")) data.setWhitelist((Boolean) extra.get("whitelist"));
         if(extra.containsKey("ignoreglobalblacklist")) data.setIgnoreGlobalBlacklist((Boolean) extra.get("ignoreglobalblacklist"));
         if(extra.containsKey("magnet")) data.setMagnet((Boolean) extra.get("magnet"));
         if(extra.containsKey("refill")) data.setRefill((Boolean) extra.get("refill"));
+        if(extra.containsKey("effect")) data.setEffect((String) extra.get("effect"));
 	}
 	
-	public static Object formatBlacklist(List<String> blacklist) {
-		if(blacklist.isEmpty()) return "[]";
-		return String.join("=", blacklist);
+	public static Object formatList(List<String> list) {
+		if(list.isEmpty()) return "[]";
+		return String.join("=", list);
 	}
 	
-	public static List<String> parseBlacklist(String text){
+	public static List<String> parseList(String text){
 		if(text.equalsIgnoreCase("[]")) return new ArrayList<String>();
 		List<String> blacklist = new ArrayList<>();
 		for(String entry : text.split("=")) {

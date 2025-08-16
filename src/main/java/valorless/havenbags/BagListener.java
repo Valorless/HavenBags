@@ -1,7 +1,9 @@
 package valorless.havenbags;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -12,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -21,24 +24,54 @@ import org.bukkit.util.BlockIterator;
 import me.NoChance.PvPManager.PvPManager;
 import me.NoChance.PvPManager.PvPlayer;
 import me.NoChance.PvPManager.Managers.PlayerHandler;
+import valorless.havenbags.database.BagCache.Observer;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.gui.BagGUI;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
 
 public class BagListener implements Listener{
 	
+	/**
+	 * Initializes the BagListener by registering it with the Bukkit event system.
+	 * This method should be called during plugin startup to ensure the listener is active.
+	 */
 	public static void init() {
 		Log.Debug(Main.plugin, "[DI-9] Registering BagListener");
 		Bukkit.getServer().getPluginManager().registerEvents(new BagListener(), Main.plugin);
 	}
-
+	
+	/**
+	 * This listener handles player interactions with bags.
+	 * It checks for cooldowns to prevent spamming and processes bag opening.
+	 */
+	// Cooldown map to prevent spamming interactions
+	private final Map<UUID, Long> interactCooldowns = new HashMap<>();
+	
+	/**
+	 * Handles player login events to clear any existing cooldowns.
+	 * 
+	 * @param event The PlayerJoinEvent triggered when a player joins the server.
+	 */
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+	    interactCooldowns.remove(event.getPlayer().getUniqueId());
+	}
+	
+	/**
+	 * Handles player interactions with bags.
+	 * 
+	 * @param event The PlayerInteractEvent triggered by the player.
+	 */
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
+	    Player player = event.getPlayer();
+	    UUID uuid = player.getUniqueId();
+	    
 		if(event.getHand() != EquipmentSlot.HAND) return;
 		if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			Player player = event.getPlayer();
 
 			// Since 1.20 players can now edit signs. Block bag interaction if a sign is clicked.
 			try {
@@ -54,9 +87,22 @@ public class BagListener implements Listener{
 			}
 			
 			ItemStack hand = player.getInventory().getItemInMainHand();
+			
+			Observer.CheckInventory(player.getInventory().getContents());
 
 			//player.sendMessage("Right click");
 			if(HavenBags.IsBag(hand)) {
+
+			    long now = System.currentTimeMillis();
+			    long last = interactCooldowns.getOrDefault(uuid, 0L);
+
+			    if (now - last < 250) { // 250ms cooldown (~5 ticks)
+			    	//player.sendMessage("Bag cooldown");
+			        return;
+			    }
+
+			    interactCooldowns.put(uuid, now);
+			    
 				if(BagData.isReady() == false) {
 					event.setCancelled(true);
 					return;
@@ -114,9 +160,9 @@ public class BagListener implements Listener{
 
 					Log.Debug(Main.plugin, "[DI-54] " + player.getName() + " is attempting to open a bag");
 					
-					boolean ownerless = !NBT.GetBool(hand, "bag-canBind");
+					boolean ownerless = !PDC.GetBoolean(hand, "binding");
 					
-					int size = NBT.GetInt(hand, "bag-size");
+					int size = PDC.GetInteger(hand, "size");
 					for(int i = 9; i <= 54; i += 9) {
 						Log.Debug(Main.plugin, "[DI-63] " + "havenbags.open." + String.valueOf(i) + ": "+ player.hasPermission("havenbags.open." + String.valueOf(i)));
 						if(size != i) continue;
@@ -127,7 +173,7 @@ public class BagListener implements Listener{
 						}
 					}
 					
-					if(NBT.GetString(hand, "bag-owner").equalsIgnoreCase("null")) {
+					if(PDC.GetString(hand, "owner").equalsIgnoreCase("null")) {
 						if(creationLimit(player)) {
 							player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("max-bags"), player));
 							event.setCancelled(true);
@@ -147,9 +193,7 @@ public class BagListener implements Listener{
 			}
 		}
 	}
-
 	
-
 	public final Block getTargetBlock(Player player, int range) {
 		BlockIterator iter = new BlockIterator(player, range);
 		Block lastBlock = iter.next();
@@ -164,20 +208,20 @@ public class BagListener implements Listener{
 	}
 	
 	private boolean CreateBag(ItemStack bag, boolean ownerless, Player player, List<Placeholder> placeholders) {
-		if(!NBT.GetString(bag, "bag-owner").equalsIgnoreCase("null")) return false;
+		if(!PDC.GetString(bag, "owner").equalsIgnoreCase("null")) return false;
 		
-		String uuid = NBT.GetString(bag, "bag-uuid");
+		String uuid = PDC.GetString(bag, "uuid");
 		if(uuid.equalsIgnoreCase("null")) {
 			Log.Debug(Main.plugin, "[DI-55] " + "bag-uuid null");
 			uuid = UUID.randomUUID().toString();
-			NBT.SetString(bag, "bag-uuid", uuid);
+			PDC.SetString(bag, "uuid", uuid);
 			//return;
 		}
 		
 		ItemMeta meta = bag.getItemMeta();
 		
 		meta.setDisplayName(ownerless ? Lang.Get("bag-ownerless-used") : Lang.Parse(Lang.lang.GetString("bag-bound-name"), player));
-		if(NBT.Has(bag, "bag-name")) meta.setDisplayName(Lang.Parse(NBT.GetString(bag, "bag-name"), player));
+		if(PDC.Has(bag, "name")) meta.setDisplayName(Lang.Parse(PDC.GetString(bag, "name"), player));
 		
 		List<String> lore = new ArrayList<String>() ;
 
@@ -190,20 +234,20 @@ public class BagListener implements Listener{
 			lore.add(Lang.Parse(Lang.Get("bound-to"), placeholders, player));
 		}
 		
-		if(NBT.Has(bag, "bag-size")) {
-			placeholders.add(new Placeholder("%size%", NBT.GetInt(bag, "bag-size")));
+		if(PDC.Has(bag, "size")) {
+			placeholders.add(new Placeholder("%size%", PDC.GetInteger(bag, "size")));
 			lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
 		}
 		
 		meta.setLore(lore);
 
 		bag.setItemMeta(meta);
-		NBT.SetString(bag, "bag-owner", ownerless ? "ownerless" : player.getUniqueId().toString());
-		//NBT.SetString(bag, "bag-creator", player.getUniqueId().toString());
-		NBT.SetDouble(bag, "bag-weight", 0.0);
+		PDC.SetString(bag, "owner", ownerless ? "ownerless" : player.getUniqueId().toString());
+		//PDC.SetString(bag, "bag-creator", player.getUniqueId().toString());
+		PDC.SetDouble(bag, "weight", 0.0);
 
 		List<ItemStack> cont = new ArrayList<ItemStack>();
-		for(int i = 0; i < NBT.GetInt(bag, "bag-size"); i++) {
+		for(int i = 0; i < PDC.GetInteger(bag, "size"); i++) {
 			cont.add(null);
 		}
 		
@@ -222,13 +266,14 @@ public class BagListener implements Listener{
 		return true;
 	}
 	
+	@SuppressWarnings("unused")
 	private void OpenBag(ItemStack bag, boolean ownerless, Player player, PlayerInteractEvent event) {		
-		//String uuid = NBT.GetString(bag, "bag-uuid");
+		//String uuid = PDC.GetString(bag, "bag-uuid");
 		if(bag.getType() == Material.AIR) return;
 		String uuid = HavenBags.GetBagUUID(bag);
 		Log.Debug(Main.plugin, "[DI-226] " + "Opening " +  uuid);
 		Data data = BagData.GetBag(uuid, bag);
-		//String owner = NBT.GetString(bag, "bag-owner");
+		//String owner = PDC.GetString(bag, "bag-owner");
 		
 		if(data == null) {
 			// This bag doesnt exist and has possibly been removed.
@@ -237,15 +282,19 @@ public class BagListener implements Listener{
 					player.getName(), uuid));
 			bag.setAmount(0);
 			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-does-not-exist"), null));
+			return;
 		}
 
-		if(data.getViewer() == player) {
+		if(data.getViewer() != null && data.getViewer() == player) {
+			player.sendMessage(String.format("viewer: %s", data.getViewer() == null ? "null" : data.getViewer().getName()));
 			Log.Debug(Main.plugin, "[DI-227] " + "This bag is already open by " + player.getName() + ".");
 			event.setCancelled(true);
 			return;
 		}
+		
 		if(data.isOpen()) {
 			if(data.getViewer() != player) {
+				player.sendMessage(String.format("Open by: %s", data.getViewer() == null ? "null" : data.getViewer().getName()));
 				player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-already-open"), null));
 				Log.Debug(Main.plugin, "[DI-60] " + "This bag is already open.");
 				event.setCancelled(true);
@@ -260,10 +309,9 @@ public class BagListener implements Listener{
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, null, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
-				Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
 				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetFloat("open-volume").floatValue(), 
-						Main.config.GetFloat("open-pitch").floatValue(), player);
+						Main.config.GetDouble("open-volume").floatValue(), 
+						Main.config.GetDouble("open-pitch").floatValue(), player);
 			}catch(Exception e) {
 				e.printStackTrace();
 				BagData.MarkBagClosed(uuid);
@@ -277,10 +325,9 @@ public class BagListener implements Listener{
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, null, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
-				Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
 				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetFloat("open-volume").floatValue(), 
-						Main.config.GetFloat("open-pitch").floatValue(), player);
+						Main.config.GetDouble("open-volume").floatValue(), 
+						Main.config.GetDouble("open-pitch").floatValue(), player);
 			}catch(Exception e) {
 				e.printStackTrace();
 				BagData.MarkBagClosed(uuid);
@@ -294,10 +341,9 @@ public class BagListener implements Listener{
 				HavenBags.UpdateBagItem(bag, null, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				//BagData.MarkBagOpen(uuid, bag, player, gui);
-				Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
 				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetFloat("open-volume").floatValue(), 
-						Main.config.GetFloat("open-pitch").floatValue(), player);
+						Main.config.GetDouble("open-volume").floatValue(), 
+						Main.config.GetDouble("open-pitch").floatValue(), player);
 				Log.Debug(Main.plugin, "[DI-65] " + player + "has attempted to open a bag, bypassing the lock");
 			}catch(Exception e) {
 				e.printStackTrace();
@@ -312,10 +358,9 @@ public class BagListener implements Listener{
 				HavenBags.UpdateBagItem(bag, null, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				//BagData.MarkBagOpen(uuid, bag, player, gui);
-				Bukkit.getServer().getPluginManager().registerEvents(gui, Main.plugin);
 				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetFloat("open-volume").floatValue(), 
-						Main.config.GetFloat("open-pitch").floatValue(), player);
+						Main.config.GetDouble("open-volume").floatValue(), 
+						Main.config.GetDouble("open-pitch").floatValue(), player);
 			}catch(Exception e) {
 				e.printStackTrace();
 				BagData.MarkBagClosed(uuid);

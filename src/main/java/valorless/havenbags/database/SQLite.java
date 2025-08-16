@@ -16,9 +16,10 @@ import com.google.gson.JsonObject;
 
 import valorless.havenbags.BagData;
 import valorless.havenbags.Main;
-import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.utils.FoodComponentFixer;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.json.JsonUtils;
 
@@ -333,7 +334,7 @@ public class SQLite {
 				items.add(null); 
 				continue;
 			}
-			if(Main.VersionCompare(Main.server, ServerVersion.v1_21_4) >= 0) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
 				try {
 					item = JsonUtils.fromJson(
 							FoodComponentFixer.fixFoodJson(entry)

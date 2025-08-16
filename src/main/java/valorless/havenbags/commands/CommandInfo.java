@@ -11,9 +11,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags.BagState;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.utils.TextFeatures;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
 public class CommandInfo {
@@ -42,7 +42,7 @@ public class CommandInfo {
 			}else {
 				weight = TextFeatures.LimitDecimal(String.valueOf(HavenBags.GetWeight(hand)),2);
 			}
-			String limit = String.valueOf(NBT.GetDouble(hand, "bag-weight-limit").intValue());
+			String limit = String.valueOf(PDC.GetDouble(hand, "weight-limit").intValue());
 			List<String> lore = meta.getLore();
 			
 			String _lore = "";
@@ -80,7 +80,7 @@ public class CommandInfo {
 				info = info + "\n  §fFilter: §enone";
 			}
 			
-			if(NBT.Has(hand, "bag-trust")) {
+			if(!data.getTrusted().isEmpty()) {
 				trust = data.getTrusted();
 			}
 			if(!trust.isEmpty()) {

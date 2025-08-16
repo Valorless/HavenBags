@@ -22,13 +22,17 @@ import org.jetbrains.annotations.NotNull;
 import com.google.gson.Gson;
 
 import valorless.havenbags.BagData.Bag;
-import valorless.havenbags.Main.ServerVersion;
+import valorless.havenbags.database.BagCache;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.AutoSorter;
+import valorless.havenbags.features.BagEffects;
 import valorless.havenbags.mods.HavenBagsPreview;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.items.ItemUtils;
@@ -62,7 +66,7 @@ public class HavenBags {
 	public static Boolean IsBag(ItemStack item) {
 		if(item == null) return false;
 		if(item.hasItemMeta()) {
-			if(NBT.Has(item, "bag-uuid")) {
+			if(PDC.Has(item, "uuid")) {
 				return true;
 			}
 		}
@@ -72,7 +76,7 @@ public class HavenBags {
 	public static Boolean IsSkinToken(ItemStack item) {
 		if(item == null) return false;
 		if(item.hasItemMeta()) {
-			if(NBT.Has(item, "bag-token-skin")) {
+			if(PDC.Has(item, "token-skin")) {
 				return true;
 			}
 		}
@@ -80,7 +84,7 @@ public class HavenBags {
 	}
 	
 	public static String GetBagUUID(@NotNull ItemStack item) {
-		if(IsBag(item)) return NBT.GetString(item, "bag-uuid");
+		if(IsBag(item)) return PDC.GetString(item, "uuid");
 		else return null;
 	}
 	
@@ -120,8 +124,8 @@ public class HavenBags {
         		} else {
         			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
     				SFX.Play(Main.config.GetString("inventory-full-sound"), 
-    						Main.config.GetFloat("inventory-full-volume").floatValue(), 
-    						Main.config.GetFloat("inventory-full-pitch").floatValue(), player);
+    						Main.config.GetDouble("inventory-full-volume").floatValue(), 
+    						Main.config.GetDouble("inventory-full-pitch").floatValue(), player);
         			player.getWorld().dropItem(player.getLocation(), bag);
         		}
     		}
@@ -139,8 +143,8 @@ public class HavenBags {
     		} else {
     			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
 				SFX.Play(Main.config.GetString("inventory-full-sound"), 
-						Main.config.GetFloat("inventory-full-volume").floatValue(), 
-						Main.config.GetFloat("inventory-full-pitch").floatValue(), player);
+						Main.config.GetDouble("inventory-full-volume").floatValue(), 
+						Main.config.GetDouble("inventory-full-pitch").floatValue(), player);
     			player.getWorld().dropItem(player.getLocation(), bag);
     		}
     	}
@@ -148,8 +152,8 @@ public class HavenBags {
 	
 	
 	/*public static void WriteBagToServer(ItemStack bag, List<ItemStack> inventory, Player player) {
-		String uuid = NBT.GetString(bag, "bag-uuid");
-    	String owner = NBT.GetString(bag, "bag-owner");
+		String uuid = PDC.GetString(bag, "bag-uuid");
+    	String owner = PDC.GetString(bag, "bag-owner");
     	Log.Debug(Main.plugin, "Attempting to write bag " + owner + "/" + uuid + " onto server");
     	
     	File bagData;
@@ -233,8 +237,8 @@ public class HavenBags {
         return true;
 	}*/
 	
-	static void UpdateNBT(ItemStack bag) {
-		String uuid = NBT.GetString(bag, "bag-uuid");
+	static void UpdatePDC(ItemStack bag) {
+		String uuid = PDC.GetString(bag, "uuid");
 		//String display = bag.getItemMeta().getDisplayName();
 		String id = uuid.replace(".json", "");
 		Data data = BagData.GetBag(id, null);
@@ -251,7 +255,7 @@ public class HavenBags {
 		//meta.setDisplayName(display);
 		//bag.setItemMeta(meta);
 		
-		//NBT.SetString(bag, "bag-uuid", uuid);
+		//PDC.SetString(bag, "bag-uuid", uuid);
 
 		if(bag.getType() == Material.PLAYER_HEAD) {
 			String texture = data.getTexture();
@@ -276,33 +280,33 @@ public class HavenBags {
 		}
 		
 		
-		NBT.SetString(bag, "bag-owner", data.getOwner());
+		PDC.SetString(bag, "owner", data.getOwner());
 		
 		if(data.getOwner().equalsIgnoreCase("ownerless")) {
-			NBT.SetBool(bag, "bag-canBind", false);
+			PDC.SetBoolean(bag, "binding", false);
 		} else {
-			NBT.SetBool(bag, "bag-canBind", true);
+			PDC.SetBoolean(bag, "binding", true);
 		}
-		NBT.SetInt(bag, "bag-size", data.getSize());
+		PDC.SetInteger(bag, "size", data.getSize());
 		if(data.getAutopickup().equalsIgnoreCase("null")) {
-			NBT.SetString(bag, "bag-filter", null);
+			PDC.SetString(bag, "filter", null);
 		}else {
-			NBT.SetString(bag, "bag-filter", data.getAutopickup());
+			PDC.SetString(bag, "filter", data.getAutopickup());
 		}
 		if(Main.weight.GetBool("enabled")){
 			if(data.getWeightMax() > 0) {
-				NBT.SetDouble(bag, "bag-weight-limit", data.getWeightMax());
+				PDC.SetDouble(bag, "weight-limit", data.getWeightMax());
 			}else {
 				if(Main.weight.GetBool("weight-per-size")) {
-					NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat(String.format("weight-size-%s", data.getSize())));
-					BagData.SetWeightMax(id, Main.weight.GetFloat(String.format("weight-size-%s", data.getSize())));
+					PDC.SetDouble(bag, "weight-limit", Main.weight.GetDouble(String.format("weight-size-%s", data.getSize())));
+					BagData.SetWeightMax(id, Main.weight.GetDouble(String.format("weight-size-%s", data.getSize())));
 				}else {
-					NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat("weight-limit"));
-					BagData.SetWeightMax(id, Main.weight.GetFloat("weight-limit"));
+					PDC.SetDouble(bag, "weight-limit", Main.weight.GetDouble("weight-limit"));
+					BagData.SetWeightMax(id, Main.weight.GetDouble("weight-limit"));
 				}
 			}
 		}
-		//NBT.SetString(bag, "bag-creator", data.getCreator());
+		//PDC.SetString(bag, "bag-creator", data.getCreator());
 	}
 	
 	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, OfflinePlayer player, boolean...preview) {
@@ -316,7 +320,7 @@ public class HavenBags {
 
 		if(BagState(bag) == BagState.Used) {
 			if(preview.length == 0) {
-				UpdateNBT(bag);
+				UpdatePDC(bag);
 			}
 			UpdateUsed(bag, BagData.GetBag(uuid, bag), player);
 		}else if (BagState(bag) == BagState.New) {
@@ -325,6 +329,10 @@ public class HavenBags {
 	}
 	
 	private static void UpdateNew(ItemStack bag, OfflinePlayer player) {
+		if(Server.VersionHigherOrEqualTo(Version.v1_21)) {
+			ItemUtils.SetMaxStackSize(bag, 1);
+		}
+		
 		List<Placeholder> placeholders = new ArrayList<Placeholder>();
 
 		ItemMeta bagMeta = bag.getItemMeta();
@@ -333,28 +341,29 @@ public class HavenBags {
 		for (String l : Lang.lang.GetStringList("bag-lore")) {
 			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 		}
-		if(NBT.Has(bag, "bag-lore")) {
+		if(PDC.Has(bag, "lore")) {
 			lore.clear();
-			for (String l : NBT.GetStringList(bag, "bag-lore")) {
+			for (String l : PDC.GetStringList(bag, "lore")) {
 				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 			}
 		}
-		if(NBT.Has(bag, "bag-size")) {
-			placeholders.add(new Placeholder("%size%", NBT.GetInt(bag, "bag-size")));
+		if(PDC.Has(bag, "size")) {
+			placeholders.add(new Placeholder("%size%", PDC.GetInteger(bag, "size")));
 			placeholders.add(new Placeholder("%bag-size%", Lang.Parse(Lang.Get("bag-size"), placeholders, player)));
 			//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
 		}
 
-		if(NBT.Has(bag, "bag-filter")) {
-			placeholders.add(new Placeholder("%filter%", AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))));
+		if(PDC.Has(bag, "filter")) {
+			placeholders.add(new Placeholder("%filter%", AutoPickup.GetFilterDisplayname(PDC.GetString(bag, "filter"))));
 			placeholders.add(new Placeholder("%bag-auto-pickup%", Lang.Parse(Lang.Get("bag-auto-pickup"), placeholders, player)));
-			//lore.add(Lang.Parse(Lang.Parse(String.format(Lang.Get("bag-auto-pickup"), AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))), player)));
-			//lore.add(Lang.Parse("&7Auto Loot: " + AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter")), player));
+			//lore.add(Lang.Parse(Lang.Parse(String.format(Lang.Get("bag-auto-pickup"), AutoPickup.GetFilterDisplayname(PDC.GetString(bag, "bag-filter"))), player)));
+			//lore.add(Lang.Parse("&7Auto Loot: " + AutoPickup.GetFilterDisplayname(PDC.GetString(bag, "bag-filter")), player));
 		}
 		
         for(String line : Lang.lang.GetStringList("bag-lore-add")) {
         	if(line.contains("%bag-auto-pickup%")) {
-        		if(!NBT.Has(bag, "bag-filter")) continue;
+        		if(!PDC.Has(bag, "filter")) continue;
+        		if(PDC.GetString(bag, "filter").equalsIgnoreCase("null")) continue;
         		lore.add(Lang.Parse(line, placeholders, player));
         	}
         	if(line.contains("%bag-size%")) {
@@ -367,13 +376,20 @@ public class HavenBags {
 	}
 	
 	private static void UpdateUsed(ItemStack bag, Data data, OfflinePlayer player) {
+		if(Server.VersionHigherOrEqualTo(Version.v1_21)) {
+			ItemUtils.SetMaxStackSize(bag, 1);
+		}
 		
 		List<ItemStack> inventory = data.getContent();
 		if(data.hasAutoSort()) {
 			inventory = AutoSorter.SortInventory(inventory);
 		}
 		if(Main.plugins.GetBool("mods.HavenBagsPreview.enabled")) {
-			NBT.SetString(bag, "bag-preview-content", gson.toJson(new HavenBagsPreview(inventory)));
+			try {
+				NBT.SetString(bag, "bag-preview-content", gson.toJson(new HavenBagsPreview(inventory)));
+				NBT.SetString(bag, "bag-uuid", "yes");
+				NBT.SetInt(bag, "bag-size", PDC.GetInteger(bag, "size"));
+			}catch(Exception e) {} // Moved away from NBT, but need it for the mod.
 		}
 
 		List<Placeholder> placeholders = new ArrayList<Placeholder>();
@@ -399,7 +415,7 @@ public class HavenBags {
 								items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
 							}
 						}
-						else if(Main.VersionCompare(Main.server, ServerVersion.v1_20_5) >= 0) {
+						else if(Server.VersionHigherOrEqualTo(Version.v1_20_5)) {
 							if(ItemUtils.HasItemName(inventory.get(i))) {
 								itemph.add(new Placeholder("%item%", ItemUtils.GetItemName(inventory.get(i))));
 								itemph.add(new Placeholder("%amount%", inventory.get(i).getAmount()));
@@ -450,44 +466,44 @@ public class HavenBags {
 		for (String l : Lang.lang.GetStringList("bag-lore")) {
 			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 		}
-		if(NBT.Has(bag, "bag-lore")) {
+		if(PDC.Has(bag, "lore")) {
 			lore.clear();
-			for (String l : NBT.GetStringList(bag, "bag-lore")) {
+			for (String l : PDC.GetStringList(bag, "bag-lore")) {
 				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 			}
 		}
-		if(NBT.GetBool(bag, "bag-canBind") == true) {
+		if(PDC.GetBoolean(bag, "binding") == true) {
 			placeholders.add(new Placeholder("%owner%", Bukkit.getOfflinePlayer(UUID.fromString(data.getOwner())).getName()));
 			placeholders.add(new Placeholder("%bound-to%", Lang.Parse(Lang.Get("bound-to"), placeholders, player)));
 			//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()), player));
 		}
-		if(NBT.Has(bag, "bag-size")) {
-			placeholders.add(new Placeholder("%size%", NBT.GetInt(bag, "bag-size")));
+		if(PDC.Has(bag, "size")) {
+			placeholders.add(new Placeholder("%size%", PDC.GetInteger(bag, "size")));
 			placeholders.add(new Placeholder("%slots_used%", items.size()));
-			placeholders.add(new Placeholder("%slots_free%", NBT.GetInt(bag, "bag-size") - items.size()));
+			placeholders.add(new Placeholder("%slots_free%", PDC.GetInteger(bag, "size") - items.size()));
 			placeholders.add(new Placeholder("%bag-size%", Lang.Parse(Lang.Get("bag-size"), placeholders, player)));
 			//if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, inventory.size()), player));
 		}
 
-		if(NBT.Has(bag, "bag-filter")) {
-			placeholders.add(new Placeholder("%filter%", AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))));
+		if(PDC.Has(bag, "filter")) {
+			placeholders.add(new Placeholder("%filter%", AutoPickup.GetFilterDisplayname(PDC.GetString(bag, "filter"))));
 			placeholders.add(new Placeholder("%bag-auto-pickup%", Lang.Parse(Lang.Get("bag-auto-pickup"), placeholders, player)));
-			//lore.add(Lang.Parse(Lang.Parse(String.format(Lang.Get("bag-auto-pickup"), AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter"))), player)));
-			//lore.add(Lang.Parse("&7Auto Loot: " + AutoPickup.GetFilterDisplayname(NBT.GetString(bag, "bag-filter")), player));
+			//lore.add(Lang.Parse(Lang.Parse(String.format(Lang.Get("bag-auto-pickup"), AutoPickup.GetFilterDisplayname(PDC.GetString(bag, "bag-filter"))), player)));
+			//lore.add(Lang.Parse("&7Auto Loot: " + AutoPickup.GetFilterDisplayname(PDC.GetString(bag, "bag-filter")), player));
 		}
 
-		if(NBT.Has(bag, "bag-weight") && NBT.Has(bag, "bag-weight-limit") && Main.weight.GetBool("enabled")) {
-			placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(GetWeight(bag), NBT.GetDouble(bag, "bag-weight-limit"), Main.weight.GetInt("bar-length"))));
+		if(PDC.Has(bag, "weight") && PDC.Has(bag, "weight-limit") && Main.weight.GetBool("enabled")) {
+			placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(GetWeight(bag), PDC.GetDouble(bag, "weight-limit"), Main.weight.GetInt("bar-length"))));
 			placeholders.add(new Placeholder("%weight%", TextFeatures.LimitDecimal(String.valueOf(GetWeight(bag)),2)));
-			placeholders.add(new Placeholder("%limit%", String.valueOf(NBT.GetDouble(bag, "bag-weight-limit").intValue())));
-			placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(GetWeight(bag), NBT.GetDouble(bag, "bag-weight-limit"))), 2) + "%"));
+			placeholders.add(new Placeholder("%limit%", String.valueOf(PDC.GetDouble(bag, "weight-limit").intValue())));
+			placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(GetWeight(bag), PDC.GetDouble(bag, "weight-limit"))), 2) + "%"));
 			placeholders.add(new Placeholder("%bag-weight%", Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player)));
 			//lore.add(Lang.Parse(Main.weight.GetString("weight-lore"), placeholders, player));
 		}
 
 		boolean hasTrust = false;
-		if(NBT.Has(bag, "bag-trust")) {
-			List<String> trust = NBT.GetStringList(bag, "bag-trust");
+		if(!data.getTrusted().isEmpty()) {
+			List<String> trust = data.getTrusted();
 			String trusted = "";
 			if(trust.size() != 0) {
 				for(int i = 0; i < trust.size(); i++) { 
@@ -524,15 +540,25 @@ public class HavenBags {
 			placeholders.add(new Placeholder("%refill%", Lang.Parse(Lang.Get("bag-refill-off"), placeholders, player)));
 		}
 		placeholders.add(new Placeholder("%bag-refill%", Lang.Parse(Lang.Get("bag-refill"), placeholders, player)));
+
+		if(data.getEffect() != null) {
+			placeholders.add(new Placeholder("%effect%", Lang.Parse(BagEffects.getEffectDisplayname(data.getEffect()), placeholders, player)));
+		}
+		placeholders.add(new Placeholder("%bag-effect%", Lang.Parse(Lang.Get("bag-effect"), placeholders, player)));
 		
         for(String line : Lang.lang.GetStringList("bag-lore-add")) {
-        	if(line.contains("%bound-to%") && !NBT.GetBool(bag, "bag-canBind")) continue;
+        	if(line.contains("%bound-to%") && !PDC.GetBoolean(bag, "binding")) continue;
+    		if(line.contains("%bag-effect%")) {
+    			if(Lang.lang.GetBool("bag-effect-hide")) continue;
+    			if(data.getEffect() == null) continue;
+    			if(data.getEffect() != null && data.getEffect().equalsIgnoreCase("null")) continue;
+    		}
     		if(line.contains("%bag-trusted%") && !hasTrust) continue;
-    		if(line.contains("%bag-auto-pickup%") && !NBT.Has(bag, "bag-filter")) continue;
+    		if(line.contains("%bag-auto-pickup%") && !PDC.Has(bag, "filter")) continue;
     		if(line.contains("%bag-weight%") && !Main.weight.GetBool("enabled")) continue;
-    		if(line.contains("%bag-autosort%") && Lang.lang.GetBool("bag-autosort-off-hidden")) continue;
-    		if(line.contains("%bag-magnet%") && Lang.lang.GetBool("bag-magnet-off-hidden")) continue;
-    		if(line.contains("%bag-refill%") && Lang.lang.GetBool("bag-refill-off-hidden")) continue;
+    		if(line.contains("%bag-autosort%") && Lang.lang.GetBool("bag-autosort-off-hide")) continue;
+    		if(line.contains("%bag-magnet%") && Lang.lang.GetBool("bag-magnet-off-hide")) continue;
+    		if(line.contains("%bag-refill%") && Lang.lang.GetBool("bag-refill-off-hide")) continue;
         	lore.add(Lang.Parse(line, placeholders, player));
         }
         
@@ -595,14 +621,14 @@ public class HavenBags {
 	}
 	
 	public static void EmptyBag(ItemStack bag, Player player) {
-		String uuid = NBT.GetString(bag, "bag-uuid");
-    	//String owner = NBT.GetString(bag, "bag-owner");
+		String uuid = PDC.GetString(bag, "uuid");
+    	//String owner = PDC.GetString(bag, "bag-owner");
 		Log.Debug(Main.plugin, "[DI-110] " + "Attempting to initialize bag items");
 		//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, player);
 		List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
 		SFX.Play(Main.config.GetString("close-sound"), 
-				Main.config.GetFloat("close-volume").floatValue(), 
-				Main.config.GetFloat("close-pitch").floatValue(), player);
+				Main.config.GetDouble("close-volume").floatValue(), 
+				Main.config.GetDouble("close-pitch").floatValue(), player);
 		for(int i = 0; i < content.size(); i++) {
 			try {
 				Item dropped = player.getWorld().dropItem(player.getLocation(), content.get(i));
@@ -618,7 +644,7 @@ public class HavenBags {
 	}
 	
 	public static boolean IsOwner(ItemStack bag, Player player) {
-    	String owner = NBT.GetString(bag, "bag-owner");
+    	String owner = PDC.GetString(bag, "owner");
     	if(owner.equalsIgnoreCase("ownerless")) {
     		return true;
     	} else if (player.hasPermission("havenbags.bypass")) {
@@ -652,19 +678,19 @@ public class HavenBags {
 	}
 	
 	public static Double GetWeight(ItemStack bag) {
-		if(NBT.Has(bag, "bag-weight")) {
-			return NBT.GetDouble(bag, "bag-weight");
+		if(PDC.Has(bag, "weight")) {
+			return PDC.GetDouble(bag, "weight");
 		}else {
 			try {
 				Double weight = 0.0;
-				String uuid = NBT.GetString(bag, "bag-uuid");
-    			//String owner = NBT.GetString(bag, "bag-owner");
+				String uuid = PDC.GetString(bag, "uuid");
+    			//String owner = PDC.GetString(bag, "bag-owner");
 				//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, null);
 				List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
 				for(ItemStack item : content) {
-					weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
+					weight += (Main.weight.GetDouble(item.getType().toString()) * item.getAmount());
 				}
-				NBT.SetDouble(bag, "bag-weight", weight);
+				PDC.SetDouble(bag, "weight", weight);
 				BagData.GetBag(uuid, bag).setWeight(weight);
 				return weight;
 			} catch(Exception e) {
@@ -681,20 +707,20 @@ public class HavenBags {
 				int cmd = item.getItemMeta().getCustomModelData();
 				if(Main.weight.HasKey(item.getType().toString() + "-" + cmd)) {
 					try {
-						weight += (Main.weight.GetFloat(item.getType().toString() + "-" + cmd) * item.getAmount());
+						weight += (Main.weight.GetDouble(item.getType().toString() + "-" + cmd) * item.getAmount());
 					} catch(Exception e) {
 						continue;
 					}
 				}else {
 					try {
-						weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
+						weight += (Main.weight.GetDouble(item.getType().toString()) * item.getAmount());
 					} catch(Exception e) {
 						continue;
 					}
 				}
 			}else {
 				try {
-					weight += (Main.weight.GetFloat(item.getType().toString()) * item.getAmount());
+					weight += (Main.weight.GetDouble(item.getType().toString()) * item.getAmount());
 				} catch(Exception e) {
 					continue;
 				}
@@ -708,21 +734,21 @@ public class HavenBags {
 		if(item.hasItemMeta() && item.getItemMeta().hasCustomModelData()) {
 			int cmd = item.getItemMeta().getCustomModelData();
 			if(Main.weight.HasKey(item.getType().toString() + "-" + cmd)) {
-				return Main.weight.GetFloat(item.getType().toString() + "-" + cmd) * item.getAmount();
+				return Main.weight.GetDouble(item.getType().toString() + "-" + cmd) * item.getAmount();
 			}else {
-				return Main.weight.GetFloat(item.getType().toString()) * item.getAmount();
+				return Main.weight.GetDouble(item.getType().toString()) * item.getAmount();
 			}
 		}else {
-			return Main.weight.GetFloat(item.getType().toString()) * item.getAmount();
+			return Main.weight.GetDouble(item.getType().toString()) * item.getAmount();
 		}
 		
-		//return Main.weight.GetFloat(item.getType().toString()) * item.getAmount();
+		//return Main.weight.GetDouble(item.getType().toString()) * item.getAmount();
 	}
 	
 	public static boolean CanCarry(ItemStack item, ItemStack bag) {
 		Log.Debug(Main.plugin, "[DI-111] " + "Can carry?");
 		HasWeightLimit(bag);
-		double maxWeight = NBT.GetDouble(bag, "bag-weight-limit");
+		double maxWeight = PDC.GetDouble(bag, "weight-limit");
 		double weight = GetWeight(bag);
 		double itemWeight = ItemWeight(item);
 		
@@ -740,7 +766,7 @@ public class HavenBags {
 		Log.Debug(Main.plugin, "[DI-115] " + "Can carry?");
 		if(bag == null) return false;
 		HasWeightLimit(bag);
-		double maxWeight = NBT.GetDouble(bag, "bag-weight-limit");
+		double maxWeight = PDC.GetDouble(bag, "weight-limit");
 		double weight = GetWeight(content);
 		double itemWeight = ItemWeight(item);
 		
@@ -755,15 +781,15 @@ public class HavenBags {
 	}
 	
 	public static boolean HasWeightLimit(ItemStack bag) {
-		if(NBT.Has(bag, "bag-weight-limit")) {
+		if(PDC.Has(bag, "weight-limit")) {
 			return true;
 		}else {
 			if(Main.weight.GetBool("weight-per-size")) {
-				NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat("weight-size-" + NBT.GetInt(bag, "bag-size")));
-				BagData.GetBag(HavenBags.GetBagUUID(bag), bag).setWeight(Main.weight.GetFloat("weight-size-" + NBT.GetInt(bag, "bag-size")));
+				PDC.SetDouble(bag, "weight-limit", Main.weight.GetDouble("weight-size-" + PDC.GetInteger(bag, "size")));
+				BagData.GetBag(HavenBags.GetBagUUID(bag), bag).setWeight(Main.weight.GetDouble("weight-size-" + PDC.GetInteger(bag, "size")));
 			}else {
-				NBT.SetDouble(bag, "bag-weight-limit", Main.weight.GetFloat("weight-limit"));
-				BagData.GetBag(HavenBags.GetBagUUID(bag), bag).setWeight(Main.weight.GetFloat("weight-limit"));
+				PDC.SetDouble(bag, "weight-limit", Main.weight.GetDouble("weight-limit"));
+				BagData.GetBag(HavenBags.GetBagUUID(bag), bag).setWeight(Main.weight.GetDouble("weight-limit"));
 			}
 		}
 		return false;
@@ -955,7 +981,7 @@ public class HavenBags {
 		}
 		
 		for(BlacklistNBT nk : nbt) {
-			if(NBT.Has(item, nk.key)) {
+			if(PDC.Has(item, nk.key)) {
 				Log.Debug(Main.plugin, "[DI-131] " + "NBT blacklisted!");	
 				if(whitelist) return false;
 				return true;
@@ -990,8 +1016,8 @@ public class HavenBags {
 	}
 	
 	/*public static boolean IsPlayerTrusted(ItemStack item, String player) {
-		if(!NBT.Has(item, "bag-trust")) return false;
-		List<String> list = NBT.GetStringList(item, "bag-trust");
+		if(!PDC.Has(item, "bag-trust")) return false;
+		List<String> list = PDC.GetStringList(item, "bag-trust");
 		for(int i = 0; i < list.size(); i++) {
 			if(list.get(i).equalsIgnoreCase(player)) {
 				return true;
@@ -1015,8 +1041,8 @@ public class HavenBags {
 		}
 		
 		ItemStack item = new ItemStack(material);
-		NBT.SetString(item, "bag-token-skin", value); // Set this first to give the item ItemMeta
-		NBT.SetString(item, "bag-token-type", type);
+		PDC.SetString(item, "token-skin", value); // Set this first to give the item ItemMeta
+		PDC.SetString(item, "token-type", type);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(Lang.Parse(name, ph));
 		if(cmd > 0) {
@@ -1048,7 +1074,7 @@ public class HavenBags {
 	
 	public static boolean IsBagFull(ItemStack bag) {
 		try {
-			int size = NBT.GetInt(bag, "bag-size");
+			int size = PDC.GetInteger(bag, "size");
 			List<ItemStack> content = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
 			content.removeIf(item -> item.getType() == Material.AIR);
 			content.removeIf(item -> item == null);
@@ -1059,8 +1085,36 @@ public class HavenBags {
 		}
 	}
 	
+	public static boolean IsBagFull(UUID uuid) {
+		try {
+			Data data = BagCache.get(uuid);
+			int size = data.getSize();
+			List<ItemStack> content = data.getContent();
+			content.removeIf(item -> item.getType() == Material.AIR);
+			content.removeIf(item -> item == null);
+			if(content.size() >= size) return true;
+			else return false;
+		}catch(Exception e) {
+			return false;
+		}
+	}
+	
+	public static boolean IsBagFull(String uuid) {
+		try {
+			Data data = BagCache.get(UUID.fromString(uuid));
+			int size = data.getSize();
+			List<ItemStack> content = data.getContent();
+			content.removeIf(item -> item.getType() == Material.AIR);
+			content.removeIf(item -> item == null);
+			if(content.size() >= size) return true;
+			else return false;
+		}catch(Exception e) {
+			return false;
+		}
+	}
+	
 	public static int SlotsEmpty(ItemStack bag) {
-		int size = NBT.GetInt(bag, "bag-size");
+		int size = PDC.GetInteger(bag, "size");
 		List<ItemStack> content = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
 		content.removeIf(item -> item == null);
 		content.removeIf(item -> item.getType() == Material.AIR);
@@ -1068,8 +1122,8 @@ public class HavenBags {
 	}
 	
 	public static double UsedCapacity(ItemStack bag, List<ItemStack> content) {
-		//Log.Error(Main.plugin, "content " + NBT.GetInt(bag, "bag-size"));
-		Double size = Double.valueOf(NBT.GetInt(bag, "bag-size") + ".0");
+		//Log.Error(Main.plugin, "content " + PDC.GetInt(bag, "bag-size"));
+		Double size = Double.valueOf(PDC.GetInteger(bag, "size") + ".0");
 		//Log.Error(Main.plugin, "size " + size);
 		List<ItemStack> used = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
 		used.removeIf(item -> item == null);

@@ -165,6 +165,9 @@ bags-in-bags: false
 # Can bags be put inside shulkers?
 bags-in-shulkers: true
 
+# Can bags be put inside bundles?
+bags-in-bundles: false
+
 # Should bags always remain in the player's inventory?
 # Good to use alongside Soulbound, otherwise death will drop the item.
 inventory-lock: false
@@ -208,10 +211,16 @@ quiver-shield-fix: 2
 # If enabled, nearby drops will move towards the player.
 magnet:
  enabled: true
+ tick-rate: 2 # How often the task should run
  range: 5.0
  speed: 0.1
  require-autopickup: false
  only-autopickup-items: false
+ instant: false # This will teleport the items to the player instantly
+ # instead of moving them over time.
+ 
+effects:
+ refresh-rate: 100 # How often the task should run. 100 ticks = 5s.
 
 # Bag Upgrades
 # If enabled, remember to allow "ANVIL" in 'allowed-containers'.
@@ -248,6 +257,30 @@ skin-token:
   - '&7Combine with a bag in an anvil to apply.'
   - '&7Skin: &e%skin%'
   # You can add extra lore in-game, with things such as which skin it is.
+  
+# Should upgrades and skins be applied through an anvil?
+bag-upgrades-anvil: false
+  
+# Custom GUI used to upgrade and skin bags.
+upgrade-gui: 
+ enabled: true
+ block: FLETCHING_TABLE
+ noteblock: # Requires "block" to be NOTE_BLOCK.
+  instrument: BASS_DRUM # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Instrument.html
+  note: 0
+ title: '&eBag Upgrade'
+ gui-size: 27 # Must be to the power of 9. i.e. Rows*9, 3*9 = 27
+ slots:
+  bag: 10 # Bag and Token can be used interchangeable.
+  token: 12
+  result: 15 # upgrade/skin result
+ filler: GRAY_STAINED_GLASS_PANE # Set to AIR to have no fillers, useful when using custom gui.
+ custom-filler:
+  '0': LIME_STAINED_GLASS_PANE # Each corner of the 27 slot gui.
+  '8': LIME_STAINED_GLASS_PANE
+  '18': LIME_STAINED_GLASS_PANE
+  '26': LIME_STAINED_GLASS_PANE
+ success-sound: ENTITY_VILLAGER_WORK_FLETCHER # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
 
 # Which containers are the player allowed to interact with bags?
 # Use this to prevent the player using bags in unintended ways, such as crafting.
@@ -268,3 +301,11 @@ blacklist:
  - world_name
  - world_name_nether
  - another_world
+ 
+# GUI where the players can restore or delete their own bags.
+player-gui:
+ enabled: false
+ # Can players restore their own bags?
+ self-restore: true
+ # Can players delete their own bags?
+ self-delete: true

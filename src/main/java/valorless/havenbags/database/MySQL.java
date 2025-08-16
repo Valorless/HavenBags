@@ -14,11 +14,12 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.gson.JsonObject;
 
-import valorless.havenbags.Main.ServerVersion;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.utils.FoodComponentFixer;
 import valorless.havenbags.BagData;
 import valorless.havenbags.Main;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.json.JsonUtils;
 
@@ -179,7 +180,7 @@ public class MySQL {
     }
 
 	public void saveBag(Data data) {
-		Log.Debug(Main.plugin, "[DI-233] " + "Attempting to write bag " + data.getOwner() + "/" + data.getUuid() + " onto database");
+		Log.Debug(Main.plugin, "[DI-233] [MYSQL] " + "Attempting to write bag " + data.getOwner() + "/" + data.getUuid() + " onto database");
 		String sql = "INSERT INTO bags (uuid, owner, creator, size, texture, custommodeldata, " +
 				"itemmodel, trusted, auto_pickup, weight, weight_max, content, open, extra) " +
 				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
@@ -416,7 +417,7 @@ public class MySQL {
 				items.add(null); 
 				continue;
 			}
-			if(Main.VersionCompare(Main.server, ServerVersion.v1_21_4) >= 0) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
 				try {
 					item = JsonUtils.fromJson(
 							FoodComponentFixer.fixFoodJson(entry)
