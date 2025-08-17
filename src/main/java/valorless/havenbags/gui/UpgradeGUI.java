@@ -51,33 +51,41 @@ public class UpgradeGUI implements Listener {
 	 * Used to close all open GUIs when the server stops or the plugin is disabled.
 	 */
 	public static class OpenGUIs {
-		
-		// Static list of UpgradeGUIs that are open.
-		private static ArrayList<UpgradeGUI> guis = new ArrayList<>();
-		
-		public static void Add(UpgradeGUI gui) {
-			if(!guis.contains(gui)) {
-				guis.add(gui);
-			}
-		}
-		
-		public static Boolean Contains(UpgradeGUI gui) {
-			if(guis.contains(gui)) return true;
-			return false;
-		}
-		
-		public static void Remove(UpgradeGUI gui) {
-			if(guis.contains(gui)) {
-				guis.remove(gui);
-			}
-		}
-		
-		public static void CloseAll() {
-			for(UpgradeGUI gui : guis) {
-				gui.Close(new ArrayList<ItemStack>());
-			}
-		}
+
+	    // Static map of Players -> their open UpgradeGUI
+	    private static final HashMap<Player, UpgradeGUI> guis = new HashMap<>();
+
+	    public static void Add(Player player, UpgradeGUI gui) {
+	        guis.put(player, gui); // replaces existing if already present
+	    }
+
+	    public static boolean Contains(Player player) {
+	        return guis.containsKey(player);
+	    }
+
+	    public static boolean Contains(UpgradeGUI gui) {
+	        return guis.containsValue(gui);
+	    }
+
+	    public static UpgradeGUI Get(Player player) {
+	        return guis.get(player); // returns null if not present
+	    }
+
+	    public static void Remove(Player player) {
+	        guis.remove(player);
+	    }
+
+	    public static void Remove(UpgradeGUI gui) {
+	        guis.entrySet().removeIf(entry -> entry.getValue().equals(gui));
+	    }
+
+	    public static void CloseAll() {
+	        for (UpgradeGUI gui : guis.values()) {
+	            gui.Close(new ArrayList<ItemStack>());
+	        }
+	    }
 	}
+
 	
 	Inventory inv;
 	int invSize = 27; // 3 rows of 9 slots
@@ -163,10 +171,14 @@ public class UpgradeGUI implements Listener {
 
 		task.runTaskLater(Main.plugin, 1); // Delay to ensure the inventory is ready before opening
 		
-		OpenGUIs.Add(this);
+		OpenGUIs.Add(player, this);
 		
 		Bukkit.getServer().getPluginManager().registerEvents(this, Main.plugin);
 		Log.Debug(Main.plugin, "[DI-284] [UpgradeGUI] Opening UpgradeGUI for " + player.getName());
+	}
+	
+	public Inventory GetInv() {
+		return inv;
 	}
 	
 	@EventHandler

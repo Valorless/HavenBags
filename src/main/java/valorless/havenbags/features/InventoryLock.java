@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.gui.UpgradeGUI;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class InventoryLock implements Listener {
@@ -41,19 +43,25 @@ public class InventoryLock implements Listener {
 	public void onInventoryClick(InventoryClickEvent e) { 
 		//Log.Error(Main.plugin, e.getEventName());
 		if(!Main.config.GetBool("inventory-lock")) return;
+		Log.Debug(Main.plugin, "[DI-290] " + "[InventoryLock] Inventory Click");
 		
 		Inventory inv = e.getInventory();
+		
+		// Check if the inventory is the upgrade gui.
+		UpgradeGUI upgrade = UpgradeGUI.OpenGUIs.Get((Player) e.getWhoClicked());
+		if(upgrade != null && upgrade.GetInv() == inv) return;
+		
 		ItemStack clickedItem = e.getCurrentItem();
 		ItemStack cursorItem = e.getCursor();
 		boolean holdingBag = HavenBags.IsBag(cursorItem);	
     	boolean clickedBag = HavenBags.IsBag(clickedItem);	
     	
+    	if(inv.getType() == InventoryType.ANVIL) return; //Ignore anvils, they can be used for skins and upgrades.
+    	
     	if(e.getRawSlot() < inv.getSize() && holdingBag){
-        	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
         	e.setCancelled(true);
         }
 		else if(e.getRawSlot() > inv.getSize() && clickedBag && e.isShiftClick()){
-            e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
             e.setCancelled(true);
         }
 	}
