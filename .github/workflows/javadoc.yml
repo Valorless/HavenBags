@@ -1,36 +1,37 @@
-name: Deploy Javadoc
+name: Build and Deploy Javadocs
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main  # your default branch
 
 jobs:
-  deploy:
+  javadoc:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: '17'
 
-      - name: Build Javadoc
-        run: mvn clean javadoc:javadoc -DdestDir=./docs -DfailOnError=false -Dquiet=true -Dsource=17
+    - name: Build Javadocs
+      run: mvn clean javadoc:javadoc -DfailOnError=false
 
-      - name: Copy docs contents to root folder for publishing
-        run: |
-          mkdir -p ./gh-pages-root
-          cp -r ./docs/* ./gh-pages-root/
+    - name: Copy Javadocs to docs folder
+      run: |
+        rm -rf docs
+        mv target/site/apidocs docs
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages-root   # now points to the folder with contents at root
-          publish_branch: gh-pages
-          user_name: github-actions
-          user_email: github-actions@github.com
-          force_orphan: true
-          keep_files: false
+    - name: Commit and Push Javadocs
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "Update Javadocs"
+        branch: main
+        file_pattern: "docs/*"
+        author_name: "github-actions"
+        author_email: "github-actions@users.noreply.github.com"
