@@ -131,19 +131,15 @@
             </plugin>
             
     <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-javadoc-plugin</artifactId>
-      <version>3.5.0</version>
-      <configuration>
-        <!-- Use relative links for package-summary and navigation -->
-        <linksource>true</linksource>
-        <use>true</use>
-                <!-- Don't fail the build if there are missing Javadocs -->
-                <failOnError>false</failOnError>
-                
-                <!-- Optionally, allow missing comments/tags -->
-                <quiet>true</quiet>
-      </configuration>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.5.0</version>
+            <configuration>
+                <failOnError>false</failOnError> <!-- don’t fail build if Javadocs missing -->
+                <quiet>true</quiet>              <!-- suppress warnings -->
+                <destDir>${project.basedir}/docs</destDir> <!-- output to ./docs -->
+                <source>17</source>             <!-- match your Java version -->
+            </configuration>
       <executions>
         <execution>
           <goals>
