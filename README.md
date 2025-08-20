@@ -17,3 +17,5 @@ Create shulker-like bags of varying sizes bound to a player, or accessible by an
 ## Config Files
 [/resources](/src/main/resources)
 
+# API (Coming soon in 1.37.2)
+[https://valorless.github.io/HavenBags](https://valorless.github.io/HavenBags)
