@@ -88,21 +88,41 @@ jobs:
     # Step: Accept EULA
     - name: Accept EULA
       run: echo "eula=true" > eula.txt
-
-    # Step: Create plugins folder and move plugin jar
-    - name: Setup plugins
+      
+    # Step: Download ValorlessUtils dependency
+    - name: Download ValorlessUtils
       run: |
         mkdir -p plugins
+        curl -s https://api.github.com/repos/valorless/ValorlessUtils/releases/latest \
+        | grep "browser_download_url.*\.jar" \
+        | cut -d '"' -f 4 \
+        | wget -qi - -O plugins/ValorlessUtils.jar
+
+    # Step: Place our plugin into plugins folder
+    - name: Setup plugin
+      run: |
         cp target/HavenBags-${{ env.branch }}-${{ env.commit }}.jar plugins/
 
-    # Step: Run the server headless to check plugin enable/disable
+    # Step: Run the server and fail on errors
     - name: Run server test
       run: |
-        java -Xmx1G -jar server.jar --nogui &
+        set -e
+        java -Xmx1G -jar server.jar --nogui > server.log 2>&1 &
         PID=$!
-        sleep 30  # give it enough time to boot and load plugins
-        kill $PID
 
+        sleep 45  # wait for startup
+
+        kill $PID || true
+        wait $PID || true
+
+        echo "=== Last 100 lines of server.log ==="
+        tail -n 100 server.log
+
+        if grep -q "\[SEVERE\]" server.log || grep -q "Exception" server.log; then
+          echo "❌ Errors found in server log!"
+          exit 1
+        fi
+    
     # Upload the JAR as an artifact
     - name: Upload JAR as Artifact
       uses: actions/upload-artifact@v4
