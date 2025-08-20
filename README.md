@@ -19,3 +19,19 @@ Create shulker-like bags of varying sizes bound to a player, or accessible by an
 
 # API (Coming soon in 1.37.2)
 [https://valorless.github.io/HavenBags](https://valorless.github.io/HavenBags)
+
+## Maven
+```xml
+	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
+	<dependency>
+	    <groupId>com.github.Valorless</groupId>
+	    <artifactId>HavenBags</artifactId>
+	    <version>1.37.2</version>
+	</dependency>
+```
