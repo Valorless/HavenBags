@@ -1,0 +1,1 @@
+/usr/lib/jvm/temurin-17-jdk-amd64/bin/javadoc @options @packages
