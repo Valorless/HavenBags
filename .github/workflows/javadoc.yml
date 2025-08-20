@@ -17,11 +17,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build Javadoc
-        run: mvn clean javadoc:javadoc \
-              -DdestDir=./docs \
-              -DfailOnError=false \
-              -Dquiet=true \
-              -Dsource=17
+        run: mvn clean javadoc:javadoc -DdestDir=./docs -DfailOnError=false -Dquiet=true -Dsource=17
 
       - name: Copy docs contents to root folder for publishing
         run: |
