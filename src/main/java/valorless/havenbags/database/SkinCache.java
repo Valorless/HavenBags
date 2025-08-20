@@ -67,16 +67,41 @@ public class SkinCache implements Listener {
 	 * This method is called on shutdown to ensure the cache is saved.
 	 */
 	public static void shutdown() {
-		long startTime = System.currentTimeMillis();
-		Log.Info(Main.plugin, "Saving skin cache..");
-		cleanup(); // Quick cleanup before saving..
-		
-		config.Set("skins", JsonUtils.toJson(cache));
-		config.SaveConfig();
-		
-		long endTime = System.currentTimeMillis();
-		long duration = endTime - startTime;
-		Log.Info(Main.plugin, String.format("Saved %s skins. %sms", cache.size(), duration));
+		try {
+			long startTime = System.currentTimeMillis();
+			Log.Info(Main.plugin, "Saving skin cache..");
+			cleanup(); // Quick cleanup before saving..
+
+			if(config == null) {
+				File root = new File(Main.plugin.getDataFolder() + "/cache");
+				File cacheFile = new File(Main.plugin.getDataFolder() + "/cache/skins.yml");
+
+				if(!root.exists()) root.mkdir();
+				if(!cacheFile.exists()) {
+					try {
+						cacheFile.createNewFile();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+					config = new Config(Main.plugin, "/cache/skins.yml");
+				} else {
+					config = new Config(Main.plugin, "/cache/skins.yml");
+				}
+
+				config.Set("skins", JsonUtils.toJson(cache));
+				config.SaveConfig();
+			} else {
+				config.Set("skins", JsonUtils.toJson(cache));
+				config.SaveConfig();
+			}
+
+			long endTime = System.currentTimeMillis();
+			long duration = endTime - startTime;
+			Log.Info(Main.plugin, String.format("Saved %s skins. %sms", cache.size(), duration));
+		}catch(Exception e) { 
+			e.printStackTrace();
+		}
 	}
 	
 	/**
