@@ -6,12 +6,14 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import net.ess3.api.IEssentials;
-import net.ess3.api.IUser;
+//import net.ess3.api.IEssentials;
+//import net.ess3.api.IUser;
 import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class Essentials {
+	
+	/*
 
 	static IEssentials instance = null;
 
@@ -49,4 +51,5 @@ public class Essentials {
 		}
 		return players;
 	}
+	*/
 }

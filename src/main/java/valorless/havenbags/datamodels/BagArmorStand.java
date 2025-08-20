@@ -164,7 +164,7 @@ public class BagArmorStand {
         if(trackedPlayer.hasPotionEffect(PotionEffectType.INVISIBILITY)) helmet = new ItemStack(Material.AIR);
         if(trackedPlayer.isInvisible()) helmet = new ItemStack(Material.AIR);
         if(EssentialsHook.isHooked()) {
-        	if(Essentials.isVanished(trackedPlayer)) helmet = new ItemStack(Material.AIR);
+        	//if(Essentials.isVanished(trackedPlayer)) helmet = new ItemStack(Material.AIR);
         }
         if(isVanished(trackedPlayer)) helmet = new ItemStack(Material.AIR);
         

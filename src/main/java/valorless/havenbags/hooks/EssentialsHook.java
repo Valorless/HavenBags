@@ -14,7 +14,7 @@ public class EssentialsHook {
 		Log.Debug(plugin, "Attempting to hook Essentials.");
 		
 		if (Bukkit.getPluginManager().getPlugin("Essentials") != null) {
-			Essentials.init();
+			//Essentials.init();
 		}
 	}
 	
