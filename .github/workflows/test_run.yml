@@ -103,24 +103,28 @@ jobs:
       run: |
         cp target/HavenBags-${{ env.branch }}-${{ env.commit }}.jar plugins/
 
-    # Step: Run the server and fail on errors
+        # Step: Run the server headless to check plugin enable/disable
     - name: Run server test
       run: |
-        set -e
-        java -Xmx1G -jar server.jar --nogui > server.log 2>&1 &
+        # Start server and tee output to both console and log file
+        java -Xmx1G -jar server.jar --nogui 2>&1 | tee server.log &
         PID=$!
 
-        sleep 45  # wait for startup
+        # Give it some time to boot and load plugins
+        sleep 30
 
+        # Shut down the server
         kill $PID || true
         wait $PID || true
 
-        echo "=== Last 100 lines of server.log ==="
-        tail -n 100 server.log
+        echo "=== Checking server.log for errors ==="
 
+        # Fail workflow if errors found
         if grep -q "\[SEVERE\]" server.log || grep -q "Exception" server.log; then
           echo "❌ Errors found in server log!"
           exit 1
+        else
+          echo "✅ No severe errors found."
         fi
     
     # Upload the JAR as an artifact
