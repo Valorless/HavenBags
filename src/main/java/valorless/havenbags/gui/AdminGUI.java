@@ -21,7 +21,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.profile.PlayerProfile;
 import org.bukkit.scheduler.BukkitTask;
 
 import valorless.valorlessutils.Server;
@@ -30,8 +32,10 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.utils.Utils;
 import valorless.havenbags.*;
+import valorless.havenbags.database.SkinCache;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.GUI;
 import valorless.havenbags.utils.HeadCreator;
@@ -730,7 +734,10 @@ public class AdminGUI implements Listener {
 			if(action != null && action.equalsIgnoreCase("confirm")){
 				String uuid = PDC.GetString(selectedBag, "uuid");
 
-				BagData.DeleteBag(uuid);
+				Data data = BagData.GetBag(uuid, null).clone();
+				if(BagData.DeleteBag(uuid)) {
+					Bukkit.getPluginManager().callEvent(new BagDeleteEvent(player, data));
+				}
 
 				type = GUIType.DeletionPlayer;
 				Reload(e);
@@ -1082,8 +1089,13 @@ public class AdminGUI implements Listener {
 		for (OfflinePlayer p : offlinePlayers) {
 			String uuid = p.getUniqueId().toString();
 
-			ItemStack entry = HeadCreator.itemFromUuid(p.getUniqueId());
-			ItemMeta meta = entry.getItemMeta();
+			//ItemStack entry = HeadCreator.itemFromUuid(p.getUniqueId()); <-- Causes HTTP 429.
+			ItemStack entry = new ItemStack(Material.PLAYER_HEAD);
+			SkullMeta meta = (SkullMeta) entry.getItemMeta();
+			PlayerProfile profile = SkinCache.getProfile(p.getName());
+			if(profile != null) {
+				meta.setOwnerProfile(profile);
+			}
 			meta.setDisplayName("§c" + p.getName());
 			meta.setLore(Arrays.asList("§8§oStill getting skins to work.."));
 			entry.setItemMeta(meta);

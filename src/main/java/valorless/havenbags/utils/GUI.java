@@ -37,6 +37,7 @@ public class GUI {
 
         // Add items to the inventory
         for (int i = startIndex; i < endIndex; i++) {
+        	if(items.get(i) == null) continue;
             inventory.addItem(items.get(i));
         }
 

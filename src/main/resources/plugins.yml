@@ -11,8 +11,6 @@
 plugins:
  PlaceholderAPI:
   enabled: true
- ChestSort:
-  enabled: true
  PvPManager:
   enabled: true
   # Can players use bags when in pvp combat?

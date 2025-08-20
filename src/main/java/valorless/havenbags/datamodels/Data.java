@@ -331,4 +331,65 @@ public class Data {
 	            ", viewer=" + (viewer != null ? viewer.getName() : "null") +
 	            '}';
 	}
+	
+	
+	/**
+	 * Creates a copy of this bag's Data.<br>
+	 * Used only for reading data from the bag, not for saving.<br>
+	 * 
+	 * @return A new Data object with the same properties as this one.
+	 */
+	@Override
+	public Data clone() {
+	    Data copy = new Data(this.uuid, this.owner);
+
+	    copy.setCreator(this.creator);
+	    copy.setSize(this.size);
+	    copy.setTexture(this.texture);
+	    copy.setMaterial(this.material);
+	    copy.setName(this.name);
+	    copy.setModeldata(this.modeldata);
+	    copy.setItemmodel(this.itemmodel);
+
+	    // Deep copy trusted list
+	    if (this.trusted != null) {
+	        copy.setTrusted(new ArrayList<>(this.trusted));
+	    }
+
+	    copy.setAutopickup(this.autopickup);
+	    copy.setWeight(this.weight);
+	    copy.setWeightMax(this.weightMax);
+	    copy.setAutoSort(this.autosort);
+
+	    // Deep copy blacklist
+	    if (this.blacklist != null) {
+	        copy.setBlacklist(new ArrayList<>(this.blacklist));
+	    }
+
+	    copy.setWhitelist(this.whitelist);
+	    copy.setIgnoreGlobalBlacklist(this.ignoreglobalblacklist);
+	    copy.setMagnet(this.magnet);
+	    copy.setRefill(this.refill);
+	    copy.setEffect(this.effect);
+
+	    // Deep copy ItemStacks
+	    if (this.content != null) {
+	        List<ItemStack> newContent = new ArrayList<>();
+	        for (ItemStack item : this.content) {
+	            newContent.add(item != null ? item.clone() : null);
+	        }
+	        copy.setContent(newContent);
+	    }
+
+	    // Do NOT copy runtime-only stuff (viewer, GUI, open state)
+	    copy.setOpen(false);
+	    copy.setGui(null);
+	    copy.setViewer(null);
+
+	    // Reset changed state for the clone
+	    copy.setChanged(false);
+
+	    return copy;
+	}
+
 }

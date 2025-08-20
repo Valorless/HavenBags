@@ -28,6 +28,8 @@ import valorless.havenbags.BagData.UpdateSource;
 import valorless.havenbags.database.DatabaseType;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.events.BagCloseEvent;
+import valorless.havenbags.events.BagOpenEvent;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
@@ -106,17 +108,6 @@ public class BagGUI implements Listener {
     			inv = Bukkit.createInventory(player, size, bagMeta.getDisplayName());
     		}
     	}
-    	
-
-		if(Main.plugins.GetBool("plugins.ChestSort.enabled")) {
-        	if(Bukkit.getPluginManager().getPlugin("ChestSort") != null) {
-        		try {
-        			de.jeff_media.chestsort.api.ChestSortAPI.setSortable(inv);   
-        		}catch (Exception e) {
-        			Log.Error(plugin, "Failed to get ChestSort's API. Is it up to date?");
-        		}
-        	}
-		}
         //this.content = JsonUtils.fromJson(Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "content", PersistentDataType.STRING).toString());
 		//player.sendMessage(content.toString());
 		
@@ -161,6 +152,7 @@ public class BagGUI implements Listener {
 		    		InitializeItems();
 		    	
 					OpenInventory(player);
+					Bukkit.getPluginManager().callEvent(new BagOpenEvent(inv, player, bagItem, BagData.GetBag(uuid, null)));
 					this.cancel();
 		    	}
 		    }
@@ -461,6 +453,8 @@ public class BagGUI implements Listener {
         //Unregister this GUI from listening to event.
     	Log.Debug(Main.plugin, "[BagGUI][DI-263] Unregistering listener for " + player.getName());
 		HandlerList.unregisterAll(this);
+		
+		Bukkit.getPluginManager().callEvent(new BagCloseEvent(inv, player, bagItem, BagData.GetBag(uuid, null), forced));
 		
 		//UpdateTimestamp();
     }

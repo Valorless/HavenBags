@@ -1,6 +1,7 @@
 package valorless.havenbags;
 
 import valorless.havenbags.database.BagCache;
+import valorless.havenbags.database.SkinCache;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.BagCarryLimit;
@@ -223,6 +224,7 @@ public final class Main extends JavaPlugin implements Listener {
     	Crafting.RemoveRecipes();
     	BagEffects.shutdown();
     	UpgradeGUI.OpenGUIs.CloseAll();
+    	SkinCache.shutdown();
     }
     
     public static void CloseBags() {
@@ -274,6 +276,7 @@ public final class Main extends JavaPlugin implements Listener {
 		BundlePrevention.init();
 		BagEffects.init();
 		BagCache.Observer.init();
+		SkinCache.init();
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
 		

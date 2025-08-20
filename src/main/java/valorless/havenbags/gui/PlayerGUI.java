@@ -27,6 +27,7 @@ import valorless.valorlessutils.utils.Utils;
 import valorless.havenbags.*;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.GUI;
 import valorless.havenbags.utils.HeadCreator;
@@ -314,7 +315,10 @@ public class PlayerGUI implements Listener {
 			if(action != null && action.equalsIgnoreCase("confirm")){
 				String uuid = PDC.GetString(selectedBag, "uuid");
 
-				BagData.DeleteBag(uuid);
+				Data data = BagData.GetBag(uuid, null).clone();
+				if(BagData.DeleteBag(uuid)) {
+					Bukkit.getPluginManager().callEvent(new BagDeleteEvent(player, data));
+				}
 
 				type = GUIType.Deletion;
 				Reload(e);

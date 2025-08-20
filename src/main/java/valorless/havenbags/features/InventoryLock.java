@@ -12,7 +12,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import valorless.havenbags.HavenBags;
-import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.gui.UpgradeGUI;
 import valorless.valorlessutils.ValorlessUtils.Log;

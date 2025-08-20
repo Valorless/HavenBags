@@ -21,7 +21,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import valorless.havenbags.*;
 import valorless.havenbags.HavenBags.BagState;
-import valorless.havenbags.gui.events.PrepareUpgradeEvent;
+import valorless.havenbags.events.gui.PrepareUpgradeEvent;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.Server;
@@ -318,7 +318,7 @@ public class UpgradeGUI implements Listener {
 				slot1 != null ? slot1.clone() : new ItemStack(Material.AIR), 
 				slot2 != null ? slot2.clone() : new ItemStack(Material.AIR));
 		
-		onPrepareUpgrade(new PrepareUpgradeEvent(player, slot1, slot2, result));
+		Bukkit.getPluginManager().callEvent(new PrepareUpgradeEvent(inv, player, slot1, slot2, result));
 	}
 	
 	private ItemStack prepareResult(Player player, ItemStack slot1, ItemStack slot2) {
@@ -397,7 +397,9 @@ public class UpgradeGUI implements Listener {
 		//return null;
 	}
 	
+	@EventHandler
 	void onPrepareUpgrade(PrepareUpgradeEvent event) {
+		if(!event.getInventory().equals(inv)) return;
 		inv.setItem(resultSlot, event.getResult());
 	}
 	

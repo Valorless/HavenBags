@@ -40,6 +40,8 @@ import valorless.havenbags.database.Files;
 import valorless.havenbags.database.MySQL;
 import valorless.havenbags.database.SQLite;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.events.BagCreateEvent;
+import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Reflex;
@@ -375,6 +377,7 @@ public class BagData {
 		dat.setChanged(true);
 		data.add(dat);
 		Log.Debug(Main.plugin, "[DI-30] " + "New bag data created: " + owner + "/" + uuid);
+		Bukkit.getPluginManager().callEvent(new BagCreateEvent(creator, bag, dat));
 		return dat;
 	}
 	
@@ -523,20 +526,17 @@ public class BagData {
 		Log.Error(Main.plugin, String.format("Failed to remove cached data for %s.", uuid));
 	}
 	
-	public static void DeleteBag(@NotNull String uuid) {
+	public static Boolean DeleteBag(@NotNull String uuid) {
 		for(int i = 0; i < data.size(); i++) {
 			Data bag = data.get(i);
 			if(bag.getUuid().equalsIgnoreCase(uuid)) {
-				RemoveBag(uuid);
-				if(changedBags.containsKey(UUID.fromString(uuid))) {
-					changedBags.remove(UUID.fromString(uuid));
-				}
 				if(getDatabase() == DatabaseType.FILES) {
 					try {
 						Files.deleteFile(bag.getOwner(), uuid);
 					}catch(Exception e) {
 						Log.Error(Main.plugin, String.format("Failed to delete data for %s.", uuid));
 						e.printStackTrace();
+						return false;
 					}
 				}else if(getDatabase() == DatabaseType.MYSQL) {
 		    		getMysql().deleteBag(uuid);
@@ -544,11 +544,17 @@ public class BagData {
 		    	else if(getDatabase() == DatabaseType.SQLITE) {
 		    		sqlite.deleteBag(uuid);
 		    	}
+				
+				RemoveBag(uuid);
+				if(changedBags.containsKey(UUID.fromString(uuid))) {
+					changedBags.remove(UUID.fromString(uuid));
+				}
 				Log.Info(Main.plugin, String.format("Deleted data for %s.", uuid));
-				return;
+				return true;
 			}
 		}
 		Log.Error(Main.plugin, String.format("Failed to delete data for %s.", uuid));
+		return false;
 	}
 	
 	public static List<String> GetBags(@NotNull String playerUUID) {
