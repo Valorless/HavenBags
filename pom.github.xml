@@ -109,29 +109,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-                <executions>
-                    <execution>
-                        <id>install-external</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>${basedir}\dependencies/ValorlessUtils-1.15.1.292.jar</file>
-                            <repositoryLayout>default</repositoryLayout>
-                            <groupId>valorless.valorlessutils</groupId>
-                            <artifactId>ValorlessUtils</artifactId>
-                            <version>1.15.1.292</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
                 <!-- or the latest version -->
@@ -151,6 +128,29 @@
                     </execution>
                 </executions>
             </plugin>
+            
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <version>3.5.0</version>
+      <configuration>
+        <!-- Use relative links for package-summary and navigation -->
+        <linksource>true</linksource>
+        <use>true</use>
+                <!-- Don't fail the build if there are missing Javadocs -->
+                <failOnError>false</failOnError>
+                
+                <!-- Optionally, allow missing comments/tags -->
+                <quiet>true</quiet>
+      </configuration>
+      <executions>
+        <execution>
+          <goals>
+            <goal>javadoc</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
         </plugins>
         <finalName>${project.artifactId}-${project.version}.${buildNumber}</finalName>
     </build>
@@ -167,18 +167,18 @@
             <id>spigot-repo2</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
         <repository>
             <id>minecraft-repo</id>
             <url>https://libraries.minecraft.net/</url>
         </repository>
-	<repository>
-		<id>jeff-media-public</id>
-		<url>https://repo.jeff-media.com/public/</url>
-	</repository>
+  <repository>
+    <id>github</id>
+    <url>https://maven.pkg.github.com/Valorless/ValorlessUtils</url>
+  </repository>
+        <repository>
+            <id>jeff-media-public</id>
+            <url>https://repo.jeff-media.com/public/</url>
+        </repository>
         <repository>
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
@@ -204,8 +204,12 @@
             <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
         <repository>
-    <id>papermc</id>
-    <url>https://repo.papermc.io/repository/maven-public/</url>
+    <id>codemc-releases</id>
+    <url>https://repo.codemc.io/repository/maven-releases/</url>
+</repository>
+<repository>
+    <id>codemc-snapshots</id>
+    <url>https://repo.codemc.io/repository/maven-snapshots/</url>
 </repository>
     </repositories>
     <dependencies>
@@ -218,7 +222,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.Valorless</groupId>
+            <groupId>valorless.ValorlessUtils</groupId>
             <artifactId>ValorlessUtils</artifactId>
             <version>1.15.2</version>
             <scope>provided</scope>
@@ -267,9 +271,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.dmulloy2</groupId>
+            <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>5.4.0</version>
+            <version>4.8.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -307,5 +311,11 @@
     <scope>system</scope>
     <systemPath>${basedir}\dependencies\SCore.jar</systemPath>
 </dependency> -->
+<dependency>
+    <groupId>com.github.retrooper</groupId>
+    <artifactId>packetevents-spigot</artifactId>
+    <version>2.9.3</version>
+    <scope>provided</scope>
+</dependency>
     </dependencies>
 </project>
