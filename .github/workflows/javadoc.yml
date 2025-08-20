@@ -20,15 +20,19 @@ jobs:
 
       # 3️⃣ Generate Javadocs (default location: target/site/apidocs)
       - name: Build Javadoc
-        run: mvn clean javadoc:javadoc -DfailOnError=false 
+        run: mvn clean javadoc:javadoc \
+              -DfailOnError=false \
+              -Dquiet=true \
+              -Dsource=17
 
-      # 4️⃣ Deploy to GitHub Pages
+      # 4️⃣ Deploy Javadocs to root of gh-pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target/site/apidocs   # use Maven's default output
+          publish_dir: ./target/site/apidocs   # folder whose CONTENTS go to root
           publish_branch: gh-pages
           user_name: github-actions
           user_email: github-actions@github.com
-          force_orphan: true   # creates gh-pages branch if missing
+          force_orphan: true   # creates branch if missing
+          keep_files: false    # remove everything in gh-pages before publishing
