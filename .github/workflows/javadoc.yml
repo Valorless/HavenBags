@@ -20,10 +20,7 @@ jobs:
 
       # 3️⃣ Generate Javadocs (default location: target/site/apidocs)
       - name: Build Javadoc
-        run: mvn clean javadoc:javadoc \
-              -DfailOnError=false \
-              -Dquiet=true \
-              -Dsource=17
+        run: mvn clean javadoc:javadoc -DfailOnError=false 
 
       # 4️⃣ Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
