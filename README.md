@@ -17,7 +17,7 @@ Create shulker-like bags of varying sizes bound to a player, or accessible by an
 ## Config Files
 [/resources](/src/main/resources)
 
-# API (Coming soon in 1.37.2)
+# API (Coming soon in 1.38.0)
 [https://valorless.github.io/HavenBags](https://valorless.github.io/HavenBags)
 
 ## Maven
@@ -32,6 +32,6 @@ Create shulker-like bags of varying sizes bound to a player, or accessible by an
 	<dependency>
 	    <groupId>com.github.Valorless</groupId>
 	    <artifactId>HavenBags</artifactId>
-	    <version>1.37.2</version>
+	    <version>1.38.0</version>
 	</dependency>
 ```
