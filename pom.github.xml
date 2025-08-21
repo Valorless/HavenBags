@@ -10,6 +10,7 @@
         <url>http://127.0.0.1/dummy</url> 
     </scm>
     <build>
+      <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <version>3.11.0</version>
@@ -148,7 +149,6 @@
       </executions>
     </plugin>
         </plugins>
-      <finalName>${project.artifactId}</finalName>
     </build>
     <repositories>
         <repository>
