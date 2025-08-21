@@ -11,6 +11,7 @@
         <url>http://127.0.0.1/dummy</url> 
     </scm>
     <build>
+        <finalName>${project.artifactId}-${project.version}.${buildNumber}</finalName>
         <plugins>
             <plugin>
                 <version>3.11.0</version>
@@ -137,8 +138,6 @@
             <configuration>
                 <failOnError>false</failOnError> <!-- don’t fail build if Javadocs missing -->
                 <quiet>true</quiet>              <!-- suppress warnings -->
-                <destDir>${project.basedir}/docs</destDir> <!-- output to ./docs -->
-                <source>17</source>             <!-- match your Java version -->
             </configuration>
       <executions>
         <execution>
@@ -149,7 +148,6 @@
       </executions>
     </plugin>
         </plugins>
-        <finalName>${project.artifactId}-${project.version}.${buildNumber}</finalName>
     </build>
     <repositories>
         <repository>
@@ -221,7 +219,8 @@
         <dependency>
             <groupId>com.github.Valorless</groupId>
             <artifactId>ValorlessUtils</artifactId>
-            <version>84d5a61370</version>
+            <!--<version>84d5a61370</version>-->
+            <version>1.16.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

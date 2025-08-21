@@ -450,6 +450,7 @@ public class ConfigValidation {
 	
 	private static void Plugins() {
 		Main.plugins.AddValidationEntry("plugins.PlaceholderAPI.enabled", true);
+		//Main.plugins.AddValidationEntry("plugins.ChestSort.enabled", true);
 		Main.plugins.AddValidationEntry("plugins.PvPManager.enabled", true);
 		Main.plugins.AddValidationEntry("plugins.PvPManager.tagged", true);
 		Main.plugins.AddValidationEntry("plugins.PvPManager.pvp", true);
