@@ -35,6 +35,7 @@ import valorless.havenbags.commands.CommandPreview;
 import valorless.havenbags.commands.CommandRawInfo;
 import valorless.havenbags.commands.CommandRefill;
 import valorless.havenbags.commands.CommandReload;
+import valorless.havenbags.commands.CommandReloadPlugin;
 import valorless.havenbags.commands.CommandRename;
 import valorless.havenbags.commands.CommandRestore;
 import valorless.havenbags.commands.CommandTexture;
@@ -202,6 +203,10 @@ public class CommandListener implements CommandExecutor {
 				
 				if(args[0].equalsIgnoreCase("effect") && sender.hasPermission("havenbags.effects")) {
 					return CommandEffect.Run(cmd);
+				}
+				
+				if(args[0].equalsIgnoreCase("pluginreload") && sender.isOp()) {
+					return CommandReloadPlugin.Run(cmd);
 				}
 				
 				

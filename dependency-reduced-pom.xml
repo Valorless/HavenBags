@@ -139,8 +139,6 @@
         <configuration>
           <failOnError>false</failOnError>
           <quiet>true</quiet>
-          <destDir>${project.basedir}/docs</destDir>
-          <source>17</source>
         </configuration>
       </plugin>
     </plugins>
@@ -213,7 +211,7 @@
     <dependency>
       <groupId>com.github.Valorless</groupId>
       <artifactId>ValorlessUtils</artifactId>
-      <version>84d5a61370</version>
+      <version>1.16.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

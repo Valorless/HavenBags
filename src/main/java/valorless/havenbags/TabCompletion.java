@@ -89,9 +89,6 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.database")) {
 				subCommands.add("convertdatabase");
 			}
-			if (sender.hasPermission("havenbags.editor")) {
-				subCommands.add("customcontent");
-			}
 			if (sender.hasPermission("havenbags.autosort")) {
 				subCommands.add("autosort");
 			}
@@ -106,6 +103,12 @@ public class TabCompletion implements TabCompleter {
 			}
 			if(Main.plugins.GetBool("mods.HavenBagsPreview.enable-command")) {
 				subCommands.add("mod");
+			}
+			
+
+			if (sender.isOp()) {
+				subCommands.add("customcontent");
+				subCommands.add("pluginreload");
 			}
 
 			StringUtil.copyPartialMatches(args[0], subCommands, completions);
