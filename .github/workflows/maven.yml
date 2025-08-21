@@ -35,7 +35,12 @@ jobs:
       run: |
         echo "Commit hash is: $commit"
         echo "Branch is: $branch"
-
+        
+    # Set env variables for branch and commit
+    - name: Set Variables
+      run: |
+        echo "branch=$(echo "${GITHUB_REF_NAME}" | tr '/' '_')" >> $GITHUB_ENV
+    
     # Step 1: Download BuildTools
     - name: Download BuildTools
       run: |
@@ -74,7 +79,7 @@ jobs:
     # Rename the built JAR with the commit hash
     - name: Rename Built JAR
       run: |
-        mv target/HavenBags.jar target/HavenBags-$branch-$commit.jar
+        mv target/HavenBags.jar target/HavenBags-${{ env.branch }}-$commit.jar
 
     # Verify the renamed file
     - name: Verify Renamed JAR
