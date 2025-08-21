@@ -220,7 +220,7 @@
         <dependency>
             <groupId>com.github.Valorless</groupId>
             <artifactId>ValorlessUtils</artifactId>
-            <version>84d5a61370</version>
+            <version>1.16.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
