@@ -21,7 +21,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import valorless.havenbags.*;
 import valorless.havenbags.HavenBags.BagState;
+import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.events.gui.PrepareUpgradeEvent;
+import valorless.havenbags.features.BagEffects;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.Server;
@@ -43,7 +46,8 @@ public class UpgradeGUI implements Listener {
 	 */
 	public enum ResultType {
 		Upgrade, // Upgrade a bag to a larger size
-		Skin // Skin a bag with a token
+		Skin, // Skin a bag with a token
+		Effect // Apply an effect to a bag
 	}
 	
 	/**
@@ -305,6 +309,30 @@ public class UpgradeGUI implements Listener {
 			}
 			Log.Debug(Main.plugin, "[DI-289] " + "[BagSkin] Applied skin!");
 		}
+		else if(resultType == ResultType.Effect) {
+			ItemStack skin = null;
+			
+			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(itemSlot1), event.getInventory().getItem(itemSlot2)))) {
+				if(!HavenBags.IsBag(item)) {
+					skin = item;
+				}
+			}
+		
+			ItemMeta meta = clicked.getItemMeta();
+			String value = PDC.GetString(skin, "token-skin");
+			try {
+				int cmd = Integer.valueOf(value);
+				if(value != null && meta.hasCustomModelData()) {
+					Log.Debug(Main.plugin, "[DI-287] " + "[BagSkin] CustomModelData Skin.");
+					meta.setCustomModelData(cmd);
+					clicked.setItemMeta(meta);
+				}
+			}catch(Exception e) {
+				Log.Debug(Main.plugin, "[DI-288] " + "[BagSkin] Texture Skin.");
+				BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(value);
+			}
+			Log.Debug(Main.plugin, "[DI-289] " + "[BagSkin] Applied skin!");
+		}
 		
 
 		event.getInventory().setItem(itemSlot1, new ItemStack(Material.AIR));
@@ -341,8 +369,7 @@ public class UpgradeGUI implements Listener {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		if(bag == null || token == null) return null
-				;
+		if(bag == null || token == null) return null;
 		
 		if(PDC.Has(bag, "skin") && PDC.GetBoolean(bag, "skin") == false) {
 			Log.Debug(Main.plugin, "[DI-269] [UpgradeGUI] Bag cannot be skinned.");
@@ -350,8 +377,13 @@ public class UpgradeGUI implements Listener {
 		}
 		if(PDC.Has(token, "token-skin")) {
 			Log.Debug(Main.plugin, "[DI-270] [UpgradeGUI] Bag is skinnable.");
-			resultType = ResultType.Skin;
-			return getSkinResult(bag, token);
+			TokenType type = PDC.Has(token, "token-type") ? TokenType.get(PDC.GetString(token, "token-type")) : null;
+			if(PDC.Has(token, "token-type") && PDC.GetString(token, "token-type").equalsIgnoreCase("effect")) {
+				return getEffectResult(bag, token);
+			}else {
+				resultType = ResultType.Skin;
+				return getSkinResult(bag, token, type);
+			}
 		}
 
 
@@ -473,14 +505,14 @@ public class UpgradeGUI implements Listener {
 		return item;
 	}
 	
-	ItemStack getSkinResult(ItemStack item, ItemStack skin) {
+	ItemStack getSkinResult(ItemStack item, ItemStack skin, TokenType type) {
 		Log.Debug(Main.plugin, "[DI-275] [UpgradeGUI] Preparing Result.");
 		ItemMeta meta = item.getItemMeta();
 		String value = PDC.GetString(skin, "token-skin");
-		String type = PDC.Has(skin, "token-type") ? PDC.GetString(skin, "token-type") : null;
+		//TokenType type = PDC.Has(skin, "token-type") ? TokenType.get(PDC.GetString(skin, "token-type")) : null;
 		
 		if(type != null) {
-			if(type.equalsIgnoreCase("texture")) {
+			if(type ==  TokenType.Texture) {
 				if(Base64Validator.isValidBase64(value)) {
 					Log.Debug(Main.plugin, "[DI-276] [UpgradeGUI] Texture Skin.");
 					BagData.setTextureValue(item, value);
@@ -489,7 +521,7 @@ public class UpgradeGUI implements Listener {
 					item = new ItemStack(Material.AIR);
 				}
 			}
-			else if(type.equalsIgnoreCase("modeldata")) {
+			else if(type == TokenType.ModelData) {
 				try {
 					int cmd = Integer.valueOf(value);
 					if(value != null) {
@@ -499,7 +531,7 @@ public class UpgradeGUI implements Listener {
 					}
 				}catch(Exception e) {}
 			}
-			else if(type.equalsIgnoreCase("itemmodel")) {
+			else if(type == TokenType.ItemModel && Server.VersionHigherOrEqualTo(Version.v1_20_5)) {
 				Log.Debug(Main.plugin, "[DI-279] [UpgradeGUI] ItemModel Skin.");
 				ItemUtils.SetItemModel(item, value);
 			}
@@ -525,6 +557,20 @@ public class UpgradeGUI implements Listener {
 		}
 		
 		return item;
+	}
+	
+	ItemStack getEffectResult(ItemStack item, ItemStack skin) {
+		Log.Debug(Main.plugin, "[DI-293] [UpgradeGUI] Preparing Result.");
+		String value = PDC.GetString(skin, "token-effect");
+		String uuid = HavenBags.GetBagUUID(item);
+				
+		if(BagEffects.hasEffect(value)) {
+			Data data = BagData.GetBag(uuid, null);
+			data.setEffect(value);
+			HavenBags.UpdateBagLore(item, player);
+			return item;
+		}
+		else return new ItemStack(Material.AIR);
 	}
 	
 }

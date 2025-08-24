@@ -27,12 +27,12 @@ import valorless.valorlessutils.utils.Utils;
 import valorless.havenbags.*;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.enums.GUIAction;
 import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.GUI;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.havenbags.utils.TaskUtils;
-import valorless.havenbags.utils.GUI.GUIAction;
 
 public class PlayerGUI implements Listener {	
 	public enum GUIType { Main, Restoration, Deletion, Confirmation }

@@ -35,11 +35,11 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import valorless.havenbags.HavenBags.BagState;
-import valorless.havenbags.database.DatabaseType;
 import valorless.havenbags.database.Files;
 import valorless.havenbags.database.MySQL;
 import valorless.havenbags.database.SQLite;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.events.BagCreateEvent;
 import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.gui.BagGUI;

@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
@@ -29,7 +30,7 @@ public class CommandToken {
 				if(command.args[1].equalsIgnoreCase("texture")) {
 					if(command.args[2].chars().count() > 30) {
 						if(Base64Validator.isValidBase64(command.args[2])) {
-							ItemStack token = HavenBags.CreateToken(command.args[2], "texture");
+							ItemStack token = HavenBags.CreateSkinToken(command.args[2], TokenType.Texture);
 							if(target != null) {
 								if(target.getInventory().firstEmpty() != -1) {
 									target.getInventory().addItem(token);
@@ -46,7 +47,7 @@ public class CommandToken {
 						}
 					}else {
 						if(Base64Validator.isValidBase64(Main.textures.GetString(String.format("textures.%s", command.args[2])))) {
-							ItemStack token = HavenBags.CreateToken(Main.textures.GetString(String.format("textures.%s", command.args[2])), command.args[1], command.args[2]);
+							ItemStack token = HavenBags.CreateSkinToken(Main.textures.GetString(String.format("textures.%s", command.args[2])), TokenType.Texture);
 							if(target != null) {
 								if(target.getInventory().firstEmpty() != -1) {
 									target.getInventory().addItem(token);
@@ -62,35 +63,48 @@ public class CommandToken {
 							return true;
 						}
 					}
-				}else {
-					if(command.args[1].equalsIgnoreCase("custommodeldata")) {
-						ItemStack token = HavenBags.CreateToken(command.args[2], "modeldata");
-						if(target != null) {
-							if(target.getInventory().firstEmpty() != -1) {
-								target.getInventory().addItem(token);
-							} else {
-								target.getWorld().dropItem(player.getLocation(), token);
-							}
-							Log.Info(Main.plugin, String.format("Gave token %s to %s.", command.args[2], command.args[3]));
-						}else {
-							player.getInventory().addItem(token);
+				}
+				else if(command.args[1].equalsIgnoreCase("custommodeldata")) {
+					ItemStack token = HavenBags.CreateSkinToken(command.args[2], TokenType.ModelData);
+					if(target != null) {
+						if(target.getInventory().firstEmpty() != -1) {
+							target.getInventory().addItem(token);
+						} else {
+							target.getWorld().dropItem(player.getLocation(), token);
 						}
-						//player.getInventory().addItem(HavenBags.CreateToken(command.args[2]));
+						Log.Info(Main.plugin, String.format("Gave token %s to %s.", command.args[2], command.args[3]));
+					}else {
+						player.getInventory().addItem(token);
 					}
-					else if(command.args[1].equalsIgnoreCase("itemmodel")) {
-							ItemStack token = HavenBags.CreateToken(command.args[2], "itemmodel");
-							if(target != null) {
-								if(target.getInventory().firstEmpty() != -1) {
-									target.getInventory().addItem(token);
-								} else {
-									target.getWorld().dropItem(player.getLocation(), token);
-								}
-								Log.Info(Main.plugin, String.format("Gave token %s to %s.", command.args[2], command.args[3]));
-							}else {
-								player.getInventory().addItem(token);
-							}
-							//player.getInventory().addItem(HavenBags.CreateToken(command.args[2]));
+					//player.getInventory().addItem(HavenBags.CreateToken(command.args[2]));
+				}
+				else if(command.args[1].equalsIgnoreCase("itemmodel")) {
+					ItemStack token = HavenBags.CreateSkinToken(command.args[2], TokenType.ItemModel);
+					if(target != null) {
+						if(target.getInventory().firstEmpty() != -1) {
+							target.getInventory().addItem(token);
+						} else {
+							target.getWorld().dropItem(player.getLocation(), token);
 						}
+						Log.Info(Main.plugin, String.format("Gave token %s to %s.", command.args[2], command.args[3]));
+					}else {
+						player.getInventory().addItem(token);
+					}
+					//player.getInventory().addItem(HavenBags.CreateToken(command.args[2]));
+				}
+				else if(command.args[1].equalsIgnoreCase("effect")) {
+					ItemStack token = HavenBags.CreateEffectToken(command.args[2]);
+					if(target != null) {
+						if(target.getInventory().firstEmpty() != -1) {
+							target.getInventory().addItem(token);
+						} else {
+							target.getWorld().dropItem(player.getLocation(), token);
+						}
+						Log.Info(Main.plugin, String.format("Gave token %s to %s.", command.args[2], command.args[3]));
+					}else {
+						player.getInventory().addItem(token);
+					}
+					//player.getInventory().addItem(HavenBags.CreateToken(command.args[2]));
 				}
 				return true;
 			}

@@ -1,4 +1,4 @@
-package valorless.havenbags.database;
+package valorless.havenbags.enums;
 
 public enum DatabaseType {
 

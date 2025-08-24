@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 import valorless.havenbags.BagData;
 import valorless.havenbags.Main;
-import valorless.havenbags.database.DatabaseType;
+import valorless.havenbags.enums.DatabaseType;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class CommandConvertDatabase {

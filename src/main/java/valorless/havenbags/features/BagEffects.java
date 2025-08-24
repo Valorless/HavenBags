@@ -86,6 +86,10 @@ public class BagEffects implements Listener {
 		}
 	}
 	
+	public static boolean hasEffect(String id) {
+		return effects.containsKey(id);
+	}
+	
 	public static BagEffect getEffect(String id){
 		return effects.get(id);
 	}

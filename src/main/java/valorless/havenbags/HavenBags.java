@@ -25,6 +25,7 @@ import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.database.BagCache;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.AutoSorter;
 import valorless.havenbags.features.BagEffects;
@@ -1026,23 +1027,22 @@ public class HavenBags {
 		return false;
 	}*/
 	
-	public static ItemStack CreateToken(String value, String type, String...skin) {
-		String name = Main.config.GetString("skin-token.display-name");
-		Material material = Main.config.GetMaterial("skin-token.material");
-		int cmd = Main.config.GetInt("skin-token.custommodeldata");
-		List<String> lore = Main.config.GetStringList("skin-token.lore");
+	public static ItemStack CreateSkinToken(String value, TokenType type ) {
+		String name = Main.config.GetString("token.skin.displayname");
+		Material material = Main.config.GetMaterial("token.skin.material");
+		int cmd = Main.config.GetInt("token.skin.custommodeldata");
+		List<String> lore = Main.config.GetStringList("token.skin.lore");
 		List<Placeholder> ph = new ArrayList<Placeholder>();
-		if(skin.length != 0) {
-			ph.add(new Placeholder("%skin%", skin[0]));
-		}else if(!Base64Validator.isValidBase64(value)) {
+		if(!Base64Validator.isValidBase64(value)) {
 			ph.add(new Placeholder("%skin%", value));
 		}else {
 			ph.add(new Placeholder("%skin%", ""));
 		}
 		
 		ItemStack item = new ItemStack(material);
-		PDC.SetString(item, "token-skin", value); // Set this first to give the item ItemMeta
-		PDC.SetString(item, "token-type", type);
+		// Set this first to give the item ItemMeta
+		PDC.SetString(item, "token-skin", value);
+		PDC.SetString(item, "token-type", type.toString());
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(Lang.Parse(name, ph));
 		if(cmd > 0) {
@@ -1068,6 +1068,35 @@ public class HavenBags {
 		if(material == Material.PLAYER_HEAD && Base64Validator.isValidBase64(value)) {
 			BagData.setTextureValue(item, value);
 		}
+		
+		return item;
+	}
+	
+	public static ItemStack CreateEffectToken(String value) {
+		String name = Main.config.GetString("token.effect.displayname");
+		Material material = Main.config.GetMaterial("token.effect.material");
+		int cmd = Main.config.GetInt("token.effect.custommodeldata");
+		List<String> lore = Main.config.GetStringList("token.effect.lore");
+		List<Placeholder> ph = new ArrayList<Placeholder>();
+		ph.add(new Placeholder("%effect%", value));
+		
+		ItemStack item = new ItemStack(material);
+		// Set this first to give the item ItemMeta
+		PDC.SetString(item, "token-effect", value);
+		PDC.SetString(item, "token-type", TokenType.Effect.toString());
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(Lang.Parse(name, ph));
+		if(cmd > 0) {
+			meta.setCustomModelData(cmd);
+		}
+		List<String> l = new ArrayList<String>();
+		for (String line : lore) {
+			if(!Utils.IsStringNullOrEmpty(line)) {
+				l.add(Lang.Parse(line, ph));
+			}
+		}
+		meta.setLore(l);
+		item.setItemMeta(meta);
 		
 		return item;
 	}

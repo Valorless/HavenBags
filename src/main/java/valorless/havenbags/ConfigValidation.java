@@ -130,12 +130,19 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("upgrades.from-27-to-36", "NETHERITE_INGOT:1:90002");
 	Main.config.AddValidationEntry("upgrades.from-36-to-45", "EMERALD:5:NETHERITE_BLOCK:1:90003");
 	Main.config.AddValidationEntry("upgrades.from-45-to-54", "END_CRYSTAL:1");
-	Main.config.AddValidationEntry("skin-token.display-name", "&aSkin Token");
-	Main.config.AddValidationEntry("skin-token.material", "PLAYER_HEAD");
-	Main.config.AddValidationEntry("skin-token.custommodeldata", 0);
-	Main.config.AddValidationEntry("skin-token.lore", new ArrayList<String>() {
+	Main.config.AddValidationEntry("token.skin.displayname", "&aSkin Token");
+	Main.config.AddValidationEntry("token.skin.material", "PLAYER_HEAD");
+	Main.config.AddValidationEntry("token.skin.custommodeldata", 0);
+	Main.config.AddValidationEntry("token.skin.lore", new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
-	{ add("&7Combine with a bag in an anvil to apply."); add("&7Skin: &e%skin%"); }} );
+	{ add("&7Combine with a bag in a fletching table to apply."); add("&7Skin: &e%skin%"); }} );
+	Main.config.AddValidationEntry("token.effect.displayname", "&eEffect Token");
+	Main.config.AddValidationEntry("token.effect.material", "PLAYER_HEAD");
+	Main.config.AddValidationEntry("token.effect.texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMzNGQxMmY3YWM5MzliMTE1MWQxMjE0NmQwMjM5ZWYwMTg4ZTQwM2VlMTk2NmQzZGIxOTllNjY0ZmYzODI4MyJ9fX0=");
+	Main.config.AddValidationEntry("token.effect.custommodeldata", 0);
+	Main.config.AddValidationEntry("token.effect.lore", new ArrayList<String>() {
+		private static final long serialVersionUID = 1L;
+	{ add("&7Combine with a bag in a fletching table to apply."); add("&7Skin: &e%effect%"); }} );
 	
 	Main.config.AddValidationEntry("bag-upgrades-anvil", false);
 	Main.config.AddValidationEntry("upgrade-gui.enabled", true);

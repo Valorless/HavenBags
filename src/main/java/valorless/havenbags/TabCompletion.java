@@ -181,6 +181,7 @@ public class TabCompletion implements TabCompleter {
 				cmds.add("texture");
 				cmds.add("custommodeldata");
 				cmds.add("itemmodel");
+				cmds.add("effect");
 				StringUtil.copyPartialMatches(cmd, cmds, completions);
 			}
 			if (args[0].equalsIgnoreCase("convertdatabase") && sender.hasPermission("havenbags.database")) {
@@ -273,17 +274,20 @@ public class TabCompletion implements TabCompleter {
 			if (args[0].equalsIgnoreCase("token") && args[1].equalsIgnoreCase("texture") && sender.hasPermission("havenbags.token")) {
 				StringUtil.copyPartialMatches(cmd, getTextures(), completions);
 			}
-			if (args[0].equalsIgnoreCase("modeldata") && sender.hasPermission("havenbags.modeldata")) {
+			if (args[0].equalsIgnoreCase("modeldata") && sender.hasPermission("havenbags.modeldata") && sender.hasPermission("havenbags.token")) {
 				List<String> materialNames = Arrays.stream(Material.values())
 				        .map(material -> material.name().toLowerCase())
 				        .collect(Collectors.toList());
 				StringUtil.copyPartialMatches(cmd, materialNames, completions);
 			}
-			if (args[0].equalsIgnoreCase("itemmodel") && sender.hasPermission("havenbags.modeldata")) {
+			if (args[0].equalsIgnoreCase("itemmodel") && sender.hasPermission("havenbags.modeldata") && sender.hasPermission("havenbags.token")) {
 				List<String> materialNames = Arrays.stream(Material.values())
 				        .map(material -> material.name().toLowerCase())
 				        .collect(Collectors.toList());
 				StringUtil.copyPartialMatches(cmd, materialNames, completions);
+			}
+			if (args[0].equalsIgnoreCase("effect") && sender.hasPermission("havenbags.effects") && sender.hasPermission("havenbags.token")) {
+				StringUtil.copyPartialMatches(cmd, BagEffects.getEffectNames(), completions);
 			}
 
 			if (args[0].equalsIgnoreCase("customcontent") && sender.hasPermission("havenbags.editor")) {

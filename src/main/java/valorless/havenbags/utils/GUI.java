@@ -12,15 +12,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.havenbags.Lang;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.enums.GUIAction;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.utils.Utils;
 
 public class GUI {
 	
-	public enum GUIAction {
-        NONE, PREV_PAGE, NEXT_PAGE, CONFIRM, CANCEL, RETURN, CREATE, RESTORE, PREVIEW, DELETE
-    }
-
 	public static Inventory CreatePage(Player player, String title, int page, List<ItemStack> items, int rows) {
 	    int totalPages;
 	    
