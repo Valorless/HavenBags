@@ -41,20 +41,38 @@ jobs:
       run: |
         echo "branch=$(echo "${GITHUB_REF_NAME}" | tr '/' '_')" >> $GITHUB_ENV
     
-    # Step 1: Download BuildTools
+    - name: Check for existing Spigot JAR
+      id: check_spigot
+      run: |
+        if [ -f "./spigot/1.20.jar" ]; then
+          echo "Spigot JAR exists, skipping BuildTools"
+          echo "cached=true" >> $GITHUB_OUTPUT
+        else
+          echo "cached=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Install existing Spigot JAR into local Maven repo
+      run: |
+        mkdir -p ~/.m2/repository/org/spigotmc/spigot/1.20-R0.1-SNAPSHOT
+        cp ./spigot/1.20.jar \
+           ~/.m2/repository/org/spigotmc/spigot/1.20-R0.1-SNAPSHOT/spigot-1.20-R0.1-SNAPSHOT.jar
+    
     - name: Download BuildTools
+      if: steps.check_spigot.outputs.cached == 'false'
       run: |
         curl -o BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
-        
-    # Step 2: Run BuildTools to generate Spigot
+    
     - name: Generate Spigot
+      if: steps.check_spigot.outputs.cached == 'false'
       run: |
-        java -jar BuildTools.jar --rev 1.21.1
+        java -jar BuildTools.jar --rev 1.20
+        mkdir -p ./spigot
+        cp ~/.m2/repository/org/spigotmc/spigot/1.20-R0.1-SNAPSHOT/spigot-1.20-R0.1-SNAPSHOT.jar ./spigot/1.20.jar
         
     # Step 3: Verify that Spigot is installed
     - name: Verify Spigot Installation
       run: |
-        ls ~/.m2/repository/org/spigotmc/spigot/1.21.1-R0.1-SNAPSHOT
+        ls ~/.m2/repository/org/spigotmc/spigot/1.20-R0.1-SNAPSHOT
 
     # Extract version from main pom.xml
     - name: Get version from main pom.xml
