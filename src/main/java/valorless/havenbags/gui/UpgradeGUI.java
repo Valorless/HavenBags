@@ -265,6 +265,9 @@ public class UpgradeGUI implements Listener {
 		}
 		ItemStack clicked = event.getInventory().getItem(resultSlot);
 		
+		event.getInventory().setItem(itemSlot1, new ItemStack(Material.AIR));
+		event.getInventory().setItem(itemSlot2, new ItemStack(Material.AIR));
+		
 		if(resultType == ResultType.Upgrade) {
 			String owner = PDC.GetString(clicked, "owner");
 			BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setSize(PDC.GetInteger(clicked, "size"));
@@ -334,9 +337,14 @@ public class UpgradeGUI implements Listener {
 			Log.Debug(Main.plugin, "[DI-289] " + "[BagSkin] Applied skin!");
 		}
 		
-
-		event.getInventory().setItem(itemSlot1, new ItemStack(Material.AIR));
-		event.getInventory().setItem(itemSlot2, new ItemStack(Material.AIR));
+		BukkitRunnable task = new BukkitRunnable() {
+		    @Override
+		    public void run() {
+		    	event.getInventory().setItem(itemSlot1, new ItemStack(Material.AIR));
+				event.getInventory().setItem(itemSlot2, new ItemStack(Material.AIR));
+		    }
+		};
+		task.runTaskLater(Main.plugin, 1);
 	}
 	
 	void updateGUI(InventoryClickEvent event) {		
