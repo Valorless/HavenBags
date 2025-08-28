@@ -1077,8 +1077,9 @@ public class HavenBags {
 		Material material = Main.config.GetMaterial("token.effect.material");
 		int cmd = Main.config.GetInt("token.effect.custommodeldata");
 		List<String> lore = Main.config.GetStringList("token.effect.lore");
+		String skin = Main.config.GetString("token.effect.texture");
 		List<Placeholder> ph = new ArrayList<Placeholder>();
-		ph.add(new Placeholder("%effect%", value));
+		ph.add(new Placeholder("%effect%", BagEffects.getEffectDisplayname(value)));
 		
 		ItemStack item = new ItemStack(material);
 		// Set this first to give the item ItemMeta
@@ -1097,6 +1098,14 @@ public class HavenBags {
 		}
 		meta.setLore(l);
 		item.setItemMeta(meta);
+		
+		if(material == Material.PLAYER_HEAD) {
+			if(Base64Validator.isValidBase64(skin)) {
+				BagData.setTextureValue(item, skin);
+			}else {
+				Log.Error(Main.plugin, "token.effect.texture is not a valid base64 skin.");
+			}
+		}
 		
 		return item;
 	}

@@ -103,6 +103,8 @@ public class UpgradeGUI implements Listener {
 	
 	Material filler = Material.GRAY_STAINED_GLASS_PANE;
 	
+	int upgAmount = 0;
+	
 	public UpgradeGUI(Player player) {
 		
 		this.player = player;
@@ -257,21 +259,29 @@ public class UpgradeGUI implements Listener {
 		if(event.getInventory().getItem(itemSlot1) == null) return;
 		if(event.getInventory().getItem(itemSlot2) == null) return;
 		if(event.getInventory().getItem(resultSlot) == null) return;
+		
 		Player player = (Player) event.getWhoClicked();
 		try {
 			player.playSound(player.getLocation(), Main.config.GetString("upgrade-gui.success-sound"), 1.0f, 1.0f);
 		} catch (Exception e) {
 			SFX.Play(Main.config.GetString("upgrade-gui.success-sound"), 1.0f, 1.0f, player);
 		}
-		ItemStack clicked = event.getInventory().getItem(resultSlot);
 		
-		event.getInventory().setItem(itemSlot1, new ItemStack(Material.AIR));
-		event.getInventory().setItem(itemSlot2, new ItemStack(Material.AIR));
+		ItemStack clicked = event.getInventory().getItem(resultSlot);
+
+		ItemStack token = null;
+		ItemStack upgrade = null;
 		
 		if(resultType == ResultType.Upgrade) {
 			String owner = PDC.GetString(clicked, "owner");
 			BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setSize(PDC.GetInteger(clicked, "size"));
 			Log.Debug(Main.plugin, "[DI-83] " + "[BagUpgrade] Size set to " + PDC.GetInteger(clicked, "size"));
+			
+			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(itemSlot1), event.getInventory().getItem(itemSlot2)))) {
+				if(!HavenBags.IsBag(item)) {
+					upgrade = item;
+				}
+			}
 
 			if(Main.weight.GetBool("weight-per-size")) {
 				BagData.SetWeightMax(HavenBags.GetBagUUID(clicked), Main.weight.GetDouble(String.format("weight-size-%s", PDC.GetInteger(clicked, "size"))));
@@ -289,16 +299,15 @@ public class UpgradeGUI implements Listener {
 			HavenBags.UpdateBagLore(clicked, null);
 		}
 		else if(resultType == ResultType.Skin) {
-			ItemStack skin = null;
 			
 			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(itemSlot1), event.getInventory().getItem(itemSlot2)))) {
 				if(!HavenBags.IsBag(item)) {
-					skin = item;
+					token = item;
 				}
 			}
 		
 			ItemMeta meta = clicked.getItemMeta();
-			String value = PDC.GetString(skin, "token-skin");
+			String value = PDC.GetString(token, "token-skin");
 			try {
 				int cmd = Integer.valueOf(value);
 				if(value != null && meta.hasCustomModelData()) {
@@ -312,42 +321,75 @@ public class UpgradeGUI implements Listener {
 			}
 			Log.Debug(Main.plugin, "[DI-289] " + "[BagSkin] Applied skin!");
 		}
-		else if(resultType == ResultType.Effect) {
-			ItemStack skin = null;
-			
+		else if(resultType == ResultType.Effect) {			
 			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(itemSlot1), event.getInventory().getItem(itemSlot2)))) {
 				if(!HavenBags.IsBag(item)) {
-					skin = item;
+					token = item;
 				}
 			}
 		
-			ItemMeta meta = clicked.getItemMeta();
-			String value = PDC.GetString(skin, "token-skin");
-			try {
-				int cmd = Integer.valueOf(value);
-				if(value != null && meta.hasCustomModelData()) {
-					Log.Debug(Main.plugin, "[DI-287] " + "[BagSkin] CustomModelData Skin.");
-					meta.setCustomModelData(cmd);
-					clicked.setItemMeta(meta);
-				}
-			}catch(Exception e) {
-				Log.Debug(Main.plugin, "[DI-288] " + "[BagSkin] Texture Skin.");
-				BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(value);
-			}
-			Log.Debug(Main.plugin, "[DI-289] " + "[BagSkin] Applied skin!");
+			String value = PDC.GetString(token, "token-effect");
+			BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setEffect(value);
+			HavenBags.UpdateBagLore(clicked, null);
 		}
-		
-		BukkitRunnable task = new BukkitRunnable() {
-		    @Override
-		    public void run() {
-		    	event.getInventory().setItem(itemSlot1, new ItemStack(Material.AIR));
+
+		// Reset slots
+		if(event.getInventory().getItem(itemSlot1).isSimilar(upgrade)) {
+			if(upgrade != null && upgrade.getAmount() > upgAmount) {
+				int amount = upgrade.getAmount() - upgAmount;
+				upgrade.setAmount(amount);
+			}else {
+				event.getInventory().setItem(itemSlot1, new ItemStack(Material.AIR));
+			}
+		}else {
+			event.getInventory().setItem(itemSlot1, new ItemStack(Material.AIR));
+		}
+
+		if(event.getInventory().getItem(itemSlot2).isSimilar(upgrade)) {
+			if(upgrade != null && upgrade.getAmount() > upgAmount) {
+				int amount = upgrade.getAmount() - upgAmount;
+				upgrade.setAmount(amount);
+			}else {
 				event.getInventory().setItem(itemSlot2, new ItemStack(Material.AIR));
-		    }
+			}
+		}else {
+			event.getInventory().setItem(itemSlot2, new ItemStack(Material.AIR));
+		}
+
+		/*final ItemStack upg = upgrade;
+		BukkitRunnable task = new BukkitRunnable() {
+			@Override
+			public void run() {
+
+				// Reset slots
+				if(event.getInventory().getItem(itemSlot1) == upg) {
+					if(upg != null && upg.getAmount() > upgAmount) {
+						int amount = upg.getAmount() - upgAmount;
+						upg.setAmount(amount);
+					}else {
+						event.getInventory().setItem(itemSlot1, new ItemStack(Material.AIR));
+					}
+				}else {
+					event.getInventory().setItem(itemSlot1, new ItemStack(Material.AIR));
+				}
+
+				if(event.getInventory().getItem(itemSlot2) == upg) {
+					if(upg != null && upg.getAmount() > upgAmount) {
+						int amount = upg.getAmount() - upgAmount;
+						upg.setAmount(amount);
+					}else {
+						event.getInventory().setItem(itemSlot2, new ItemStack(Material.AIR));
+					}
+				}else {
+					event.getInventory().setItem(itemSlot2, new ItemStack(Material.AIR));
+				}
+			}
 		};
-		task.runTaskLater(Main.plugin, 1);
+		task.runTaskLater(Main.plugin, 1);*/
 	}
 	
 	void updateGUI(InventoryClickEvent event) {		
+		upgAmount = 0;
 		ItemStack slot1 = event.getInventory().getItem(itemSlot1);
 		ItemStack slot2 = event.getInventory().getItem(itemSlot2);
 		ItemStack result = prepareResult(player, 
@@ -386,12 +428,13 @@ public class UpgradeGUI implements Listener {
 		if(PDC.Has(token, "token-skin")) {
 			Log.Debug(Main.plugin, "[DI-270] [UpgradeGUI] Bag is skinnable.");
 			TokenType type = PDC.Has(token, "token-type") ? TokenType.get(PDC.GetString(token, "token-type")) : null;
-			if(PDC.Has(token, "token-type") && PDC.GetString(token, "token-type").equalsIgnoreCase("effect")) {
-				return getEffectResult(bag, token);
-			}else {
-				resultType = ResultType.Skin;
-				return getSkinResult(bag, token, type);
-			}
+			resultType = ResultType.Skin;
+			return getSkinResult(bag, token, type);
+		}
+		
+		if(PDC.Has(token, "token-effect")) {
+			resultType = ResultType.Effect;
+			return getEffectResult(bag, token);
 		}
 
 
@@ -412,6 +455,7 @@ public class UpgradeGUI implements Listener {
 			String model = null;
 			Material requirement = Material.getMaterial(split[0]);
 			int amount = Integer.valueOf(split[1]);
+			upgAmount = amount;
 			try {
 				if(split.length == 3) {
 					cmd = Integer.valueOf(split[2]);
@@ -429,7 +473,7 @@ public class UpgradeGUI implements Listener {
 					}else return null;
 				}
 			}
-			if(token.getType() != requirement || token.getAmount() != amount) return null;
+			if(token.getType() != requirement || token.getAmount() < amount) return null;
 			ItemStack result = bag.clone();
 			resultType = ResultType.Upgrade;
 			return getUpgradeResult(result, size, size+9, bag, token);
@@ -494,7 +538,7 @@ public class UpgradeGUI implements Listener {
 		String[] split = Main.config.GetString(String.format("upgrades.from-%s-to-%s", from, to)).split(":");
 		Material requirement = Material.getMaterial(split[0]);
 		int amount = Integer.valueOf(split[1]);
-		if(upgrade.getType() == requirement && upgrade.getAmount() == amount) {
+		if(upgrade.getType() == requirement && upgrade.getAmount() >= amount) {
 			meta.setLore(newLore);
 			item.setItemMeta(meta);
 			PDC.SetInteger(item, "size", to);
