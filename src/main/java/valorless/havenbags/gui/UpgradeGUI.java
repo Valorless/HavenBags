@@ -4,8 +4,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -23,23 +21,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 import valorless.havenbags.*;
 import valorless.havenbags.HavenBags.BagState;
 import valorless.havenbags.datamodels.Data;
-import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.events.gui.PrepareUpgradeEvent;
-import valorless.havenbags.features.AutoPickup;
-import valorless.havenbags.features.AutoSorter;
 import valorless.havenbags.features.BagEffects;
-import valorless.havenbags.mods.HavenBagsPreview;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
-import valorless.havenbags.utils.TextFeatures;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.items.ItemUtils;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.sound.SFX;
-import valorless.valorlessutils.utils.Utils;
 
 /**
  * UpgradeGUI is a GUI for upgrading bags or applying skins to them.
