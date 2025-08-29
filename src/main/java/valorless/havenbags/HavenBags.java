@@ -376,7 +376,7 @@ public class HavenBags {
 		bag.setItemMeta(bagMeta);
 	}
 	
-	private static void UpdateUsed(ItemStack bag, Data data, OfflinePlayer player) {
+	public static void UpdateUsed(ItemStack bag, Data data, OfflinePlayer player) {
 		if(Server.VersionHigherOrEqualTo(Version.v1_21)) {
 			ItemUtils.SetMaxStackSize(bag, 1);
 		}

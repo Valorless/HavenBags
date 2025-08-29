@@ -339,7 +339,6 @@ public class Data {
 	 * 
 	 * @return A new Data object with the same properties as this one.
 	 */
-	@Override
 	public Data clone() {
 	    Data copy = new Data(this.uuid, this.owner);
 
