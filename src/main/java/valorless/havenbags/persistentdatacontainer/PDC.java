@@ -17,8 +17,13 @@ import valorless.valorlessutils.utils.Utils;
 public class PDC {
 	
 	public static Boolean Has(ItemStack item, String key) {
-	    if (!item.hasItemMeta()) return false;
-	    return Tags.Has(Main.plugin, item, key);
+	    //if (!item.hasItemMeta()) return false;
+	    try {
+	    	return Tags.Has(Main.plugin, item, key);
+	    } catch (Exception e) {
+	    	//e.printStackTrace();
+	    	return false;
+	    }
 	}
 	
 	public static Boolean Remove(ItemStack item, String key) {

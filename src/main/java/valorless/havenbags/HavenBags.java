@@ -66,10 +66,8 @@ public class HavenBags {
 	
 	public static Boolean IsBag(ItemStack item) {
 		if(item == null) return false;
-		if(item.hasItemMeta()) {
-			if(PDC.Has(item, "uuid")) {
-				return true;
-			}
+		if(PDC.Has(item, "uuid")) {
+			return true;
 		}
 		return false;
 	}
