@@ -11,6 +11,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -145,6 +146,12 @@ public class PlayerGUI implements Listener {
 	public void onInventoryClose(final InventoryCloseEvent e) {
 		if (!e.getInventory().equals(inv)) return;
 	}
+    
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        if (!event.getInventory().equals(inv)) return;
+        event.setCancelled(true);
+    }
 	
 	@EventHandler
 	public void onPlayerCommand(PlayerCommandPreprocessEvent e) {
