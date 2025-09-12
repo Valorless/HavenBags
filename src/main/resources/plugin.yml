@@ -164,10 +164,10 @@ permissions:
   havenbags.token:
     description: Allows you create skin tokens.
     default: op
-  havenbags.carry.0:
+  havenbags.carry.99:
     description: Bags carry limit.
     default: op
-  havenbags.max.0:
+  havenbags.max.99:
     description: Bags creation limit.
     default: op
   havenbags.autosort:

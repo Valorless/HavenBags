@@ -88,18 +88,21 @@ public class BagCarryLimit implements Listener {
     }
 	
 	public static int getBagCarryLimit(Player player) {
+        Integer highestNumber = null;
 	    for (PermissionAttachmentInfo perm : player.getEffectivePermissions()) {
 	        String permName = perm.getPermission();
 
 	        if (permName.startsWith("havenbags.carry.")) {
 	            try {
-	                return Integer.parseInt(permName.substring("havenbags.carry.".length())); // Extract full number
+	            	Integer num = Integer.parseInt(permName.substring("havenbags.carry.".length())); // Extract full number
+	                if(num > highestNumber) highestNumber = num;
 	            } catch (NumberFormatException e) {
-	                return Main.config.GetInt("carry-limit");
+	                return Main.config.GetInt("carry-limit"); // Fallback if parsing fails
 	            }
 	        }
+	     
 	    }
-	    return Main.config.GetInt("carry-limit");
+	    return highestNumber != null ? highestNumber : Main.config.GetInt("carry-limit");
 	}
 	
 	

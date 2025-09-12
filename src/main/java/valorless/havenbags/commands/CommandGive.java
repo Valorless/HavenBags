@@ -40,8 +40,8 @@ public class CommandGive {
 				try {
 					CustomBags.Give(receiver, command.args[2]);
 					return true;
-				}catch(Exception é) {
-					é.printStackTrace();
+				}catch(Exception ex) {
+					ex.printStackTrace();
 					return false;
 				}
 			}
