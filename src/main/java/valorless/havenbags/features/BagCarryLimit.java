@@ -88,7 +88,7 @@ public class BagCarryLimit implements Listener {
     }
 	
 	public static int getBagCarryLimit(Player player) {
-        Integer highestNumber = null;
+        Integer highestNumber = 0;
 	    for (PermissionAttachmentInfo perm : player.getEffectivePermissions()) {
 	        String permName = perm.getPermission();
 
@@ -96,13 +96,13 @@ public class BagCarryLimit implements Listener {
 	            try {
 	            	Integer num = Integer.parseInt(permName.substring("havenbags.carry.".length())); // Extract full number
 	                if(num > highestNumber) highestNumber = num;
-	            } catch (NumberFormatException e) {
+	            } catch (Exception e) {
 	                return Main.config.GetInt("carry-limit"); // Fallback if parsing fails
 	            }
 	        }
 	     
 	    }
-	    return highestNumber != null ? highestNumber : Main.config.GetInt("carry-limit");
+	    return highestNumber != 0 ? highestNumber : Main.config.GetInt("carry-limit");
 	}
 	
 	
