@@ -120,6 +120,7 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("magnet.require-autopickup", false);
 	Main.config.AddValidationEntry("magnet.only-autopickup-items", false);
 	Main.config.AddValidationEntry("magnet.instant", false);
+	Main.config.AddValidationEntry("magnet.vertical", false);
 	
 	Main.config.AddValidationEntry("effects.refresh-rate", 100);
 	

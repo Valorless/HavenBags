@@ -214,6 +214,7 @@ magnet:
  tick-rate: 2 # How often the task should run
  range: 5.0
  speed: 0.1
+ vertical: false # Should drops ignore gravity to move vertically towards the player?
  require-autopickup: false
  only-autopickup-items: false
  instant: false # This will teleport the items to the player instantly

@@ -39,7 +39,7 @@ public class Magnet {
 			                if (!(entity instanceof Item)) continue;
 			                Item item = (Item) entity;
 			                if (item.isDead() || !item.isValid()) continue;
-			                if (!item.isOnGround()) continue;
+			                if (!item.isOnGround() && Main.config.GetBool("magnet.vertical") == false) continue;
 			                if (item.getOwner() != null && item.getOwner() != player.getUniqueId()) continue;
 			                
 			                if(Main.config.GetBool("magnet.require-autopickup") && !data.getAutopickup().equalsIgnoreCase("null")) {
