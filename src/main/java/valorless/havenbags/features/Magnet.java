@@ -60,8 +60,10 @@ public class Magnet {
 			                double distanceSquared = direction.lengthSquared();
 			                if (distanceSquared < 0.25) continue; // 0.5 blocks squared
 
-			                if (!item.getLocation().getBlock().isLiquid()) {
-			                    direction.setY(0);
+			                if(Main.config.GetBool("magnet.vertical") == false) {
+			                	if (!item.getLocation().getBlock().isLiquid()) {
+			                    	direction.setY(0);
+			                	}
 			                }
 			                
 			                direction.normalize().multiply(Main.config.GetDouble("magnet.speed"));
