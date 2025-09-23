@@ -12,6 +12,7 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.items.ItemUtils;
@@ -42,6 +43,8 @@ public class AutoSorter {
 			content.sort((item1, item2) -> {
 				if (item1 == null || item1.getType() == null) return 1; // Push nulls to the end
 				if (item2 == null || item2.getType() == null) return -1;
+				if(PDC.Has(item1, "locked")) return 1;
+				if(PDC.Has(item2, "locked")) return -1;
 
 				// Get best available name: DisplayName > Custom ItemName > Material Name
 				String name1 = getBestItemName(item1);

@@ -336,8 +336,12 @@ public class BagData {
 		Data dat = new Data(uuid, owner, bag.getType());
 		dat.setContent(content);
 		dat.setCreator(creator.getUniqueId().toString());
-		
-		dat.setSize(PDC.GetInteger(bag, "size"));
+		int size = 0;
+		for(ItemStack item : content) {
+			if(!PDC.Has(item, "locked")) size++;
+		}
+		//dat.setSize(PDC.GetInteger(bag, "size"));
+		dat.setSize(size);
 		if(bag.getType() == Material.PLAYER_HEAD) {
 			dat.setTexture(getTextureValue(bag));
 			dat.setModeldata(0);

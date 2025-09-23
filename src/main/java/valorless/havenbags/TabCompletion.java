@@ -119,12 +119,12 @@ public class TabCompletion implements TabCompleter {
 				// /bags create <size>
 				List<String> sizes = new ArrayList<String>();
 				sizes.add("ownerless");
-				sizes.add("1");
-				sizes.add("2");
-				sizes.add("3");
-				sizes.add("4");
-				sizes.add("5");
-				sizes.add("6");
+				sizes.add("9");
+				sizes.add("18");
+				sizes.add("27");
+				sizes.add("36");
+				sizes.add("45");
+				sizes.add("54");
 				StringUtil.copyPartialMatches(cmd, sizes, completions);
 			}
 			if (args[0].equalsIgnoreCase("give") && sender.hasPermission("havenbags.give")) {

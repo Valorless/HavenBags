@@ -286,7 +286,10 @@ public class HavenBags {
 		} else {
 			PDC.SetBoolean(bag, "binding", true);
 		}
-		PDC.SetInteger(bag, "size", data.getSize());
+		if(isPowerOfNine(data.getSize())) {
+			PDC.SetInteger(bag, "size", data.getSize());
+		}
+		
 		if(data.getAutopickup().equalsIgnoreCase("null")) {
 			PDC.SetString(bag, "filter", null);
 		}else {
@@ -307,7 +310,7 @@ public class HavenBags {
 		}
 		//PDC.SetString(bag, "bag-creator", data.getCreator());
 	}
-	
+
 	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, OfflinePlayer player, boolean...preview) {
 		if(bag == null || bag.getType() == Material.AIR) {
 			Log.Warning(Main.plugin, String.format("Failed to update bag item for player '%s'.\n"
@@ -400,6 +403,7 @@ public class HavenBags {
 		List<String> items = new ArrayList<String>();
 		if(inventory != null) {
 			for(int i = 0; i < inventory.size(); i++) {
+				if(PDC.Has(inventory.get(i), "locked")) continue;
 				cont.add(inventory.get(i));
 				if(inventory.get(i) != null && inventory.get(i).getType() != Material.AIR) {
 					List<Placeholder> itemph = new ArrayList<Placeholder>();
@@ -630,6 +634,7 @@ public class HavenBags {
 				Main.config.GetDouble("close-pitch").floatValue(), player);
 		for(int i = 0; i < content.size(); i++) {
 			try {
+				if(PDC.Has(content.get(i), "locked")) continue;
 				Item dropped = player.getWorld().dropItem(player.getLocation(), content.get(i));
 				dropped.setPickupDelay(100);
 				content.set(i, null);
@@ -1224,4 +1229,19 @@ public class HavenBags {
 
 		return !access;
     }
+
+	public static Integer findClosestNine(Integer size) {
+		if(size <= 9) return 9;
+		if(size <= 18) return 18;
+		if(size <= 27) return 27;
+		if(size <= 36) return 36;
+		if(size <= 45) return 45;
+		if(size <= 54) return 54;
+		return 54;
+	}
+	
+	public static boolean isPowerOfNine(int size) {
+		if(size % 9 == 0) return true;
+		return false;
+	}
 }

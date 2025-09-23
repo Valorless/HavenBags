@@ -41,6 +41,7 @@ public class CommandExplode {
 		SFX.Play(Sound.ENTITY_GENERIC_EXPLODE.toString(), 1.0f, 1.0f, player);
 		for(int i = 0; i < content.size(); i++) {
 			try {
+				if(PDC.Has(content.get(i), "locked")) continue;
 				Item dropped = player.getWorld().dropItem(player.getLocation(), content.get(i));
 				dropped.setPickupDelay(100);
 				

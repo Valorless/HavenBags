@@ -32,6 +32,14 @@ import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.sound.SFX;
 
+/**
+ * Listener for handling player interactions with bags.
+ * This class manages the opening of bags, ensuring proper permissions,
+ * cooldowns, and bag ownership checks are enforced.
+ * <p>
+ * To activate this listener, call the static {@link #init()} method during your plugin's startup.
+ * </p>
+ */
 public class BagListener implements Listener{
 	
 	/**
@@ -162,7 +170,7 @@ public class BagListener implements Listener{
 					
 					boolean ownerless = !PDC.GetBoolean(hand, "binding");
 					
-					int size = PDC.GetInteger(hand, "size");
+					int size = HavenBags.findClosestNine(PDC.GetInteger(hand, "size"));
 					for(int i = 9; i <= 54; i += 9) {
 						Log.Debug(Main.plugin, "[DI-63] " + "havenbags.open." + String.valueOf(i) + ": "+ player.hasPermission("havenbags.open." + String.valueOf(i)));
 						if(size != i) continue;
@@ -247,8 +255,20 @@ public class BagListener implements Listener{
 		PDC.SetDouble(bag, "weight", 0.0);
 
 		List<ItemStack> cont = new ArrayList<ItemStack>();
-		for(int i = 0; i < PDC.GetInteger(bag, "size"); i++) {
-			cont.add(null);
+		for(int i = 0; i < HavenBags.findClosestNine(PDC.GetInteger(bag, "size")); i++) {
+			if(i < PDC.GetInteger(bag, "size")) {
+				cont.add(null);
+			} else {
+				ItemStack blocker = new ItemStack(Material.BARRIER);
+				ItemMeta bm = blocker.getItemMeta();
+				bm.setCustomModelData(99999);
+				// hide tooltip
+				bm.setDisplayName(" ");
+				blocker.setItemMeta(bm);
+				PDC.SetBoolean(blocker, "locked", true);
+				
+				cont.add(blocker);
+			}
 		}
 		
 		if(ownerless) {
