@@ -128,6 +128,7 @@ public class SkinCache implements Listener {
 		} else {
 			config = new Config(Main.plugin, "/cache/skins.yml");
 			cache = JsonUtils.fromJson(config.GetString("skins"));
+			if(cache == null) cache = new HashMap<>();
 		}
 		long endTime = System.currentTimeMillis();
 		long duration = endTime - startTime;
