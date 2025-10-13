@@ -31,6 +31,7 @@ import valorless.havenbags.commands.CommandItemModel;
 import valorless.havenbags.commands.CommandMagnet;
 import valorless.havenbags.commands.CommandMod;
 import valorless.havenbags.commands.CommandModelData;
+import valorless.havenbags.commands.CommandOpen;
 import valorless.havenbags.commands.CommandPreview;
 import valorless.havenbags.commands.CommandRawInfo;
 import valorless.havenbags.commands.CommandRefill;
@@ -56,9 +57,12 @@ public class CommandListener implements CommandExecutor {
     	Log.Debug(Main.plugin, "[DI-85] " + "Sender: " + sender.getName());
     	Log.Debug(Main.plugin, "[DI-86] " + "Command: " + command.toString());
     	Log.Debug(Main.plugin, "[DI-87] " + "Label: " + label);
-    	for(String arg : args) {
-			Log.Debug(Main.plugin, "[DI-132] " + arg);
+    	for(int i = 0; i < args.length; i++) {
+			Log.Debug(Main.plugin, "[DI-132] " + "Arg " + i + ": " + args[i]);
 		}
+    	/*for(String arg : args) {
+			Log.Debug(Main.plugin, "[DI-132] " + arg);
+		}*/
     	final HBCommand cmd = new HBCommand(sender, command, label, args);
     	
 		if(args.length == 0) {
@@ -203,6 +207,10 @@ public class CommandListener implements CommandExecutor {
 				
 				if(args[0].equalsIgnoreCase("effect") && sender.hasPermission("havenbags.effects")) {
 					return CommandEffect.Run(cmd);
+				}
+				
+				if(args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.ethereal")) {
+					return CommandOpen.Run(cmd);
 				}
 				
 				if(args[0].equalsIgnoreCase("pluginreload") && sender.isOp()) {

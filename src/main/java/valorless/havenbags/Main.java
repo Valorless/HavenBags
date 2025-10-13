@@ -1,6 +1,7 @@
 package valorless.havenbags;
 
 import valorless.havenbags.database.BagCache;
+import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.database.SkinCache;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.features.AutoPickup;
@@ -170,6 +171,8 @@ public final class Main extends JavaPlugin implements Listener {
 		AutoPickup.Initiate();
 		
 		CustomBags.Initiate();
+		
+		EtherealBags.init();
 
 		RegisterListeners();
 				
@@ -226,6 +229,7 @@ public final class Main extends JavaPlugin implements Listener {
     	BagEffects.shutdown();
     	UpgradeGUI.OpenGUIs.CloseAll();
     	SkinCache.shutdown();
+    	EtherealBags.shutdown();
     }
     
     public static void CloseBags() {

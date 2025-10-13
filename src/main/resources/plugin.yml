@@ -48,6 +48,7 @@ permissions:
       havenbags.autosort: true
       havenbags.magnet: true
       havenbags.refill: true
+      havenbags.ethereal: true
   havenbags.admin:
     description: Gives access to all admin commands.
     children:
@@ -65,6 +66,7 @@ permissions:
       havenbags.modeldata: true
       havenbags.token: true
       havenbags.effects: true
+      havenbags.ethereal.admin: true
   havenbags.reload:
     description: Allows you to reload the configuration.
     default: op
@@ -185,4 +187,12 @@ permissions:
   havenbags.database:
     description: Allows you to change the database type.
     default: op
+  havenbags.ethereal:
+    description: Allows you to open ethereal bags.
+    default: op
+  havenbags.ethereal.admin:
+    description: Allows you to open others ethereal bags, and give/remove them.
+    default: op
+    children:
+      havenbags.ethereal: true
   

@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -17,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.StringUtil;
 
 import valorless.havenbags.HavenBags.BagState;
+import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.BagEffects;
@@ -56,9 +58,7 @@ public class TabCompletion implements TabCompleter {
 				subCommands.add("info");
 				subCommands.add("rawinfo");
 			}
-			if (sender.hasPermission("havenbags.gui")) {
-				subCommands.add("gui");
-			}else if(Main.config.GetBool("player-gui.enabled")){
+			if (sender.hasPermission("havenbags.gui") || Main.config.GetBool("player-gui.enabled")) {
 				subCommands.add("gui");
 			}
 			if (sender.hasPermission("havenbags.empty")) {
@@ -103,6 +103,9 @@ public class TabCompletion implements TabCompleter {
 			}
 			if(Main.plugins.GetBool("mods.HavenBagsPreview.enable-command")) {
 				subCommands.add("mod");
+			}
+			if (sender.hasPermission("havenbags.ethereal")) {
+				subCommands.add("open");
 			}
 			
 
@@ -222,6 +225,15 @@ public class TabCompletion implements TabCompleter {
 				effects.add("none");
 				StringUtil.copyPartialMatches(cmd, effects, completions);
 			}
+			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.ethereal")) {
+				if(sender instanceof Player player) {
+					List<String> bags = EtherealBags.getPlayerBagsFormatted(player.getUniqueId());
+					if(sender.hasPermission("havenbags.ethereal.admin")) {
+						bags.addAll(getOnlinePlayerNames());
+					}
+					StringUtil.copyPartialMatches(cmd, bags, completions);
+				}
+			}
 			/*
 			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.open")) {
 				Player player = (Player)sender;
@@ -248,6 +260,7 @@ public class TabCompletion implements TabCompleter {
 				// /bags give <player> <size>
 				List<String> sizes = new ArrayList<String>();
 				sizes.add("ownerless");
+				sizes.add("ethereal");
 				sizes.add("1");
 				sizes.add("2");
 				sizes.add("3");
@@ -293,6 +306,20 @@ public class TabCompletion implements TabCompleter {
 				StringUtil.copyPartialMatches(cmd, materialNames, completions);
 			}
 			
+			
+			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.ethereal.admin")) {
+				String playerName = args[2];
+				List<OfflinePlayer> offlinePlayers = Arrays.asList(Bukkit.getOfflinePlayers());
+				OfflinePlayer target = offlinePlayers.stream()
+						.filter(p -> p.getName() != null && p.getName().equalsIgnoreCase(playerName))
+						.findFirst()
+						.orElse(null);
+				if(target != null) {
+					List<String> bags = EtherealBags.getPlayerBagsFormatted(target.getPlayer().getUniqueId());
+					StringUtil.copyPartialMatches(cmd, bags, completions);
+				}
+			}
+			
 
 			if (args[0].equalsIgnoreCase("customcontent") && sender.hasPermission("havenbags.editor")) {
 				if(args[1].equalsIgnoreCase("load")) {
@@ -307,7 +334,9 @@ public class TabCompletion implements TabCompleter {
 		} 
 		else if(args.length == 4) {
 			String cmd = args[3];
-			if (args[0].equalsIgnoreCase("give") && args[2].equalsIgnoreCase("ownerless") && sender.hasPermission("havenbags.give")) {
+			if (args[0].equalsIgnoreCase("give") 
+					&& (args[2].equalsIgnoreCase("ownerless") || args[2].equalsIgnoreCase("ethereal"))
+					&& sender.hasPermission("havenbags.give")) {
 				// /bags give <player> ownerless <size>
 				List<String> sizes = new ArrayList<String>();
 				sizes.add("1");
@@ -320,6 +349,17 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (args[0].equalsIgnoreCase("token") && sender.hasPermission("havenbags.token")) {
 				StringUtil.copyPartialMatches(cmd, getOnlinePlayerNames(), completions);
+			}
+		} 
+		else if(args.length == 5) {
+			String cmd = args[4];
+			if (args[0].equalsIgnoreCase("give") 
+					&& args[2].equalsIgnoreCase("ethereal")
+					&& sender.hasPermission("havenbags.ethereal.admin")) {
+				// /bags give <player> ownerless <size>
+				List<String> id = new ArrayList<String>();
+				id.add("<id>");
+				StringUtil.copyPartialMatches(cmd, id, completions);
 			}
 		} 
 		else {
