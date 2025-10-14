@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import valorless.havenbags.Main;
@@ -57,7 +58,40 @@ public class EtherealBags {
 	/**
 	 * Currently open Ethereal GUIs, used to ensure they are closed before saving on shutdown.
 	 */
-	private static List<EtherealGUI> openGUIs = new ArrayList<>();
+	public static List<EtherealGUI> openGUIs = new ArrayList<>();
+	
+	/**
+	 * Check if any specific player has a specific bag GUI open.
+	 * @param player Player to check
+	 * @param bagId Raw bag identifier
+	 * @return true if the player has the specified bag GUI open; false otherwise
+	 */
+	public static Boolean isOpen(Player player, String bagId) {
+		for(EtherealGUI gui : openGUIs) {
+			if(gui.player.getUniqueId().toString().equalsIgnoreCase(player.getUniqueId().toString())
+					&& gui.bagId.equalsIgnoreCase(bagId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Check if any player has a specific bag GUI open by its composite ID.
+	 * <p>
+	 * The composite ID is in the format "&lt;uuid&gt;-&lt;bagId&gt;".
+	 * @param bagId Composite bag identifier to check
+	 * @return true if any player has the specified bag GUI open; false otherwise
+	 */
+	public static Boolean isOpen(String bagId) {
+		for(EtherealGUI gui : openGUIs) {
+			String compare = formatBagId(gui.player.getUniqueId(), gui.bagId);
+			if(compare.equalsIgnoreCase(bagId)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	/**
 	 * Initialize the Ethereal Bags subsystem.
@@ -108,8 +142,8 @@ public class EtherealBags {
 			Log.Info(Main.plugin, "Saving ethereal bags..");
 			
 			// close any open Ethereal GUIs to prevent issues on reload
-			for(EtherealGUI gui : openGUIs) {
-				gui.Close(true);
+			for (EtherealGUI gui : new ArrayList<>(openGUIs)) {
+			    gui.Close(true);
 			}
 
 			if(config == null) {
@@ -241,7 +275,7 @@ public class EtherealBags {
 	    }
 
 	    // Prepare empty contents
-	    List<ItemStack> contents = new ArrayList<>(size * 9);
+	    List<ItemStack> contents = new ArrayList<>();
 	    for (int i = 0; i < size * 9; i++) {
 	        contents.add(null); // null represents an empty slot
 	    }

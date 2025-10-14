@@ -308,7 +308,7 @@ public class TabCompletion implements TabCompleter {
 			
 			
 			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.ethereal.admin")) {
-				String playerName = args[2];
+				String playerName = args[1];
 				List<OfflinePlayer> offlinePlayers = Arrays.asList(Bukkit.getOfflinePlayers());
 				OfflinePlayer target = offlinePlayers.stream()
 						.filter(p -> p.getName() != null && p.getName().equalsIgnoreCase(playerName))

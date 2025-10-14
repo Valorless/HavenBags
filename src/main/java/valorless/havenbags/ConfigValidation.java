@@ -203,6 +203,8 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("auto-sort-command", "&fAuto-sort has been set to: %value%.");
 		Lang.lang.AddValidationEntry("magnet-command", "&fMagnetic has been set to: %value%.");
 		Lang.lang.AddValidationEntry("refill-command", "&fRefill has been set to: %value%.");
+		Lang.lang.AddValidationEntry("ethereal-open", "&cThe player is currently using their bag.");
+		Lang.lang.AddValidationEntry("ethereal-open-admin", "&cThis bag is currently being viewed by an admin.");
 		
 		// Admin Lang
 		//Lang.lang.AddValidationEntry("bag-create", ""); //unsure wtf this was for

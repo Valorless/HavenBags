@@ -25,7 +25,7 @@ public class EtherealGUI implements Listener {
 	public Player player;
 	public int size;
 	
-    public EtherealGUI(Player player, String bagId) {
+    public EtherealGUI(Player player, String bagId, Player viewer) {
 		Bukkit.getServer().getPluginManager().registerEvents(this, Main.plugin);
 		
 		Log.Info(Main.plugin, player.getName());
@@ -36,11 +36,13 @@ public class EtherealGUI implements Listener {
     	this.player = player;
     	this.content = EtherealBags.getBagContentsOrNull(player.getUniqueId(), bagId);
     	if(this.content == null) {
-			player.sendMessage(Lang.Parse(Lang.Get("bag-does-not-exist"), player));
+    		viewer.sendMessage(Lang.Parse(Lang.Get("bag-does-not-exist"), viewer));
 			HandlerList.unregisterAll(this);
 			return;
 		}
     	this.size = this.content.size();
+    	
+    	EtherealBags.openGUIs.add(this);
     	
     	inv = Bukkit.createInventory(player, size, bagId);
 
@@ -136,6 +138,8 @@ public class EtherealGUI implements Listener {
         //Unregister this GUI from listening to event.
     	Log.Debug(Main.plugin, "[EtherealGUI][DI-298] Unregistering listener for " + player.getName());
 		HandlerList.unregisterAll(this);
+		
+		EtherealBags.openGUIs.remove(this);
     }
     
 }

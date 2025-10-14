@@ -90,6 +90,14 @@ magnet-command: '&fMagnetic has been set to: %value%.'
 # Message sent when the player toggles refill.
 refill-command: '&fRefill has been set to: %value%.'
 
+# Message sent to admins if they attempt to open a player's Ethereal bag,
+# while the player is using it.
+ethereal-open: '&cThe player is currently using their bag.'
+
+# Message sent to the player trying to open their Ethereal bag, which
+# is currently being viewed by someone with 'havenbags.ethereal.admin'.
+ethereal-open-admin: '&cThis bag is currently being viewed by an admin.'
+
 ### Admin ###
 
 # Message sent when attempting to fetch a player which does not exist.
