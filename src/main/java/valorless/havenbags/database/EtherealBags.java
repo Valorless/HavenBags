@@ -396,16 +396,16 @@ public class EtherealBags {
 	 */
 	public static List<String> getPlayerBagsFormatted(UUID uuid) {
 	    // get the bags (or an empty list) and remove the "<uuid>-" prefix from each id
-		Log.Info(Main.plugin, "[EtherealBags][DI-295] Retrieving formatted bag list for player " + uuid.toString());
+		//Log.Info(Main.plugin, "[EtherealBags][DI-295] Retrieving formatted bag list for player " + uuid.toString());
 	    List<String> playerBags = getPlayerBags(uuid);
-	    Log.Info(Main.plugin, "[EtherealBags][DI-296] Raw bag list: " + playerBags.toString());
+	    //Log.Info(Main.plugin, "[EtherealBags][DI-296] Raw bag list: " + playerBags.toString());
 
 	    String prefix = uuid.toString() + "-";
-	    Log.Info(Main.plugin, "[EtherealBags][DI-297] Using prefix: " + prefix);
+	    //Log.Info(Main.plugin, "[EtherealBags][DI-297] Using prefix: " + prefix);
 	    List<String> formattedBags = playerBags.stream()
                 .map(bagId -> bagId.replace(prefix, ""))
                 .collect(Collectors.toList());
-	    Log.Info(Main.plugin, "[EtherealBags][DI-298] Formatted bag list: " + formattedBags.toString());
+	    //Log.Info(Main.plugin, "[EtherealBags][DI-298] Formatted bag list: " + formattedBags.toString());
 	    return formattedBags;
 	}
 	
