@@ -32,7 +32,7 @@ permissions:
       havenbags.use: true
       havenbags.rename: true
       havenbags.empty: true
-      havenbags.autoloot: true
+      havenbags.autopickup: true
       havenbags.open.9: true
       havenbags.open.18: true
       havenbags.open.27: true

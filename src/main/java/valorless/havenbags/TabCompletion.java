@@ -105,8 +105,17 @@ public class TabCompletion implements TabCompleter {
 				subCommands.add("mod");
 			}
 			if (sender.hasPermission("havenbags.ethereal")) {
-				subCommands.add("open");
-				subCommands.add("ethereal");
+				// Only show 'open' subcommand if player has ethereal bags
+				if(EtherealBags.hasBags(sender instanceof Player ? ((Player)sender).getUniqueId() : null)) {
+					subCommands.add("open");
+				}
+				
+				// Only show 'ethereal' subcommand if player has at least one of the related permissions
+				if(sender.hasPermission("havenbags.magnet") 
+						|| sender.hasPermission("havenbags.autopickup") 
+						|| sender.hasPermission("havenbags.autosort")) {
+					subCommands.add("ethereal"); // Manage ethereal bag settings
+				}
 			}
 			
 
@@ -239,9 +248,9 @@ public class TabCompletion implements TabCompleter {
 				if(sender instanceof Player player) {
 					List<String> bags = EtherealBags.getPlayerBagsFormatted(player.getUniqueId());
 					List<String> types = new ArrayList<String>();
-					types.add("autosort");
-					types.add("autopickup");
-					types.add("magnet");
+					if(player.hasPermission("havenbags.autosort")) types.add("autosort");
+					if(player.hasPermission("havenbags.autopickup")) types.add("autopickup");
+					if(player.hasPermission("havenbags.magnet")) types.add("magnet");
 					StringUtil.copyPartialMatches(cmd, bags, completions);
 				}
 			}

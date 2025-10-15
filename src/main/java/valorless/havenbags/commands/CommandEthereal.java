@@ -26,7 +26,7 @@ public class CommandEthereal {
 			return true;
 		}
 		
-		if(type.equalsIgnoreCase("autosort")) {
+		if(type.equalsIgnoreCase("autosort") && player.hasPermission("havenbags.autosort")) {
 			if(command.args.length < 4) {
 				command.sender.sendMessage("§cUsage: /bag ethereal <id> autosort <on|off>");
 				return true;
@@ -46,7 +46,7 @@ public class CommandEthereal {
 			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-sort-command").replace("%value%", value), player));
 			return true;
 		}
-		else if(type.equalsIgnoreCase("autopickup")) {
+		else if(type.equalsIgnoreCase("autopickup") && player.hasPermission("havenbags.autopickup")) {
 			if(command.args.length < 4) {
 				//command.sender.sendMessage("§cUsage: /bag ethereal <id> autopickup <filter|none>");
 				EtherealBags.getBagSettings(player.getUniqueId(), bagId).autoPickup = "null";
@@ -67,7 +67,7 @@ public class CommandEthereal {
 			}
 			return true;
 		}
-		else if(type.equalsIgnoreCase("magnet")) {
+		else if(type.equalsIgnoreCase("magnet") && player.hasPermission("havenbags.magnet")) {
 			if(command.args.length < 4) {
 				command.sender.sendMessage("§cUsage: /bag ethereal <id> magnet <on|off>");
 				return true;

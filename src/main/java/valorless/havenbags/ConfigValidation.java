@@ -465,7 +465,8 @@ public class ConfigValidation {
 		Main.plugins.AddValidationEntry("plugins.PvPManager.tagged", true);
 		Main.plugins.AddValidationEntry("plugins.PvPManager.pvp", true);
 		Main.plugins.AddValidationEntry("plugins.PvPManager.message", "&cYou cannot use this while in PvP.");
-		//plugins.AddValidationEntry("plugins.Oraxen.enabled", true);
+		Main.plugins.AddValidationEntry("plugins.Nexo.enabled", true);
+		Main.plugins.AddValidationEntry("plugins.Oraxen.enabled", true);
 		
 		Main.plugins.AddValidationEntry("mods.HavenBagsPreview.enabled", true);
 		Main.plugins.AddValidationEntry("mods.HavenBagsPreview.enable-command", true);

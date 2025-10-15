@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -246,6 +247,7 @@ public class EtherealBags {
 	 * @return true if the player has at least one bag; false otherwise
 	 */
 	public static Boolean hasBags(UUID uuid) {
+		if(uuid == null) return false;
 		return bags.containsKey(uuid.toString()) && !bags.get(uuid.toString()).isEmpty();
 	}
 	
@@ -285,6 +287,7 @@ public class EtherealBags {
 		
 		// If the bag data already exists, don't overwrite — treat as "already added".
 	    if (bagData.containsKey(id)) {
+	    	Log.Info(Main.plugin, "[EtherealBags][DI-303] Bag data for id " + bagId + " for player " + Bukkit.getOfflinePlayer(uuid).getName() + " already exists.");
 	        return false;
 	    }
 		
@@ -331,6 +334,7 @@ public class EtherealBags {
 
 	    // If the bag data already exists, don't overwrite — treat as "already added".
 	    if (bagData.containsKey(id)) {
+	    	Log.Info(Main.plugin, "[EtherealBags][DI-303] Bag data for id " + bagId + " for player " + Bukkit.getOfflinePlayer(uuid).getName() + " already exists.");
 	        return false;
 	    }
 
@@ -477,9 +481,11 @@ public class EtherealBags {
 	}
 	
 	/**
-	 * Get the settings of a player's bag or null if unknown.
+	 * Get the settings of a player's bag or create default settings if unknown.
 	 * <p>
-	 * Builds the composite key from the player UUID and bagId and queries {@code bagFeatures}.
+	 * Builds the composite key from the player UUID and bagId and queries {@code bagFeatures}.<br>
+	 * If no settings exist, a new default {@link EtherealBagSettings} instance is created,
+	 * stored, and returned.
 	 * @param uuid Owner of the bag
 	 * @param bagId Raw bag identifier
 	 * @return EtherealBagSettings instance if present; otherwise null
@@ -487,6 +493,8 @@ public class EtherealBags {
 	public static EtherealBagSettings getBagSettings(UUID uuid, String bagId) {
 		String id = uuid.toString() + "-" + bagId;
 		if(!bagSettings.containsKey(id)) {
+			Log.Debug(Main.plugin, "[EtherealBags][DI-304] Bag settings for id " + bagId + " for player " 
+					+ Bukkit.getOfflinePlayer(uuid).getName() + " do not exist. Creating default settings.");
 			bagSettings.put(id, new EtherealBagSettings());
 		}
 		return bagSettings.get(id);
