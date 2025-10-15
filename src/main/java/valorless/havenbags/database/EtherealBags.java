@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import valorless.havenbags.Main;
+import valorless.havenbags.datamodels.EtherealBagSettings;
 import valorless.havenbags.gui.EtherealGUI;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
@@ -26,11 +27,16 @@ import valorless.valorlessutils.json.JsonUtils;
  *   <li>Store serialized bag contents by a composite bag key.</li>
  *   <li>Load data on plugin start ({@link #init()}) and save on shutdown ({@link #shutdown()}).</li>
  *   <li>Track open Ethereal GUIs to close them safely during shutdown.</li>
+ *   <li>Provide methods to add, remove, update, and query bags and their contents.</li>
+ *   <li>Normalize bag IDs by stripping or adding the UUID prefix.</li>
+ *   <li>Check and manage open GUIs for players and bag IDs.</li>
  * </ul>
  * Storage notes:
  * <ul>
  *   <li>bags: Map keyed by a player's UUID string. Value is a list of raw bag IDs.</li>
  *   <li>bagData: Map keyed by a composite string "&lt;uuid&gt;-&lt;bagId&gt;".</li>
+ *   <li>bagSettings: Map keyed by the same composite string, storing {@link EtherealBagSettings} instances.</li>
+ *   <li>openGUIs: List of currently open {@link EtherealGUI} instances.</li>
  * </ul>
  * Data is persisted to plugins/HavenBags/bags/etherealbags.yml using
  * ValorlessUtils {@link Config} with JSON-serialized payloads.
@@ -54,6 +60,14 @@ public class EtherealBags {
 	 * Value: serialized bag contents as a list of {@link ItemStack}.
 	 */
 	private static HashMap<String, List<ItemStack>> bagData = new HashMap<>();
+	
+	/**
+	 * Bag settings storage.
+	 * <p>
+	 * Key: composite bag key "&lt;uuid&gt;-&lt;bagId&gt;".<br>
+	 * Value: {@link EtherealBagSettings} instance storing bag settings.
+	 */
+	private static HashMap<String, EtherealBagSettings> bagSettings = new HashMap<>();
 	
 	/**
 	 * Currently open Ethereal GUIs, used to ensure they are closed before saving on shutdown.
@@ -94,6 +108,41 @@ public class EtherealBags {
 	}
 	
 	/**
+	 * Close a specific player's open bag GUI by raw bag ID.
+	 * @param player Player whose GUI to close
+	 * @param bagId Raw bag identifier
+	 * @return true if the GUI was found and closed; false otherwise
+	 */
+	public static Boolean closeGUI(Player player, String bagId) {
+		for(EtherealGUI gui : openGUIs) {
+			if(gui.player.getUniqueId().toString().equalsIgnoreCase(player.getUniqueId().toString())
+					&& gui.bagId.equalsIgnoreCase(bagId)) {
+				gui.Close(true);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Close any player's open bag GUI by its composite ID.
+	 * <p>
+	 * The composite ID is in the format "&lt;uuid&gt;-&lt;bagId&gt;".
+	 * @param bagId Composite bag identifier
+	 * @return true if the GUI was found and closed; false otherwise
+	 */
+	public static Boolean closeGUI(String bagId) {
+		for(EtherealGUI gui : openGUIs) {
+			String compare = formatBagId(gui.player.getUniqueId(), gui.bagId);
+			if(compare.equalsIgnoreCase(bagId)) {
+				gui.Close(true);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * Initialize the Ethereal Bags subsystem.
 	 * <p>
 	 * Ensures storage directories/files exist, loads persisted JSON strings from
@@ -104,6 +153,7 @@ public class EtherealBags {
 		long startTime = System.currentTimeMillis();
 		bags.clear();
 		bagData.clear();
+		bagSettings.clear();
 		openGUIs.clear();
 		File root = new File(Main.plugin.getDataFolder() + "/bags");
 		File file = new File(Main.plugin.getDataFolder() + "/bags/etherealbags.yml");
@@ -123,6 +173,8 @@ public class EtherealBags {
 			if(bags == null) bags = new HashMap<String, List<String>>();
 			bagData = JsonUtils.fromJson(config.GetString("data"));
 			if(bagData == null) bagData = new HashMap<String, List<ItemStack>>();
+			bagSettings = JsonUtils.fromJson(config.GetString("features"));
+			if(bagSettings == null) bagSettings = new HashMap<String, EtherealBagSettings>();
 		}
 		long endTime = System.currentTimeMillis();
 		long duration = endTime - startTime;
@@ -165,10 +217,12 @@ public class EtherealBags {
 
 				config.Set("bags", JsonUtils.toJson(bags));
 				config.Set("data", JsonUtils.toJson(bagData));
+				config.Set("features", JsonUtils.toJson(bagSettings));
 				config.SaveConfig();
 			} else {
 				config.Set("bags", JsonUtils.toJson(bags));
 				config.Set("data", JsonUtils.toJson(bagData));
+				config.Set("features", JsonUtils.toJson(bagSettings));
 				config.SaveConfig();
 			}
 
@@ -246,6 +300,7 @@ public class EtherealBags {
 
 	    // Store the bag contents
 	    bagData.put(id, contents);
+	    bagSettings.put(id, new EtherealBagSettings());
 	    return true;
 	}
 	
@@ -266,7 +321,7 @@ public class EtherealBags {
 	 * @param size Number of rows (of 9 slots each) for the bag's initial contents
 	 * @return true if the new bag was created; false if it already exists
 	 */
-	public static boolean addBag(UUID uuid, String bagId, int size) {
+	public static Boolean addBag(UUID uuid, String bagId, int size) {
 	    String id = uuid.toString() + "-" + bagId;
 
 	    // If the bag data already exists, don't overwrite — treat as "already added".
@@ -297,6 +352,7 @@ public class EtherealBags {
 
 	    // Store the bag contents
 	    bagData.put(id, contents);
+	    bagSettings.put(id, new EtherealBagSettings());
 	    return true;
 	}
 	
@@ -308,10 +364,13 @@ public class EtherealBags {
 	 * If the player's bag list becomes empty, their entry is removed from {@code bags}.
 	 * @param uuid Owner of the bag
 	 * @param bagId Bag identifier to remove
+	 * @return true if the bag existed and was removed; false otherwise
 	 */
-	public static void removeBag(UUID uuid, String bagId) {
+	public static Boolean removeBag(UUID uuid, String bagId) {
 	    String key = uuid.toString();
 	    String id = key + "-" + bagId;
+	    
+	    if(isOpen(id)) closeGUI(id);
 
 	    if (bags.containsKey(key)) {
 	        List<String> playerBags = bags.get(key);
@@ -323,9 +382,12 @@ public class EtherealBags {
 	                bags.put(key, playerBags);
 	            }
 	        }
-	    }
 
-	    bagData.remove(id);
+		    bagData.remove(id);
+		    bagSettings.remove(id);
+		    return true;
+	    }
+	    return false;
 	}
 	
 	/**
@@ -407,6 +469,67 @@ public class EtherealBags {
                 .collect(Collectors.toList());
 	    //Log.Info(Main.plugin, "[EtherealBags][DI-298] Formatted bag list: " + formattedBags.toString());
 	    return formattedBags;
+	}
+	
+	/**
+	 * Get the settings of a player's bag or null if unknown.
+	 * <p>
+	 * Builds the composite key from the player UUID and bagId and queries {@code bagFeatures}.
+	 * @param uuid Owner of the bag
+	 * @param bagId Raw bag identifier
+	 * @return EtherealBagSettings instance if present; otherwise null
+	 */
+	public static EtherealBagSettings getBagSettings(UUID uuid, String bagId) {
+		String id = uuid.toString() + "-" + bagId;
+		if(bagSettings.containsKey(id)) {
+			return bagSettings.get(id);
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the autoPickup setting of a player's bag or "null" if unknown.
+	 * @param uuid Owner of the bag
+	 * @param bagId Raw bag identifier
+	 * @return autoPickup setting if present; otherwise "null"
+	 */
+	public static String getBagAutoPickup(UUID uuid, String bagId) {
+		String id = uuid.toString() + "-" + bagId;
+		EtherealBagSettings bag = getBagSettings(uuid, id);
+		if(bag != null) {
+			return bag.autoPickup;
+		}
+		return "null";
+	}
+	
+	/**
+	 * Get the magnet setting of a player's bag or false if unknown.
+	 * @param uuid Owner of the bag
+	 * @param bagId Raw bag identifier
+	 * @return magnet setting if present; otherwise false
+	 */
+	public static Boolean getBagMagnet(UUID uuid, String bagId) {
+		String id = uuid.toString() + "-" + bagId;
+		EtherealBagSettings bag = getBagSettings(uuid, id);
+		if(bag != null) {
+			return bag.magnet;
+		}
+		return false;
+	}
+	
+	/**
+	 * Get the autoSort setting of a player's bag or false if unknown.
+	 * @param uuid Owner of the bag
+	 * @param bagId Raw bag identifier
+	 * @return autoSort setting if present; otherwise false
+	 */
+	public static Boolean getBagAutoSort(UUID uuid, String bagId) {
+		String id = uuid.toString() + "-" + bagId;
+		EtherealBagSettings bag = getBagSettings(uuid, id);
+		if(bag != null) {
+			return bag.autoSort;
+		}
+		return false;
 	}
 	
 	/**
