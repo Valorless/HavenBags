@@ -11,6 +11,10 @@ import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.EtherealBagSettings;
 import valorless.havenbags.gui.EtherealGUI;
@@ -173,7 +177,8 @@ public class EtherealBags {
 			if(bags == null) bags = new HashMap<String, List<String>>();
 			bagData = JsonUtils.fromJson(config.GetString("data"));
 			if(bagData == null) bagData = new HashMap<String, List<ItemStack>>();
-			bagSettings = JsonUtils.fromJson(config.GetString("features"));
+			Type bagSettingsType = new TypeToken<HashMap<String, EtherealBagSettings>>(){}.getType();
+			bagSettings = fromJson(config.GetString("settings"), bagSettingsType);
 			if(bagSettings == null) bagSettings = new HashMap<String, EtherealBagSettings>();
 		}
 		long endTime = System.currentTimeMillis();
@@ -217,12 +222,12 @@ public class EtherealBags {
 
 				config.Set("bags", JsonUtils.toJson(bags));
 				config.Set("data", JsonUtils.toJson(bagData));
-				config.Set("features", JsonUtils.toJson(bagSettings));
+				config.Set("settings", JsonUtils.toJson(bagSettings));
 				config.SaveConfig();
 			} else {
 				config.Set("bags", JsonUtils.toJson(bags));
 				config.Set("data", JsonUtils.toJson(bagData));
-				config.Set("features", JsonUtils.toJson(bagSettings));
+				config.Set("settings", JsonUtils.toJson(bagSettings));
 				config.SaveConfig();
 			}
 
@@ -432,7 +437,7 @@ public class EtherealBags {
 	 */
 	public static List<ItemStack> getBagContentsOrEmpty(UUID uuid, String bagId) {
 		String id = uuid.toString() + "-" + bagId;
-		return bagData.getOrDefault(id, new ArrayList<ItemStack>());
+		return new ArrayList<>(bagData.getOrDefault(id, new ArrayList<ItemStack>()));
 	}
 	
 	/**
@@ -481,10 +486,10 @@ public class EtherealBags {
 	 */
 	public static EtherealBagSettings getBagSettings(UUID uuid, String bagId) {
 		String id = uuid.toString() + "-" + bagId;
-		if(bagSettings.containsKey(id)) {
-			return bagSettings.get(id);
+		if(!bagSettings.containsKey(id)) {
+			bagSettings.put(id, new EtherealBagSettings());
 		}
-		return null;
+		return bagSettings.get(id);
 	}
 	
 	/**
@@ -494,8 +499,7 @@ public class EtherealBags {
 	 * @return autoPickup setting if present; otherwise "null"
 	 */
 	public static String getBagAutoPickup(UUID uuid, String bagId) {
-		String id = uuid.toString() + "-" + bagId;
-		EtherealBagSettings bag = getBagSettings(uuid, id);
+		EtherealBagSettings bag = getBagSettings(uuid, bagId);
 		if(bag != null) {
 			return bag.autoPickup;
 		}
@@ -509,8 +513,7 @@ public class EtherealBags {
 	 * @return magnet setting if present; otherwise false
 	 */
 	public static Boolean getBagMagnet(UUID uuid, String bagId) {
-		String id = uuid.toString() + "-" + bagId;
-		EtherealBagSettings bag = getBagSettings(uuid, id);
+		EtherealBagSettings bag = getBagSettings(uuid, bagId);
 		if(bag != null) {
 			return bag.magnet;
 		}
@@ -524,8 +527,7 @@ public class EtherealBags {
 	 * @return autoSort setting if present; otherwise false
 	 */
 	public static Boolean getBagAutoSort(UUID uuid, String bagId) {
-		String id = uuid.toString() + "-" + bagId;
-		EtherealBagSettings bag = getBagSettings(uuid, id);
+		EtherealBagSettings bag = getBagSettings(uuid, bagId);
 		if(bag != null) {
 			return bag.autoSort;
 		}
@@ -552,6 +554,28 @@ public class EtherealBags {
 	public static String formatBagId(UUID uuid, String bagId) {
 		String prefix = uuid.toString() + "-" + bagId;
 		return prefix;
+	}
+	
+	/**
+	 * Check if a player's bag is completely full (no empty slots).
+	 * <p>
+	 * Uses {@link #getBagContentsOrNull(UUID, String)} to retrieve contents
+	 * and checks for any {@code null} entries representing empty slots.
+	 * @param uuid Owner of the bag
+	 * @param bagId Raw bag identifier
+	 * @return true if the bag exists and has no empty slots; false if it has empty slots or does not exist
+	 */
+	public static Boolean isBagFull(UUID uuid, String bagId) {
+		List<ItemStack> contents = getBagContentsOrNull(uuid, bagId);
+		if(contents == null) return false;
+		for(ItemStack item : contents) {
+			if(item == null) return false;
+		}
+		return true;
+	}
+	
+	public static <T> T fromJson(String json, Type type) {
+	    return new Gson().fromJson(json, type);
 	}
 	
 }

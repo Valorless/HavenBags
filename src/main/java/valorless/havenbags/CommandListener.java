@@ -24,6 +24,7 @@ import valorless.havenbags.commands.CommandCreate;
 import valorless.havenbags.commands.CommandCustomContent;
 import valorless.havenbags.commands.CommandEffect;
 import valorless.havenbags.commands.CommandEmpty;
+import valorless.havenbags.commands.CommandEthereal;
 import valorless.havenbags.commands.CommandGUI;
 import valorless.havenbags.commands.CommandGive;
 import valorless.havenbags.commands.CommandInfo;
@@ -212,6 +213,12 @@ public class CommandListener implements CommandExecutor {
 				if(args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.ethereal")) {
 					return CommandOpen.Run(cmd);
 				}
+				
+				if(args[0].equalsIgnoreCase("ethereal") && sender.hasPermission("havenbags.ethereal")) {
+					return CommandEthereal.Run(cmd);
+				}
+				
+				
 				
 				if(args[0].equalsIgnoreCase("pluginreload") && sender.isOp()) {
 					return CommandReloadPlugin.Run(cmd);

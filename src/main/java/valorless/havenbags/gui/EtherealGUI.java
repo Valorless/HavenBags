@@ -15,23 +15,29 @@ import org.bukkit.inventory.ItemStack;
 import valorless.valorlessutils.sound.SFX;
 import valorless.havenbags.*;
 import valorless.havenbags.database.EtherealBags;
+import valorless.havenbags.datamodels.EtherealBagSettings;
+import valorless.havenbags.features.AutoSorter;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 
 public class EtherealGUI implements Listener {
+	private String key;
 	private Inventory inv;
 	public final String bagId;
 	public List<ItemStack> content;
 	public Player player;
 	public int size;
 	
+	public EtherealBagSettings settings;
+	
     public EtherealGUI(Player player, String bagId, Player viewer) {
+		this.key = EtherealBags.formatBagId(player.getUniqueId(), bagId);
 		Bukkit.getServer().getPluginManager().registerEvents(this, Main.plugin);
 		
-		Log.Info(Main.plugin, player.getName());
-		Log.Info(Main.plugin, bagId);
+		//Log.Info(Main.plugin, player.getName());
+		//Log.Info(Main.plugin, bagId);
     	
-    	Log.Debug(Main.plugin, "[EtherealGUI][DI-294] " + "Attempting to create and open ethereal bag " + EtherealBags.formatBagId(player.getUniqueId(), bagId));
+    	Log.Debug(Main.plugin, "[EtherealGUI][DI-294] " + "Attempting to create and open ethereal bag " + this.key);
     	this.bagId = bagId;
     	this.player = player;
     	this.content = EtherealBags.getBagContentsOrNull(player.getUniqueId(), bagId);
@@ -41,6 +47,8 @@ public class EtherealGUI implements Listener {
 			return;
 		}
     	this.size = this.content.size();
+    	this.settings = EtherealBags.getBagSettings(player.getUniqueId(), bagId);
+    	Log.Debug(Main.plugin, "[EtherealGUI][DI-302] " + "Ethereal bag settings: " + settings.toString());
     	
     	EtherealBags.openGUIs.add(this);
     	
@@ -119,7 +127,7 @@ public class EtherealGUI implements Listener {
     
     public void Close(boolean forced) {
     	if(forced) {
-    		Log.Warning(Main.plugin, String.format("[EtherealGUI][DI-296] %s forcefully closed!", EtherealBags.formatBagId(player.getUniqueId(), bagId)));
+    		Log.Warning(Main.plugin, String.format("[EtherealGUI][DI-296] %s forcefully closed!", key));
     		player.closeInventory();
     	}
 
@@ -127,16 +135,22 @@ public class EtherealGUI implements Listener {
 				Main.config.GetDouble("close-volume").floatValue(), 
 				Main.config.GetDouble("close-pitch").floatValue(), player);
     	
-        Log.Debug(Main.plugin, "[EtherealGUI][DI-297] " + "Bag closed, attempting to save ethereal bag. (" + EtherealBags.formatBagId(player.getUniqueId(), bagId) + ")");
+        Log.Debug(Main.plugin, "[EtherealGUI][DI-297] " + "Bag closed, attempting to save ethereal bag. (" + key + ")");
+        
+        if(settings.autoSort) {
+			Log.Debug(Main.plugin, "[EtherealGUI][DI-301] " + "Auto-sorting enabled, sorting bag contents. (" + key + ")");
+			List<ItemStack> sorted = AutoSorter.SortInventory(Arrays.asList(inv.getContents()));
+			inv.setContents(sorted.toArray(new ItemStack[0]));
+		}
         
         if(!EtherealBags.updateBagContents(player.getUniqueId(), bagId, Arrays.asList(inv.getContents()))) {
-			Log.Error(Main.plugin, "[EtherealGUI][DI-297] " + "Failed to save ethereal bag contents! (" + EtherealBags.formatBagId(player.getUniqueId(), bagId) + ")");
+			Log.Error(Main.plugin, "[EtherealGUI][DI-298] " + "Failed to save ethereal bag contents! (" + key + ")");
 		} else {
-			Log.Debug(Main.plugin, "[EtherealGUI][DI-297] " + "Successfully saved ethereal bag contents. (" + EtherealBags.formatBagId(player.getUniqueId(), bagId) + ")");
+			Log.Debug(Main.plugin, "[EtherealGUI][DI-299] " + "Successfully saved ethereal bag contents. (" + key + ")");
 		}
 		
         //Unregister this GUI from listening to event.
-    	Log.Debug(Main.plugin, "[EtherealGUI][DI-298] Unregistering listener for " + player.getName());
+    	Log.Debug(Main.plugin, "[EtherealGUI][DI-300] Unregistering listener for " + player.getName());
 		HandlerList.unregisterAll(this);
 		
 		EtherealBags.openGUIs.remove(this);

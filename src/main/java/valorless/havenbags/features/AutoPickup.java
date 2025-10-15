@@ -2,6 +2,7 @@ package valorless.havenbags.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,7 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Message;
@@ -565,8 +567,6 @@ public class AutoPickup implements Listener {
 				}
 			}
 			
-			
-			
 			if(HavenBags.CanCarry(item, bag.item) == false) return false;
 			
 			Log.Debug(Main.plugin, "[DI-170] " + "maxContent:" + maxContent);
@@ -614,6 +614,91 @@ public class AutoPickup implements Listener {
 				return false;
 			}
 		}
+		
+		for(String ebag : EtherealBags.getPlayerBags(player.getUniqueId())) {
+			String key = EtherealBags.formatBagId(player.getUniqueId(), ebag);
+			if(HavenBags.IsItemBlacklisted(item)) continue;
+			Log.Debug(Main.plugin, "[DI-159] " + "ethereal bag: " + key);
+			if(EtherealBags.isOpen(key)) continue;
+			if(EtherealBags.isBagFull(player.getUniqueId(), ebag)) continue;
+			boolean c = false;
+			String filter = EtherealBags.getBagAutoPickup(player.getUniqueId(), ebag);
+			for(Filter f : filters) {
+				//Log.Debug(Main.plugin, "Filter: " + f.name);
+				//Log.Debug(Main.plugin, "Bag Filter: " + PDC.GetString(bag.item, "bag-filter"));
+				if(f.name.equalsIgnoreCase(filter)) {
+					if(AutoPickup.filter.HasKey("filters." + f.name + ".permission.node")) {
+						Log.Debug(Main.plugin, "[DI-160] " + "[AutoPickup] Permission");
+						if(!AutoPickup.filter.GetString("filters." + f.name + ".permission.node").equalsIgnoreCase("none")) {
+							Log.Debug(Main.plugin, "[DI-161] " + "[AutoPickup] Permission " + f.name);
+							if(AutoPickup.filter.GetBool("filters." + f.name + ".permission.use")) {
+								if(!player.hasPermission(AutoPickup.filter.GetString("filters." + f.name + ".permission.node"))) {
+									Log.Debug(Main.plugin, "[DI-162] " + "[AutoPickup] Permission Use true - Player false");
+									c = false; break;
+								}else {
+									Log.Debug(Main.plugin, "[DI-163] " + "[AutoPickup] Permission Use true - Player true");
+								}
+							}else {
+								Log.Debug(Main.plugin, "[DI-164] " + "[AutoPickup] Permission Use false");
+								c = false; break;
+							}
+						}
+					}
+					c = true;
+					break;
+				}
+			}
+			
+			Log.Debug(Main.plugin, "[DI-165] " + "Filter " + c);
+			if(!c) {
+				Log.Debug(Main.plugin, "[DI-166] " + "No filters, skipping.");
+				continue;
+			}
+			
+			if(!IsItemInFilter(filter, item)) {
+				Log.Debug(Main.plugin, "[DI-167] " + "Item " + item.getType().toString() + " is not in the filter. Skipping.");
+				continue;
+			}
+			
+			List<ItemStack> content = EtherealBags.getBagContentsOrEmpty(player.getUniqueId(), ebag);
+			Log.Debug(Main.plugin, "[DI-169] " + "Checking bag content.");
+			int contSize = 0;
+			for(ItemStack i : content) {
+				try {
+					if(i.getType() != Material.AIR) {
+						contSize++;
+					}
+				} catch (Exception e) {
+					continue;
+				}
+			}
+			
+			
+			Log.Debug(Main.plugin, "[DI-170] " + "maxContent:" + content.size());
+			//if(contSize >= maxContent) return false;
+			Log.Debug(Main.plugin, "[DI-171] " + "contSize:" + contSize);
+			if(contSize == 0) {
+				if(content.size() > 0) {
+					content.set(0, item);
+				}else content.add(item);
+				EtherealBags.updateBagContents(player.getUniqueId(), ebag, content);
+				PickupSound(player);
+				return true;
+			}
+			
+			// Can't deal with empty bags.
+			HashMap<Boolean, List<ItemStack>> modified = HavenBags.AddItemToEtherealInventory(player, ebag, item);
+			if(modified.containsKey(true)) {
+				PickupSound(player);
+				Log.Debug(Main.plugin, "[DI-172] " + "Item put in bag.");
+				EtherealBags.updateBagContents(player.getUniqueId(), ebag, modified.get(true));
+				return true;
+			}else {
+				Log.Debug(Main.plugin, "[DI-173] " + "Item was not put in bag.");
+				return false;
+			}
+		}
+		
 		Log.Debug(Main.plugin, "[DI-174] " + "Item was not put in bag.");
 		return false;
 	}

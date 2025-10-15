@@ -106,6 +106,7 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (sender.hasPermission("havenbags.ethereal")) {
 				subCommands.add("open");
+				subCommands.add("ethereal");
 			}
 			
 
@@ -234,6 +235,16 @@ public class TabCompletion implements TabCompleter {
 					StringUtil.copyPartialMatches(cmd, bags, completions);
 				}
 			}
+			if (args[0].equalsIgnoreCase("ethereal") && sender.hasPermission("havenbags.ethereal")) {
+				if(sender instanceof Player player) {
+					List<String> bags = EtherealBags.getPlayerBagsFormatted(player.getUniqueId());
+					List<String> types = new ArrayList<String>();
+					types.add("autosort");
+					types.add("autopickup");
+					types.add("magnet");
+					StringUtil.copyPartialMatches(cmd, bags, completions);
+				}
+			}
 			/*
 			if (args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.open")) {
 				Player player = (Player)sender;
@@ -319,7 +330,15 @@ public class TabCompletion implements TabCompleter {
 					StringUtil.copyPartialMatches(cmd, bags, completions);
 				}
 			}
-			
+
+			if (args[0].equalsIgnoreCase("ethereal") && sender.hasPermission("havenbags.ethereal")) {
+				List<String> types = new ArrayList<String>();
+				types.add("autosort");
+				types.add("autopickup");
+				types.add("magnet");
+				StringUtil.copyPartialMatches(cmd, types, completions);
+			}
+
 
 			if (args[0].equalsIgnoreCase("customcontent") && sender.hasPermission("havenbags.editor")) {
 				if(args[1].equalsIgnoreCase("load")) {
@@ -349,6 +368,19 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (args[0].equalsIgnoreCase("token") && sender.hasPermission("havenbags.token")) {
 				StringUtil.copyPartialMatches(cmd, getOnlinePlayerNames(), completions);
+			}
+			if (args[0].equalsIgnoreCase("ethereal") && args[2].equalsIgnoreCase("autopickup") && sender.hasPermission("havenbags.ethereal")) {
+				List<String> filters = AutoPickup.GetFilterNames((Player)sender);
+				filters.add("none");
+				StringUtil.copyPartialMatches(cmd, filters, completions);
+			}
+			if (args[0].equalsIgnoreCase("ethereal") 
+					&& (args[2].equalsIgnoreCase("autosort") || args[2].equalsIgnoreCase("magnet"))
+							&& sender.hasPermission("havenbags.ethereal")) {
+				List<String> options = new ArrayList<String>();
+				options.add("on");
+				options.add("off");
+				StringUtil.copyPartialMatches(cmd, options, completions);
 			}
 		} 
 		else if(args.length == 5) {

@@ -9,4 +9,8 @@ public class EtherealBagSettings {
 	public Boolean autoSort = false;
 	
 	public EtherealBagSettings() {}
+	
+	public String toString() {
+		return "EtherealBagSettings[autoPickup=" + autoPickup + ", magnet=" + magnet + ", autoSort=" + autoSort + "]";
+	}
 }

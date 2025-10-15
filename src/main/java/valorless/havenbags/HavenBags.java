@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.database.BagCache;
+import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.enums.TokenType;
@@ -664,6 +665,7 @@ public class HavenBags {
 		for(ItemStack item : player.getInventory().getContents()) {
 			if(IsBag(item)) return true;
 		}
+		if(EtherealBags.hasBags(player.getUniqueId())) return true;
 		return false;
 	}
 	
@@ -805,11 +807,12 @@ public class HavenBags {
 		items = RemoveAir(items);
 		
 	    // Check if there is still space in the list for new items
+		
 	    if (items.size() >= inventorySlots && allSlotsFull(items, itemToAdd)) {
 			Log.Debug(Main.plugin, "[DI-119] " + "bag full!");	
 	        return false; // The bag is full and item is dropped
 	    }
-
+		
 	    boolean added = false;
 		Log.Debug(Main.plugin, "[DI-120] " + "checking bag.");	
 	    for (ItemStack stack : items) {
@@ -847,6 +850,66 @@ public class HavenBags {
 		Log.Debug(Main.plugin, "[DI-125] " + "failed.");	
 
 	    return true; // This line is theoretically unreachable
+	}
+	
+	public static HashMap<Boolean, List<ItemStack>> AddItemToEtherealInventory(Player player, String bagId, ItemStack itemToAdd) {
+		HashMap<Boolean, List<ItemStack>> result = new HashMap<Boolean, List<ItemStack>>();
+		Log.Debug(Main.plugin, "[DI-118] " + "Put item in bag? (ethereal)");	
+		
+		List<ItemStack> items = EtherealBags.getBagContentsOrNull(player.getUniqueId(), bagId);
+		
+	    // Check if there is still space in the list for new items
+		
+	    if (EtherealBags.isBagFull(player.getUniqueId(), bagId)) {
+			Log.Debug(Main.plugin, "[DI-119] " + "bag full!");	
+            result.put(false, items);
+            return result;
+	    }
+		
+		Log.Debug(Main.plugin, "[DI-120] " + "checking bag.");	
+	    for (ItemStack stack : items) {
+	    	if(stack == null) continue;
+	        if (stack.isSimilar(itemToAdd)) {
+	            int maxStackSize = stack.getMaxStackSize();
+	            int totalAmount = stack.getAmount() + itemToAdd.getAmount();
+
+	            if (totalAmount <= maxStackSize) {
+	        		Log.Debug(Main.plugin, "[DI-121] " + "stack has space.");	
+	                stack.setAmount(totalAmount); // Perfect fit or less
+	                result.put(true, items);
+	                return result;
+	            } else {
+	        		Log.Debug(Main.plugin, "[DI-122] " + "stack overflow, adjusting.");	
+	                stack.setAmount(maxStackSize); // Max out the stack
+	                itemToAdd.setAmount(totalAmount - maxStackSize); // Adjust remaining
+	            }
+	        }
+	    }
+
+	    // Try to add remaining part of itemToAdd in a new slot if not all added
+	    if (itemToAdd.getAmount() > 0) {
+	    	Log.Debug(Main.plugin, "[DI-124] " + "adding new stack.");
+	    	int free = -1;
+	    	for(int i = 0; i < items.size(); i++) {
+	    		if(items.get(i) == null || items.get(i).getType() == Material.AIR) {
+	    			free = i;
+	    			break;
+	    		}
+	    	}
+	    	if(free != -1) {
+	    		items.set(free, itemToAdd.clone());
+	            itemToAdd.setAmount(0);
+	    		Log.Debug(Main.plugin, "[DI-123] " + "success.");	
+	            result.put(true, items);
+	            return result;
+	    	}else {
+	            result.put(false, items);
+	            return result;
+	    	}
+	    }
+		Log.Debug(Main.plugin, "[DI-125] " + "failed.");
+        result.put(false, items);
+        return result;
 	}
 	
 	private static boolean allSlotsFull(List<ItemStack> items, ItemStack add) {
