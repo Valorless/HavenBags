@@ -5,19 +5,19 @@
 -protected
 -quiet
 -sourcepath
-'E:/Projects/Minecraft Plugins/HavenBags/src/main/java'
+'F:/Minecraft Plugins/HavenBags/src/main/java'
 -author
 -bottom
 'Copyright &#169; 2025. All rights reserved.'
 -charset
 'UTF-8'
 -d
-'E:/Projects/Minecraft Plugins/HavenBags/target/site/apidocs'
+'F:/Minecraft Plugins/HavenBags/target/site/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
-'HavenBags 1.37.2 API'
+'HavenBags 1.38.0 API'
 -use
 -version
 -windowtitle
-'HavenBags 1.37.2 API'
+'HavenBags 1.38.0 API'

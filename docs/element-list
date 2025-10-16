@@ -3,6 +3,7 @@ valorless.havenbags.commands
 valorless.havenbags.commands.fun
 valorless.havenbags.database
 valorless.havenbags.datamodels
+valorless.havenbags.enums
 valorless.havenbags.events
 valorless.havenbags.events.gui
 valorless.havenbags.features
