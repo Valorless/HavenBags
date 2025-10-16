@@ -287,7 +287,7 @@ public class EtherealBags {
 		
 		// If the bag data already exists, don't overwrite — treat as "already added".
 	    if (bagData.containsKey(id)) {
-	    	Log.Info(Main.plugin, "[EtherealBags][DI-303] Bag data for id " + bagId + " for player " + Bukkit.getOfflinePlayer(uuid).getName() + " already exists.");
+	    	Log.Debug(Main.plugin, "[EtherealBags][DI-303] Bag data for id " + bagId + " for player " + Bukkit.getOfflinePlayer(uuid).getName() + " already exists.");
 	        return false;
 	    }
 		
@@ -334,7 +334,7 @@ public class EtherealBags {
 
 	    // If the bag data already exists, don't overwrite — treat as "already added".
 	    if (bagData.containsKey(id)) {
-	    	Log.Info(Main.plugin, "[EtherealBags][DI-303] Bag data for id " + bagId + " for player " + Bukkit.getOfflinePlayer(uuid).getName() + " already exists.");
+	    	Log.Debug(Main.plugin, "[EtherealBags][DI-303] Bag data for id " + bagId + " for player " + Bukkit.getOfflinePlayer(uuid).getName() + " already exists.");
 	        return false;
 	    }
 

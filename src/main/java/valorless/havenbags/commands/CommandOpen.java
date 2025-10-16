@@ -23,6 +23,10 @@ public class CommandOpen {
 					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("ethereal-open-admin"), player));
 					return true;
 				}
+				if(!EtherealBags.hasBag(player.getUniqueId(), id)) {
+					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-does-not-exist"), player));
+					return true;
+				}
 				EtherealGUI gui = new EtherealGUI(player, id, player);
 				gui.OpenInventory(player);
 				return true;

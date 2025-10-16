@@ -85,7 +85,8 @@ public class CommandEthereal {
 			}
 			EtherealBags.getBagSettings(player.getUniqueId(), bagId).magnet = magnet;
 			player.sendMessage(Lang.Get("prefix") + Lang.Get("magnet-command").replace("%value%", value));
-		}else {
+		}
+		else {
 			command.sender.sendMessage("§cUsage: /bag ethereal <id> <autosort|autopickup|magnet> <value>");
 		}
 		return true;
