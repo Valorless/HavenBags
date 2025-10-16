@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import valorless.havenbags.database.EtherealBags;
+import valorless.havenbags.events.BagEtherealCreateEvent;
 
 public class CommandGiveEthereal {
 	
@@ -25,6 +26,10 @@ public class CommandGiveEthereal {
 		
 		if(EtherealBags.addBag(target.getPlayer().getUniqueId(), id, size)){
 			command.sender.sendMessage("Gave " + target.getName() + " an ethereal bag with ID " + id);
+			Bukkit.getPluginManager().callEvent(
+		    		new BagEtherealCreateEvent(target.getPlayer(), command.sender, id, 
+		    				EtherealBags.formatBagId(target.getUniqueId(), id), EtherealBags.getBagSettings(target.getUniqueId(), id))
+			);
 		}else {
 			command.sender.sendMessage("An ethereal bag with ID " + id + " already exists for " + target.getName());
 		}
