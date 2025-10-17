@@ -25,6 +25,9 @@ plugins:
  Oraxen:
   # Should Auto-pickup check for Oraxen items?
   enabled: true
+ ItemsAdder:
+  # Should Auto-pickup check for ItemsAdder items?
+  enabled: true
      
 mods:
  HavenBagsPreview:

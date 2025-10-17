@@ -19,6 +19,9 @@ softdepend:
   - ViaRewind
   - Geyser-Spigot
   - Essentials
+  - Nexo
+  - Oraxen
+  - ItemsAdder
 # loadbefore: [AdvancedEnchantments]
 commands:
   havenbags:

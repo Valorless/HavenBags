@@ -24,6 +24,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import dev.lone.itemsadder.api.CustomStack;
 import net.md_5.bungee.api.ChatMessageType;
 
 import valorless.havenbags.BagData;
@@ -750,6 +751,18 @@ public class AutoPickup implements Listener {
 							return true;
 						}
 					}catch (Exception e) {} // Ignore. Faster than checking if it has the itemmeta or tag first.
+				}
+			}
+		}
+		
+
+		if(Main.plugins.GetBool("plugins.ItemsAdder.enabled")) {
+			if(Bukkit.getPluginManager().getPlugin("ItemsAdder") != null) {
+				CustomStack citem = CustomStack.byItemStack(item);
+				if(citem != null) {
+					if(entries.contains("itemsadder:" + citem.getId())) {
+						return true;
+					}
 				}
 			}
 		}

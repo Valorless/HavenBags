@@ -137,8 +137,6 @@
             <configuration>
                 <failOnError>false</failOnError> <!-- don’t fail build if Javadocs missing -->
                 <quiet>true</quiet>              <!-- suppress warnings -->
-                <destDir>${project.basedir}/docs</destDir> <!-- output to ./docs -->
-                <source>17</source>             <!-- match your Java version -->
             </configuration>
       <executions>
         <execution>
@@ -207,6 +205,10 @@
         <id>papermc</id>
         <url>https://papermc.io/repo/repository/maven-public/</url>
     </repository>
+     <repository>
+    <id>matteodev</id>
+    <url>https://maven.devs.beer/</url>
+</repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -220,6 +222,7 @@
         <dependency>
             <groupId>com.github.Valorless</groupId>
             <artifactId>ValorlessUtils</artifactId>
+            <!--<version>84d5a61370</version>-->
             <version>1.16.0</version>
             <scope>provided</scope>
         </dependency>
@@ -313,6 +316,13 @@
     <groupId>com.github.retrooper</groupId>
     <artifactId>packetevents-spigot</artifactId>
     <version>2.9.3</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>dev.lone</groupId>
+    <artifactId>api-itemsadder</artifactId>
+    <!-- Replace {version} with the latest version -->
+    <version>4.0.10</version>
     <scope>provided</scope>
 </dependency>
     </dependencies>
