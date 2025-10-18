@@ -200,6 +200,10 @@
       <id>papermc</id>
       <url>https://papermc.io/repo/repository/maven-public/</url>
     </repository>
+    <repository>
+      <id>matteodev</id>
+      <url>https://maven.devs.beer/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -266,6 +270,12 @@
       <groupId>com.github.retrooper</groupId>
       <artifactId>packetevents-spigot</artifactId>
       <version>2.9.3</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>dev.lone</groupId>
+      <artifactId>api-itemsadder</artifactId>
+      <version>4.0.10</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

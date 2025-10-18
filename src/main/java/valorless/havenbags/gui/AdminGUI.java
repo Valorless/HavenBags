@@ -1097,7 +1097,7 @@ public class AdminGUI implements Listener {
 				meta.setOwnerProfile(profile);
 			}
 			meta.setDisplayName("§c" + p.getName());
-			meta.setLore(Arrays.asList("§8§oStill getting skins to work.."));
+			//meta.setLore(Arrays.asList("§8§oStill getting skins to work.."));
 			entry.setItemMeta(meta);
 			PDC.SetString(entry, "owner", uuid);
 			bags.add(entry);

@@ -9,7 +9,8 @@
 # In addition will any % cause errors, as they're using for parsing.
 
 # Prefix in front of all plugin messages. '' for blank.
-prefix: '&7[&aHaven&bBags&7] &r'
+# [HavenBags]
+prefix: '&7[&#55FF55H&#55FF71a&#55FF8Ev&#55FFAAe&#55FFC6n&#55FFE3B&#55FFFFa&#55FFFFg&#55FFFFs&7] &r'
 
 # Message sent if the command is missing some args.
 # Some commands have their own messages.
