@@ -27,6 +27,7 @@ import me.NoChance.PvPManager.Managers.PlayerHandler;
 import valorless.havenbags.database.BagCache.Observer;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -190,6 +191,9 @@ public class BagListener implements Listener{
 					}
 					
 					if(CreateBag(hand, ownerless, player, placeholders)) {
+						if(BagData.getDatabase() == DatabaseType.MYSQL || BagData.getDatabase() == DatabaseType.MYSQLPLUS) {
+							return;
+						}
 						Bukkit.getScheduler().runTaskLater(Main.plugin, () -> {
 							OpenBag(hand, ownerless, player, event);
 						}, 1L);
@@ -313,7 +317,7 @@ public class BagListener implements Listener{
 		}
 		
 		if(data.isOpen()) {
-			if(data.getViewer() != player) {
+			if(data.getViewer() != null && data.getViewer() != player) {
 				player.sendMessage(String.format("Open by: %s", data.getViewer() == null ? "null" : data.getViewer().getName()));
 				player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-already-open"), null));
 				Log.Debug(Main.plugin, "[DI-60] " + "This bag is already open.");

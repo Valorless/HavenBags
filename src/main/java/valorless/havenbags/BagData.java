@@ -133,6 +133,15 @@ public class BagData {
 				e.printStackTrace();
 			}
 		}
+		else if(getDatabase() == DatabaseType.MYSQLPLUS) {
+			try {
+				if(getMysql() != null) {
+					getMysql().disconnect();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public static void ChangeDatabase(DatabaseType type) {
@@ -380,6 +389,11 @@ public class BagData {
 		
 		dat.setChanged(true);
 		data.add(dat);
+		if(database == DatabaseType.MYSQLPLUS) {
+			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+				getMysql().saveBag(dat);
+			});
+		}
 		Log.Debug(Main.plugin, "[DI-30] " + "New bag data created: " + owner + "/" + uuid);
 		Bukkit.getPluginManager().callEvent(new BagCreateEvent(creator, bag, dat));
 		return dat;
