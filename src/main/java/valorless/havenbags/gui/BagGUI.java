@@ -25,9 +25,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import valorless.valorlessutils.sound.SFX;
 import valorless.havenbags.*;
 import valorless.havenbags.BagData.UpdateSource;
-import valorless.havenbags.database.DatabaseType;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.events.BagCloseEvent;
 import valorless.havenbags.events.BagOpenEvent;
 import valorless.havenbags.persistentdatacontainer.PDC;
@@ -78,7 +78,7 @@ public class BagGUI implements Listener {
     	this.uuid = PDC.GetString(bagItem, "uuid");
     	this.bagMeta = bagMeta;
     	this.player = player;
-    	this.size = size;
+    	this.size = HavenBags.findClosestNine(size);
     	try {
     		// Try get owner's name on the server.
     		this.bagOwner = PDC.GetString(bagItem, "owner");
@@ -97,15 +97,22 @@ public class BagGUI implements Listener {
     	
     	if(Lang.lang.GetBool("per-size-title")) {
     		for(int i = 9; i <= 54; i += 9) {
-				if(size != i) continue;
+				if(this.size != i) continue;
 				String title = Lang.Parse(Lang.Get("bag-inventory-title-" + String.valueOf(i)), player);
-    			inv = Bukkit.createInventory(player, size, title.replace("%name%", bagMeta.getDisplayName()));
+    			inv = Bukkit.createInventory(player, this.size, title.replace("%name%", bagMeta.getDisplayName()));
+			}
+    		if(inv == null) {
+				if(!Utils.IsStringNullOrEmpty(Lang.Get("bag-inventory-title"))) {
+					inv = Bukkit.createInventory(player, this.size, Lang.Parse(Lang.Get("bag-inventory-title"), player));
+				} else {
+					inv = Bukkit.createInventory(player, this.size, bagMeta.getDisplayName());
+				}
 			}
     	}else {
     		if(!Utils.IsStringNullOrEmpty(Lang.Get("bag-inventory-title"))) {
-    			inv = Bukkit.createInventory(player, size, Lang.Parse(Lang.Get("bag-inventory-title"), player));
+    			inv = Bukkit.createInventory(player, this.size, Lang.Parse(Lang.Get("bag-inventory-title"), player));
     		} else {
-    			inv = Bukkit.createInventory(player, size, bagMeta.getDisplayName());
+    			inv = Bukkit.createInventory(player, this.size, bagMeta.getDisplayName());
     		}
     	}
         //this.content = JsonUtils.fromJson(Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "content", PersistentDataType.STRING).toString());
@@ -310,6 +317,11 @@ public class BagGUI implements Listener {
         	e.setCancelled(true);
         	return;
         }
+        
+        if(PDC.Has(clickedItem, "locked")) {
+			e.setCancelled(true);
+			return;
+		}
     	
     	boolean holdingBag = HavenBags.IsBag(cursorItem);	
     	boolean clickedBag = HavenBags.IsBag(clickedItem);	

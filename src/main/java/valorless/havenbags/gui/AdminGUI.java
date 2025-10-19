@@ -35,12 +35,12 @@ import valorless.havenbags.*;
 import valorless.havenbags.database.SkinCache;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.enums.GUIAction;
 import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.GUI;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.havenbags.utils.TaskUtils;
-import valorless.havenbags.utils.GUI.GUIAction;
 
 /** AdminGUI class for managing Haven Bags through a graphical user interface.
  * This class allows admins to create, restore, preview, delete, and manage bags of players.
@@ -1097,7 +1097,7 @@ public class AdminGUI implements Listener {
 				meta.setOwnerProfile(profile);
 			}
 			meta.setDisplayName("§c" + p.getName());
-			meta.setLore(Arrays.asList("§8§oStill getting skins to work.."));
+			//meta.setLore(Arrays.asList("§8§oStill getting skins to work.."));
 			entry.setItemMeta(meta);
 			PDC.SetString(entry, "owner", uuid);
 			bags.add(entry);

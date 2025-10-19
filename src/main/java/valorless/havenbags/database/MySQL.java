@@ -28,6 +28,9 @@ public class MySQL {
 	private String host, database, username, password;
 	private int port;
 	private Connection connection;
+	
+	private int connectTimeout = 30000;
+	private int socketTimeout = 60000;
 
 	public MySQL() {
 		init();
@@ -55,7 +58,8 @@ public class MySQL {
 	// Connect to MySQL
 	public void connect() throws SQLException {
 		if (connection != null && !connection.isClosed()) return;
-		String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&autoReconnect=true";
+		String url = "jdbc:mysql://" + host + ":" + port + "/" + database +
+		        "?useSSL=false&autoReconnect=true&connectTimeout=" + connectTimeout + "&socketTimeout=" + socketTimeout;
 		connection = DriverManager.getConnection(url, username, password);
 	}
 
@@ -189,15 +193,14 @@ public class MySQL {
 				"weight_max=?, content=?, open=?, extra=?";
 
 		try {
-			if(connection.isClosed()) {
+			if(connection == null || connection.isClosed()) {
 				connect();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		try (Connection conn = connection;
-				PreparedStatement stmt = conn.prepareStatement(sql)) {
+		try (PreparedStatement stmt = connection.prepareStatement(sql)) {
 
 			stmt.setString(1, data.getUuid());
     		stmt.setString(2, data.getOwner());
@@ -284,7 +287,7 @@ public class MySQL {
 	            stmt.setDouble(index++, bag.getWeight());
 	            stmt.setDouble(index++, bag.getWeightMax());
 	            stmt.setString(index++, JsonUtils.toJson(bag.getContent()));
-	            stmt.setBoolean(index++, bag.isOpen());
+	            stmt.setBoolean(index++, false); //isOpen()
 	            stmt.setString(index++, DatabaseUtils.Extra(bag));
 	        }
 	        stmt.executeUpdate();
@@ -298,15 +301,14 @@ public class MySQL {
 		String sql = "SELECT * FROM bags WHERE uuid = ?";
 
 		try {
-			if(connection.isClosed()) {
+			if(connection == null || connection.isClosed()) {
 				connect();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		try (Connection conn = connection;
-				PreparedStatement stmt = conn.prepareStatement(sql)) {
+		try (PreparedStatement stmt = connection.prepareStatement(sql)) {
 
 			stmt.setString(1, uuid.toString());
 			ResultSet rs = stmt.executeQuery();
@@ -343,7 +345,7 @@ public class MySQL {
 	    String sql = "SELECT * FROM bags";
 	    
 	    try {
-			if(connection.isClosed()) {
+			if(connection == null || connection.isClosed()) {
 				connect();
 			}
 		} catch (SQLException e) {
@@ -385,7 +387,7 @@ public class MySQL {
 	    String sql = "DELETE FROM bags WHERE uuid = ?";
 
 	    try {
-			if(connection.isClosed()) {
+			if(connection == null || connection.isClosed()) {
 				connect();
 			}
 		} catch (SQLException e) {

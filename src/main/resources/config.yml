@@ -5,7 +5,7 @@
 ############################################################
 
 # DO NOT EDIT
-config-version: 4
+config-version: 5
 
 # Additional messages used for debugging.
 debug: false
@@ -214,6 +214,7 @@ magnet:
  tick-rate: 2 # How often the task should run
  range: 5.0
  speed: 0.1
+ vertical: false # Should drops ignore gravity to move vertically towards the player?
  require-autopickup: false
  only-autopickup-items: false
  instant: false # This will teleport the items to the player instantly
@@ -239,24 +240,36 @@ upgrades:
  from-36-to-45: NETHERITE_BLOCK:1:90003
  from-45-to-54: END_CRYSTAL:1
  
-# Skin Token
+# Token
 # Used to create a generic token, which you can edit in-game.
 # The rest of the data for the token is given when using the command.
 # You can create skins in the 'textures.yml' file.
-# Placeholders:
-# %skin% - Name of the skin, found in textures.yml. 
-# (Works in name and lore)
-skin-token:
- display-name: '&aSkin Token'
- # If material is PLAYER_HEAD, the head's texture will be the same as the skin.
- material: PLAYER_HEAD
- custommodeldata: 0 # 0 to ignore
- # Placeholders:
- # %skin% - Name of the skin, found in textures.yml. 
- lore:
-  - '&7Combine with a bag in an anvil to apply.'
-  - '&7Skin: &e%skin%'
-  # You can add extra lore in-game, with things such as which skin it is.
+# You can create effects in the 'effects.yml' file.
+# Placeholders work in names and lore.
+token:
+ skin:
+  displayname: '&aSkin Token'
+  # If material is PLAYER_HEAD, the head's texture will be the same as the skin.
+  material: PLAYER_HEAD
+  custommodeldata: 0 # 0 to ignore
+  # Placeholders:
+  # %skin% - Name of the skin found in textures.yml. 
+  lore:
+   - '&7Combine with a bag in a fletching table to apply.'
+   - '&7Skin: &e%skin%'
+   # You can add extra lore in-game, with things such as which skin it is.
+ effect:
+  displayname: '&eEffect Token'
+  material: PLAYER_HEAD
+  # base64 texture for PLAYER_HEAD material, can also be a value from textures.yml.
+  texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMzNGQxMmY3YWM5MzliMTE1MWQxMjE0NmQwMjM5ZWYwMTg4ZTQwM2VlMTk2NmQzZGIxOTllNjY0ZmYzODI4MyJ9fX0='
+  custommodeldata: 0 # 0 to ignore
+  # Placeholders:
+  # %effect% - Name of the effect found in effects.yml. 
+  lore:
+   - '&7Combine with a bag in a fletching table to apply.'
+   - '&7Effect: &e%effect%'
+   # You can add extra lore in-game, with things such as effect effects.
   
 # Should upgrades and skins be applied through an anvil?
 bag-upgrades-anvil: false

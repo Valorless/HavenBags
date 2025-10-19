@@ -35,11 +35,11 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import valorless.havenbags.HavenBags.BagState;
-import valorless.havenbags.database.DatabaseType;
 import valorless.havenbags.database.Files;
 import valorless.havenbags.database.MySQL;
 import valorless.havenbags.database.SQLite;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.events.BagCreateEvent;
 import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.gui.BagGUI;
@@ -128,6 +128,15 @@ public class BagData {
 			try {
 				if(sqlite != null) {
 					sqlite.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(getDatabase() == DatabaseType.MYSQLPLUS) {
+			try {
+				if(getMysql() != null) {
+					getMysql().disconnect();
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -336,8 +345,12 @@ public class BagData {
 		Data dat = new Data(uuid, owner, bag.getType());
 		dat.setContent(content);
 		dat.setCreator(creator.getUniqueId().toString());
-		
-		dat.setSize(PDC.GetInteger(bag, "size"));
+		int size = 0;
+		for(ItemStack item : content) {
+			if(!PDC.Has(item, "locked")) size++;
+		}
+		//dat.setSize(PDC.GetInteger(bag, "size"));
+		dat.setSize(size);
 		if(bag.getType() == Material.PLAYER_HEAD) {
 			dat.setTexture(getTextureValue(bag));
 			dat.setModeldata(0);
@@ -376,6 +389,11 @@ public class BagData {
 		
 		dat.setChanged(true);
 		data.add(dat);
+		if(database == DatabaseType.MYSQLPLUS) {
+			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+				getMysql().saveBag(dat);
+			});
+		}
 		Log.Debug(Main.plugin, "[DI-30] " + "New bag data created: " + owner + "/" + uuid);
 		Bukkit.getPluginManager().callEvent(new BagCreateEvent(creator, bag, dat));
 		return dat;

@@ -19,6 +19,15 @@ plugins:
   pvp: false
   # Message sent to the player, if they can't use the bag.
   message: '&cYou cannot use this while in PvP.'
+ Nexo:
+  # Should Auto-pickup check for Nexo items?
+  enabled: true
+ Oraxen:
+  # Should Auto-pickup check for Oraxen items?
+  enabled: true
+ ItemsAdder:
+  # Should Auto-pickup check for ItemsAdder items?
+  enabled: true
      
 mods:
  HavenBagsPreview:

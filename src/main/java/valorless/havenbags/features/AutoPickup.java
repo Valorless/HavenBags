@@ -2,6 +2,7 @@ package valorless.havenbags.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,16 +24,19 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import dev.lone.itemsadder.api.CustomStack;
 import net.md_5.bungee.api.ChatMessageType;
 
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Message;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.datamodels.PluginTags;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.TextFeatures;
 import valorless.valorlessutils.Server;
@@ -64,9 +68,7 @@ public class AutoPickup implements Listener {
 	public static Config filter;
 	
 	private static List<Filter> filters = new ArrayList<Filter>();
-	
-	private static List<String> oraxenIDs = new ArrayList<String>();
-	
+		
 	public static void init() {
 		Log.Debug(Main.plugin, "[DI-16] Registering AutoPickup");
 		Bukkit.getServer().getPluginManager().registerEvents(new AutoPickup(), Main.plugin);
@@ -142,17 +144,6 @@ public class AutoPickup implements Listener {
 		}catch(Exception e) {
 			Log.Error(Main.plugin, "Something went wrong creating filters for specific items:");
 			e.printStackTrace();
-		}
-		
-		if(Main.plugins.GetBool("plugins.Oraxen.enabled")) {
-			if(Bukkit.getPluginManager().getPlugin("Oraxen") != null) {
-        		try {
-        			Log.Debug(Main.plugin, "[DI-147] " + "Adding Oraxen items to auto-pickup.");
-        			oraxenIDs = Main.plugins.GetStringList("plugins.Oraxen.items");
-        		}catch (Exception e) {
-        			Log.Error(Main.plugin, "[DI-148] " + "Failed to get Oraxen API. Is it up to date?");
-        		}
-        	}
 		}
 	}
 	
@@ -565,8 +556,6 @@ public class AutoPickup implements Listener {
 				}
 			}
 			
-			
-			
 			if(HavenBags.CanCarry(item, bag.item) == false) return false;
 			
 			Log.Debug(Main.plugin, "[DI-170] " + "maxContent:" + maxContent);
@@ -614,6 +603,91 @@ public class AutoPickup implements Listener {
 				return false;
 			}
 		}
+		
+		for(String ebag : EtherealBags.getPlayerBags(player.getUniqueId())) {
+			String key = EtherealBags.formatBagId(player.getUniqueId(), ebag);
+			if(HavenBags.IsItemBlacklisted(item)) continue;
+			Log.Debug(Main.plugin, "[DI-159] " + "ethereal bag: " + key);
+			if(EtherealBags.isOpen(key)) continue;
+			if(EtherealBags.isBagFull(player.getUniqueId(), ebag)) continue;
+			boolean c = false;
+			String filter = EtherealBags.getBagAutoPickup(player.getUniqueId(), ebag);
+			for(Filter f : filters) {
+				//Log.Debug(Main.plugin, "Filter: " + f.name);
+				//Log.Debug(Main.plugin, "Bag Filter: " + PDC.GetString(bag.item, "bag-filter"));
+				if(f.name.equalsIgnoreCase(filter)) {
+					if(AutoPickup.filter.HasKey("filters." + f.name + ".permission.node")) {
+						Log.Debug(Main.plugin, "[DI-160] " + "[AutoPickup] Permission");
+						if(!AutoPickup.filter.GetString("filters." + f.name + ".permission.node").equalsIgnoreCase("none")) {
+							Log.Debug(Main.plugin, "[DI-161] " + "[AutoPickup] Permission " + f.name);
+							if(AutoPickup.filter.GetBool("filters." + f.name + ".permission.use")) {
+								if(!player.hasPermission(AutoPickup.filter.GetString("filters." + f.name + ".permission.node"))) {
+									Log.Debug(Main.plugin, "[DI-162] " + "[AutoPickup] Permission Use true - Player false");
+									c = false; break;
+								}else {
+									Log.Debug(Main.plugin, "[DI-163] " + "[AutoPickup] Permission Use true - Player true");
+								}
+							}else {
+								Log.Debug(Main.plugin, "[DI-164] " + "[AutoPickup] Permission Use false");
+								c = false; break;
+							}
+						}
+					}
+					c = true;
+					break;
+				}
+			}
+			
+			Log.Debug(Main.plugin, "[DI-165] " + "Filter " + c);
+			if(!c) {
+				Log.Debug(Main.plugin, "[DI-166] " + "No filters, skipping.");
+				continue;
+			}
+			
+			if(!IsItemInFilter(filter, item)) {
+				Log.Debug(Main.plugin, "[DI-167] " + "Item " + item.getType().toString() + " is not in the filter. Skipping.");
+				continue;
+			}
+			
+			List<ItemStack> content = EtherealBags.getBagContentsOrEmpty(player.getUniqueId(), ebag);
+			Log.Debug(Main.plugin, "[DI-169] " + "Checking bag content.");
+			int contSize = 0;
+			for(ItemStack i : content) {
+				try {
+					if(i.getType() != Material.AIR) {
+						contSize++;
+					}
+				} catch (Exception e) {
+					continue;
+				}
+			}
+			
+			
+			Log.Debug(Main.plugin, "[DI-170] " + "maxContent:" + content.size());
+			//if(contSize >= maxContent) return false;
+			Log.Debug(Main.plugin, "[DI-171] " + "contSize:" + contSize);
+			if(contSize == 0) {
+				if(content.size() > 0) {
+					content.set(0, item);
+				}else content.add(item);
+				EtherealBags.updateBagContents(player.getUniqueId(), ebag, content);
+				PickupSound(player);
+				return true;
+			}
+			
+			// Can't deal with empty bags.
+			HashMap<Boolean, List<ItemStack>> modified = HavenBags.AddItemToEtherealInventory(player, ebag, item);
+			if(modified.containsKey(true)) {
+				PickupSound(player);
+				Log.Debug(Main.plugin, "[DI-172] " + "Item put in bag.");
+				EtherealBags.updateBagContents(player.getUniqueId(), ebag, modified.get(true));
+				return true;
+			}else {
+				Log.Debug(Main.plugin, "[DI-173] " + "Item was not put in bag.");
+				return false;
+			}
+		}
+		
 		Log.Debug(Main.plugin, "[DI-174] " + "Item was not put in bag.");
 		return false;
 	}
@@ -633,37 +707,23 @@ public class AutoPickup implements Listener {
 		if(item.hasItemMeta() && item.getItemMeta().hasCustomModelData()) {
 			cmd = item.getItemMeta().getCustomModelData();
 		}
-		if(Main.plugins.GetBool("plugins.Oraxen.enabled")) {
-			if(Bukkit.getPluginManager().getPlugin("Oraxen") != null) {
-				if(item.hasItemMeta()) {
-					JavaPlugin oraxen = (JavaPlugin)Bukkit.getPluginManager().getPlugin("Oraxen");
-					if(Tags.Has(oraxen, item.getItemMeta().getPersistentDataContainer(), "id", TagType.STRING)) {
-						if(oraxenIDs.contains(Tags.Get(oraxen, item.getItemMeta().getPersistentDataContainer(), "id", TagType.STRING))) {
-							//return true;
-							// Not ready yet.
-						}
-					}
-				}
-        	}
-		}
+		
 		for(Filter f : filters) {
 			if(f.name.equalsIgnoreCase(filter)) {
+				if(checkPlugins(f.entries, item)) return true;
+				
 				if(cmd != 0) {
 					if(f.entries.contains(item.getType().toString() + "-" + cmd)){
-						//Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
 						return true;
 					}else if(f.entries.contains(item.getType().toString() + ":" + cmd)){
-						//Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
 						return true;
 					}else{
 						if(f.entries.contains(item.getType().toString())){
-							//Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
 							return true;
 						}
 					}
 				}else {
 					if(f.entries.contains(item.getType().toString())){
-						//Log.Debug(Main.plugin, "[DI-176] " + "IsItemInFilter true");
 						return true;
 					}
 				}
@@ -671,6 +731,65 @@ public class AutoPickup implements Listener {
 		}
 
 		//Log.Debug(Main.plugin, "[DI-177] " + "IsItemInFilter false");
+		return false;
+	}
+	
+	// Check for items from other plugins, like Nexo, Oraxen, etc.
+	public static Boolean checkPlugins(List<String> entries, ItemStack item) {
+		// Assuming plugins use PDC.
+		List<PluginTags> pluginTags = List.of(
+				new PluginTags("Nexo", "nexo:", "id"),
+				new PluginTags("Oraxen", "oraxen:", "id")
+			);
+		
+		for(PluginTags plugin : pluginTags) {
+			if(Main.plugins.GetBool("plugins." + plugin.name + ".enabled")) {
+				if(Bukkit.getPluginManager().getPlugin(plugin.name) != null) {
+					JavaPlugin jplugin = (JavaPlugin)Bukkit.getPluginManager().getPlugin(plugin.name);
+					try {
+						if(entries.contains(plugin.namespace + Tags.Get(jplugin, item.getItemMeta().getPersistentDataContainer(), plugin.pdcKey, TagType.STRING))) {
+							return true;
+						}
+					}catch (Exception e) {} // Ignore. Faster than checking if it has the itemmeta or tag first.
+				}
+			}
+		}
+		
+
+		if(Main.plugins.GetBool("plugins.ItemsAdder.enabled")) {
+			if(Bukkit.getPluginManager().getPlugin("ItemsAdder") != null) {
+				CustomStack citem = CustomStack.byItemStack(item);
+				if(citem != null) {
+					if(entries.contains("itemsadder:" + citem.getId())) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		/*
+		if(Main.plugins.GetBool("plugins.Oraxen.enabled")) {
+			if(Bukkit.getPluginManager().getPlugin("Oraxen") != null) {
+				JavaPlugin oraxen = (JavaPlugin)Bukkit.getPluginManager().getPlugin("Oraxen");
+				try {
+					if(entries.contains("oraxen:" + Tags.Get(oraxen, item.getItemMeta().getPersistentDataContainer(), "id", TagType.STRING))) {
+						return true;
+					}
+				}catch (Exception e) {} // Ignore. Faster than checking if it has the tag first.
+			}
+		}
+		if(Main.plugins.GetBool("plugins.Nexo.enabled")) {
+			if(Bukkit.getPluginManager().getPlugin("Nexo") != null) {
+				JavaPlugin nexo = (JavaPlugin)Bukkit.getPluginManager().getPlugin("Nexo");
+				try {
+					if(entries.contains("nexo:" + Tags.Get(nexo, item.getItemMeta().getPersistentDataContainer(), "id", TagType.STRING))) {
+						return true;
+					}
+				}catch (Exception e) {} // Ignore. Faster than checking if it has the tag first.
+
+			}
+		}
+		*/
 		return false;
 	}
 	

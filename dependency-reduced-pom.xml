@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
-  <version>1.37.2</version>
+  <version>1.38.0</version>
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -200,6 +200,10 @@
       <id>papermc</id>
       <url>https://papermc.io/repo/repository/maven-public/</url>
     </repository>
+    <repository>
+      <id>matteodev</id>
+      <url>https://maven.devs.beer/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -266,6 +270,12 @@
       <groupId>com.github.retrooper</groupId>
       <artifactId>packetevents-spigot</artifactId>
       <version>2.9.3</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>dev.lone</groupId>
+      <artifactId>api-itemsadder</artifactId>
+      <version>4.0.10</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

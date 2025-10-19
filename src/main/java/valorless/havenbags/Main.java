@@ -1,6 +1,7 @@
 package valorless.havenbags;
 
 import valorless.havenbags.database.BagCache;
+import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.database.SkinCache;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.features.AutoPickup;
@@ -21,10 +22,9 @@ import valorless.havenbags.features.WeightTooltipProtocollib;
 import valorless.havenbags.gui.UpgradeGUI;
 import valorless.havenbags.hooks.*;
 import valorless.havenbags.prevention.*;
-import valorless.havenbags.utils.Metrics;
 import valorless.havenbags.utils.NoteBlockUtils;
 import valorless.havenbags.utils.UpdateChecker;
-
+import valorless.valorlessutils.Metrics;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
@@ -155,13 +155,15 @@ public final class Main extends JavaPlugin implements Listener {
 		ValidateSizeTextures();
 		
 		// Config-Version checks
-        BagConversion();
-        //TimeTable();
+        BagConversion(); // Config 1 -> 2
+        //TimeTable(); Would've been Config 2 -> 3
         try {
-			DataConversion();
+			DataConversion(); // Config 3 -> 4
 		} catch (InvalidConfigurationException e) {
 			//e.printStackTrace();
 		}
+        TokenConfigConversion(); // Config 4 -> 5
+		
         
 		
 		BagData.Initiate();
@@ -169,6 +171,8 @@ public final class Main extends JavaPlugin implements Listener {
 		AutoPickup.Initiate();
 		
 		CustomBags.Initiate();
+		
+		EtherealBags.init();
 
 		RegisterListeners();
 				
@@ -209,7 +213,7 @@ public final class Main extends JavaPlugin implements Listener {
         
     	//activeBags.clear();
     }
-    
+
 	@Override
     public void onDisable() {		
     	CloseBags();
@@ -225,6 +229,7 @@ public final class Main extends JavaPlugin implements Listener {
     	BagEffects.shutdown();
     	UpgradeGUI.OpenGUIs.CloseAll();
     	SkinCache.shutdown();
+    	EtherealBags.shutdown();
     }
     
     public static void CloseBags() {
@@ -329,6 +334,7 @@ public final class Main extends JavaPlugin implements Listener {
 			}
     	}
     }
+    
     void DataConversion() throws InvalidConfigurationException {
     	if(config.GetInt("config-version") < 4) {
     		Log.Warning(plugin, "Old data storage found, updating bag data!");
@@ -395,6 +401,29 @@ public final class Main extends JavaPlugin implements Listener {
     		Log.Info(plugin, String.format("Failed: %s.", failed));
     	}
     }
+    
+	void TokenConfigConversion() {
+		if(config.GetInt("config-version") < 5) {
+    		Log.Warning(plugin, "Old configuration found, updating configs!");
+    		config.Set("config-version", 5);
+    		config.SaveConfig();
+    		
+    		if(config.HasKey("skin-token.material")) {
+				config.Set("token.skin.material", config.Get("skin-token.material"));
+				config.Set("token.skin.custommodeldata", config.Get("skin-token.custommodeldata"));
+				config.Set("token.skin.displayname", config.Get("skin-token.display-name"));
+				config.Set("token.skin.lore", config.Get("skin-token.lore"));
+				
+				config.Set("skin-token.display-name", null);
+				config.Set("skin-token.material", null);
+				config.Set("skin-token.custommodeldata", null);
+				config.Set("skin-token.lore", null);
+				config.Set("skin-token", null);
+				
+				config.SaveConfig();
+			}
+    	}
+	}
     
     List<String> GetBags(@NotNull String player){
 		Log.Debug(Main.plugin, "[DI-21] " + player);

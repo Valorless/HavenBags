@@ -31,6 +31,10 @@ public class CommandGive {
 		Player receiver = Bukkit.getPlayer(command.args[1]);
 		int size;
 		
+		if(command.args[2].equalsIgnoreCase("ethereal")) {
+			return CommandGiveEthereal.Run(command);
+		}
+		
 		try {
 			size = Integer.parseInt(command.args[2]);
 		}catch(Exception e) {
@@ -40,8 +44,8 @@ public class CommandGive {
 				try {
 					CustomBags.Give(receiver, command.args[2]);
 					return true;
-				}catch(Exception é) {
-					é.printStackTrace();
+				}catch(Exception ex) {
+					ex.printStackTrace();
 					return false;
 				}
 			}

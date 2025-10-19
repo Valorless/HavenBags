@@ -11,6 +11,7 @@ import org.bukkit.util.Vector;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.database.BagCache;
+import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.Data;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
@@ -39,7 +40,7 @@ public class Magnet {
 			                if (!(entity instanceof Item)) continue;
 			                Item item = (Item) entity;
 			                if (item.isDead() || !item.isValid()) continue;
-			                if (!item.isOnGround()) continue;
+			                if (!item.isOnGround() && Main.config.GetBool("magnet.vertical") == false) continue;
 			                if (item.getOwner() != null && item.getOwner() != player.getUniqueId()) continue;
 			                
 			                if(Main.config.GetBool("magnet.require-autopickup") && !data.getAutopickup().equalsIgnoreCase("null")) {
@@ -60,8 +61,56 @@ public class Magnet {
 			                double distanceSquared = direction.lengthSquared();
 			                if (distanceSquared < 0.25) continue; // 0.5 blocks squared
 
-			                if (!item.getLocation().getBlock().isLiquid()) {
-			                    direction.setY(0);
+			                if(Main.config.GetBool("magnet.vertical") == false) {
+			                	if (!item.getLocation().getBlock().isLiquid()) {
+			                    	direction.setY(0);
+			                	}
+			                }
+			                
+			                direction.normalize().multiply(Main.config.GetDouble("magnet.speed"));
+
+			                item.setVelocity(direction);
+			            }
+		        	}
+		        	
+		        	for(String ebag : EtherealBags.getPlayerBags(player.getUniqueId())) {
+		        		if(HavenBags.IsBagFull(EtherealBags.formatBagId(player.getUniqueId(), ebag))) continue; // Ignore full bags
+		        		if(!EtherealBags.getBagMagnet(player.getUniqueId(), ebag)) continue;
+
+		        		if(Main.config.GetBool("magnet.require-autopickup") && EtherealBags.getBagAutoPickup(player.getUniqueId(), ebag).equalsIgnoreCase("null")) continue;
+		        		
+			            Location playerLoc = player.getLocation();
+			            double range = Main.config.GetDouble("magnet.range");
+
+			            for (Entity entity : player.getNearbyEntities(range, range, range)) {
+			                if (!(entity instanceof Item)) continue;
+			                Item item = (Item) entity;
+			                if (item.isDead() || !item.isValid()) continue;
+			                if (!item.isOnGround() && Main.config.GetBool("magnet.vertical") == false) continue;
+			                if (item.getOwner() != null && item.getOwner() != player.getUniqueId()) continue;
+
+			                if(Main.config.GetBool("magnet.require-autopickup") && !EtherealBags.getBagAutoPickup(player.getUniqueId(), ebag).equalsIgnoreCase("null")) {
+			                	if(Main.config.GetBool("magnet.only-autopickup-items")) {
+			                		if(!AutoPickup.IsItemInFilter(EtherealBags.getBagAutoPickup(player.getUniqueId(), ebag), item.getItemStack())) {
+			            				continue;
+			            			}
+			                	}
+			                }
+
+			                if(Main.config.GetBool("magnet.instant")) {
+			                    // Instant magnet effect
+			                    item.teleport(playerLoc);
+			                    continue;
+			                }
+
+			                Vector direction = playerLoc.toVector().subtract(item.getLocation().toVector());
+			                double distanceSquared = direction.lengthSquared();
+			                if (distanceSquared < 0.25) continue; // 0.5 blocks squared
+
+			                if(Main.config.GetBool("magnet.vertical") == false) {
+			                	if (!item.getLocation().getBlock().isLiquid()) {
+			                    	direction.setY(0);
+			                	}
 			                }
 			                
 			                direction.normalize().multiply(Main.config.GetDouble("magnet.speed"));

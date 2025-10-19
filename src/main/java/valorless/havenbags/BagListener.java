@@ -27,11 +27,20 @@ import me.NoChance.PvPManager.Managers.PlayerHandler;
 import valorless.havenbags.database.BagCache.Observer;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.sound.SFX;
 
+/**
+ * Listener for handling player interactions with bags.
+ * This class manages the opening of bags, ensuring proper permissions,
+ * cooldowns, and bag ownership checks are enforced.
+ * <p>
+ * To activate this listener, call the static {@link #init()} method during your plugin's startup.
+ * </p>
+ */
 public class BagListener implements Listener{
 	
 	/**
@@ -162,7 +171,7 @@ public class BagListener implements Listener{
 					
 					boolean ownerless = !PDC.GetBoolean(hand, "binding");
 					
-					int size = PDC.GetInteger(hand, "size");
+					int size = HavenBags.findClosestNine(PDC.GetInteger(hand, "size"));
 					for(int i = 9; i <= 54; i += 9) {
 						Log.Debug(Main.plugin, "[DI-63] " + "havenbags.open." + String.valueOf(i) + ": "+ player.hasPermission("havenbags.open." + String.valueOf(i)));
 						if(size != i) continue;
@@ -182,6 +191,9 @@ public class BagListener implements Listener{
 					}
 					
 					if(CreateBag(hand, ownerless, player, placeholders)) {
+						if(BagData.getDatabase() == DatabaseType.MYSQL || BagData.getDatabase() == DatabaseType.MYSQLPLUS) {
+							return;
+						}
 						Bukkit.getScheduler().runTaskLater(Main.plugin, () -> {
 							OpenBag(hand, ownerless, player, event);
 						}, 1L);
@@ -247,8 +259,20 @@ public class BagListener implements Listener{
 		PDC.SetDouble(bag, "weight", 0.0);
 
 		List<ItemStack> cont = new ArrayList<ItemStack>();
-		for(int i = 0; i < PDC.GetInteger(bag, "size"); i++) {
-			cont.add(null);
+		for(int i = 0; i < HavenBags.findClosestNine(PDC.GetInteger(bag, "size")); i++) {
+			if(i < PDC.GetInteger(bag, "size")) {
+				cont.add(null);
+			} else {
+				ItemStack blocker = new ItemStack(Material.BARRIER);
+				ItemMeta bm = blocker.getItemMeta();
+				bm.setCustomModelData(99999);
+				// hide tooltip
+				bm.setDisplayName(" ");
+				blocker.setItemMeta(bm);
+				PDC.SetBoolean(blocker, "locked", true);
+				
+				cont.add(blocker);
+			}
 		}
 		
 		if(ownerless) {
@@ -293,7 +317,7 @@ public class BagListener implements Listener{
 		}
 		
 		if(data.isOpen()) {
-			if(data.getViewer() != player) {
+			if(data.getViewer() != null && data.getViewer() != player) {
 				player.sendMessage(String.format("Open by: %s", data.getViewer() == null ? "null" : data.getViewer().getName()));
 				player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-already-open"), null));
 				Log.Debug(Main.plugin, "[DI-60] " + "This bag is already open.");

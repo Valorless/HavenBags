@@ -19,6 +19,9 @@ softdepend:
   - ViaRewind
   - Geyser-Spigot
   - Essentials
+  - Nexo
+  - Oraxen
+  - ItemsAdder
 # loadbefore: [AdvancedEnchantments]
 commands:
   havenbags:
@@ -32,7 +35,7 @@ permissions:
       havenbags.use: true
       havenbags.rename: true
       havenbags.empty: true
-      havenbags.autoloot: true
+      havenbags.autopickup: true
       havenbags.open.9: true
       havenbags.open.18: true
       havenbags.open.27: true
@@ -48,6 +51,7 @@ permissions:
       havenbags.autosort: true
       havenbags.magnet: true
       havenbags.refill: true
+      havenbags.ethereal: true
   havenbags.admin:
     description: Gives access to all admin commands.
     children:
@@ -65,6 +69,7 @@ permissions:
       havenbags.modeldata: true
       havenbags.token: true
       havenbags.effects: true
+      havenbags.ethereal.admin: true
   havenbags.reload:
     description: Allows you to reload the configuration.
     default: op
@@ -164,10 +169,10 @@ permissions:
   havenbags.token:
     description: Allows you create skin tokens.
     default: op
-  havenbags.carry.0:
+  havenbags.carry.99:
     description: Bags carry limit.
     default: op
-  havenbags.max.0:
+  havenbags.max.99:
     description: Bags creation limit.
     default: op
   havenbags.autosort:
@@ -185,4 +190,12 @@ permissions:
   havenbags.database:
     description: Allows you to change the database type.
     default: op
+  havenbags.ethereal:
+    description: Allows you to open ethereal bags.
+    default: op
+  havenbags.ethereal.admin:
+    description: Allows you to open others ethereal bags, and give/remove them.
+    default: op
+    children:
+      havenbags.ethereal: true
   

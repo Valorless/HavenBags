@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
@@ -31,12 +32,14 @@ public class CommandCreate {
 		if (command.args.length >= 2){
 			if(command.args[1].equalsIgnoreCase("ownerless")) {
 				if (command.args.length >= 3){
-					int size = Utils.Clamp(Integer.parseInt(command.args[2]), 1, 6);
+					//int size = Utils.Clamp(Integer.parseInt(command.args[2]), 1, 6);
+					int size = Integer.parseInt(command.args[2]);
+					int slots = HavenBags.findClosestNine(size);
 					if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
 						if(Main.config.GetBool("bag-textures.enabled")) {
 							for(int s = 9; s <= 54; s += 9) {
-								if(size*9 == s) {
-									bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + size*9));
+								if(slots == s) {
+									bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + slots));
 								}
 							}
 						}else {
@@ -54,7 +57,7 @@ public class CommandCreate {
 					}
 					if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
 						for(int s = 9; s <= 54; s += 9) {
-							if(size*9 == s) {
+							if(slots == s) {
 								bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + s));
 							}
 						}
@@ -64,7 +67,7 @@ public class CommandCreate {
 					for (String l : Lang.lang.GetStringList("bag-lore")) {
 						if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)command.sender));
 					}
-					placeholders.add(new Placeholder("%size%", size*9));
+					placeholders.add(new Placeholder("%size%", size));
 			        lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, (Player)command.sender));
 					//for (String l : Lang.lang.GetStringList("bag-size")) {
 					//	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), (Player)sender));
@@ -79,10 +82,10 @@ public class CommandCreate {
 					//PDC.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
 					PDC.SetString(bagItem, "uuid", "null");
 					PDC.SetString(bagItem, "owner", "null");
-					PDC.SetInteger(bagItem, "size", size*9);
+					PDC.SetInteger(bagItem, "size", size);
 					PDC.SetBoolean(bagItem, "binding", false);
 					Bukkit.getPlayer(command.sender.getName()).getInventory().addItem(bagItem);
-					Log.Debug(Main.plugin, "[DI-138] " + String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size*9, "false"));
+					Log.Debug(Main.plugin, "[DI-138] " + String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size, "false"));
 					//sender.sendMessage(JsonUtils.toJson(bagItem));
 				}else {
 					command.sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-ownerless-no-size"));
@@ -90,12 +93,14 @@ public class CommandCreate {
 			}
 			else {
 				try{
-					int size = Utils.Clamp(Integer.parseInt(command.args[1]), 1, 6);
+					//int size = Utils.Clamp(Integer.parseInt(command.args[1]), 1, 6);
+					int size = Integer.parseInt(command.args[1]);
+					int slots = HavenBags.findClosestNine(size);
 					if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
 						if(Main.config.GetBool("bag-textures.enabled")) {
 							for(int s = 9; s <= 54; s += 9) {
-								if(size*9 == s) {
-									bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size*9));
+								if(slots == s) {
+									bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + slots));
 								}
 							}
 						}else {
@@ -117,7 +122,7 @@ public class CommandCreate {
 					}
 					if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
 						for(int s = 9; s <= 54; s += 9) {
-							if(size*9 == s) {
+							if(slots == s) {
 								bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + s));
 							}
 						}
@@ -127,7 +132,7 @@ public class CommandCreate {
 					for (String l : Lang.lang.GetStringList("bag-lore")) {
 						if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, (Player)command.sender));
 					}
-					placeholders.add(new Placeholder("%size%", size*9));
+					placeholders.add(new Placeholder("%size%", size));
 			        lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, (Player)command.sender));
 					//for (String l : Lang.lang.GetStringList("bag-size")) {
 					//	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), (Player)sender));
@@ -137,10 +142,14 @@ public class CommandCreate {
 					//PDC.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
 					PDC.SetString(bagItem, "uuid", "null");
 					PDC.SetString(bagItem, "owner", "null");
-					PDC.SetInteger(bagItem, "size", size*9);
+					PDC.SetInteger(bagItem, "size", size);
 					PDC.SetBoolean(bagItem, "binding", true);
+					if(!HavenBags.isPowerOfNine(size)) {
+						PDC.SetBoolean(bagItem, "upgrade", false);
+					}
+					
 					Bukkit.getPlayer(command.sender.getName()).getInventory().addItem(bagItem);
-					Log.Debug(Main.plugin, "[DI-139] " + String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
+					Log.Debug(Main.plugin, "[DI-139] " + String.format("Bag created: %s %s %s %s", "null", "null", size, "true"));
 				}
 				catch (NumberFormatException ex){
 					ex.printStackTrace();

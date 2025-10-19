@@ -23,8 +23,10 @@ import com.google.gson.Gson;
 
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.database.BagCache;
+import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.AutoSorter;
 import valorless.havenbags.features.BagEffects;
@@ -65,10 +67,8 @@ public class HavenBags {
 	
 	public static Boolean IsBag(ItemStack item) {
 		if(item == null) return false;
-		if(item.hasItemMeta()) {
-			if(PDC.Has(item, "uuid")) {
-				return true;
-			}
+		if(PDC.Has(item, "uuid")) {
+			return true;
 		}
 		return false;
 	}
@@ -287,7 +287,10 @@ public class HavenBags {
 		} else {
 			PDC.SetBoolean(bag, "binding", true);
 		}
-		PDC.SetInteger(bag, "size", data.getSize());
+		if(isPowerOfNine(data.getSize())) {
+			PDC.SetInteger(bag, "size", data.getSize());
+		}
+		
 		if(data.getAutopickup().equalsIgnoreCase("null")) {
 			PDC.SetString(bag, "filter", null);
 		}else {
@@ -308,7 +311,7 @@ public class HavenBags {
 		}
 		//PDC.SetString(bag, "bag-creator", data.getCreator());
 	}
-	
+
 	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, OfflinePlayer player, boolean...preview) {
 		if(bag == null || bag.getType() == Material.AIR) {
 			Log.Warning(Main.plugin, String.format("Failed to update bag item for player '%s'.\n"
@@ -375,7 +378,7 @@ public class HavenBags {
 		bag.setItemMeta(bagMeta);
 	}
 	
-	private static void UpdateUsed(ItemStack bag, Data data, OfflinePlayer player) {
+	public static void UpdateUsed(ItemStack bag, Data data, OfflinePlayer player) {
 		if(Server.VersionHigherOrEqualTo(Version.v1_21)) {
 			ItemUtils.SetMaxStackSize(bag, 1);
 		}
@@ -401,6 +404,7 @@ public class HavenBags {
 		List<String> items = new ArrayList<String>();
 		if(inventory != null) {
 			for(int i = 0; i < inventory.size(); i++) {
+				if(PDC.Has(inventory.get(i), "locked")) continue;
 				cont.add(inventory.get(i));
 				if(inventory.get(i) != null && inventory.get(i).getType() != Material.AIR) {
 					List<Placeholder> itemph = new ArrayList<Placeholder>();
@@ -631,6 +635,7 @@ public class HavenBags {
 				Main.config.GetDouble("close-pitch").floatValue(), player);
 		for(int i = 0; i < content.size(); i++) {
 			try {
+				if(PDC.Has(content.get(i), "locked")) continue;
 				Item dropped = player.getWorld().dropItem(player.getLocation(), content.get(i));
 				dropped.setPickupDelay(100);
 				content.set(i, null);
@@ -660,6 +665,7 @@ public class HavenBags {
 		for(ItemStack item : player.getInventory().getContents()) {
 			if(IsBag(item)) return true;
 		}
+		if(EtherealBags.hasBags(player.getUniqueId())) return true;
 		return false;
 	}
 	
@@ -801,11 +807,12 @@ public class HavenBags {
 		items = RemoveAir(items);
 		
 	    // Check if there is still space in the list for new items
+		
 	    if (items.size() >= inventorySlots && allSlotsFull(items, itemToAdd)) {
 			Log.Debug(Main.plugin, "[DI-119] " + "bag full!");	
 	        return false; // The bag is full and item is dropped
 	    }
-
+		
 	    boolean added = false;
 		Log.Debug(Main.plugin, "[DI-120] " + "checking bag.");	
 	    for (ItemStack stack : items) {
@@ -843,6 +850,66 @@ public class HavenBags {
 		Log.Debug(Main.plugin, "[DI-125] " + "failed.");	
 
 	    return true; // This line is theoretically unreachable
+	}
+	
+	public static HashMap<Boolean, List<ItemStack>> AddItemToEtherealInventory(Player player, String bagId, ItemStack itemToAdd) {
+		HashMap<Boolean, List<ItemStack>> result = new HashMap<Boolean, List<ItemStack>>();
+		Log.Debug(Main.plugin, "[DI-118] " + "Put item in bag? (ethereal)");	
+		
+		List<ItemStack> items = EtherealBags.getBagContentsOrNull(player.getUniqueId(), bagId);
+		
+	    // Check if there is still space in the list for new items
+		
+	    if (EtherealBags.isBagFull(player.getUniqueId(), bagId)) {
+			Log.Debug(Main.plugin, "[DI-119] " + "bag full!");	
+            result.put(false, items);
+            return result;
+	    }
+		
+		Log.Debug(Main.plugin, "[DI-120] " + "checking bag.");	
+	    for (ItemStack stack : items) {
+	    	if(stack == null) continue;
+	        if (stack.isSimilar(itemToAdd)) {
+	            int maxStackSize = stack.getMaxStackSize();
+	            int totalAmount = stack.getAmount() + itemToAdd.getAmount();
+
+	            if (totalAmount <= maxStackSize) {
+	        		Log.Debug(Main.plugin, "[DI-121] " + "stack has space.");	
+	                stack.setAmount(totalAmount); // Perfect fit or less
+	                result.put(true, items);
+	                return result;
+	            } else {
+	        		Log.Debug(Main.plugin, "[DI-122] " + "stack overflow, adjusting.");	
+	                stack.setAmount(maxStackSize); // Max out the stack
+	                itemToAdd.setAmount(totalAmount - maxStackSize); // Adjust remaining
+	            }
+	        }
+	    }
+
+	    // Try to add remaining part of itemToAdd in a new slot if not all added
+	    if (itemToAdd.getAmount() > 0) {
+	    	Log.Debug(Main.plugin, "[DI-124] " + "adding new stack.");
+	    	int free = -1;
+	    	for(int i = 0; i < items.size(); i++) {
+	    		if(items.get(i) == null || items.get(i).getType() == Material.AIR) {
+	    			free = i;
+	    			break;
+	    		}
+	    	}
+	    	if(free != -1) {
+	    		items.set(free, itemToAdd.clone());
+	            itemToAdd.setAmount(0);
+	    		Log.Debug(Main.plugin, "[DI-123] " + "success.");	
+	            result.put(true, items);
+	            return result;
+	    	}else {
+	            result.put(false, items);
+	            return result;
+	    	}
+	    }
+		Log.Debug(Main.plugin, "[DI-125] " + "failed.");
+        result.put(false, items);
+        return result;
 	}
 	
 	private static boolean allSlotsFull(List<ItemStack> items, ItemStack add) {
@@ -1026,23 +1093,22 @@ public class HavenBags {
 		return false;
 	}*/
 	
-	public static ItemStack CreateToken(String value, String type, String...skin) {
-		String name = Main.config.GetString("skin-token.display-name");
-		Material material = Main.config.GetMaterial("skin-token.material");
-		int cmd = Main.config.GetInt("skin-token.custommodeldata");
-		List<String> lore = Main.config.GetStringList("skin-token.lore");
+	public static ItemStack CreateSkinToken(String value, TokenType type ) {
+		String name = Main.config.GetString("token.skin.displayname");
+		Material material = Main.config.GetMaterial("token.skin.material");
+		int cmd = Main.config.GetInt("token.skin.custommodeldata");
+		List<String> lore = Main.config.GetStringList("token.skin.lore");
 		List<Placeholder> ph = new ArrayList<Placeholder>();
-		if(skin.length != 0) {
-			ph.add(new Placeholder("%skin%", skin[0]));
-		}else if(!Base64Validator.isValidBase64(value)) {
+		if(!Base64Validator.isValidBase64(value)) {
 			ph.add(new Placeholder("%skin%", value));
 		}else {
 			ph.add(new Placeholder("%skin%", ""));
 		}
 		
 		ItemStack item = new ItemStack(material);
-		PDC.SetString(item, "token-skin", value); // Set this first to give the item ItemMeta
-		PDC.SetString(item, "token-type", type);
+		// Set this first to give the item ItemMeta
+		PDC.SetString(item, "token-skin", value);
+		PDC.SetString(item, "token-type", type.toString());
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(Lang.Parse(name, ph));
 		if(cmd > 0) {
@@ -1067,6 +1133,44 @@ public class HavenBags {
 		
 		if(material == Material.PLAYER_HEAD && Base64Validator.isValidBase64(value)) {
 			BagData.setTextureValue(item, value);
+		}
+		
+		return item;
+	}
+	
+	public static ItemStack CreateEffectToken(String value) {
+		String name = Main.config.GetString("token.effect.displayname");
+		Material material = Main.config.GetMaterial("token.effect.material");
+		int cmd = Main.config.GetInt("token.effect.custommodeldata");
+		List<String> lore = Main.config.GetStringList("token.effect.lore");
+		String skin = Main.config.GetString("token.effect.texture");
+		List<Placeholder> ph = new ArrayList<Placeholder>();
+		ph.add(new Placeholder("%effect%", BagEffects.getEffectDisplayname(value)));
+		
+		ItemStack item = new ItemStack(material);
+		// Set this first to give the item ItemMeta
+		PDC.SetString(item, "token-effect", value);
+		PDC.SetString(item, "token-type", TokenType.Effect.toString());
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(Lang.Parse(name, ph));
+		if(cmd > 0) {
+			meta.setCustomModelData(cmd);
+		}
+		List<String> l = new ArrayList<String>();
+		for (String line : lore) {
+			if(!Utils.IsStringNullOrEmpty(line)) {
+				l.add(Lang.Parse(line, ph));
+			}
+		}
+		meta.setLore(l);
+		item.setItemMeta(meta);
+		
+		if(material == Material.PLAYER_HEAD) {
+			if(Base64Validator.isValidBase64(skin)) {
+				BagData.setTextureValue(item, skin);
+			}else {
+				Log.Error(Main.plugin, "token.effect.texture is not a valid base64 skin.");
+			}
 		}
 		
 		return item;
@@ -1188,4 +1292,19 @@ public class HavenBags {
 
 		return !access;
     }
+
+	public static Integer findClosestNine(Integer size) {
+		if(size <= 9) return 9;
+		if(size <= 18) return 18;
+		if(size <= 27) return 27;
+		if(size <= 36) return 36;
+		if(size <= 45) return 45;
+		if(size <= 54) return 54;
+		return 54;
+	}
+	
+	public static boolean isPowerOfNine(int size) {
+		if(size % 9 == 0) return true;
+		return false;
+	}
 }
