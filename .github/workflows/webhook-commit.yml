@@ -1,0 +1,126 @@
+name: Discord Commit
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  discord_notify:
+    runs-on: ubuntu-latest
+    env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      REPO: ${{ github.repository }}
+      GITHUB_EVENT_PATH: ${{ github.event_path }}
+      REF: ${{ github.ref }}
+    steps:
+      - name: Checkout (optional)
+        uses: actions/checkout@v4
+
+      - name: Send a Discord message per commit (fixed here-doc)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Ensure jq is available
+          if ! command -v jq >/dev/null 2>&1; then
+            echo "Installing jq..."
+            sudo apt-get update -y
+            sudo apt-get install -y jq
+          fi
+
+          if [ -z "${GITHUB_EVENT_PATH:-}" ] || [ ! -s "$GITHUB_EVENT_PATH" ]; then
+            echo "GITHUB_EVENT_PATH is missing or empty, nothing to do."
+            exit 0
+          fi
+
+          commits_count=$(jq '.commits | length' "$GITHUB_EVENT_PATH")
+          if [ "$commits_count" -eq 0 ]; then
+            echo "No commits found in the push event."
+            exit 0
+          fi
+
+          BRANCH=${REF#refs/heads/}
+
+          # Create a small Python script once that reads env vars and prints JSON payload.
+          # We write it to /tmp/discord_payload.py to avoid embedding a here-doc inside a command substitution,
+          # which can lead to "unexpected EOF" errors when the delimiters don't match exactly.
+          cat > /tmp/discord_payload.py <<'PY'
+          import os, json, datetime, time
+          
+          sha = os.environ.get('SHA', '')
+          msg = os.environ.get('COMMIT_MSG', '').strip().replace('\r', '')
+          author = os.environ.get('AUTHOR', 'unknown')
+          timestamp = os.environ.get('TIMESTAMP', '')
+          repo = os.environ.get('REPO', '')
+          branch = os.environ.get('BRANCH', '')
+          short_sha = sha[:7] if sha else "(no sha)"
+          commit_url = f"https://github.com/{repo}/commit/{sha}" if sha else ""
+          
+          # Convert ISO8601 timestamp to UNIX for Discord (<t:UNIX:T>)
+          try:
+              if timestamp:
+                  dt = datetime.datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+                  unix_time = int(dt.timestamp())
+              else:
+                  unix_time = int(time.time())
+          except Exception:
+              unix_time = int(time.time())
+          
+          # Split title/body
+          lines = msg.split("\n", 1)
+          title = lines[0].strip() if lines and lines[0].strip() != "" else "(no title)"
+          body = lines[1].strip() if len(lines) > 1 else ""
+          
+          embed = {
+              "author": {
+                  "name": author,
+                  "icon_url": f"https://github.com/{author}.png?size=64"
+              },
+              "title": title or "(no title)",
+              # Use description only if there is body text
+              **({"description": body} if body else {}),
+              "fields": [
+                  {
+                      "name": "",
+                      "value": f"[`{short_sha}`]({commit_url}) - {branch} - <t:{unix_time}:f> (<t:{unix_time}:R>)",
+                      "inline": True
+                  }
+              ],
+              "color": 7506394
+          }
+          
+          print(json.dumps({"embeds": [embed]}, ensure_ascii=False))
+          PY
+
+          # Iterate commits[] and send one payload per commit
+          jq -c '.commits[]' "$GITHUB_EVENT_PATH" | while read -r commit_json; do
+            sha=$(echo "$commit_json" | jq -r '.id // empty')
+            msg=$(echo "$commit_json" | jq -r '.message // empty')
+            author_username=$(echo "$commit_json" | jq -r '.author.username // empty')
+            author_name=$(echo "$commit_json" | jq -r '.author.name // empty')
+            author_email=$(echo "$commit_json" | jq -r '.author.email // empty')
+            timestamp=$(echo "$commit_json" | jq -r '.timestamp // empty')
+
+            if [ -n "$author_username" ]; then
+              author="$author_username"
+            elif [ -n "$author_name" ]; then
+              author="$author_name"
+            elif [ -n "$author_email" ]; then
+              author="$author_email"
+            else
+              author="unknown"
+            fi
+
+            # Export values for the Python script to pick up
+            export SHA="$sha" COMMIT_MSG="$msg" AUTHOR="$author" TIMESTAMP="$timestamp" REPO="$REPO" BRANCH="$BRANCH"
+
+            # Run the Python script (it reads env vars) and capture its output
+            PAYLOAD=$(python3 /tmp/discord_payload.py)
+
+            # Post to Discord
+            curl -s -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK"
+
+            # Small pause to reduce chance of hitting rate limits
+            sleep 0.5
+          done

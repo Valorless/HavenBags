@@ -10,6 +10,7 @@ public class EtherealBagSettings {
 	
 	public EtherealBagSettings() {}
 	
+	@Override
 	public String toString() {
 		return "EtherealBagSettings[autoPickup=" + autoPickup + ", magnet=" + magnet + ", autoSort=" + autoSort + "]";
 	}

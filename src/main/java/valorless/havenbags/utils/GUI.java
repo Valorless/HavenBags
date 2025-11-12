@@ -111,7 +111,7 @@ public class GUI {
         return button;
     }
     
-    static List<String> PageNumberTextures = new ArrayList<String>() {
+    public final static List<String> PageNumberTextures = new ArrayList<String>() {
 		private static final long serialVersionUID = 1L; {
 			/*00*/add("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2VmN2YzOWY3Y2JmZThhYjkzOGNkOWQxYmEyYzJkNzhjYWQ1ODcxZDBmM2FkZTEzYjk0ZDYzNzNiYTdjMWI0ZCJ9fX0="); 
 			/*01*/add("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZhZGUwYTgxNzIxYjNjMmY0ZWQyODI4Y2VjMDUyNDNkMTA3ZDIyN2Q0ZDE5NDcwNDAyOTE4NTM4ZTM2N2JjZiJ9fX0="); 

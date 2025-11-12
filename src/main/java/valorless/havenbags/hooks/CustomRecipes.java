@@ -11,12 +11,15 @@ import org.jetbrains.annotations.NotNull;
 
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.annotations.MarkedForRemoval;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.utils.Utils;
 
+@MarkedForRemoval("Originally part of HavenBags API, now deprecated in favor of direct usage of the HavenBagsAPI.")
+@Deprecated(since = "1.39.0", forRemoval = true)
 public class CustomRecipes {
 	
 	public class BagInfo {
