@@ -41,7 +41,6 @@ import valorless.havenbags.database.SQLite;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.events.BagCreateEvent;
-import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Reflex;
