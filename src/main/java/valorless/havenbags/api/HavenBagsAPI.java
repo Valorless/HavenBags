@@ -262,10 +262,6 @@ public class HavenBagsAPI {
 		return EtherealBags.getBagSettings(player.getUniqueId(), bagId);
 	}
 	
-	
-	
-	// functions;
-	
 	/**
 	 * Upgrades the given bag ItemStack to the next size tier.
 	 * Increases the bag size by 9 slots, updates weight limit if applicable,
