@@ -2,7 +2,6 @@ package valorless.havenbags.datamodels;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import valorless.havenbags.BagData;
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.HavenBags;
@@ -16,13 +19,43 @@ import valorless.havenbags.datamodels.EtherealBagSettings;
 import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
+import valorless.havenbags.utils.HeadCreator;
+import valorless.havenbags.utils.TextFeatures;
+import valorless.valorlessutils.translate.Translator;
 
 /**
  * Public API for interacting with HavenBags.
  * Provides helpers to inspect items, fetch and mutate bag data,
  * manage ethereal bags, and create tokens.
+ * <p>
+ * I also threw in a bunch of random methods.<br>
+ * Have fun!
  */
 public class HavenBagsAPI {
+	
+	/**
+	 * Gets the main plugin instance.
+	 * @return HavenBags JavaPlugin instance
+	 */
+	public static JavaPlugin getInstance() {
+		return Main.plugin;
+	}
+	
+	/**
+	 * Forces the closure of all open bags for all players.
+	 */
+	public static void forceCloseAllBags() {
+		Main.CloseBags();
+	}
+	
+	/**
+	 * Gets the Translator instance used by HavenBags.
+	 * @return Translator instance
+	 */
+	public static Translator getTranslator() {
+		return Main.translator;
+	}
+	
 	/**
 	 * Checks whether the given item is a HavenBag.
 	 * @param item item to check
@@ -512,4 +545,133 @@ public class HavenBagsAPI {
     public static String bagState(ItemStack item) {
 		return HavenBags.BagState(item).toString().toUpperCase();
 	}
+    
+    /** Extracts the URL from a Base64-encoded texture string.
+     * 
+     * @param base64 The Base64-encoded texture string.
+     * @return The extracted URL.
+     */
+    public static String extractUrlFromBase64(String base64) {
+		return HeadCreator.extractUrlFromBase64(base64);
+	}
+    
+    /** Converts a texture URL to a Base64-encoded string.
+	 * 
+	 * @param url The texture URL.
+	 * @return The Base64-encoded texture string.
+	 */
+    public static String convertUrlToBase64(String url) {
+		return HeadCreator.convertUrlToBase64(url);
+	}
+    
+    /** Creates a player head ItemStack with a custom texture from a Base64 string.
+     * 
+     * @param base64 The Base64-encoded texture string.
+     * @return The custom player head ItemStack.
+     */
+    public static ItemStack creteHeadFromBase64(String base64) {
+    	return HeadCreator.itemFromBase64(base64);
+    }
+    
+    /**
+	 * GUI-related utilities for HavenBags.
+	 */
+    public static class GUI {
+    	/**
+		 * Creates a paginated inventory GUI for displaying items.<br>
+		 * if the number of items exceeds the capacity of a single page,
+		 * multiple pages will be created.
+		 * <p>
+		 * Each page will have the specified number of rows (up to 6),
+		 * and navigation controls will be added to move between pages.<br>
+		 * The bottom row is reserved for navigation buttons.
+		 * <p>
+		 * The buttons for navigation are placed in the bottom row of the inventory.<br>
+		 * Each button have their action stored in their PDC for handling clicks, as "havenbags:bag-action".
+		 * <p>
+		 * <code>PDC.SetString(button, "bag-action", action.toString());</code>
+		 * <p>
+		 * Possible actions are:<br>
+		 * - "prev-page": Go to the previous page.<br>
+		 * - "next-page": Go to the next page.<br>
+		 * - "return": Exit button.
+		 * <p>
+		 * 
+		 * See {@link #getPageActionKey(ItemStack button)} to retrieve the action from a button.
+		 * <p>
+		 * Note: This method only creates a single page based on the provided page number.<br>
+		 * To handle multiple pages, you will need to call this method with different page numbers
+		 * and manage the navigation logic in your plugin.
+		 * <p>
+		 * <b>Example usage:</b>
+		 * <pre>
+		 * List&lt;ItemStack&gt; items = ...; // Your list of items to display
+		 * int rows = 5; // Number of rows for the inventory
+		 * int page = 0; // Page number to display
+		 * Inventory inventory = HavenBagsAPI.GUI.createPage(player, "My Items", page, items, rows);
+		 * player.openInventory(inventory);
+		 * </pre>
+		 * 
+		 * @param player The player for whom the inventory is created.
+		 * @param title The title of the inventory GUI.
+		 * @param page The page number to display (0-indexed).
+		 * @param items The list of ItemStacks to paginate.
+		 * @param rows The number of rows in the inventory (max 6).
+		 * @return The created Inventory object representing the paginated GUI.
+		 */
+    	public static Inventory createPage(Player player, String title, int page, List<ItemStack> items, int rows) {
+    		return valorless.havenbags.utils.GUI.CreatePage(player, title, page, items, rows);
+    	}
+    	
+    	/**
+		 * Retrieves the action associated with a pagination button.
+		 * 
+		 * @param button The ItemStack representing the pagination button.
+		 * @return The action string stored in the button's PDC, or null if not found.
+		 */
+    	public static String getPageActionKey(ItemStack button) {
+    		try {
+    			return PDC.GetString(button, "bag-action");
+    		}catch(Exception e) {
+				return null;
+			}
+		}
+    	
+    	/**
+    	 * Gets the list of page number textures used for paginated GUIs.
+    	 * 
+    	 * @return List of 32 (0-31) Base64-encoded texture strings for page numbers.
+    	 */
+    	public static List<String> getPageNumberTextures(){
+			return valorless.havenbags.utils.GUI.PageNumberTextures;
+		}
+    	
+    	/**
+    	 * Creates a textual progress bar representation.
+    	 * 
+    	 * @param progress The current progress value
+    	 * @param total The total value for completion
+    	 * @param barLength The length of the bar in characters
+    	 * @return A String representation of the progress bar
+    	 */
+    	public static String createBar(double progress, double total, int barLength) {
+			return TextFeatures.CreateBar(progress, total, barLength);
+		}
+    	
+    	/**
+		 * Creates a customized textual progress bar representation.
+		 * 
+		 * @param progress The current progress value
+		 * @param total The total value for completion
+		 * @param barLength The length of the bar in characters
+		 * @param barColor The color code for the unfilled portion of the bar
+		 * @param fillColor The color code for the filled portion of the bar
+		 * @param barStyle The character to use for the unfilled portion of the bar
+		 * @param fillStyle The character to use for the filled portion of the bar
+		 * @return A String representation of the customized progress bar
+		 */
+    	public static String createBar(double progress, double total, int barLength, String barColor, String fillColor, char barStyle, char fillStyle) {
+    		return TextFeatures.CreateBar(progress, total, barLength, barColor, fillColor, barStyle, fillStyle);
+    	}
+    }
 }
