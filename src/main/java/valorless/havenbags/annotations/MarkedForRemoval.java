@@ -3,6 +3,7 @@ package valorless.havenbags.annotations;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Target;
@@ -15,7 +16,7 @@ import java.lang.annotation.Target;
  * </p>
  */
 @Documented
-@Target({ FIELD, METHOD, CONSTRUCTOR })
+@Target({ FIELD, METHOD, CONSTRUCTOR, TYPE })
 public @interface MarkedForRemoval {
 	
 	/**
