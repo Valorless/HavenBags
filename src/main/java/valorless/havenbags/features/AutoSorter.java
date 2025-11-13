@@ -33,7 +33,7 @@ public class AutoSorter {
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable(){
             @Override
             public void run(){
-            	HavenBags.UpdateBagItem(bag, sorted, owner);
+            	HavenBags.UpdateBagItem(bag, owner);
             }
         }, 1L);
 	}

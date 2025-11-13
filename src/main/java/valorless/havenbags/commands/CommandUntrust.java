@@ -35,7 +35,7 @@ public class CommandUntrust {
 							//}
 						//}
 						BagData.RemoveTrusted(HavenBags.GetBagUUID(item), command.args[1]);						
-						HavenBags.UpdateBagItem(item, null, player);
+						HavenBags.UpdateBagItem(item, player);
 						
 						List<Placeholder> ph = new ArrayList<Placeholder>();
 						ph.add(new Placeholder("%trusted%", command.args[1]));

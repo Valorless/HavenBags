@@ -57,6 +57,6 @@ public class CommandExplode {
 			}
 		}
 		BagData.UpdateBag(uuid, content);
-		HavenBags.UpdateBagItem(bag, content, player);
+		HavenBags.UpdateBagItem(bag, player);
 	}
 }

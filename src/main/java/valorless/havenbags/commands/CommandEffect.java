@@ -31,7 +31,7 @@ public class CommandEffect {
 					data.setEffect("null");
 					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("effects-command").replace("%value%", 
 							"none"), player));
-					HavenBags.UpdateBagItem(item, null, player);
+					HavenBags.UpdateBagItem(item, player);
 					return true;
 				}
 				boolean c = false;
@@ -54,7 +54,7 @@ public class CommandEffect {
 						player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("effects-command").replace("%value%", 
 								BagEffects.getEffectDisplayname(effect)), player));
 						//PDC.SetString(item, "bag-filter", args[1]);
-						HavenBags.UpdateBagItem(item, null, player);
+						HavenBags.UpdateBagItem(item, player);
 						c = true; // Future Valor: why this? // Future Future Valor: I still have no clue.
 						return true;
 					}
@@ -82,7 +82,7 @@ public class CommandEffect {
 				data.setEffect("null");
 				player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("effects-command").replace("%value%", 
 						"none"), player));
-				HavenBags.UpdateBagItem(item, null, player);
+				HavenBags.UpdateBagItem(item, player);
 				//HavenBags.UpdateBagLore(item, player);
 				return true;
 			}

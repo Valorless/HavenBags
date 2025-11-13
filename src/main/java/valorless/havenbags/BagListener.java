@@ -331,7 +331,7 @@ public class BagListener implements Listener{
 			try {
 				event.setCancelled(true);
 				HavenBags.HasWeightLimit(bag);
-				HavenBags.UpdateBagItem(bag, null, player);
+				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				SFX.Play(Main.config.GetString("open-sound"), 
 						Main.config.GetDouble("open-volume").floatValue(), 
@@ -347,7 +347,7 @@ public class BagListener implements Listener{
 			try {
 				event.setCancelled(true);
 				HavenBags.HasWeightLimit(bag);
-				HavenBags.UpdateBagItem(bag, null, player);
+				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				SFX.Play(Main.config.GetString("open-sound"), 
 						Main.config.GetDouble("open-volume").floatValue(), 
@@ -362,7 +362,7 @@ public class BagListener implements Listener{
 			try {
 				event.setCancelled(true);
 				HavenBags.HasWeightLimit(bag);
-				HavenBags.UpdateBagItem(bag, null, player);
+				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				//BagData.MarkBagOpen(uuid, bag, player, gui);
 				SFX.Play(Main.config.GetString("open-sound"), 
@@ -379,7 +379,7 @@ public class BagListener implements Listener{
 			try {
 				event.setCancelled(true);
 				HavenBags.HasWeightLimit(bag);
-				HavenBags.UpdateBagItem(bag, null, player);
+				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				//BagData.MarkBagOpen(uuid, bag, player, gui);
 				SFX.Play(Main.config.GetString("open-sound"), 

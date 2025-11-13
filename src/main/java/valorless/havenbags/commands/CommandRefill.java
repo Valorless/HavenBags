@@ -24,14 +24,14 @@ public class CommandRefill {
 						if(command.args[1].equalsIgnoreCase("off")) value = false;
 						Data data = BagData.GetBag(uuid, null);
 						data.setRefill(value);
-						HavenBags.UpdateBagItem(item, null, player);
+						HavenBags.UpdateBagItem(item, player);
 						player.sendMessage(Lang.Get("prefix") + Lang.Get("refill-command").replace("%value%", command.args[1]));
 						return true;
 					}
 				}else {
 					Data data = BagData.GetBag(uuid, null);
 					data.setRefill(false);
-					HavenBags.UpdateBagItem(item, null, player);
+					HavenBags.UpdateBagItem(item, player);
 					player.sendMessage(Lang.Get("prefix") + Lang.Get("refill-command").replace("%value%", "off"));
 					return true;
 

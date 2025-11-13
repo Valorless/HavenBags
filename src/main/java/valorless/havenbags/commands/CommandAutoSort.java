@@ -24,14 +24,14 @@ public class CommandAutoSort {
 						if(command.args[1].equalsIgnoreCase("off")) value = false;
 						Data data = BagData.GetBag(uuid, null);
 						data.setAutoSort(value);
-						HavenBags.UpdateBagItem(item, null, player);
+						HavenBags.UpdateBagItem(item, player);
 						player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-sort-command").replace("%value%", command.args[1]), player));
 						return true;
 					}
 				}else {
 					Data data = BagData.GetBag(uuid, null);
 					data.setAutoSort(false);
-					HavenBags.UpdateBagItem(item, null, player);
+					HavenBags.UpdateBagItem(item, player);
 					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-sort-command").replace("%value%", "off"), player));
 					return true;
 

@@ -312,7 +312,7 @@ public class HavenBags {
 		//PDC.SetString(bag, "bag-creator", data.getCreator());
 	}
 
-	public static void UpdateBagItem(ItemStack bag, List<ItemStack> inventory, OfflinePlayer player, boolean...preview) {
+	public static void UpdateBagItem(ItemStack bag, OfflinePlayer player, boolean...preview) {
 		if(bag == null || bag.getType() == Material.AIR) {
 			Log.Warning(Main.plugin, String.format("Failed to update bag item for player '%s'.\n"
 					+ "It's possible they have a mod allowing them to move the item away.", player.getName()));
@@ -618,9 +618,9 @@ public class HavenBags {
 	
 	public static void UpdateBagLore(ItemStack bag, Player player, boolean...preview) {
 		try {
-			UpdateBagItem(bag, LoadBagContentFromServer(bag), player, preview);
+			UpdateBagItem(bag, player, preview);
 		} catch (Exception e) {
-			UpdateBagItem(bag, null, player, preview);
+			UpdateBagItem(bag, player, preview);
 		}
 	}
 	
@@ -645,7 +645,7 @@ public class HavenBags {
 		}
 		//WriteBagToServer(bag, content, player);
 		BagData.UpdateBag(uuid, content);
-		UpdateBagItem(bag, content, player);
+		UpdateBagItem(bag, player);
 	}
 	
 	public static boolean IsOwner(ItemStack bag, Player player) {

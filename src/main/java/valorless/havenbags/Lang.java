@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import valorless.havenbags.datamodels.Placeholder;
@@ -73,12 +74,12 @@ public class Lang {
 	}
 	*/
 	
-	public static String Get(String key) {
+	public static String Get(String key, OfflinePlayer... player) {
 		if(lang.Get(key) == null) {
 			Log.Error(Main.plugin, String.format("Lang.yml is missing the key '%s'!", key));
 			return "§4error";
 		}
-		return hex(lang.GetString(key));
+		return player == null ?  Parse(lang.GetString(key), null) : Parse(lang.GetString(key), player[0]);
 	}
 
 	/* Old Code

@@ -36,7 +36,7 @@ public class CommandAutopickup {
 						BagData.SetAutoPickup(HavenBags.GetBagUUID(item), "null");
 						player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
 								"none"), player));
-						HavenBags.UpdateBagItem(item, null, player);
+						HavenBags.UpdateBagItem(item, player);
 						return true;
 					}
 					boolean c = false;
@@ -78,7 +78,7 @@ public class CommandAutopickup {
 							player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
 									AutoPickup.GetFilterDisplayname(filter)), player));
 							//PDC.SetString(item, "bag-filter", args[1]);
-							HavenBags.UpdateBagItem(item, null, player);
+							HavenBags.UpdateBagItem(item, player);
 							c = true; // Future Valor: why this? // Future Future Valor: I still have no clue.
 							return true;
 						}
@@ -111,7 +111,7 @@ public class CommandAutopickup {
 					BagData.SetAutoPickup(HavenBags.GetBagUUID(item), "null");
 					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
 							"none"), player));
-					HavenBags.UpdateBagItem(item, null, player);
+					HavenBags.UpdateBagItem(item, player);
 					//HavenBags.UpdateBagLore(item, player);
 					return true;
 				}else {

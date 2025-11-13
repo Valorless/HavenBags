@@ -574,7 +574,7 @@ public class AutoPickup implements Listener {
 						weightMessage.Send(player);
 					}
 		        }
-				HavenBags.UpdateBagItem(bag.item, bag.content, player);
+				HavenBags.UpdateBagItem(bag.item, player);
 				//HavenBags.WriteBagToServer(bag.item, bag.content, player);
 				BagData.UpdateBag(bag.item, bag.content);
 				PickupSound(player);
@@ -592,7 +592,7 @@ public class AutoPickup implements Listener {
 						weightMessage.Send(player);
 					}
 		        }
-				HavenBags.UpdateBagItem(bag.item, bag.content, player);
+				HavenBags.UpdateBagItem(bag.item, player);
 				//HavenBags.WriteBagToServer(bag.item, bag.content, player);
 				BagData.UpdateBag(bag.item, bag.content);
 				PickupSound(player);
