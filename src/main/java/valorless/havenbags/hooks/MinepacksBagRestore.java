@@ -218,9 +218,9 @@ public class MinepacksBagRestore implements Listener{
 		bagItem.setItemMeta(bagMeta);
 		
 		try {
-			HavenBags.UpdateBagItem(bagItem, Content, Bukkit.getOfflinePlayer(UUID.fromString(playeruuid)));
+			HavenBags.UpdateBagItem(bagItem, Bukkit.getOfflinePlayer(UUID.fromString(playeruuid)));
 		}catch(Exception e) {
-			HavenBags.UpdateBagItem(bagItem, Content, null);
+			HavenBags.UpdateBagItem(bagItem, null);
 		}
 		
 		return bagItem;

@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,8 +21,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -35,6 +31,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import valorless.havenbags.HavenBags.BagState;
+import valorless.havenbags.annotations.NotNull;
+import valorless.havenbags.annotations.Nullable;
 import valorless.havenbags.database.Files;
 import valorless.havenbags.database.MySQL;
 import valorless.havenbags.database.SQLite;
@@ -328,7 +326,7 @@ public class BagData {
 				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable(){
 		            @Override
 		            public void run(){
-		            	HavenBags.UpdateBagItem(bagItem, content, bag.getViewer());
+		            	HavenBags.UpdateBagItem(bagItem, bag.getViewer());
 		            }
 		        }, 1L);
 				

@@ -17,6 +17,7 @@ import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.EtherealBagSettings;
 import valorless.havenbags.enums.TokenType;
+import valorless.havenbags.items.BagItemFactory;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.havenbags.utils.HeadCreator;
@@ -82,6 +83,15 @@ public class HavenBagsAPI {
 	public static Data getBagData(ItemStack item) {
 		if(!isBag(item)) return null;
 		return BagData.GetBag(getBagUUID(item), null);
+	}
+	
+	/**
+	 * Generates a bag item from the provided Data.
+	 * @param bagData Data for the bag
+	 * @return ItemStack representing the bag
+	 */
+	public static ItemStack generateBagItem(Data bagData) {
+		return BagItemFactory.toItemStack(bagData);
 	}
 	
 	/**

@@ -40,7 +40,7 @@ public class CommandTrust {
 						//list.add(args[1]);
 						//PDC.SetStringList(item, "bag-trust", list);
 						BagData.AddTrusted(HavenBags.GetBagUUID(item), command.args[1]);
-						HavenBags.UpdateBagItem(item, null, player);
+						HavenBags.UpdateBagItem(item, player);
 						
 						List<Placeholder> ph = new ArrayList<Placeholder>();
 						ph.add(new Placeholder("%trusted%", command.args[1]));

@@ -437,7 +437,7 @@ public class BagGUI implements Listener {
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable(){
             @Override
             public void run(){
-            	HavenBags.UpdateBagItem(bagItem, cont, player);
+            	HavenBags.UpdateBagItem(bagItem, player);
             }
         }, 1L);
 		//GivePlayerBagBack();

@@ -20,7 +20,7 @@ public class CommandWeight {
 					//Integer value = Integer.valueOf(args[1]);
 					Double value = Double.valueOf(command.args[1]);
 					BagData.SetWeightMax(HavenBags.GetBagUUID(item), value);
-					HavenBags.UpdateBagItem(item, null, player);
+					HavenBags.UpdateBagItem(item, player);
 					//PDC.SetDouble(item, "bag-weight-limit", value);
 				} catch (Exception e) {
 					//e.printStackTrace();

@@ -462,9 +462,9 @@ public class PlayerGUI implements Listener {
 			}
 
 			try {
-				HavenBags.UpdateBagItem(bagItem, Content, player);
+				HavenBags.UpdateBagItem(bagItem, player);
 			}catch(Exception e) {
-				HavenBags.UpdateBagItem(bagItem, Content, null);
+				HavenBags.UpdateBagItem(bagItem, null);
 			}
 
 			bags.add(bagItem);

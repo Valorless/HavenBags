@@ -1161,9 +1161,9 @@ public class AdminGUI implements Listener {
 			}
 
 			try {
-				HavenBags.UpdateBagItem(bagItem, Content, targetPlayer);
+				HavenBags.UpdateBagItem(bagItem, targetPlayer);
 			}catch(Exception e) {
-				HavenBags.UpdateBagItem(bagItem, Content, null);
+				HavenBags.UpdateBagItem(bagItem, null);
 			}
 
 			bags.add(bagItem);
