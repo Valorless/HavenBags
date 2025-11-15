@@ -79,7 +79,15 @@ public class Lang {
 			Log.Error(Main.plugin, String.format("Lang.yml is missing the key '%s'!", key));
 			return "§4error";
 		}
-		return player == null ?  Parse(lang.GetString(key), null) : Parse(lang.GetString(key), player[0]);
+		
+		if(player != null && player.length > 0) {
+			return Parse(lang.GetString(key), player[0]);
+		}
+		else {
+			return Parse(lang.GetString(key), null);
+		}
+		
+		//return player == null ? Parse(lang.GetString(key), null) : Parse(lang.GetString(key), player[0]);
 	}
 
 	/* Old Code
