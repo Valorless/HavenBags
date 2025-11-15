@@ -18,8 +18,8 @@ Create shulker-like bags of varying sizes bound to a player, or accessible by an
 [/resources](/src/main/resources)
 
 # API
-[https://valorless.github.io/HavenBags](https://valorless.github.io/HavenBags)
-
+[https://valorless.github.io/HavenBags](https://valorless.github.io/HavenBags)<br>
+Latest Release: [![Latest Release](https://img.shields.io/github/v/release/valorless/havenbags)](#)
 ## Maven
 ```xml
 	<repositories>
@@ -32,6 +32,6 @@ Create shulker-like bags of varying sizes bound to a player, or accessible by an
 	<dependency>
 	    <groupId>com.github.Valorless</groupId>
 	    <artifactId>HavenBags</artifactId>
-	    <version>1.39.0</version>
+	    <version>VERSION</version>
 	</dependency>
 ```
