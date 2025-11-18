@@ -472,7 +472,7 @@ public class HavenBags {
 		}
 		if(PDC.Has(bag, "lore")) {
 			lore.clear();
-			for (String l : PDC.GetStringList(bag, "bag-lore")) {
+			for (String l : PDC.GetStringList(bag, "lore")) {
 				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
 			}
 		}
