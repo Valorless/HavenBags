@@ -141,7 +141,7 @@ public final class Main extends JavaPlugin implements Listener {
 		ChestSortHook.Hook();
 		PvPManagerHook.Hook();
 		if(ProtocolLibHook.Hook()) {
-			WeightTooltipProtocollib.registerTooltipListener(this);
+			//WeightTooltipProtocollib.registerTooltipListener(this);
 		}
 		
 		EssentialsHook.Hook();
