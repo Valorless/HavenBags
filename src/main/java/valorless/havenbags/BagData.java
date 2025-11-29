@@ -396,6 +396,20 @@ public class BagData {
 		return dat;
 	}
 	
+	public static Data CreateBag(@NotNull Data dat) {
+		dat.setChanged(true);
+		data.add(dat);
+		if(database == DatabaseType.MYSQLPLUS) {
+			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+				getMysql().saveBag(dat);
+			});
+		}
+		Log.Debug(Main.plugin, "[DI-30] " + "New bag data created: " + dat.getOwner() + "/" + dat.getUuid());
+		Player creator = Bukkit.getPlayer(UUID.fromString(dat.getCreator()));
+		Bukkit.getPluginManager().callEvent(new BagCreateEvent(creator, null, dat));
+		return dat;
+	}
+	
 	public static void LoadData(){
 		ready = false;
 		Log.Info(Main.plugin, "Loading bags..");
