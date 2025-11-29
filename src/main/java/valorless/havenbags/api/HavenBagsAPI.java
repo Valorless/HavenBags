@@ -673,6 +673,18 @@ public class HavenBagsAPI {
 		return bagItem;
 	}
     
+    /*
+    public static Data getUnusedBagData(ItemStack bagItem) {
+    	String uuid = PDC.GetString(bagItem, "uuid");
+    	String owner = PDC.GetString(bagItem, "owner");
+    	int size = PDC.GetInteger(bagItem, "size");
+    	//Boolean binding = PDC.GetBoolean(bagItem, "binding");
+    	Data bagData = new Data(uuid, owner);
+    	bagData.setSize(size);
+    	return bagData;
+    }
+    */
+    
     /**
 	 * GUI-related utilities for HavenBags.
 	 */

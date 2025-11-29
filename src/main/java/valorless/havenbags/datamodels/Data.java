@@ -502,6 +502,11 @@ public class Data {
 		this.changed = true;
 	}
 	
+	/** @return true if bag is bound to an owner */
+	public boolean isBound() {
+		return this.owner != null && !this.owner.equalsIgnoreCase("null") && !this.owner.equalsIgnoreCase("");
+	}
+	
 	/**
 	 * String representation for debugging/logging.
 	 * @return readable summary
