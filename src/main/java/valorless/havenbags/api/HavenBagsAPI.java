@@ -193,7 +193,8 @@ public class HavenBagsAPI {
 	 * @return Data for the created bag
 	 */
 	public static Data createBag(BagCreationObject creationObject) {
-		return BagData.CreateBag(creationObject.uuid, creationObject.owner, creationObject.contents, creationObject.creator, null);
+		return BagData.CreateBag(creationObject.uuid, creationObject.owner, creationObject.contents, creationObject.creator, 
+				createUnusedBagItem(creationObject.contents.size(), !creationObject.owner.equalsIgnoreCase("ownerless")));
 	}
 	
 	/**
