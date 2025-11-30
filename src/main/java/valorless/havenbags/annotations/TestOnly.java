@@ -1,11 +1,6 @@
 package valorless.havenbags.annotations;
 
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-
 import java.lang.annotation.Documented;
-import java.lang.annotation.Target;
 
 /**
  * Annotation indicating that the annotated element is intended for testing purposes only.
@@ -15,7 +10,6 @@ import java.lang.annotation.Target;
  * </p>
  */
 @Documented
-@Target({ FIELD, METHOD, CONSTRUCTOR })
 public @interface TestOnly {
 
 	/**

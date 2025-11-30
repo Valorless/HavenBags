@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import valorless.havenbags.HavenBags;
@@ -22,8 +21,8 @@ public class BagCreationObject {
 	String owner = "ownerless";
 	/** List of ItemStacks representing the bag's contents */
 	List<ItemStack> contents = new ArrayList<>();
-	/** Player who created the bag */
-	Player creator;
+	/** UUID string of the player who created the bag */
+	String creator = "null";
 	
 	/** 
 	 * Constructor to initialize a BagCreationObject with a specified size for contents.
@@ -108,7 +107,7 @@ public class BagCreationObject {
 	 *
 	 * @return the creating Player, or null if not set
 	 */
-	public Player getCreator() {
+	public String getCreator() {
 		return creator;
 	}
 
@@ -117,7 +116,7 @@ public class BagCreationObject {
 	 *
 	 * @param creator the creating Player
 	 */
-	public void setCreator(Player creator) {
+	public void setCreator(String creator) {
 		this.creator = creator;
 	}
 }

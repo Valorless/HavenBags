@@ -3,26 +3,37 @@ package valorless.havenbags.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.havenbags.BagData;
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.HavenBags;
+import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.Nullable;
 import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.EtherealBagSettings;
+import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.items.BagItemFactory;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.havenbags.utils.TextFeatures;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
+import valorless.valorlessutils.config.Config;
+import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.translate.Translator;
+import valorless.valorlessutils.utils.Utils;
 
 /**
  * Public API for interacting with HavenBags.
@@ -157,7 +168,7 @@ public class HavenBagsAPI {
 	 * @param uuid bag UUID
 	 * @return Player who opened the bag, or null if not open
 	 */
-	public static Player BagOpenBy(String uuid) {
+	public static Player bagOpenBy(String uuid) {
 		return BagData.BagOpenBy(uuid, null);
 	}
 	
@@ -183,7 +194,18 @@ public class HavenBagsAPI {
 	 * @return Data for the created bag
 	 */
 	public static Data createBag(BagCreationObject creationObject) {
-		return BagData.CreateBag(creationObject.uuid, creationObject.owner, creationObject.contents, creationObject.creator, null);
+		return BagData.CreateBag(creationObject.uuid, creationObject.owner, creationObject.contents, 
+				creationObject.creator.equalsIgnoreCase("null") ? null : Bukkit.getOfflinePlayer(UUID.fromString(creationObject.creator)).getPlayer(), 
+				createUnusedBagItem(creationObject.contents.size(), !creationObject.owner.equalsIgnoreCase("ownerless")));
+	}
+	
+	/**
+	 * Creates and persists a new bag from the provided Data object.
+	 * @param bagData bag Data
+	 * @return Data for the created bag
+	 */
+	public static Data createBag(Data bagData) {
+		return BagData.CreateBag(bagData);
 	}
 	
 	/**
@@ -582,6 +604,95 @@ public class HavenBagsAPI {
     public static ItemStack creteHeadFromBase64(String base64) {
     	return HeadCreator.itemFromBase64(base64);
     }
+    
+    /** Creates an unused bag ItemStack with specified size and binding status.
+     * 
+     * @param size The size of the bag (number of slots, to the power of 9).
+     * @param binding Whether the bag should be bound to an owner upon creation.
+     * @return The created unused bag ItemStack.
+     */
+    public static ItemStack createUnusedBagItem(int size, boolean binding) {
+		Config config = valorless.havenbags.Main.config;
+		String bagTexture = config.GetString("bag-texture");
+		ItemStack bagItem = new ItemStack(Material.AIR);
+
+		if(config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+			if(config.GetBool("bag-textures.enabled")) {
+				for(int s = 9; s <= 54; s += 9) {
+					if(size == s) {
+						bagItem = HeadCreator.itemFromBase64(config.GetString("bag-textures.size-" + size));
+					}
+				}
+			}else {
+				bagItem = HeadCreator.itemFromBase64(bagTexture);
+			}
+		} else if(config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
+			bagItem = new ItemStack(config.GetMaterial("bag-material"));
+		}
+		
+		ItemMeta bagMeta = bagItem.getItemMeta();
+		if(config.GetInt("bag-custom-model-data") != 0 && config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
+			bagMeta.setCustomModelData(config.GetInt("bag-custom-model-data"));
+			if(config.GetBool("bag-custom-model-datas.enabled")) {
+				for(int s = 9; s <= 54; s += 9) {
+					if(size == s) {
+						bagMeta.setCustomModelData(config.GetInt("bag-custom-model-datas.size-" + size));
+					}
+				}
+			}
+		}
+
+		bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
+		List<String> lore = new ArrayList<String>();
+		for (String l : Lang.lang.GetStringList("bag-lore")) {
+			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, null));
+		}
+		
+		List<Placeholder> placeholders = new ArrayList<Placeholder>();
+		placeholders.add(new Placeholder("%size%", size));
+		lore.add(Lang.Get("bag-size").replace("%size", "" + size));
+		
+		bagMeta.setLore(lore);
+		bagItem.setItemMeta(bagMeta);
+
+		if(Server.VersionHigherOrEqualTo(Version.v1_21_5)) {
+			ItemUtils.SetMaxStackSize(bagItem, 1);
+		}
+
+		if(config.GetBool("bag-custom-model-datas.enabled")) {
+			for(int s = 9; s <= 54; s += 9) {
+				if(size == s) {
+					if(!Utils.IsStringNullOrEmpty(config.GetString("bag-custom-model-datas.size-" + size)) && 
+							!config.GetString("bag-custom-model-datas.size-" + size).matches("-?\\d+(\\.\\d+)?")) {
+						ItemUtils.SetItemModel(bagItem, config.GetString("bag-custom-model-datas.size-" + size));
+					}
+				}
+			}
+		}
+
+		if(!Utils.IsStringNullOrEmpty(config.GetString("bag-item-model"))) {
+			ItemUtils.SetItemModel(bagItem, config.GetString("bag-item-model"));
+		}
+
+		PDC.SetString(bagItem, "uuid", "null");
+		PDC.SetString(bagItem, "owner", "null");
+		PDC.SetInteger(bagItem, "size", size);
+		PDC.SetBoolean(bagItem, "binding", binding);
+		
+		return bagItem;
+	}
+    
+    /*
+    public static Data getUnusedBagData(ItemStack bagItem) {
+    	String uuid = PDC.GetString(bagItem, "uuid");
+    	String owner = PDC.GetString(bagItem, "owner");
+    	int size = PDC.GetInteger(bagItem, "size");
+    	//Boolean binding = PDC.GetBoolean(bagItem, "binding");
+    	Data bagData = new Data(uuid, owner);
+    	bagData.setSize(size);
+    	return bagData;
+    }
+    */
     
     /**
 	 * GUI-related utilities for HavenBags.

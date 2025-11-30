@@ -341,7 +341,7 @@ public class BagData {
 	public static Data CreateBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content, Player creator, ItemStack bag) {
 		Data dat = new Data(uuid, owner, bag.getType());
 		dat.setContent(content);
-		dat.setCreator(creator.getUniqueId().toString());
+		if(creator != null)	dat.setCreator(creator.getUniqueId().toString());
 		int size = 0;
 		for(ItemStack item : content) {
 			if(!PDC.Has(item, "locked")) size++;
@@ -393,6 +393,20 @@ public class BagData {
 		}
 		Log.Debug(Main.plugin, "[DI-30] " + "New bag data created: " + owner + "/" + uuid);
 		Bukkit.getPluginManager().callEvent(new BagCreateEvent(creator, bag, dat));
+		return dat;
+	}
+	
+	public static Data CreateBag(@NotNull Data dat) {
+		dat.setChanged(true);
+		data.add(dat);
+		if(database == DatabaseType.MYSQLPLUS) {
+			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
+				getMysql().saveBag(dat);
+			});
+		}
+		Log.Debug(Main.plugin, "[DI-30] " + "New bag data created: " + dat.getOwner() + "/" + dat.getUuid());
+		Player creator = Bukkit.getPlayer(UUID.fromString(dat.getCreator()));
+		Bukkit.getPluginManager().callEvent(new BagCreateEvent(creator, null, dat));
 		return dat;
 	}
 	

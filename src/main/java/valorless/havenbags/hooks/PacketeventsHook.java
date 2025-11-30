@@ -4,8 +4,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.havenbags.Main;
+import valorless.havenbags.annotations.Unused;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
+@Unused
 public class PacketeventsHook {
 	
 	public static boolean Hook() {
