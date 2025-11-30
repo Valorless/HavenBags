@@ -311,6 +311,80 @@ public class HavenBags {
 		}
 		//PDC.SetString(bag, "bag-creator", data.getCreator());
 	}
+	
+	public static void UpdatePDC(ItemStack bag, Data data) {
+		String uuid = PDC.GetString(bag, "uuid");
+		//String display = bag.getItemMeta().getDisplayName();
+		String id = uuid.replace(".json", "");
+		//Log.Error(Main.plugin, uuid);
+		//Log.Error(Main.plugin, id);
+		//Log.Error(Main.plugin, data + "");
+		
+		//ItemStack skull = HeadCreator.itemFromBase64(data.GetString("texture"));
+		//if(!Utils.IsStringNullOrEmpty(data.GetString("texture"))) {
+		//	bag.setItemMeta((SkullMeta)HeadCreator.itemFromBase64(data.GetString("texture")).getItemMeta());
+		//}
+		
+		//ItemMeta meta = bag.getItemMeta();
+		//meta.setDisplayName(display);
+		//bag.setItemMeta(meta);
+		
+		//PDC.SetString(bag, "bag-uuid", uuid);
+
+		if(bag.getType() == Material.PLAYER_HEAD) {
+			String texture = data.getTexture();
+			if(!Utils.IsStringNullOrEmpty(texture)) {
+				if(!texture.contains("null")) {
+					BagData.setTextureValue(bag, texture);
+				}
+			}
+		}else {
+			int cmd = data.getModeldata();
+			if(cmd != 0) {
+				if(bag.hasItemMeta()) {
+					bag.getItemMeta().setCustomModelData(cmd);
+				}
+			}
+			String im = data.getItemmodel();
+			if(!Utils.IsStringNullOrEmpty(im)) {
+				if(bag.hasItemMeta()) {
+					ItemUtils.SetItemModel(bag, im);
+				}
+			}
+		}
+		
+		
+		PDC.SetString(bag, "owner", data.getOwner());
+		
+		if(data.getOwner().equalsIgnoreCase("ownerless")) {
+			PDC.SetBoolean(bag, "binding", false);
+		} else {
+			PDC.SetBoolean(bag, "binding", true);
+		}
+		if(isPowerOfNine(data.getSize())) {
+			PDC.SetInteger(bag, "size", data.getSize());
+		}
+		
+		if(data.getAutopickup().equalsIgnoreCase("null")) {
+			PDC.SetString(bag, "filter", null);
+		}else {
+			PDC.SetString(bag, "filter", data.getAutopickup());
+		}
+		if(Main.weight.GetBool("enabled")){
+			if(data.getWeightMax() > 0) {
+				PDC.SetDouble(bag, "weight-limit", data.getWeightMax());
+			}else {
+				if(Main.weight.GetBool("weight-per-size")) {
+					PDC.SetDouble(bag, "weight-limit", Main.weight.GetDouble(String.format("weight-size-%s", data.getSize())));
+					BagData.SetWeightMax(id, Main.weight.GetDouble(String.format("weight-size-%s", data.getSize())));
+				}else {
+					PDC.SetDouble(bag, "weight-limit", Main.weight.GetDouble("weight-limit"));
+					BagData.SetWeightMax(id, Main.weight.GetDouble("weight-limit"));
+				}
+			}
+		}
+		//PDC.SetString(bag, "bag-creator", data.getCreator());
+	}
 
 	public static void UpdateBagItem(ItemStack bag, OfflinePlayer player, boolean...preview) {
 		if(bag == null || bag.getType() == Material.AIR) {
