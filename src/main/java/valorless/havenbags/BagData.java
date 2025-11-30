@@ -341,7 +341,7 @@ public class BagData {
 	public static Data CreateBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content, Player creator, ItemStack bag) {
 		Data dat = new Data(uuid, owner, bag.getType());
 		dat.setContent(content);
-		dat.setCreator(creator.getUniqueId().toString());
+		if(creator != null)	dat.setCreator(creator.getUniqueId().toString());
 		int size = 0;
 		for(ItemStack item : content) {
 			if(!PDC.Has(item, "locked")) size++;

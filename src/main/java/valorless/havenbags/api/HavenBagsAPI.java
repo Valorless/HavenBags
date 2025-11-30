@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -193,7 +194,8 @@ public class HavenBagsAPI {
 	 * @return Data for the created bag
 	 */
 	public static Data createBag(BagCreationObject creationObject) {
-		return BagData.CreateBag(creationObject.uuid, creationObject.owner, creationObject.contents, creationObject.creator, 
+		return BagData.CreateBag(creationObject.uuid, creationObject.owner, creationObject.contents, 
+				creationObject.creator.equalsIgnoreCase("null") ? null : Bukkit.getOfflinePlayer(UUID.fromString(creationObject.creator)).getPlayer(), 
 				createUnusedBagItem(creationObject.contents.size(), !creationObject.owner.equalsIgnoreCase("ownerless")));
 	}
 	
