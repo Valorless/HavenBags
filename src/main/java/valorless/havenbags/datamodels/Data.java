@@ -60,7 +60,7 @@ public class Data {
 	/** Refill feature enabled flag */
 	private boolean refill = false;
 	/** Effect identifier string */
-	private String effect;
+	private String effect = "null";
 	
 	/** Indicates if the data has changed since last save */
 	boolean changed = false;

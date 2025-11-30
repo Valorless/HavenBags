@@ -44,8 +44,15 @@ public final class BagItemFactory {
         ItemMeta meta = base.getItemMeta();
 
         // Display name
-        String displayName = (bag.getName() != null && !bag.getName().isEmpty()) ? bag.getName() : 
-        	bag.getOwner().equalsIgnoreCase("ownerless") ? Lang.Get("bag-ownerless-used") : Lang.Get("bag-bound-name", owner);
+        String displayName = "";
+        if(bag.getName() != null && !bag.getName().isEmpty() && owner != null) {
+			displayName = bag.getName();
+		}
+        else if(!bag.getUuid().equalsIgnoreCase("null")) {
+        	displayName = bag.getOwner().equalsIgnoreCase("ownerless") ? Lang.Get("bag-ownerless-used") : Lang.Get("bag-bound-name", owner);
+        }else {
+        	displayName = bag.getOwner().equalsIgnoreCase("ownerless") ? Lang.Get("bag-ownerless-unused") : Lang.Get("bag-unbound-name");
+        }
         meta.setDisplayName(displayName);
 
         // Let HavenBags manage lore and dynamic fields; avoid setting lore here.
