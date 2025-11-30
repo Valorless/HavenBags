@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import valorless.havenbags.Main;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
+@Deprecated(since = "1.37.2.2548", forRemoval = true)
 public class ChestSortHook {
 	
 	public static void Hook() {
