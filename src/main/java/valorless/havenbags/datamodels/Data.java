@@ -20,9 +20,9 @@ import valorless.havenbags.gui.BagGUI;
  */
 public class Data {
     /** Unique identifier of the bag */
-	String uuid;
+	String uuid = "null";
 	/** Owner UUID of the bag */
-	String owner;
+	String owner = "null";
 	/** UUID of the player who created the bag (may differ from owner) */
 	String creator;
 	/** Inventory size (number of slots) */
@@ -38,9 +38,9 @@ public class Data {
 	/** Item model identifier string */
 	String itemmodel;
 	/** List of trusted player UUIDs */
-	List<String> trusted;
+	List<String> trusted = new ArrayList<String>();
 	/** Autopickup mode string */
-	String autopickup;
+	String autopickup = "null";
 	/** Current weight of the bag */
 	double weight;
 	/** Maximum weight capacity of the bag */
@@ -48,17 +48,17 @@ public class Data {
 	/** List of ItemStacks representing bag contents */
 	List<ItemStack> content = new ArrayList<ItemStack>();
 	/** Auto-sort enabled flag */
-	private boolean autosort;
+	private boolean autosort = false;
 	/** Blacklist entries */
-	private List<String> blacklist;
+	private List<String> blacklist = new ArrayList<String>();
 	/** Whitelist mode flag */
-	private boolean whitelist;
+	private boolean whitelist = false;
 	/** Ignore global blacklist flag */
-	private boolean ignoreglobalblacklist;
+	private boolean ignoreglobalblacklist = false;
 	/** Magnet feature enabled flag */
-	private boolean magnet;
+	private boolean magnet = false;
 	/** Refill feature enabled flag */
-	private boolean refill;
+	private boolean refill = false;
 	/** Effect identifier string */
 	private String effect;
 	
