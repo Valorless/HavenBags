@@ -237,7 +237,7 @@ public class HavenBags {
         return true;
 	}*/
 	
-	static void UpdatePDC(ItemStack bag) {
+	public static void UpdatePDC(ItemStack bag) {
 		String uuid = PDC.GetString(bag, "uuid");
 		//String display = bag.getItemMeta().getDisplayName();
 		String id = uuid.replace(".json", "");

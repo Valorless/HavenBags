@@ -54,6 +54,7 @@ public final class BagItemFactory {
         // Tag with our PDC helper for runtime identification
         PDC.SetString(base, "uuid", bag.getUuid()); // Only uuid, the rest is automatically resolved.
         
+        HavenBags.UpdatePDC(base);
         HavenBags.UpdateBagItem(base, owner);
 
         return base;
