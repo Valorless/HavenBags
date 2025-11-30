@@ -605,6 +605,12 @@ public class HavenBagsAPI {
     	return HeadCreator.itemFromBase64(base64);
     }
     
+    /** Creates an unused bag ItemStack with specified size and binding status.
+     * 
+     * @param size The size of the bag (number of slots, to the power of 9).
+     * @param binding Whether the bag should be bound to an owner upon creation.
+     * @return The created unused bag ItemStack.
+     */
     public static ItemStack createUnusedBagItem(int size, boolean binding) {
 		Config config = valorless.havenbags.Main.config;
 		String bagTexture = config.GetString("bag-texture");
