@@ -372,13 +372,13 @@ public class BagData {
 		}
 		dat.setTrusted(new ArrayList<String>());
 		
-		if(PDC.Has(bag, "bag-filter")) {
+		if(PDC.Has(bag, "filter")) {
 			dat.setAutopickup(PDC.GetString(bag, "filter"));
 		}else {
 			dat.setAutopickup("null");
 		}
 		
-		if(PDC.Has(bag, "bag-blacklist")) {
+		if(PDC.Has(bag, "blacklist")) {
 			dat.setBlacklist(PDC.GetStringList(bag, "blacklist"));
 			dat.setWhitelist(PDC.GetBoolean(bag, "whitelist"));
 			dat.setIgnoreGlobalBlacklist(PDC.GetBoolean(bag, "igb"));

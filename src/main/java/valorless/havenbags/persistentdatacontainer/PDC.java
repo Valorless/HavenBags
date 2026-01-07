@@ -62,7 +62,12 @@ public class PDC {
     }
 
     public static List<String> GetStringList(ItemStack item, String key) {
-    	List<String> value = Tags.GetStringList(Main.plugin, item, key);
+    	List<String> value = null;
+    	try {
+    		value = Tags.GetStringList(Main.plugin, item, key);
+    	}catch(IllegalArgumentException e) { // In case the data is not a valid json array.
+    		return new ArrayList<String>();
+    	}
         return value == null ? new ArrayList<String>() : value;
     }
 
