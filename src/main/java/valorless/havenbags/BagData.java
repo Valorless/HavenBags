@@ -467,7 +467,6 @@ public class BagData {
 	
 	public static void SaveData(boolean shutdown, boolean... conversion) {
 		long startTime = System.currentTimeMillis();
-		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, "Saving bags..");
 		List<Data> toSave = new ArrayList<>();
 		
 		if(shutdown || conversion != null) {
@@ -484,7 +483,11 @@ public class BagData {
 		    iterator.remove();
 		    bag.setChanged(false);
 		}
-		
+
+		if(toSave.isEmpty()) {
+			return;
+		}
+		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, "Saving bags..");
 		for(Data bag : toSave) {
 			String uuid = bag.getUuid();
 	    	String owner = bag.getOwner();
