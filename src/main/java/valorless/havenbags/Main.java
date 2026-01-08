@@ -1,5 +1,8 @@
 package valorless.havenbags;
 
+import valorless.havenbags.configconversion.BagConversion;
+import valorless.havenbags.configconversion.DataConversion;
+import valorless.havenbags.configconversion.TokenConfigConversion;
 import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.database.SkinCache;
@@ -18,7 +21,6 @@ import valorless.havenbags.features.Quiver;
 import valorless.havenbags.features.Refill;
 import valorless.havenbags.features.Soulbound;
 import valorless.havenbags.features.BackBag;
-import valorless.havenbags.features.WeightTooltipProtocollib;
 import valorless.havenbags.gui.UpgradeGUI;
 import valorless.havenbags.hooks.*;
 import valorless.havenbags.prevention.*;
@@ -28,26 +30,8 @@ import valorless.valorlessutils.Metrics;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
-import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.translate.Translator;
 import valorless.valorlessutils.utils.Utils;
-import valorless.valorlessutils.uuid.UUIDFetcher;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -55,10 +39,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")
 public final class Main extends JavaPlugin implements Listener {
@@ -102,7 +83,7 @@ public final class Main extends JavaPlugin implements Listener {
 	boolean ValorlessUtils() {
 		Log.Debug(plugin, "[DI-0] Checking ValorlessUtils");
 		
-		int requiresBuild = 295; // The build number of ValorlessUtils that is required for HavenBags to run.
+		int requiresBuild = 313; // The build number of ValorlessUtils that is required for HavenBags to run.
 		
 		String ver = Bukkit.getPluginManager().getPlugin("ValorlessUtils").getDescription().getVersion();
 		//Log.Debug(plugin, ver);
@@ -125,6 +106,7 @@ public final class Main extends JavaPlugin implements Listener {
 		else return true;
 	}
 	
+	@SuppressWarnings("removal")
 	@Override
     public void onEnable() {
 		Log.Debug(plugin, "HavenBags Debugging Enabled!");
@@ -155,15 +137,12 @@ public final class Main extends JavaPlugin implements Listener {
 		ValidateSizeTextures();
 		
 		// Config-Version checks
-        BagConversion(); // Config 1 -> 2
-        //TimeTable(); Would've been Config 2 -> 3
-        try {
-			DataConversion(); // Config 3 -> 4
-		} catch (InvalidConfigurationException e) {
-			//e.printStackTrace();
-		}
-        TokenConfigConversion(); // Config 4 -> 5
-		
+		BagConversion.check(config); // Config 1 -> 2
+		//TimeTableConversion.check(); Would've been Config 2 -> 3
+		try {
+			DataConversion.check(config);// Config 3 -> 4
+		} catch (InvalidConfigurationException e) {} 
+		TokenConfigConversion.check(config); // Config 4 -> 5
         
 		
 		BagData.Initiate();
@@ -304,7 +283,8 @@ public final class Main extends JavaPlugin implements Listener {
 		
 	}
     
-    void BagConversion() {
+	// Moved to BagConversion class
+    /*void BagConversion() {
     	if(config.GetInt("config-version") < 2) {
     		Log.Warning(plugin, "Old configuration found, updating bag data!");
     		config.Set("config-version", 2);
@@ -333,9 +313,9 @@ public final class Main extends JavaPlugin implements Listener {
 				}
 			}
     	}
-    }
+    }*/
     
-    void DataConversion() throws InvalidConfigurationException {
+    /*void DataConversion() throws InvalidConfigurationException {
     	if(config.GetInt("config-version") < 4) {
     		Log.Warning(plugin, "Old data storage found, updating bag data!");
     		//Log.Error(plugin, "Debugging. Old data files are not removed.");
@@ -400,9 +380,9 @@ public final class Main extends JavaPlugin implements Listener {
     		Log.Info(plugin, String.format("Converted %s Data Files!", converted));
     		Log.Info(plugin, String.format("Failed: %s.", failed));
     	}
-    }
+    }*/
     
-	void TokenConfigConversion() {
+	/*void TokenConfigConversion() {
 		if(config.GetInt("config-version") < 5) {
     		Log.Warning(plugin, "Old configuration found, updating configs!");
     		config.Set("config-version", 5);
@@ -423,25 +403,7 @@ public final class Main extends JavaPlugin implements Listener {
 				config.SaveConfig();
 			}
     	}
-	}
-    
-    List<String> GetBags(@NotNull String player){
-		Log.Debug(Main.plugin, "[DI-21] " + player);
-		try {
-			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
-					.filter(file -> !file.isDirectory())
-					.filter(file -> !file.getName().contains(".yml"))
-					.map(File::getName)
-					.collect(Collectors.toList());
-			for(int i = 0; i < bags.size(); i++) {
-				//Log.Debug(Main.plugin, bags.get(i));
-				bags.set(i, bags.get(i).replace(".yml", ""));
-			}
-			return bags;
-		} catch (Exception e) {
-			return new ArrayList<String>();
-		}
-	}
+	}*/
     
     /*void TimeTable() {
     	if(config.GetInt("config-version") < 3) {

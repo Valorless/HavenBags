@@ -22,7 +22,6 @@ import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.nbt.NBT;
 import valorless.valorlessutils.utils.Utils;
 
 /**
