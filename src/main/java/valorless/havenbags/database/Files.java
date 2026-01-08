@@ -159,7 +159,7 @@ public class Files {
 			}else {
 				bagData.Set("custommodeldata", 0);
 			}
-			bagData.Set("texture", Main.config.GetString("bag-texture"));
+			bagData.Set("texture", Main.config.GetString("bag.texture"));
 		}
 		bagData.Set("trusted", new ArrayList<String>());
 		if(PDC.Has(bag, "filter")) {

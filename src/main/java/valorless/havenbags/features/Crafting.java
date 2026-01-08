@@ -76,13 +76,13 @@ public class Crafting implements Listener {
 		if(!Utils.IsStringNullOrEmpty(config.GetString("recipes." + recipe + ".bag-texture"))) {
 			bagTexture = config.GetString("recipes." + recipe + ".bag-texture");
 		}else {
-			bagTexture = Main.config.GetString("bag-texture");
+			bagTexture = Main.config.GetString("bag.texture");
 		}
 		int size = Utils.Clamp(config.GetInt("recipes." + recipe + ".bag-size"), 1, 6);
-		if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+		if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")){
 			bagItem = HeadCreator.itemFromBase64(bagTexture);
-		} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-			bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+		} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
+			bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
 		} else {
 			Log.Error(Main.plugin, Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
 			return null;

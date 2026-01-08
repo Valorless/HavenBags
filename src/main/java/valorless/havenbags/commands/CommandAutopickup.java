@@ -23,7 +23,7 @@ public class CommandAutopickup {
 	public static boolean Run(HBCommand command) {
 		Player player = (Player)command.sender;
 		
-		if(!Main.config.GetBool("auto-pickup")) {
+		if(!Main.config.GetBool("auto-pickup.enabled")) {
 			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("feature-disabled"), player));
 			return true;
 		}

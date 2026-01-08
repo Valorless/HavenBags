@@ -333,9 +333,9 @@ public class BagListener implements Listener{
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
-				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetDouble("open-volume").floatValue(), 
-						Main.config.GetDouble("open-pitch").floatValue(), player);
+				SFX.Play(Main.config.GetString("sound.open.key"), 
+						Main.config.GetDouble("sound.open.volume").floatValue(), 
+						Main.config.GetDouble("sound.open.pitch").floatValue(), player);
 			}catch(Exception e) {
 				e.printStackTrace();
 				BagData.MarkBagClosed(uuid);
@@ -349,9 +349,9 @@ public class BagListener implements Listener{
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
-				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetDouble("open-volume").floatValue(), 
-						Main.config.GetDouble("open-pitch").floatValue(), player);
+				SFX.Play(Main.config.GetString("sound.open.key"), 
+						Main.config.GetDouble("sound.open.volume").floatValue(), 
+						Main.config.GetDouble("sound.open.pitch").floatValue(), player);
 			}catch(Exception e) {
 				e.printStackTrace();
 				BagData.MarkBagClosed(uuid);
@@ -365,9 +365,9 @@ public class BagListener implements Listener{
 				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				//BagData.MarkBagOpen(uuid, bag, player, gui);
-				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetDouble("open-volume").floatValue(), 
-						Main.config.GetDouble("open-pitch").floatValue(), player);
+				SFX.Play(Main.config.GetString("sound.open.key"), 
+						Main.config.GetDouble("sound.open.volume").floatValue(), 
+						Main.config.GetDouble("sound.open.pitch").floatValue(), player);
 				Log.Debug(Main.plugin, "[DI-65] " + player + "has attempted to open a bag, bypassing the lock");
 			}catch(Exception e) {
 				e.printStackTrace();
@@ -382,9 +382,9 @@ public class BagListener implements Listener{
 				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				//BagData.MarkBagOpen(uuid, bag, player, gui);
-				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetDouble("open-volume").floatValue(), 
-						Main.config.GetDouble("open-pitch").floatValue(), player);
+				SFX.Play(Main.config.GetString("sound.open.key"), 
+						Main.config.GetDouble("sound.open.volume").floatValue(), 
+						Main.config.GetDouble("sound.open.pitch").floatValue(), player);
 			}catch(Exception e) {
 				e.printStackTrace();
 				BagData.MarkBagClosed(uuid);

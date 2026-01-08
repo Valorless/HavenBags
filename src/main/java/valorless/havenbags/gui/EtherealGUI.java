@@ -58,9 +58,9 @@ public class EtherealGUI implements Listener {
     	
 		//OpenInventory(player);
 		
-		SFX.Play(Main.config.GetString("open-sound"), 
-				Main.config.GetDouble("open-volume").floatValue(), 
-				Main.config.GetDouble("open-pitch").floatValue(), player);
+		SFX.Play(Main.config.GetString("sound.open.key"), 
+				Main.config.GetDouble("sound.open.volume").floatValue(), 
+				Main.config.GetDouble("sound.open.pitch").floatValue(), player);
     }
     
 	public void InitializeItems() {
@@ -131,9 +131,9 @@ public class EtherealGUI implements Listener {
     		player.closeInventory();
     	}
 
-		SFX.Play(Main.config.GetString("close-sound"), 
-				Main.config.GetDouble("close-volume").floatValue(), 
-				Main.config.GetDouble("close-pitch").floatValue(), player);
+		SFX.Play(Main.config.GetString("sound.close.key"), 
+				Main.config.GetDouble("sound.close.volume").floatValue(), 
+				Main.config.GetDouble("sound.close.pitch").floatValue(), player);
     	
         Log.Debug(Main.plugin, "[EtherealGUI][DI-297] " + "Bag closed, attempting to save ethereal bag. (" + key + ")");
         

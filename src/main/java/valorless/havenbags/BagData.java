@@ -88,7 +88,7 @@ public class BagData {
 			sqlite = new SQLite();
 		}
 		
-		interval = Main.config.GetInt("auto-save-interval")*20;
+		interval = Main.config.GetInt("auto-save.interval")*20;
 		LoadData();
 		/*
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
@@ -182,7 +182,7 @@ public class BagData {
 	}
 	
 	public static void Reload() {
-		interval = Main.config.GetInt("auto-save-interval");
+		interval = Main.config.GetInt("auto-save.interval");
 		Log.Info(Main.plugin, "Bag data was not reloaded. You can force bag data reload with /havenbags reload force");
 		Log.Warning(Main.plugin, "Any unsaved bag data will be lost!");
 	}
@@ -308,7 +308,7 @@ public class BagData {
 					bag.setModeldata(0);
 					bag.setItemmodel("");
 				}
-				bag.setTexture(Main.config.GetString("bag-texture"));
+				bag.setTexture(Main.config.GetString("bag.texture"));
 			}
 			//bag.data.Set("texture", getTextureValue(bagItem));
 			 
@@ -487,7 +487,7 @@ public class BagData {
 		if(toSave.isEmpty()) {
 			return;
 		}
-		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, "Saving bags..");
+		if(Main.config.GetBool("auto-save.message")) Log.Info(Main.plugin, "Saving bags..");
 		for(Data bag : toSave) {
 			String uuid = bag.getUuid();
 	    	String owner = bag.getOwner();
@@ -540,7 +540,7 @@ public class BagData {
 		
 		long endTime = System.currentTimeMillis();
 		long duration = endTime - startTime;
-		if(Main.config.GetBool("auto-save-message")) Log.Info(Main.plugin, String.format("Saved %s bags. %sms", toSave.size(), duration));
+		if(Main.config.GetBool("auto-save.message")) Log.Info(Main.plugin, String.format("Saved %s bags. %sms", toSave.size(), duration));
 	}
 	
 	public static void RemoveBag(@NotNull String uuid) {

@@ -41,7 +41,7 @@ public class CustomBags {
 				if(!Utils.IsStringNullOrEmpty(texture)) {
 					if(texture.chars().count() > 30) {
 						item = HeadCreator.itemFromBase64(!Utils.IsStringNullOrEmpty(texture) ? 
-								texture : Main.config.GetString("bag-texture"));
+								texture : Main.config.GetString("bag.texture"));
 					}else {
 						item = HeadCreator.itemFromBase64(Main.textures.GetString(String.format("textures.%s", texture)));
 					}

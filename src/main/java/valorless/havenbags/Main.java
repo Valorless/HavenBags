@@ -1,6 +1,7 @@
 package valorless.havenbags;
 
 import valorless.havenbags.configconversion.BagConversion;
+import valorless.havenbags.configconversion.ConfigRestructure;
 import valorless.havenbags.configconversion.DataConversion;
 import valorless.havenbags.configconversion.TokenConfigConversion;
 import valorless.havenbags.database.BagCache;
@@ -143,6 +144,7 @@ public final class Main extends JavaPlugin implements Listener {
 			DataConversion.check(config);// Config 3 -> 4
 		} catch (InvalidConfigurationException e) {} 
 		TokenConfigConversion.check(config); // Config 4 -> 5
+		//ConfigRestructure.check(config); // Config 5 -> 6
         
 		
 		BagData.Initiate();
@@ -283,128 +285,6 @@ public final class Main extends JavaPlugin implements Listener {
 		
 	}
     
-	// Moved to BagConversion class
-    /*void BagConversion() {
-    	if(config.GetInt("config-version") < 2) {
-    		Log.Warning(plugin, "Old configuration found, updating bag data!");
-    		config.Set("config-version", 2);
-    		config.SaveConfig();
-    		
-    		File file = new File(String.format("%s/bags", plugin.getDataFolder()));
-    		String[] directories = file.list(new FilenameFilter() {
-    		  @Override
-    		  public boolean accept(File current, String name) {
-    		    return new File(current, name).isDirectory();
-    		  }
-    		});
-			
-			for(String folder : directories) {
-				if(folder.equalsIgnoreCase("ownerless")) continue;
-				try {
-					File f = new File(String.format("%s/bags/%s", plugin.getDataFolder(), folder));
-					File to = new File(String.format("%s/bags/%s", plugin.getDataFolder(), UUIDFetcher.getUUID(folder)));
-					f.renameTo(to);
-					Log.Warning(plugin, String.format("%s => %s", 
-						String.format("/bags/%s", folder), 
-						String.format("/bags/%s", UUIDFetcher.getUUID(folder))
-					));
-				} catch(Exception e) {
-					Log.Error(plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s", folder)));
-				}
-			}
-    	}
-    }*/
-    
-    /*void DataConversion() throws InvalidConfigurationException {
-    	if(config.GetInt("config-version") < 4) {
-    		Log.Warning(plugin, "Old data storage found, updating bag data!");
-    		//Log.Error(plugin, "Debugging. Old data files are not removed.");
-    		Log.Error(plugin, "Old data files are not removed, in case of failure.");
-    		config.Set("config-version", 4);
-    		config.SaveConfig();
-    		int converted = 0;
-    		int failed = 0;
-    		
-    		List<String> owners	= BagData.GetBagOwners();
-    		for(String owner : owners) {
-    			List<String> bags = GetBags(owner);
-    			for(String bag : bags) {
-    				bag = bag.replace(".json", "");
-    				String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, bag);
-    				Path conf = Paths.get(String.format("%s/bags/%s/%s.yml", plugin.getDataFolder(), owner, bag));
-    				try {
-    					List<ItemStack> cont = JsonUtils.fromJson(Files.readString(Paths.get(path)));
-    	    			@SuppressWarnings("unused")
-						List<String> lines = Arrays.asList(JsonUtils.toPrettyJson(cont));
-
-    	    			try {
-    	    				//Files.write(conf, lines, StandardCharsets.UTF_8);
-    	    				//Files.createFile(conf);
-    	    				OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(conf.toString()), StandardCharsets.UTF_8);
-    	    				//writer.write(String.format("uuid: %s", bag));
-    	    				writer.close();
-    	    				
-    	    			}catch(IOException e){
-    	    				//e.printStackTrace();
-    	    			}finally {
-    	    				try {
-    	    					Config bagData = new Config(plugin, String.format("/bags/%s/%s.yml", owner, bag));
-    	    					bagData.Set("uuid", bag);
-    	    					bagData.Set("owner", owner);
-    	    					bagData.Set("creator", "null");
-    	    					bagData.Set("size", cont.size());
-    	    					bagData.Set("texture", Main.config.Get("bag-texture"));
-    	    					bagData.Set("custommodeldata", 0);
-    	    					bagData.Set("trusted", new ArrayList<String>());
-    	    					bagData.Set("auto-pickup", "null");
-    	    					bagData.Set("weight-max", 0);
-    	    					bagData.Set("content", JsonUtils.toJson(cont).replace("'", "◊"));
-    	    					bagData.SaveConfig();
-    	    					converted++;
-    	    				}catch(Exception E) {
-    	    					//E.printStackTrace();
-    	    					// Error: Top level is not a Map.
-    	    					// Unsure why this is thrown, but the file is converted successfully without issues..
-    	    					//Log.Error(plugin, String.format("Something went wrong while converting %s!.", String.format("/bags/%s/%s", owner, bag)));
-    	    				}
-    	    			}
-    				} catch(Exception e) {
-    					failed++;
-    		    		//config.Set("config-version", 3);
-    		    		//config.SaveConfig();
-    					e.printStackTrace();
-    					Log.Error(plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s/%s.json", owner, bag)));
-    				}
-    			}
-    		}
-    		Log.Info(plugin, String.format("Converted %s Data Files!", converted));
-    		Log.Info(plugin, String.format("Failed: %s.", failed));
-    	}
-    }*/
-    
-	/*void TokenConfigConversion() {
-		if(config.GetInt("config-version") < 5) {
-    		Log.Warning(plugin, "Old configuration found, updating configs!");
-    		config.Set("config-version", 5);
-    		config.SaveConfig();
-    		
-    		if(config.HasKey("skin-token.material")) {
-				config.Set("token.skin.material", config.Get("skin-token.material"));
-				config.Set("token.skin.custommodeldata", config.Get("skin-token.custommodeldata"));
-				config.Set("token.skin.displayname", config.Get("skin-token.display-name"));
-				config.Set("token.skin.lore", config.Get("skin-token.lore"));
-				
-				config.Set("skin-token.display-name", null);
-				config.Set("skin-token.material", null);
-				config.Set("skin-token.custommodeldata", null);
-				config.Set("skin-token.lore", null);
-				config.Set("skin-token", null);
-				
-				config.SaveConfig();
-			}
-    	}
-	}*/
-    
     /*void TimeTable() {
     	if(config.GetInt("config-version") < 3) {
     		Log.Warning(plugin, "Old configuration found, updating time table!");
@@ -445,13 +325,13 @@ public final class Main extends JavaPlugin implements Listener {
     		boolean c = false;
     		for(int s = 9; s <= 54; s += 9) {
     			if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag-textures.size-" + s))){
-    				config.Set("bag-textures.size-" + s, config.GetString("bag-texture"));
+    				config.Set("bag-textures.size-" + s, config.GetString("bag.texture"));
     				c = true;
     			}
 			}
     		for(int s = 9; s <= 54; s += 9) {
     			if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag-textures.size-ownerless-" + s))){
-    				config.Set("bag-textures.size-ownerless-" + s, config.GetString("bag-texture"));
+    				config.Set("bag-textures.size-ownerless-" + s, config.GetString("bag.texture"));
     				c = true;
     			}
 			}

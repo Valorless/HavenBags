@@ -74,7 +74,7 @@ public class AutoPickup implements Listener {
 		Bukkit.getServer().getPluginManager().registerEvents(new AutoPickup(), Main.plugin);
 		
 
-		if(!Main.config.GetBool("auto-pickup")) return;
+		if(!Main.config.GetBool("auto-pickup.enabled")) return;
 		Integer ticks = 10;
 		new BukkitRunnable() {
 		    @Override
@@ -105,7 +105,7 @@ public class AutoPickup implements Listener {
 	}
 	
 	public static void Initiate() {
-		if(!Main.config.GetBool("auto-pickup")) return;
+		if(!Main.config.GetBool("auto-pickup.enabled")) return;
 		filters.clear();
 		Object[] f = filter.GetConfigurationSection("filters").getKeys(false).toArray();
 		Log.Debug(Main.plugin, "[DI-145] " + "Filters: " + f.length);
@@ -172,8 +172,8 @@ public class AutoPickup implements Listener {
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
-		if(Main.config.GetBool("auto-pickup-inventory.enabled")) {
-			if(Main.config.GetBool("auto-pickup-inventory.events.onBlockBreak")) {
+		if(Main.config.GetBool("auto-pickup.inventory.enabled")) {
+			if(Main.config.GetBool("auto-pickup.inventory.events.onBlockBreak")) {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 				    public void run() {
 				    	FromInventory(event.getPlayer());
@@ -220,8 +220,8 @@ public class AutoPickup implements Listener {
 			event.getItem().remove();
 		}
 
-		if(Main.config.GetBool("auto-pickup-inventory.enabled")) {
-			if(Main.config.GetBool("auto-pickup-inventory.events.onItemPickup")) {
+		if(Main.config.GetBool("auto-pickup.inventory.enabled")) {
+			if(Main.config.GetBool("auto-pickup.inventory.events.onItemPickup")) {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 				    public void run() {
 				    	FromInventory(player);
@@ -252,8 +252,8 @@ public class AutoPickup implements Listener {
 			event.getItem().remove();
 		}
 
-		if(Main.config.GetBool("auto-pickup-inventory.enabled")) {
-			if(Main.config.GetBool("auto-pickup-inventory.events.onItemPickup")) {
+		if(Main.config.GetBool("auto-pickup.inventory.enabled")) {
+			if(Main.config.GetBool("auto-pickup.inventory.events.onItemPickup")) {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 				    public void run() {
 				    	FromInventory(player);
@@ -817,11 +817,11 @@ public class AutoPickup implements Listener {
 	static void PickupSound(Player player) {
 		Double pitch = 1.0;
 		if(!Server.VersionEqualTo(Version.v1_17) && !Server.VersionEqualTo(Version.v1_17_1)) {
-			pitch = Utils.RandomRange(Main.config.GetDouble("auto-pickup-pitch-min"), Main.config.GetDouble("auto-pickup-pitch-max"));
+			pitch = Utils.RandomRange(Main.config.GetDouble("auto-pickup.sound.pitch.min"), Main.config.GetDouble("auto-pickup.sound.pitch.max"));
 		}
 		
-		SFX.Play(Main.config.GetString("auto-pickup-sound"), 
-				Main.config.GetDouble("auto-pickup-volume").floatValue(), 
+		SFX.Play(Main.config.GetString("auto-pickup.sound.key"), 
+				Main.config.GetDouble("auto-pickup.sound.volume").floatValue(), 
 				pitch.floatValue(), player);
 		
 	}

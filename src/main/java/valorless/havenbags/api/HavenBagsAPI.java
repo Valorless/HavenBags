@@ -613,7 +613,7 @@ public class HavenBagsAPI {
      */
     public static ItemStack createUnusedBagItem(int size, boolean binding) {
 		Config config = valorless.havenbags.Main.config;
-		String bagTexture = config.GetString("bag-texture");
+		String bagTexture = config.GetString("bag.texture");
 		ItemStack bagItem = new ItemStack(Material.AIR);
 
 		if(config.GetString("bag-type").equalsIgnoreCase("HEAD")){
@@ -626,13 +626,13 @@ public class HavenBagsAPI {
 			}else {
 				bagItem = HeadCreator.itemFromBase64(bagTexture);
 			}
-		} else if(config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-			bagItem = new ItemStack(config.GetMaterial("bag-material"));
+		} else if(config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
+			bagItem = new ItemStack(config.GetMaterial("bag.material"));
 		}
 		
 		ItemMeta bagMeta = bagItem.getItemMeta();
-		if(config.GetInt("bag-custom-model-data") != 0 && config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-			bagMeta.setCustomModelData(config.GetInt("bag-custom-model-data"));
+		if(config.GetInt("bag.modeldata") != 0 && config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
+			bagMeta.setCustomModelData(config.GetInt("bag.modeldata"));
 			if(config.GetBool("bag-custom-model-datas.enabled")) {
 				for(int s = 9; s <= 54; s += 9) {
 					if(size == s) {
@@ -670,8 +670,8 @@ public class HavenBagsAPI {
 			}
 		}
 
-		if(!Utils.IsStringNullOrEmpty(config.GetString("bag-item-model"))) {
-			ItemUtils.SetItemModel(bagItem, config.GetString("bag-item-model"));
+		if(!Utils.IsStringNullOrEmpty(config.GetString("bag.itemmodel"))) {
+			ItemUtils.SetItemModel(bagItem, config.GetString("bag.itemmodel"));
 		}
 
 		PDC.SetString(bagItem, "uuid", "null");

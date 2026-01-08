@@ -54,14 +54,14 @@ public class PlacementBlocker implements Listener {
 			}
 		}
 		if(item.getType() == Material.AIR) {
-			if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-			if(block.getType() == Main.config.GetMaterial("bag-material")) {
+			if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
+			if(block.getType() == Main.config.GetMaterial("bag.material")) {
 				block.setType(Material.AIR);
 				event.setCancelled(true);
 				Log.Debug(Main.plugin, "[PlacementBlocker][DI-206] " + "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
 				Log.Debug(Main.plugin, "[PlacementBlocker][DI-207] " + "Block was likely bag, removing.");
 			}
-			}else if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")) {
+			}else if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")) {
 				if(block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
 					block.setType(Material.AIR);
 					event.setCancelled(true);

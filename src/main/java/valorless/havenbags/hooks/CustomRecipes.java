@@ -189,9 +189,9 @@ public class CustomRecipes {
 	    			bag = HeadCreator.itemFromBase64(Main.config.GetString("bag-texture"));
 	    		}
 	    	}
-	    } else if (Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
+	    } else if (Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
 	        // Use a material specified in the config for ITEM type bags
-	        bag = new ItemStack(Main.config.GetMaterial("bag-material"));
+	        bag = new ItemStack(Main.config.GetMaterial("bag.material"));
 	    }
 
 	    // Set metadata (custom model data, display name, lore) for the bag
@@ -199,8 +199,8 @@ public class CustomRecipes {
 	    
 	    // If the template contains custom model data, apply it
 	    if (template.getModelData() == 0) {
-	        if (Main.config.GetInt("bag-custom-model-data") != 0) {
-	            bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+	        if (Main.config.GetInt("bag.modeldata") != 0) {
+	            bagMeta.setCustomModelData(Main.config.GetInt("bag.modeldata"));
 	        }
 	        if (Main.config.GetBool("bag-custom-model-datas.enabled")) {
 	            // Apply custom model data based on the bag size
