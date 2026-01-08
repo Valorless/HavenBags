@@ -25,10 +25,55 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 
+/**
+ * Handles migration of HavenBags per-bag data from legacy JSON files to the
+ * current YAML-based format when an outdated {@code config-version} is
+ * detected. When invoked against a configuration with version lower than 4,
+ * this converter will:
+ * <ul>
+ *   <li>Update {@code config-version} to {@code 4} and persist the change.</li>
+ *   <li>Enumerate bag owners and scan {@code <dataFolder>/bags/<owner>} for bag
+ *       data files that are not YAML.</li>
+ *   <li>Deserialize each legacy JSON file into a list of {@link ItemStack}
+ *       entries and write a new YAML file with structured metadata and content.</li>
+ *   <li>Log conversion progress and a final summary of converted and failed
+ *       files. Legacy files are intentionally not deleted.</li>
+ * </ul>
+ *
+ * Notes:
+ * <ul>
+ *   <li>Performs filesystem I/O and may take noticeable time on large data
+ *       sets.</li>
+ *   <li>Not thread-safe; intended to run during plugin startup before other
+ *       components access the data directory.</li>
+ * </ul>
+ */
 public class DataConversion {
 	
+	/**
+	 * Checks the provided configuration and, if {@code config-version < 4},
+	 * converts each owner's legacy bag JSON files into YAML files containing bag
+	 * metadata and serialized content. The configuration is updated to version
+	 * {@code 4} and saved prior to performing file conversions.
+	 *
+	 * Side effects:
+	 * <ul>
+	 *   <li>Updates and saves the supplied configuration.</li>
+	 *   <li>Creates or overwrites YAML files under
+	 *       {@code <dataFolder>/bags/<owner>/<bag>.yml}.</li>
+	 *   <li>Emits log messages for progress, warnings, and errors.</li>
+	 *   <li>Does not remove legacy JSON files; manual cleanup may be required.</li>
+	 * </ul>
+	 *
+	 * Thread-safety: not thread-safe. Call during initialization only.
+	 *
+	 * @param config non-null plugin configuration used to read/write
+	 *               {@code config-version} and defaults (e.g., {@code bag-texture}).
+	 * @throws InvalidConfigurationException if a YAML configuration cannot be
+	 *         initialized or persisted during conversion.
+	 */
 	@DoNotCall("Internal Use Only")
-	public static void check(Config config) throws InvalidConfigurationException {
+	public static void check(@NotNull Config config) throws InvalidConfigurationException {
 		if(config.GetInt("config-version") < 4) {
     		Log.Warning(Main.plugin, "Old data storage found, updating bag data!");
     		//Log.Error(plugin, "Debugging. Old data files are not removed.");
@@ -95,6 +140,16 @@ public class DataConversion {
     	}
 	}
     
+    /**
+     * Lists the bag data files for a given player under
+     * {@code <dataFolder>/bags/<player>/}. Only non-directory files that are not
+     * YAML ({@code .yml}) are returned. File names are returned as observed on
+     * disk and may still include other extensions (e.g., {@code .json}).
+     *
+     * @param player the owner/directory name; must not be {@code null}
+     * @return a list of file names for the player's bags; never {@code null}
+     *         (an empty list is returned on error)
+     */
     static List<String> GetBags(@NotNull String player){
 		Log.Debug(Main.plugin, "[DI-21] " + player);
 		try {
