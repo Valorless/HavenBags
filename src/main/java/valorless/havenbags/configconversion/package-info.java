@@ -11,6 +11,9 @@
  *       structured metadata (upgrade to {@code config-version} 4).</li>
  *   <li>Renaming token settings from {@code skin-token.*} to
  *       {@code token.skin.*} (upgrade to {@code config-version} 5).</li>
+ *   <li>Restructuring flat config keys into hierarchical paths and creating
+ *       a backup before changes (upgrade to {@code config-version} 6).
+ *       See {@link valorless.havenbags.configconversion.ConfigRestructure}.</li>
  * </ul>
  *
  * Conventions:
@@ -25,6 +28,7 @@
  * See also:
  * {@link valorless.havenbags.configconversion.BagConversion},
  * {@link valorless.havenbags.configconversion.DataConversion},
- * {@link valorless.havenbags.configconversion.TokenConfigConversion}
+ * {@link valorless.havenbags.configconversion.TokenConfigConversion},
+ * {@link valorless.havenbags.configconversion.ConfigRestructure}
  */
 package valorless.havenbags.configconversion;

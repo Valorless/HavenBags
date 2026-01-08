@@ -11,10 +11,39 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-// Not Ready for use, placeholder for future config restructures
-
+/**
+ * Performs in-place restructuring of the HavenBags configuration when an older
+ * {@code config-version} is detected. This converter currently upgrades
+ * configurations to version {@code 6} by moving keys to new hierarchical
+ * paths and removing deprecated entries.
+ * <p>
+ * Safety: Before any change is applied, a backup of the original configuration
+ * file is created alongside the file using the pattern
+ * {@code <name>.backup-<build><ext>} so administrators can revert if needed.
+ * </p>
+ * <p>
+ * Usage: This class is invoked internally during plugin startup and should not
+ * be called directly from user code.
+ * </p>
+ */
 public class ConfigRestructure {
 	
+	/**
+	 * Checks the provided config and, if needed, performs a one-shot migration to
+	 * {@code config-version = 6}. The migration:
+	 * <ul>
+	 *   <li>Creates a backup copy of the existing config file.</li>
+	 *   <li>Renames legacy flat keys to new nested keys (e.g.,
+	 *       {@code auto-save-interval} to {@code auto-save.interval}).</li>
+	 *   <li>Groups sound settings under {@code sound.*} and auto-pickup settings
+	 *       under {@code auto-pickup.*} with structured subkeys.</li>
+	 *   <li>Removes deprecated keys after transferring their values.</li>
+	 *   <li>Saves the updated configuration and logs progress.</li>
+	 * </ul>
+	 * If the backup fails, the restructure is aborted to avoid destructive changes.
+	 *
+	 * @param config the configuration to migrate; must not be null
+	 */
 	@DoNotCall("Internal Use Only")
 	public static void check(@NotNull Config config) {
 		if(config.GetInt("config-version") < 6) {
