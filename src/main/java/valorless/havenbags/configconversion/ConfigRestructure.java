@@ -6,6 +6,11 @@ import valorless.havenbags.annotations.NotNull;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+
 // Not Ready for use, placeholder for future config restructures
 
 public class ConfigRestructure {
@@ -14,6 +19,29 @@ public class ConfigRestructure {
 	public static void check(@NotNull Config config) {
 		if(config.GetInt("config-version") < 6) {
     		Log.Warning(Main.plugin, "Old configuration found, updating configs!");
+    		
+    		// Create a backup of the current config before making changes
+            try {
+                File original = config.GetFile().getFile();
+                File parent = original.getParentFile();
+                String name = original.getName();
+                String base = name;
+                String ext = "";
+                int dot = name.lastIndexOf('.');
+                if (dot != -1) {
+                    base = name.substring(0, dot);
+                    ext = name.substring(dot); // includes dot
+                }
+                String backupName = base + ".backup-" + Main.build + ext;
+                File backup = new File(parent, backupName);
+                Files.copy(original.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Log.Info(Main.plugin, "Backed up config to: " + backup.getName());
+            } catch (IOException ex) {
+                Log.Error(Main.plugin, "Failed to backup config before restructure: " + ex.getMessage());
+                return; // Abort restructure if backup fails
+            }
+    		
+            // Start restructuring
     		config.Set("config-version", 6);
     		config.SaveConfig();
     		

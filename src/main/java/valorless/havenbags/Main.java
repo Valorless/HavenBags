@@ -44,6 +44,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 @SuppressWarnings("deprecation")
 public final class Main extends JavaPlugin implements Listener {
+	public static Integer build = 0;
+	
 	public static JavaPlugin plugin;
 	public static Config config;
 	//public static Config timeTable;
@@ -92,7 +94,7 @@ public final class Main extends JavaPlugin implements Listener {
 		int major = Integer.valueOf(split[0]);
 		int minor = Integer.valueOf(split[1]);
 		int hotfix = Integer.valueOf(split[2]);
-		int build = Integer.valueOf(split[3]);
+		build = Integer.valueOf(split[3]);
 		
 		if(build < requiresBuild) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
