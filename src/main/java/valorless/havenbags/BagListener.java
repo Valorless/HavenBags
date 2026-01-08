@@ -21,9 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.util.BlockIterator;
 
-import me.NoChance.PvPManager.PvPManager;
-import me.NoChance.PvPManager.PvPlayer;
-import me.NoChance.PvPManager.Managers.PlayerHandler;
+import me.chancesd.pvpmanager.player.CombatPlayer;
 import valorless.havenbags.database.BagCache.Observer;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
@@ -131,8 +129,8 @@ public class BagListener implements Listener{
 						if(Bukkit.getPluginManager().getPlugin("PvPManager") != null) {
 							try {
 								Log.Debug(Main.plugin, "[DI-47] " + "Checking if player is pvp.");
-								PlayerHandler playerHandler = PvPManager.getInstance().getPlayerHandler();
-								PvPlayer pvplayer = playerHandler.get(player);
+								//PlayerHandler playerHandler = PvPManager.getInstance().getPlayerHandler();
+								CombatPlayer pvplayer = CombatPlayer.get(player);
 								boolean pvp = pvplayer.hasPvPEnabled();
 								boolean tagged = pvplayer.isInCombat();
 								//if(!Settings.isGlobalStatus()) pvp = false;
