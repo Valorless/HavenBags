@@ -154,7 +154,19 @@ public class ConfigRestructure {
 				config.Set("auto-pickup-inventory.events", null);
 				config.Set("auto-pickup-inventory", null);
 			}
-			
+    		
+    		if(config.HasKey("inventory-lock")) {
+    			boolean locked = config.GetBool("inventory-lock"); //<-- not working, sets false
+				config.Set("inventory-lock", null);
+				config.Set("inventory-lock.enabled", locked);
+				config.Set("inventory-lock.unbound", false);
+				config.Set("inventory-lock.bound", true);
+				config.Set("inventory-lock.unused", false);
+				config.Set("inventory-lock.used", true);
+				
+				config.Set("inventory-lock", null);
+			}
+    		
 			config.SaveConfig();
 			Log.Info(Main.plugin, "Configuration update complete!");
     	}

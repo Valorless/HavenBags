@@ -170,7 +170,12 @@ bags-in-bundles: false
 
 # Should bags always remain in the player's inventory?
 # Good to use alongside Soulbound, otherwise death will drop the item.
-inventory-lock: false
+inventory-lock:
+ enabled: false
+ unbound: false
+ bound: true
+ unused: false
+ used: true
 
 # Should bags be kept through death?
 # May be incompatible with other plugins.

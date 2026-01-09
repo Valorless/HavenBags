@@ -105,7 +105,11 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("bags-in-bags", false);
 	Main.config.AddValidationEntry("bags-in-shulkers", true);
 	Main.config.AddValidationEntry("bags-in-bundles", false);
-	Main.config.AddValidationEntry("inventory-lock", false);
+	Main.config.AddValidationEntry("inventory-lock.enabled", false);
+	Main.config.AddValidationEntry("inventory-lock.unbound", false);
+	Main.config.AddValidationEntry("inventory-lock.bound", true);
+	Main.config.AddValidationEntry("inventory-lock.unused", false);
+	Main.config.AddValidationEntry("inventory-lock.used", true);
 	Main.config.AddValidationEntry("soulbound", false);
 	Main.config.AddValidationEntry("old-help-menu", false);
 	

@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.gui.UpgradeGUI;
+import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class InventoryLock implements Listener {
@@ -26,11 +27,39 @@ public class InventoryLock implements Listener {
 	@EventHandler
 	public void onInventoryMoveItem(InventoryMoveItemEvent e) {
 		//Log.Error(Main.plugin, e.getEventName());
-		if(!Main.config.GetBool("inventory-lock")) return;
+		if(!Main.config.GetBool("inventory-lock.enabled")) return;
 		try {
 			Player player = (Player) e.getSource().getViewers().get(0);
-			if(HavenBags.IsBag(e.getItem()) && e.getSource() == player.getInventory()) {
-				e.setCancelled(true);
+			ItemStack item = e.getItem();
+			if(HavenBags.IsBag(item) && e.getSource() == player.getInventory()) {
+				if(Main.config.GetBool("inventory-lock.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+						PDC.GetBoolean(item, "binding") == true) {
+					if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+						e.setCancelled(true);
+						return;
+					}
+				}
+				if(Main.config.GetBool("inventory-lock.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+						PDC.GetBoolean(item, "binding") == true) {
+					if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+						e.setCancelled(true);
+						return;
+					}
+				}
+				if(Main.config.GetBool("inventory-lock.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+						PDC.GetBoolean(item, "binding") == false) {
+					if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+						e.setCancelled(true);
+						return;
+					}
+				}
+				if(Main.config.GetBool("inventory-lock.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+						PDC.GetBoolean(item, "binding") == false) {
+					if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
+						e.setCancelled(true);
+						return;
+					}
+				}
 			}
 		}catch(Exception E) {
 			E.printStackTrace();
@@ -41,7 +70,7 @@ public class InventoryLock implements Listener {
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) { 
 		//Log.Error(Main.plugin, e.getEventName());
-		if(!Main.config.GetBool("inventory-lock")) return;
+		if(!Main.config.GetBool("inventory-lock.enabled")) return;
 		Log.Debug(Main.plugin, "[DI-290] " + "[InventoryLock] Inventory Click");
 		
 		Inventory inv = e.getInventory();
@@ -58,19 +87,103 @@ public class InventoryLock implements Listener {
     	if(inv.getType() == InventoryType.ANVIL) return; //Ignore anvils, they can be used for skins and upgrades.
     	
     	if(e.getRawSlot() < inv.getSize() && holdingBag){
-        	e.setCancelled(true);
+    		ItemStack item = cursorItem;
+    		if(Main.config.GetBool("inventory-lock.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+					PDC.GetBoolean(item, "binding") == true) {
+				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
+			if(Main.config.GetBool("inventory-lock.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+					PDC.GetBoolean(item, "binding") == true) {
+				if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
+			if(Main.config.GetBool("inventory-lock.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+					PDC.GetBoolean(item, "binding") == false) {
+				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
+			if(Main.config.GetBool("inventory-lock.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+					PDC.GetBoolean(item, "binding") == false) {
+				if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
         }
 		else if(e.getRawSlot() > inv.getSize() && clickedBag && e.isShiftClick()){
-            e.setCancelled(true);
+			ItemStack item = clickedItem;
+			if(Main.config.GetBool("inventory-lock.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+					PDC.GetBoolean(item, "binding") == true) {
+				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
+			if(Main.config.GetBool("inventory-lock.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+					PDC.GetBoolean(item, "binding") == true) {
+				if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
+			if(Main.config.GetBool("inventory-lock.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+					PDC.GetBoolean(item, "binding") == false) {
+				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
+			if(Main.config.GetBool("inventory-lock.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+					PDC.GetBoolean(item, "binding") == false) {
+				if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
         }
 	}
 	
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent e) {
 		//Log.Error(Main.plugin, e.getEventName());
-		if(!Main.config.GetBool("inventory-lock")) return;
-		if(HavenBags.IsBag(e.getItemDrop().getItemStack())) {
-			e.setCancelled(true);
+		if(!Main.config.GetBool("inventory-lock.enabled")) return;
+		ItemStack item = e.getItemDrop().getItemStack();
+		if(HavenBags.IsBag(item)) {
+			if(Main.config.GetBool("inventory-lock.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+					PDC.GetBoolean(item, "binding") == true) {
+				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
+			if(Main.config.GetBool("inventory-lock.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+					PDC.GetBoolean(item, "binding") == true) {
+				if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
+			if(Main.config.GetBool("inventory-lock.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+					PDC.GetBoolean(item, "binding") == false) {
+				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
+			if(Main.config.GetBool("inventory-lock.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+					PDC.GetBoolean(item, "binding") == false) {
+				if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
+					e.setCancelled(true);
+					return;
+				}
+			}
 		}
 		
 	}
