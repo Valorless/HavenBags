@@ -49,6 +49,14 @@ public class ConfigRestructure {
 		if(config.GetInt("config-version") < 6) {
     		Log.Warning(Main.plugin, "Old configuration found, updating configs!");
     		
+    		String ver = Main.plugin.getDescription().getVersion();
+    		//Log.Debug(plugin, ver);
+    		String[] split = ver.split("[.]");
+    		//int major = Integer.valueOf(split[0]);
+    		//int minor = Integer.valueOf(split[1]);
+    		//int hotfix = Integer.valueOf(split[2]);
+    		int build = Integer.valueOf(split[3]);
+    		
     		// Create a backup of the current config before making changes
             try {
                 File original = config.GetFile().getFile();
@@ -61,7 +69,7 @@ public class ConfigRestructure {
                     base = name.substring(0, dot);
                     ext = name.substring(dot); // includes dot
                 }
-                String backupName = base + ".backup-" + Main.build + ext;
+                String backupName = base + ".backup-" + build + ext;
                 File backup = new File(parent, backupName);
                 Files.copy(original.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 Log.Info(Main.plugin, "Backed up config to: " + backup.getName());
@@ -125,7 +133,7 @@ public class ConfigRestructure {
 			}
     		
     		if(config.HasKey("auto-pickup")) {
-    			boolean autoPickup = config.GetBool("auto-pickup");
+    			boolean autoPickup = config.GetBool("auto-pickup"); //<-- not working, sets false
 				config.Set("auto-pickup", null);
 				config.Set("auto-pickup.enabled", autoPickup);
 				config.Set("auto-pickup.sound.key", config.Get("auto-pickup-sound"));
@@ -143,6 +151,8 @@ public class ConfigRestructure {
 				config.Set("auto-pickup-inventory.enabled", null);
 				config.Set("auto-pickup-inventory.events.onBlockBreak", null);
 				config.Set("auto-pickup-inventory.events.onItemPickup", null);
+				config.Set("auto-pickup-inventory.events", null);
+				config.Set("auto-pickup-inventory", null);
 			}
 			
 			config.SaveConfig();

@@ -43,9 +43,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @SuppressWarnings("deprecation")
-public final class Main extends JavaPlugin implements Listener {
-	public static Integer build = 0;
-	
+public final class Main extends JavaPlugin implements Listener {	
 	public static JavaPlugin plugin;
 	public static Config config;
 	//public static Config timeTable;
@@ -94,7 +92,7 @@ public final class Main extends JavaPlugin implements Listener {
 		int major = Integer.valueOf(split[0]);
 		int minor = Integer.valueOf(split[1]);
 		int hotfix = Integer.valueOf(split[2]);
-		build = Integer.valueOf(split[3]);
+		int build = Integer.valueOf(split[3]);
 		
 		if(build < requiresBuild) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -146,7 +144,7 @@ public final class Main extends JavaPlugin implements Listener {
 			DataConversion.check(config);// Config 3 -> 4
 		} catch (InvalidConfigurationException e) {} 
 		TokenConfigConversion.check(config); // Config 4 -> 5
-		//ConfigRestructure.check(config); // Config 5 -> 6
+		ConfigRestructure.check(config); // Config 5 -> 6
         
 		
 		BagData.Initiate();
