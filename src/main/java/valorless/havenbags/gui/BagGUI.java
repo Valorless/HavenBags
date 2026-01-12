@@ -352,7 +352,7 @@ public class BagGUI implements Listener {
     		return;
     	}
 		else if(e.getRawSlot() > inv.getSize() && e.isShiftClick() && HavenBags.IsItemBlacklisted(clickedItem, data)){
-            e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
+            e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("item-blacklisted"), player));
             e.setCancelled(true);
         }
     	

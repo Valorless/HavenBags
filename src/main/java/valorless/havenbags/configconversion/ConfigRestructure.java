@@ -134,37 +134,45 @@ public class ConfigRestructure {
     		
     		if(config.HasKey("auto-pickup")) {
     			boolean autoPickup = config.GetBool("auto-pickup"); //<-- not working, sets false
-				config.Set("auto-pickup", null);
-				config.Set("auto-pickup.enabled", autoPickup);
-				config.Set("auto-pickup.sound.key", config.Get("auto-pickup-sound"));
-				config.Set("auto-pickup.sound.volume", config.Get("auto-pickup-volume"));
-				config.Set("auto-pickup.sound.pitch.min", config.Get("auto-pickup-pitch-min"));
-				config.Set("auto-pickup.sound.pitch.max", config.Get("auto-pickup-pitch-max"));
-				config.Set("auto-pickup.inventory.enabled", config.Get("auto-pickup-inventory.enabled"));
-				config.Set("auto-pickup.inventory.events.onBlockBreak", config.Get("auto-pickup-inventory.events.onBlockBreak"));
-				config.Set("auto-pickup.inventory.events.onItemPickup", config.Get("auto-pickup-inventory.events.onItemPickup"));
-				
-				config.Set("auto-pickup-sound", null);
-				config.Set("auto-pickup-volume", null);
-				config.Set("auto-pickup-pitch-min", null);
-				config.Set("auto-pickup-pitch-max", null);
-				config.Set("auto-pickup-inventory.enabled", null);
-				config.Set("auto-pickup-inventory.events.onBlockBreak", null);
-				config.Set("auto-pickup-inventory.events.onItemPickup", null);
-				config.Set("auto-pickup-inventory.events", null);
-				config.Set("auto-pickup-inventory", null);
+    			new org.bukkit.scheduler.BukkitRunnable() {
+    			    @Override
+    			    public void run() {
+    					config.Set("auto-pickup", null);
+    					config.Set("auto-pickup.enabled", autoPickup);
+    					config.Set("auto-pickup.sound.key", config.Get("auto-pickup-sound"));
+    					config.Set("auto-pickup.sound.volume", config.Get("auto-pickup-volume"));
+    					config.Set("auto-pickup.sound.pitch.min", config.Get("auto-pickup-pitch-min"));
+    					config.Set("auto-pickup.sound.pitch.max", config.Get("auto-pickup-pitch-max"));
+    					config.Set("auto-pickup.inventory.enabled", config.Get("auto-pickup-inventory.enabled"));
+    					config.Set("auto-pickup.inventory.events.onBlockBreak", config.Get("auto-pickup-inventory.events.onBlockBreak"));
+    					config.Set("auto-pickup.inventory.events.onItemPickup", config.Get("auto-pickup-inventory.events.onItemPickup"));
+    					
+    					config.Set("auto-pickup-sound", null);
+    					config.Set("auto-pickup-volume", null);
+    					config.Set("auto-pickup-pitch-min", null);
+    					config.Set("auto-pickup-pitch-max", null);
+    					config.Set("auto-pickup-inventory.enabled", null);
+    					config.Set("auto-pickup-inventory.events.onBlockBreak", null);
+    					config.Set("auto-pickup-inventory.events.onItemPickup", null);
+    					config.Set("auto-pickup-inventory.events", null);
+    					config.Set("auto-pickup-inventory", null);
+    			    }
+    			}.runTaskLater(Main.plugin, 1L);
 			}
     		
     		if(config.HasKey("inventory-lock")) {
     			boolean locked = config.GetBool("inventory-lock"); //<-- not working, sets false
-				config.Set("inventory-lock", null);
-				config.Set("inventory-lock.enabled", locked);
-				config.Set("inventory-lock.unbound", false);
-				config.Set("inventory-lock.bound", true);
-				config.Set("inventory-lock.unused", false);
-				config.Set("inventory-lock.used", true);
-				
-				config.Set("inventory-lock", null);
+    			new org.bukkit.scheduler.BukkitRunnable() {
+    			    @Override
+    			    public void run() {
+    					config.Set("inventory-lock", null);
+    					config.Set("inventory-lock.enabled", locked);
+    					config.Set("inventory-lock.unbound", false);
+    					config.Set("inventory-lock.bound", true);
+    					config.Set("inventory-lock.unused", false);
+    					config.Set("inventory-lock.used", true);
+    			    }
+    			}.runTaskLater(Main.plugin, 1L);
 			}
     		
 			config.SaveConfig();

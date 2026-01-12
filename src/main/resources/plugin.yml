@@ -8,7 +8,7 @@ description: Create shulker-like bags of varying sizes bound to a player, or acc
 depend: [ValorlessUtils]
 softdepend:
   - ProtocolLib
-  - ChestSort
+  #- ChestSort
   - PlaceholderAPI
   - AngelChest
   - PvPManager

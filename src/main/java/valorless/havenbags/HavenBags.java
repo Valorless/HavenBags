@@ -1019,6 +1019,7 @@ public class HavenBags {
 	
 	public static boolean IsItemBlacklisted(ItemStack item, Data... bagData) {
 		if(item == null) return false;
+		if(item.getType() == Material.AIR) return false;
 		
 		// Check bag's own blacklist
 		if(bagData != null && bagData.length != 0) {
@@ -1038,6 +1039,9 @@ public class HavenBags {
 						mat = Material.valueOf(entry.split("-")[0]);
 						cmd = Integer.valueOf(entry.split("-")[1]);
 					}
+					else {
+						mat = Material.valueOf(entry);
+					}
 					if(item.getType() == mat) {
 						Log.Debug(Main.plugin, "[DI-245] " + "Material blacklisted!");	
 						if(whitelist) return false;
@@ -1053,7 +1057,8 @@ public class HavenBags {
 						}
 					}
 				}
-				if(data.isIngoreGlobalBlacklist()) return false;
+				if(whitelist) return true; // If using as whitelist, and not found, return true
+				if(data.isIngoreGlobalBlacklist()) return false; // If ignoring global blacklist, return false
 			}
 		}
 		
