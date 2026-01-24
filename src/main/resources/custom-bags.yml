@@ -32,6 +32,7 @@ bags:
     - DIRT:44453 # Define CustomModelData with either - or :
    whitelist: true # Should we treat the blacklist as a whitelist?
    ignoreglobalblacklist: true # Should we ignore the blacklist from blacklist.yml?
+   carry-limit: true # Should this bag ignore the carry limit?
    
  special_bag_3:
   displayname: '&6Special Bag 3 :O'

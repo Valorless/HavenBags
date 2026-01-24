@@ -126,18 +126,35 @@ public class AdminGUI implements Listener {
 			
 			// Prepare offline bags asynchronously to avoid blocking the main thread.
 			TaskUtils.runAsyncThenSync(() -> {
+				if(player.getName().equalsIgnoreCase("Alynie")) {
+					player.sendMessage("§c[Debug] Requesting offline bags...");
+					Log.Info(plugin, "[Debug] Requesting offline bags...");
+				}
 			    return PrepareOfflineBags();
 			}, (offline) -> {
 				if(unused) return;
 				// After preparing all offline players async, add them to the GUI's content and reload the inventory if applicable.
 				if(offline != null) {
 					if(type == GUIType.Restoration || type == GUIType.Preview || type == GUIType.Deletion) {
+						if(player.getName().equalsIgnoreCase("Alynie")) {
+							player.sendMessage("§e[Debug] Requested offline bags successfully, adding to GUI...");
+							Log.Info(plugin, "[Debug] Requested offline bags successfully, adding to GUI...");
+						}
 						for(ItemStack off : offline) {
 							content.add(off);
 						}
 						if(player.getOpenInventory().getTopInventory() != inv) return;
+						if(player.getName().equalsIgnoreCase("Alynie")) {
+							player.sendMessage("§e[Debug] Updating GUI with offline bags...");
+							Log.Info(plugin, "[Debug] Updating GUI with offline bags...");
+						}
 						Open();
 						return;
+					}
+				}else {
+					if(player.getName().equalsIgnoreCase("Alynie")) {
+						player.sendMessage("§c[Debug] Error, offline bags is null.");
+						Log.Error(plugin, "[Debug] Error, offline bags is null.");
 					}
 				}
 			});
@@ -1078,6 +1095,11 @@ public class AdminGUI implements Listener {
 	
 	List<ItemStack> PrepareOfflineBags(){
 		List<ItemStack> bags = new ArrayList<ItemStack>();
+		
+		if(player.getName().equalsIgnoreCase("Alynie")) {
+			player.sendMessage("§e[Debug] Preparing offline bags...");
+			Log.Info(plugin, "[Debug] Preparing offline bags...");
+		}
 
 		// OFFLINE PLAYERS (excluding those who are currently online)
 		List<OfflinePlayer> offlinePlayers = Arrays.stream(Bukkit.getOfflinePlayers())
@@ -1085,9 +1107,19 @@ public class AdminGUI implements Listener {
 				.filter(p -> !BagData.GetBags(p.getUniqueId().toString()).isEmpty())
 				.sorted(Comparator.comparing(OfflinePlayer::getName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
 				.toList();
+		
+		if(player.getName().equalsIgnoreCase("Alynie")) {
+			player.sendMessage("§e[Debug] Found " + offlinePlayers.size() + " offline players with bags.");
+			Log.Info(plugin, "[Debug] Found " + offlinePlayers.size() + " offline players with bags.");
+		}
 
 		for (OfflinePlayer p : offlinePlayers) {
 			String uuid = p.getUniqueId().toString();
+			
+			if(player.getName().equalsIgnoreCase("Alynie")) {
+				player.sendMessage("§e[Debug] Player: " + p.getName() + " UUID: " + uuid);
+				Log.Info(plugin, "[Debug] Player: " + p.getName() + " UUID: " + uuid);
+			}
 
 			//ItemStack entry = HeadCreator.itemFromUuid(p.getUniqueId()); <-- Causes HTTP 429.
 			ItemStack entry = new ItemStack(Material.PLAYER_HEAD);
@@ -1097,7 +1129,6 @@ public class AdminGUI implements Listener {
 				meta.setOwnerProfile(profile);
 			}
 			meta.setDisplayName("§c" + p.getName());
-			//meta.setLore(Arrays.asList("§8§oStill getting skins to work.."));
 			entry.setItemMeta(meta);
 			PDC.SetString(entry, "owner", uuid);
 			bags.add(entry);

@@ -1338,6 +1338,19 @@ public class HavenBags {
 		return bags;
 	}
 	
+	public static int GetBagsInInventoryCarryLimit(Player player) {
+		int bags = 0;
+		for(ItemStack i : player.getInventory().getContents()) {
+			if(HavenBags.IsBag(i)) { 
+				if(PDC.GetBoolean(i, "climit")) {
+					continue;
+				}
+				bags++;
+			}
+		}
+		return bags;
+	}
+	
     public static int countItems(List<ItemStack> items, Material material) {
         int count = 0;
         for (ItemStack item : items) {
