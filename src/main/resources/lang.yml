@@ -91,9 +91,8 @@ magnet-command: '&fMagnetic has been set to: %value%.'
 # Message sent when the player toggles refill.
 refill-command: '&fRefill has been set to: %value%.'
 
-# Message sent to admins if they attempt to open a player's Ethereal bag,
-# while the player is using it.
-ethereal-open: '&cThe player is currently using their bag.'
+# Message sent when the player toggles refill.
+effects-command: '&fEffect has been set to: %value%.'
 
 # Message sent to the player trying to open their Ethereal bag, which
 # is currently being viewed by someone with 'havenbags.ethereal.admin'.
@@ -118,12 +117,17 @@ bag-given: '&aYou''ve been given an %name%!'
 # %value% - Size given by command user.
 number-conversion-error: '&cCannot convert ''%value%'' to a number!'
 
-# Message sent when the player toggles refill.
-effects-command: '&fEffect has been set to: %value%.'
-
 # Bags found of player'.
 # %player% - Name of the player specified.
 bags-of: 'Bags of %player%:'
+
+# Message sent to admins if they attempt to open a player's Ethereal bag,
+# while the player is using it.
+ethereal-open: '&cThe player is currently using their bag.'
+
+# Message sent if that texture wasnt found.
+# %texture% - value given.
+bag-texture-not-found: 'No texture called %texture% found.'
 
 ############################################################
 # +------------------------------------------------------+ #

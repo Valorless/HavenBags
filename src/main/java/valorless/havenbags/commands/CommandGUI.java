@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import valorless.havenbags.BagData;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.gui.AdminGUI;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
@@ -12,6 +14,12 @@ public class CommandGUI {
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
 	public static boolean Run(HBCommand command) {
+		
+		for(Data dat : BagData.GetOpenBags()) {
+			if(dat.getViewer().getUniqueId().equals(((Player)command.sender).getUniqueId())) {
+				return true;
+			}
+		}
 		
 		if (command.args.length == 1) {
 			AdminGUI gui = new AdminGUI(AdminGUI.GUIType.Main, (Player)command.sender);

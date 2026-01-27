@@ -12,8 +12,10 @@ import org.bukkit.util.Vector;
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
+import valorless.havenbags.Main;
 import valorless.havenbags.commands.HBCommand;
 import valorless.havenbags.persistentdatacontainer.PDC;
+import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.sound.SFX;
 
 public class CommandExplode {
@@ -25,6 +27,10 @@ public class CommandExplode {
 		Player player = (Player)command.sender;
 		ItemStack item = player.getInventory().getItemInMainHand();
 		if(HavenBags.IsBag(item)) {
+			if(BagData.IsBagOpen(item)) {
+				Log.Warning(Main.plugin, "Due to a recent bug, this player may be attempting to exploit the empty command while the bag is open: " + player.getName());
+				return true;
+			}
 			if(HavenBags.IsOwner(item, player)) {
 				Explode(item, player);
 			}else {

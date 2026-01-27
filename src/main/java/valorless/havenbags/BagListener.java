@@ -21,9 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.util.BlockIterator;
 
-import me.NoChance.PvPManager.PvPManager;
-import me.NoChance.PvPManager.PvPlayer;
-import me.NoChance.PvPManager.Managers.PlayerHandler;
+import me.chancesd.pvpmanager.player.CombatPlayer;
 import valorless.havenbags.database.BagCache.Observer;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
@@ -131,8 +129,8 @@ public class BagListener implements Listener{
 						if(Bukkit.getPluginManager().getPlugin("PvPManager") != null) {
 							try {
 								Log.Debug(Main.plugin, "[DI-47] " + "Checking if player is pvp.");
-								PlayerHandler playerHandler = PvPManager.getInstance().getPlayerHandler();
-								PvPlayer pvplayer = playerHandler.get(player);
+								//PlayerHandler playerHandler = PvPManager.getInstance().getPlayerHandler();
+								CombatPlayer pvplayer = CombatPlayer.get(player);
 								boolean pvp = pvplayer.hasPvPEnabled();
 								boolean tagged = pvplayer.isInCombat();
 								//if(!Settings.isGlobalStatus()) pvp = false;
@@ -333,9 +331,9 @@ public class BagListener implements Listener{
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
-				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetDouble("open-volume").floatValue(), 
-						Main.config.GetDouble("open-pitch").floatValue(), player);
+				SFX.Play(Main.config.GetString("sound.open.key"), 
+						Main.config.GetDouble("sound.open.volume").floatValue(), 
+						Main.config.GetDouble("sound.open.pitch").floatValue(), player);
 			}catch(Exception e) {
 				e.printStackTrace();
 				BagData.MarkBagClosed(uuid);
@@ -349,9 +347,9 @@ public class BagListener implements Listener{
 				HavenBags.HasWeightLimit(bag);
 				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
-				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetDouble("open-volume").floatValue(), 
-						Main.config.GetDouble("open-pitch").floatValue(), player);
+				SFX.Play(Main.config.GetString("sound.open.key"), 
+						Main.config.GetDouble("sound.open.volume").floatValue(), 
+						Main.config.GetDouble("sound.open.pitch").floatValue(), player);
 			}catch(Exception e) {
 				e.printStackTrace();
 				BagData.MarkBagClosed(uuid);
@@ -365,9 +363,9 @@ public class BagListener implements Listener{
 				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				//BagData.MarkBagOpen(uuid, bag, player, gui);
-				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetDouble("open-volume").floatValue(), 
-						Main.config.GetDouble("open-pitch").floatValue(), player);
+				SFX.Play(Main.config.GetString("sound.open.key"), 
+						Main.config.GetDouble("sound.open.volume").floatValue(), 
+						Main.config.GetDouble("sound.open.pitch").floatValue(), player);
 				Log.Debug(Main.plugin, "[DI-65] " + player + "has attempted to open a bag, bypassing the lock");
 			}catch(Exception e) {
 				e.printStackTrace();
@@ -382,9 +380,9 @@ public class BagListener implements Listener{
 				HavenBags.UpdateBagItem(bag, player);
 				BagGUI gui = new BagGUI(Main.plugin, data.getSize(), player, bag, bag.getItemMeta());
 				//BagData.MarkBagOpen(uuid, bag, player, gui);
-				SFX.Play(Main.config.GetString("open-sound"), 
-						Main.config.GetDouble("open-volume").floatValue(), 
-						Main.config.GetDouble("open-pitch").floatValue(), player);
+				SFX.Play(Main.config.GetString("sound.open.key"), 
+						Main.config.GetDouble("sound.open.volume").floatValue(), 
+						Main.config.GetDouble("sound.open.pitch").floatValue(), player);
 			}catch(Exception e) {
 				e.printStackTrace();
 				BagData.MarkBagClosed(uuid);

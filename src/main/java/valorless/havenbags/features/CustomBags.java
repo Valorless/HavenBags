@@ -41,7 +41,7 @@ public class CustomBags {
 				if(!Utils.IsStringNullOrEmpty(texture)) {
 					if(texture.chars().count() > 30) {
 						item = HeadCreator.itemFromBase64(!Utils.IsStringNullOrEmpty(texture) ? 
-								texture : Main.config.GetString("bag-texture"));
+								texture : Main.config.GetString("bag.texture"));
 					}else {
 						item = HeadCreator.itemFromBase64(Main.textures.GetString(String.format("textures.%s", texture)));
 					}
@@ -76,6 +76,7 @@ public class CustomBags {
 			PDC.SetBoolean(item, "whitelist", file.GetBool(String.format("bags.%s.properties.whitelist", key)));
 			PDC.SetBoolean(item, "igb", file.GetBool(String.format("bags.%s.properties.ignoreglobalblacklist", key)));
 			PDC.SetString(item, "filter", file.GetString(String.format("bags.%s.properties.autopickup", key)));
+			PDC.SetBoolean(item, "climit", file.GetBool(String.format("bags.%s.properties.carry-limit", key)));
 			
 			bags.put(key, item);
 		}

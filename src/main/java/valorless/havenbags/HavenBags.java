@@ -123,9 +123,9 @@ public class HavenBags {
         			player.getInventory().addItem(bag);
         		} else {
         			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
-    				SFX.Play(Main.config.GetString("inventory-full-sound"), 
-    						Main.config.GetDouble("inventory-full-volume").floatValue(), 
-    						Main.config.GetDouble("inventory-full-pitch").floatValue(), player);
+    				SFX.Play(Main.config.GetString("sound.inventory-full.key"), 
+    						Main.config.GetDouble("sound.inventory-full.volume").floatValue(), 
+    						Main.config.GetDouble("sound.inventory-full.pitch").floatValue(), player);
         			player.getWorld().dropItem(player.getLocation(), bag);
         		}
     		}
@@ -142,9 +142,9 @@ public class HavenBags {
     			player.getInventory().addItem(bag);
     		} else {
     			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
-				SFX.Play(Main.config.GetString("inventory-full-sound"), 
-						Main.config.GetDouble("inventory-full-volume").floatValue(), 
-						Main.config.GetDouble("inventory-full-pitch").floatValue(), player);
+				SFX.Play(Main.config.GetString("sound.inventory-full.key"), 
+						Main.config.GetDouble("sound.inventory-full.volume").floatValue(), 
+						Main.config.GetDouble("sound.inventory-full.pitch").floatValue(), player);
     			player.getWorld().dropItem(player.getLocation(), bag);
     		}
     	}
@@ -704,9 +704,9 @@ public class HavenBags {
 		Log.Debug(Main.plugin, "[DI-110] " + "Attempting to initialize bag items");
 		//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, player);
 		List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
-		SFX.Play(Main.config.GetString("close-sound"), 
-				Main.config.GetDouble("close-volume").floatValue(), 
-				Main.config.GetDouble("close-pitch").floatValue(), player);
+		SFX.Play(Main.config.GetString("sound.close.key"), 
+				Main.config.GetDouble("sound.close.volume").floatValue(), 
+				Main.config.GetDouble("sound.close.pitch").floatValue(), player);
 		for(int i = 0; i < content.size(); i++) {
 			try {
 				if(PDC.Has(content.get(i), "locked")) continue;
@@ -745,11 +745,11 @@ public class HavenBags {
 	
 	public static ItemStack GetDisplayBagItem() {
 		ItemStack bagItem;
-		String bagTexture = Main.config.GetString("bag-texture");
-		if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+		String bagTexture = Main.config.GetString("bag.texture");
+		if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")){
 			bagItem = HeadCreator.itemFromBase64(bagTexture);
-		} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-			bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+		} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
+			bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
 		} else {
 			Log.Error(Main.plugin, (Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM."));
 			return null;
@@ -1019,6 +1019,7 @@ public class HavenBags {
 	
 	public static boolean IsItemBlacklisted(ItemStack item, Data... bagData) {
 		if(item == null) return false;
+		if(item.getType() == Material.AIR) return false;
 		
 		// Check bag's own blacklist
 		if(bagData != null && bagData.length != 0) {
@@ -1038,6 +1039,9 @@ public class HavenBags {
 						mat = Material.valueOf(entry.split("-")[0]);
 						cmd = Integer.valueOf(entry.split("-")[1]);
 					}
+					else {
+						mat = Material.valueOf(entry);
+					}
 					if(item.getType() == mat) {
 						Log.Debug(Main.plugin, "[DI-245] " + "Material blacklisted!");	
 						if(whitelist) return false;
@@ -1053,7 +1057,8 @@ public class HavenBags {
 						}
 					}
 				}
-				if(data.isIngoreGlobalBlacklist()) return false;
+				if(whitelist) return true; // If using as whitelist, and not found, return true
+				if(data.isIngoreGlobalBlacklist()) return false; // If ignoring global blacklist, return false
 			}
 		}
 		
@@ -1327,6 +1332,19 @@ public class HavenBags {
 		int bags = 0;
 		for(ItemStack i : player.getInventory().getContents()) {
 			if(HavenBags.IsBag(i)) { 
+				bags++;
+			}
+		}
+		return bags;
+	}
+	
+	public static int GetBagsInInventoryCarryLimit(Player player) {
+		int bags = 0;
+		for(ItemStack i : player.getInventory().getContents()) {
+			if(HavenBags.IsBag(i)) { 
+				if(PDC.Has(i, "climit") && PDC.GetBoolean(i, "climit")) {
+					continue;
+				}
 				bags++;
 			}
 		}

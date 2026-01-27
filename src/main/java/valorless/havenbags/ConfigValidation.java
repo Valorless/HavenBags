@@ -27,22 +27,34 @@ public class ConfigValidation {
 	}
 	
 	private static void Config() {
+	// Core
 	Main.config.AddValidationEntry("debug", false);
-	Main.config.AddValidationEntry("config-version", 2);
+	Main.config.AddValidationEntry("config-version", 5);
 	Main.config.AddValidationEntry("check-updates", true);
-	Main.config.AddValidationEntry("save-type", "files");
+	Main.config.AddValidationEntry("save-type", "sqlite");
+	
+	// Database
 	Main.config.AddValidationEntry("mysql.host", "localhost");
 	Main.config.AddValidationEntry("mysql.port", 3306);
 	Main.config.AddValidationEntry("mysql.name", "minecraft");
 	Main.config.AddValidationEntry("mysql.user", "admin");
 	Main.config.AddValidationEntry("mysql.password", "pass");
-	Main.config.AddValidationEntry("auto-save-interval", 1200);
-	Main.config.AddValidationEntry("auto-save-message", true);
+	
+	// Auto-save
+	Main.config.AddValidationEntry("auto-save.interval", 1200);
+	Main.config.AddValidationEntry("auto-save.message", true);
+	
+	// Language
 	Main.config.AddValidationEntry("language", "en_us");
-	Main.config.AddValidationEntry("bag-type", "HEAD");
-	Main.config.AddValidationEntry("bag-material", "ENDER_CHEST");
-	Main.config.AddValidationEntry("bag-custom-model-data", 0);
-	Main.config.AddValidationEntry("bag-item-model", "");
+	
+	// Bag base config (nested keys)
+	Main.config.AddValidationEntry("bag.type", "HEAD");
+	Main.config.AddValidationEntry("bag.texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=");
+	Main.config.AddValidationEntry("bag.material", "ENDER_CHEST");
+	Main.config.AddValidationEntry("bag.modeldata", 0);
+	Main.config.AddValidationEntry("bag.itemmodel", "");
+	
+	// Per-size model data and textures
 	Main.config.AddValidationEntry("bag-custom-model-datas.enabled", false);
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-9", 0);
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-18", 0);
@@ -56,7 +68,7 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-ownerless-36", 0);
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-ownerless-45", 0);
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-ownerless-54", 0);
-	Main.config.AddValidationEntry("bag-texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=");
+	
 	Main.config.AddValidationEntry("bag-textures.enabled", false);
 	Main.config.AddValidationEntry("bag-textures.size-9", "");
 	Main.config.AddValidationEntry("bag-textures.size-18", "");
@@ -73,78 +85,89 @@ public class ConfigValidation {
 	
 	Main.config.AddValidationEntry("capacity-based-textures.enabled", false);
 	Main.config.AddValidationEntry("capacity-based-textures.textures.0", "");
-
-	Main.config.AddValidationEntry("open-sound", "ITEM_BUNDLE_INSERT");
-	Main.config.AddValidationEntry("open-volume", 1);
-	Main.config.AddValidationEntry("open-pitch", 1);
-	Main.config.AddValidationEntry("close-sound", "ITEM_BUNDLE_DROP_CONTENTS");
-	Main.config.AddValidationEntry("close-volume", 1);
-	Main.config.AddValidationEntry("close-pitch", 1);
-	Main.config.AddValidationEntry("inventory-full-sound", "ENTITY_VILLAGER_NO");
-	Main.config.AddValidationEntry("inventory-full-volume", 1);
-	Main.config.AddValidationEntry("inventory-full-pitch", 1);
-	Main.config.AddValidationEntry("max-bags", 0);
-	Main.config.AddValidationEntry("carry-limit", 0);
+	
+	// Sound (nested)
+	Main.config.AddValidationEntry("sound.open.key", "ITEM_BUNDLE_INSERT");
+	Main.config.AddValidationEntry("sound.open.volume", 1.0);
+	Main.config.AddValidationEntry("sound.open.pitch", 1.0);
+	Main.config.AddValidationEntry("sound.close.key", "ITEM_BUNDLE_DROP_CONTENTS");
+	Main.config.AddValidationEntry("sound.close.volume", 1.0);
+	Main.config.AddValidationEntry("sound.close.pitch", 1.0);
+	Main.config.AddValidationEntry("sound.inventory-full.key", "ENTITY_VILLAGER_NO");
+	Main.config.AddValidationEntry("sound.inventory-full.volume", 1.0);
+	Main.config.AddValidationEntry("sound.inventory-full.pitch", 1.0);
+	
+	// Limits and protection
+	Main.config.AddValidationEntry("max-bags", 9);
+	Main.config.AddValidationEntry("carry-limit", 3);
 	Main.config.AddValidationEntry("protect-bags", true);
 	Main.config.AddValidationEntry("protect-bags-players", false);
 	Main.config.AddValidationEntry("bags-in-bags", false);
 	Main.config.AddValidationEntry("bags-in-shulkers", true);
 	Main.config.AddValidationEntry("bags-in-bundles", false);
-	//Main.config.AddValidationEntry("keep-bags", true);
-	Main.config.AddValidationEntry("inventory-lock", false);
+	Main.config.AddValidationEntry("inventory-lock.enabled", false);
+	Main.config.AddValidationEntry("inventory-lock.unbound", false);
+	Main.config.AddValidationEntry("inventory-lock.bound", true);
+	Main.config.AddValidationEntry("inventory-lock.unused", false);
+	Main.config.AddValidationEntry("inventory-lock.used", true);
 	Main.config.AddValidationEntry("soulbound", false);
 	Main.config.AddValidationEntry("old-help-menu", false);
-	Main.config.AddValidationEntry("auto-pickup", true);
-	Main.config.AddValidationEntry("auto-pickup-sound", "ENTITY_ITEM_PICKUP");
-	Main.config.AddValidationEntry("auto-pickup-volume", 0.8);
-	Main.config.AddValidationEntry("auto-pickup-pitch-min", 1.05);
-	Main.config.AddValidationEntry("auto-pickup-pitch-max", 1.25);
-	Main.config.AddValidationEntry("auto-pickup-inventory.enabled", false);
-	Main.config.AddValidationEntry("auto-pickup-inventory.events.onBlockBreak", true);
-	Main.config.AddValidationEntry("auto-pickup-inventory.events.onItemPickup", true);
+	
+	// Auto-pickup (nested)
+	Main.config.AddValidationEntry("auto-pickup.enabled", true);
+	Main.config.AddValidationEntry("auto-pickup.sound.key", "ENTITY_ITEM_PICKUP");
+	Main.config.AddValidationEntry("auto-pickup.sound.volume", 0.8);
+	Main.config.AddValidationEntry("auto-pickup.sound.pitch.min", 1.05);
+	Main.config.AddValidationEntry("auto-pickup.sound.pitch.max", 1.25);
+	Main.config.AddValidationEntry("auto-pickup.inventory.enabled", true);
+	Main.config.AddValidationEntry("auto-pickup.inventory.events.onBlockBreak", true);
+	Main.config.AddValidationEntry("auto-pickup.inventory.events.onItemPickup", true);
+	
+	// Trusting and quiver
 	Main.config.AddValidationEntry("trusting", true);
 	Main.config.AddValidationEntry("quiver-bags", true);
 	Main.config.AddValidationEntry("quiver-shield-fix", 2);
-	//Main.config.AddValidationEntry("back-bag.enabled", true);
-	//Main.config.AddValidationEntry("back-bag.scale", 0.8);
-	//Main.config.AddValidationEntry("back-bag.show-own", false);
-	//Main.config.AddValidationEntry("back-bag.offset.position.x", 0.0);
-	//Main.config.AddValidationEntry("back-bag.offset.position.y", -0.15);
-	//Main.config.AddValidationEntry("back-bag.offset.position.z", -0.4);
-	//Main.config.AddValidationEntry("back-bag.offset.rotation", 180.0);
-	//Main.config.AddValidationEntry("back-bag.offset.pitch", 0.0);
+	
+	// Magnet (nested booleans and numbers)
 	Main.config.AddValidationEntry("magnet.enabled", true);
 	Main.config.AddValidationEntry("magnet.tick-rate", 2);
 	Main.config.AddValidationEntry("magnet.range", 5.0);
 	Main.config.AddValidationEntry("magnet.speed", 0.1);
+	Main.config.AddValidationEntry("magnet.vertical", false);
 	Main.config.AddValidationEntry("magnet.require-autopickup", false);
 	Main.config.AddValidationEntry("magnet.only-autopickup-items", false);
 	Main.config.AddValidationEntry("magnet.instant", false);
-	Main.config.AddValidationEntry("magnet.vertical", false);
 	
+	// Effects
 	Main.config.AddValidationEntry("effects.refresh-rate", 100);
 	
+	// Upgrades
 	Main.config.AddValidationEntry("upgrades.enabled", false);
 	Main.config.AddValidationEntry("upgrades.keep-texture", false);
 	Main.config.AddValidationEntry("upgrades.from-9-to-18", "EMERALD:5:90000");
 	Main.config.AddValidationEntry("upgrades.from-18-to-27", "DIAMOND:10:90001");
 	Main.config.AddValidationEntry("upgrades.from-27-to-36", "NETHERITE_INGOT:1:90002");
-	Main.config.AddValidationEntry("upgrades.from-36-to-45", "EMERALD:5:NETHERITE_BLOCK:1:90003");
+	Main.config.AddValidationEntry("upgrades.from-36-to-45", "NETHERITE_BLOCK:1:90003");
 	Main.config.AddValidationEntry("upgrades.from-45-to-54", "END_CRYSTAL:1");
+	
+	// Tokens (nested)
 	Main.config.AddValidationEntry("token.skin.displayname", "&aSkin Token");
 	Main.config.AddValidationEntry("token.skin.material", "PLAYER_HEAD");
 	Main.config.AddValidationEntry("token.skin.custommodeldata", 0);
 	Main.config.AddValidationEntry("token.skin.lore", new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
-	{ add("&7Combine with a bag in a fletching table to apply."); add("&7Skin: &e%skin%"); }} );
+		{ add("&7Combine with a bag in a fletching table to apply."); add("&7Skin: &e%skin%"); }
+	});
 	Main.config.AddValidationEntry("token.effect.displayname", "&eEffect Token");
 	Main.config.AddValidationEntry("token.effect.material", "PLAYER_HEAD");
 	Main.config.AddValidationEntry("token.effect.texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMzNGQxMmY3YWM5MzliMTE1MWQxMjE0NmQwMjM5ZWYwMTg4ZTQwM2VlMTk2NmQzZGIxOTllNjY0ZmYzODI4MyJ9fX0=");
 	Main.config.AddValidationEntry("token.effect.custommodeldata", 0);
 	Main.config.AddValidationEntry("token.effect.lore", new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
-	{ add("&7Combine with a bag in a fletching table to apply."); add("&7Skin: &e%effect%"); }} );
+		{ add("&7Combine with a bag in a fletching table to apply."); add("&7Effect: &e%effect%"); }
+	});
 	
+	// Anvil upgrades and GUI
 	Main.config.AddValidationEntry("bag-upgrades-anvil", false);
 	Main.config.AddValidationEntry("upgrade-gui.enabled", true);
 	Main.config.AddValidationEntry("upgrade-gui.block", "FLETCHING_TABLE");
@@ -164,13 +187,17 @@ public class ConfigValidation {
 	}
 	Main.config.AddValidationEntry("upgrade-gui.success-sound", "ENTITY_VILLAGER_WORK_FLETCHER");
 	
+	// Blacklist worlds and allowed containers
 	Main.config.AddValidationEntry("blacklist", new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
-	{ add("world_name"); add("world_name_nether"); add("another_world"); }} );
+		{ add("world_name"); add("world_name_nether"); add("another_world"); }
+	});
 	Main.config.AddValidationEntry("allowed-containers", new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
-	{ add("CHEST"); add("ENDER_CHEST"); add("BARREL"); add("SHULKER_BOX"); add("MERCHANT"); }} );
+		{ add("CHEST"); add("ENDER_CHEST"); add("BARREL"); add("SHULKER_BOX"); add("MERCHANT"); add("ANVIL"); }
+	});
 	
+	// Player GUI
 	Main.config.AddValidationEntry("player-gui.enabled", false);
 	Main.config.AddValidationEntry("player-gui.self-restore", true);
 	Main.config.AddValidationEntry("player-gui.self-delete", true);
@@ -204,6 +231,7 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("magnet-command", "&fMagnetic has been set to: %value%.");
 		Lang.lang.AddValidationEntry("refill-command", "&fRefill has been set to: %value%.");
 		Lang.lang.AddValidationEntry("ethereal-open", "&cThe player is currently using their bag.");
+		Lang.lang.AddValidationEntry("effects-command", "&fEffect has been set to: %value%.");
 		Lang.lang.AddValidationEntry("ethereal-open-admin", "&cThis bag is currently being viewed by an admin.");
 		
 		// Admin Lang
@@ -213,7 +241,7 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("bag-ownerless-no-size", "&cOwnerless bag must have a size.");
 		Lang.lang.AddValidationEntry("bag-given", "&aYou've been given an %name%!");
 		Lang.lang.AddValidationEntry("number-conversion-error", "&cCannot convert '%value%' to a number!");
-		Lang.lang.AddValidationEntry("effects-command", "&fEffect has been set to: %value%.");
+		Lang.lang.AddValidationEntry("bag-texture-not-found", "&cNo texture called %texture% found.");
 		
 		// Bag GUI
 		Lang.lang.AddValidationEntry("bag-inventory-title", "");

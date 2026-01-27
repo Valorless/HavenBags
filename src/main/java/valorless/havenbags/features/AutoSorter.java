@@ -27,6 +27,7 @@ public class AutoSorter {
 		
 		if(!data.hasAutoSort()) return;
 		
+		@SuppressWarnings("unused")
 		List<ItemStack> sorted = SortInventory(data.getContent());
 		OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(data.getOwner()));
 		

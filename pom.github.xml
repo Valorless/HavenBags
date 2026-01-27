@@ -10,7 +10,7 @@
         <url>http://127.0.0.1/dummy</url> 
     </scm>
     <build>
-      <finalName>${project.artifactId}</finalName>
+      <finalName>${project.artifactId}</finalName> <!-- Paste changes after here -->
         <plugins>
             <plugin>
                 <version>3.11.0</version>
@@ -251,9 +251,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>me.NoChance.PvPManager</groupId>
+            <groupId>me.chancesd.pvpmanager</groupId>
             <artifactId>pvpmanager</artifactId>
-            <version>3.17.8</version>
+            <!-- <version>3.17.8</version> -->
+            <version>4.0.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

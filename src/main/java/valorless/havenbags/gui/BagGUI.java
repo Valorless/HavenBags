@@ -352,7 +352,7 @@ public class BagGUI implements Listener {
     		return;
     	}
 		else if(e.getRawSlot() > inv.getSize() && e.isShiftClick() && HavenBags.IsItemBlacklisted(clickedItem, data)){
-            e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-bag-error"));
+            e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("item-blacklisted"), player));
             e.setCancelled(true);
         }
     	
@@ -412,9 +412,9 @@ public class BagGUI implements Listener {
     	//if(!HavenBags.IsBagOpen(bagItem)) return;
     	if(!BagData.IsBagOpen(uuid, bagItem)) return;
 
-		SFX.Play(Main.config.GetString("close-sound"), 
-				Main.config.GetDouble("close-volume").floatValue(), 
-				Main.config.GetDouble("close-pitch").floatValue(), player);
+		SFX.Play(Main.config.GetString("sound.close.key"), 
+				Main.config.GetDouble("sound.close.volume").floatValue(), 
+				Main.config.GetDouble("sound.close.pitch").floatValue(), player);
     	
         Log.Debug(plugin, "[DI-44] " + "Bag closed, attempting to save bag. (" + bag + ")");
 

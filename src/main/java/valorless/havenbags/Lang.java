@@ -9,8 +9,6 @@ import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
 import me.clip.placeholderapi.PlaceholderAPI;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.hooks.PlaceholderAPIHook;

@@ -125,14 +125,14 @@ public class EpicBackpacksBagRestore implements Listener{
 		if (Content == null) return null;
 		List<Placeholder> placeholders = new ArrayList<Placeholder>();
 		
-		String bagTexture = Main.config.GetString("bag-texture");
+		String bagTexture = Main.config.GetString("bag.texture");
 		ItemStack bagItem = new ItemStack(Material.AIR);
 		int size = Content.size();
 		
-		if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+		if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")){
 			bagItem = HeadCreator.itemFromBase64(bagTexture);
-		} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-			bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+		} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
+			bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
 		}
 		
 		PDC.SetString(bagItem, "uuid", baguuid);
@@ -145,8 +145,8 @@ public class EpicBackpacksBagRestore implements Listener{
 		}
 		
 		ItemMeta bagMeta = bagItem.getItemMeta();
-		if(Main.config.GetInt("bag-custom-model-data") != 0) {
-			bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+		if(Main.config.GetInt("bag.modeldata") != 0) {
+			bagMeta.setCustomModelData(Main.config.GetInt("bag.modeldata"));
 		}
 		if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
 			for(int s = 9; s <= 54; s += 9) {

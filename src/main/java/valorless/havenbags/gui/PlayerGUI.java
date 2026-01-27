@@ -415,7 +415,7 @@ public class PlayerGUI implements Listener {
 			List<ItemStack> Content  = data.getContent();
 			if (Content == null) continue;
 
-			String bagTexture = Main.config.GetString("bag-texture");
+			String bagTexture = Main.config.GetString("bag.texture");
 			ItemStack bagItem = new ItemStack(Material.AIR);
 
 			if(data.getMaterial() != null) {
@@ -429,14 +429,14 @@ public class PlayerGUI implements Listener {
 				}
 			}
 			else {
-				if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+				if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")){
 					if(!Utils.IsStringNullOrEmpty(data.getTexture())) {
 						bagItem = HeadCreator.itemFromBase64(data.getTexture());
 					}else {
 						bagItem = HeadCreator.itemFromBase64(bagTexture);
 					}
-				} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-					bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+				} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
+					bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
 				}
 			}
 

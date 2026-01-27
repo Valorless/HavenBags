@@ -86,13 +86,13 @@ public class CommandConvertEpicBackpacks {
 	static ItemStack PlaceholderBag(OfflinePlayer owner) {
 		ItemStack bagItem = new ItemStack(Material.DIRT);
 		String bagTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
-		bagTexture = Main.config.GetString("bag-texture");
+		bagTexture = Main.config.GetString("bag.texture");
 		
 		String uuid = UUID.randomUUID().toString();
 		
 		List<Placeholder> placeholders = new ArrayList<Placeholder>();
 		int size = 6;
-		if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+		if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")){
 			if(Main.config.GetBool("bag-textures.enabled")) {
 				for(int s = 9; s <= 54; s += 9) {
 					if(size*9 == s) {
@@ -102,16 +102,16 @@ public class CommandConvertEpicBackpacks {
 			}else {
 				bagItem = HeadCreator.itemFromBase64(bagTexture);
 			}
-		} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-			bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+		} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
+			bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
 		}
 		ItemMeta bagMeta = bagItem.getItemMeta();
 		if (bagMeta == null) {
 			PDC.SetString(bagItem, "uuid", uuid);
 			bagMeta = bagItem.getItemMeta();
         }
-		if(Main.config.GetInt("bag-custom-model-data") != 0) {
-			bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+		if(Main.config.GetInt("bag.modeldata") != 0) {
+			bagMeta.setCustomModelData(Main.config.GetInt("bag.modeldata"));
 		}
 		if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
 			for(int s = 9; s <= 54; s += 9) {

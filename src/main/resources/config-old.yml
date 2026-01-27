@@ -5,7 +5,7 @@
 ############################################################
 
 # DO NOT EDIT
-config-version: 6
+config-version: 5
 
 # Additional messages used for debugging.
 debug: false
@@ -28,19 +28,18 @@ mysql:
  user: 'admin'
  password: 'pass'
 
-auto-save:
- # How often should we save bags onto the server?
- # In seconds.
- # Default: 1200 = 20min
- interval: 1200
- # Should HavenBags write in the console when saving?
- message: true
+# How often should we save bags onto the server?
+# In seconds.
+# Default: 1200 = 20min
+auto-save-interval: 1200
+
+# Should HavenBags write in the console when saving?
+auto-save-message: true
 
 # Language used when translating material and item names.
 ## Supported languages:
 # English (US) --------- en_us
 # English -------------- en_gb
-# English (Pirate) ----- en_pt
 # Danish --------------- da_dk
 # German --------------- de_de
 # Spanish -------------- es_es
@@ -56,28 +55,20 @@ auto-save:
 # Portuguese (Brazil) -- pt_br
 language: 'en_us'
 
-bag:
- # Should the bags use heads or items?
- # HEAD - use Player Heads.
- # ITEM - use regular items.
- type: HEAD
- # Texture of the bag if the bag-type is 'HEAD'. Must be Base64 format.
- # You can get textures from https://minecraft-heads.com/
- # The texture by default: https://minecraft-heads.com/custom-heads/decoration/1906-bag
- # At the bottom of the page there's a section called "For Developers".
- # Inside "For Developers" is a value based off of a large amount of random letters, numbers and symbols. That is the Base64 texture.
- texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0='
- # Item material if the bag-type is 'ITEM'
- material: ENDER_CHEST
- # Custom Model Data if the bag-type is 'ITEM'
- modeldata: 0
- # Item Model if the bag-type is 'ITEM'
- itemmodel: ''
+# Should the bags use heads or items?
+# HEAD - use Player Heads.
+# ITEM - use regular items.
+bag-type: HEAD
+
+# Item material if the bag-type is 'ITEM'
+bag-material: ENDER_CHEST
+
+# Custom Model Data if the bag-type is 'ITEM'
+bag-custom-model-data: 0
 
 # Want CustomModelData per size instead?
 # You can fill these with the same method as above.
 # Existing bags are not updated.
-# Accepts item models too.
 bag-custom-model-datas:
  enabled: false
  size-9: 0
@@ -92,6 +83,16 @@ bag-custom-model-datas:
  size-ownerless-36: 0
  size-ownerless-45: 0
  size-ownerless-54: 0
+
+# Item Model if the bag-type is 'ITEM'
+bag-item-model: ''
+
+# Texture of the bag. Must be Base64 format.
+# You can get textures from https://minecraft-heads.com/
+# The texture by default: https://minecraft-heads.com/custom-heads/decoration/1906-bag
+# At the bottom of the page there's a section called "For Developers".
+# Inside "For Developers" is a value based off of a large amount of random letters, numbers and symbols. That is the Base64 texture.
+bag-texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0='
 
 # Want textures per size instead?
 # You can fill these with the same method as above.
@@ -124,24 +125,23 @@ capacity-based-textures:
   '50': ''
   '70': ''
   '90': ''
-  
-sound:
- # Sound played when opening a bag.
- # Sounds: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
- open:
-  key: 'ITEM_BUNDLE_INSERT'
-  volume: 1.0
-  pitch: 1.0
- # Sound played when closing a bag.
- close:
-  key: 'ITEM_BUNDLE_DROP_CONTENTS'
-  volume: 1.0
-  pitch: 1.0
- # Sound played when a bag is dropped due to the inventory being full.
- inventory-full:
-  key: 'ENTITY_VILLAGER_NO'
-  volume: 1.0
-  pitch: 1.0
+
+# Sound played when opening a bag.
+# Sounds: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+# 1.17 Sounds: https://helpch.at/docs/1.17/org/bukkit/Sound.html
+open-sound: 'ITEM_BUNDLE_INSERT'
+open-volume: 1
+open-pitch: 1
+
+# Sound played when closing a bag.
+close-sound: 'ITEM_BUNDLE_DROP_CONTENTS'
+close-volume: 1
+close-pitch: 1
+
+# Sound played when a bag is dropped due to the inventory being full.
+inventory-full-sound: 'ENTITY_VILLAGER_NO'
+inventory-full-volume: 1
+inventory-full-pitch: 1
 
 # The max amount of bags a player can create.
 # Note that is they lose a bag, they'll need it restored, 
@@ -170,12 +170,7 @@ bags-in-bundles: false
 
 # Should bags always remain in the player's inventory?
 # Good to use alongside Soulbound, otherwise death will drop the item.
-inventory-lock:
- enabled: false
- unbound: false
- bound: true
- unused: false
- used: true
+inventory-lock: false
 
 # Should bags be kept through death?
 # May be incompatible with other plugins.
@@ -185,20 +180,18 @@ soulbound: false
 old-help-menu: false
 
 # Can bags automatically pick up drops?
-auto-pickup:
- enabled: true
- sound: 
-  key: 'ENTITY_ITEM_PICKUP'
-  volume: 0.8
-  pitch:
-   min: 1.05
-   max: 1.25
- # Should Auto-Pickup put items from the inventory into the bag as well?
- inventory:
-  enabled: true
-  events:
-   onBlockBreak: true # For effect like "Teleport Drops" from AdvancedEnchants or EliteEnchants.
-   onItemPickup: true # To add existing items in the inventory to the bag.
+auto-pickup: true
+auto-pickup-sound: 'ENTITY_ITEM_PICKUP'
+auto-pickup-volume: 0.8
+auto-pickup-pitch-min: 1.05
+auto-pickup-pitch-max: 1.25
+
+# Should Auto-Pickup put items from the inventory into the bag as well?
+auto-pickup-inventory:
+ enabled: false
+ events:
+  onBlockBreak: true # For effect like "Teleport Drops" from AdvancedEnchants or EliteEnchants.
+  onItemPickup: true # To add existing items in the inventory to the bag.
   
 # Can players trust other players with access to their bound bags?
 trusting: true

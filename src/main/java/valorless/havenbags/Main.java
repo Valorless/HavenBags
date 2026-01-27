@@ -1,5 +1,9 @@
 package valorless.havenbags;
 
+import valorless.havenbags.configconversion.BagConversion;
+import valorless.havenbags.configconversion.ConfigRestructure;
+import valorless.havenbags.configconversion.DataConversion;
+import valorless.havenbags.configconversion.TokenConfigConversion;
 import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.database.SkinCache;
@@ -18,7 +22,6 @@ import valorless.havenbags.features.Quiver;
 import valorless.havenbags.features.Refill;
 import valorless.havenbags.features.Soulbound;
 import valorless.havenbags.features.BackBag;
-import valorless.havenbags.features.WeightTooltipProtocollib;
 import valorless.havenbags.gui.UpgradeGUI;
 import valorless.havenbags.hooks.*;
 import valorless.havenbags.prevention.*;
@@ -28,26 +31,8 @@ import valorless.valorlessutils.Metrics;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
-import valorless.valorlessutils.json.JsonUtils;
 import valorless.valorlessutils.translate.Translator;
 import valorless.valorlessutils.utils.Utils;
-import valorless.valorlessutils.uuid.UUIDFetcher;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -55,13 +40,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import org.jetbrains.annotations.NotNull;
-
 @SuppressWarnings("deprecation")
-public final class Main extends JavaPlugin implements Listener {
+public final class Main extends JavaPlugin implements Listener {	
 	public static JavaPlugin plugin;
 	public static Config config;
 	//public static Config timeTable;
@@ -102,7 +84,7 @@ public final class Main extends JavaPlugin implements Listener {
 	boolean ValorlessUtils() {
 		Log.Debug(plugin, "[DI-0] Checking ValorlessUtils");
 		
-		int requiresBuild = 295; // The build number of ValorlessUtils that is required for HavenBags to run.
+		int requiresBuild = 313; // The build number of ValorlessUtils that is required for HavenBags to run.
 		
 		String ver = Bukkit.getPluginManager().getPlugin("ValorlessUtils").getDescription().getVersion();
 		//Log.Debug(plugin, ver);
@@ -125,6 +107,7 @@ public final class Main extends JavaPlugin implements Listener {
 		else return true;
 	}
 	
+	@SuppressWarnings("removal")
 	@Override
     public void onEnable() {
 		Log.Debug(plugin, "HavenBags Debugging Enabled!");
@@ -155,15 +138,13 @@ public final class Main extends JavaPlugin implements Listener {
 		ValidateSizeTextures();
 		
 		// Config-Version checks
-        BagConversion(); // Config 1 -> 2
-        //TimeTable(); Would've been Config 2 -> 3
-        try {
-			DataConversion(); // Config 3 -> 4
-		} catch (InvalidConfigurationException e) {
-			//e.printStackTrace();
-		}
-        TokenConfigConversion(); // Config 4 -> 5
-		
+		BagConversion.check(config); // Config 1 -> 2
+		//TimeTableConversion.check(); Would've been Config 2 -> 3
+		try {
+			DataConversion.check(config);// Config 3 -> 4
+		} catch (InvalidConfigurationException e) {} 
+		TokenConfigConversion.check(config); // Config 4 -> 5
+		ConfigRestructure.check(config); // Config 5 -> 6
         
 		
 		BagData.Initiate();
@@ -304,145 +285,6 @@ public final class Main extends JavaPlugin implements Listener {
 		
 	}
     
-    void BagConversion() {
-    	if(config.GetInt("config-version") < 2) {
-    		Log.Warning(plugin, "Old configuration found, updating bag data!");
-    		config.Set("config-version", 2);
-    		config.SaveConfig();
-    		
-    		File file = new File(String.format("%s/bags", plugin.getDataFolder()));
-    		String[] directories = file.list(new FilenameFilter() {
-    		  @Override
-    		  public boolean accept(File current, String name) {
-    		    return new File(current, name).isDirectory();
-    		  }
-    		});
-			
-			for(String folder : directories) {
-				if(folder.equalsIgnoreCase("ownerless")) continue;
-				try {
-					File f = new File(String.format("%s/bags/%s", plugin.getDataFolder(), folder));
-					File to = new File(String.format("%s/bags/%s", plugin.getDataFolder(), UUIDFetcher.getUUID(folder)));
-					f.renameTo(to);
-					Log.Warning(plugin, String.format("%s => %s", 
-						String.format("/bags/%s", folder), 
-						String.format("/bags/%s", UUIDFetcher.getUUID(folder))
-					));
-				} catch(Exception e) {
-					Log.Error(plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s", folder)));
-				}
-			}
-    	}
-    }
-    
-    void DataConversion() throws InvalidConfigurationException {
-    	if(config.GetInt("config-version") < 4) {
-    		Log.Warning(plugin, "Old data storage found, updating bag data!");
-    		//Log.Error(plugin, "Debugging. Old data files are not removed.");
-    		Log.Error(plugin, "Old data files are not removed, in case of failure.");
-    		config.Set("config-version", 4);
-    		config.SaveConfig();
-    		int converted = 0;
-    		int failed = 0;
-    		
-    		List<String> owners	= BagData.GetBagOwners();
-    		for(String owner : owners) {
-    			List<String> bags = GetBags(owner);
-    			for(String bag : bags) {
-    				bag = bag.replace(".json", "");
-    				String path = String.format("%s/bags/%s/%s.json", plugin.getDataFolder(), owner, bag);
-    				Path conf = Paths.get(String.format("%s/bags/%s/%s.yml", plugin.getDataFolder(), owner, bag));
-    				try {
-    					List<ItemStack> cont = JsonUtils.fromJson(Files.readString(Paths.get(path)));
-    	    			@SuppressWarnings("unused")
-						List<String> lines = Arrays.asList(JsonUtils.toPrettyJson(cont));
-
-    	    			try {
-    	    				//Files.write(conf, lines, StandardCharsets.UTF_8);
-    	    				//Files.createFile(conf);
-    	    				OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(conf.toString()), StandardCharsets.UTF_8);
-    	    				//writer.write(String.format("uuid: %s", bag));
-    	    				writer.close();
-    	    				
-    	    			}catch(IOException e){
-    	    				//e.printStackTrace();
-    	    			}finally {
-    	    				try {
-    	    					Config bagData = new Config(plugin, String.format("/bags/%s/%s.yml", owner, bag));
-    	    					bagData.Set("uuid", bag);
-    	    					bagData.Set("owner", owner);
-    	    					bagData.Set("creator", "null");
-    	    					bagData.Set("size", cont.size());
-    	    					bagData.Set("texture", Main.config.Get("bag-texture"));
-    	    					bagData.Set("custommodeldata", 0);
-    	    					bagData.Set("trusted", new ArrayList<String>());
-    	    					bagData.Set("auto-pickup", "null");
-    	    					bagData.Set("weight-max", 0);
-    	    					bagData.Set("content", JsonUtils.toJson(cont).replace("'", "◊"));
-    	    					bagData.SaveConfig();
-    	    					converted++;
-    	    				}catch(Exception E) {
-    	    					//E.printStackTrace();
-    	    					// Error: Top level is not a Map.
-    	    					// Unsure why this is thrown, but the file is converted successfully without issues..
-    	    					//Log.Error(plugin, String.format("Something went wrong while converting %s!.", String.format("/bags/%s/%s", owner, bag)));
-    	    				}
-    	    			}
-    				} catch(Exception e) {
-    					failed++;
-    		    		//config.Set("config-version", 3);
-    		    		//config.SaveConfig();
-    					e.printStackTrace();
-    					Log.Error(plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s/%s.json", owner, bag)));
-    				}
-    			}
-    		}
-    		Log.Info(plugin, String.format("Converted %s Data Files!", converted));
-    		Log.Info(plugin, String.format("Failed: %s.", failed));
-    	}
-    }
-    
-	void TokenConfigConversion() {
-		if(config.GetInt("config-version") < 5) {
-    		Log.Warning(plugin, "Old configuration found, updating configs!");
-    		config.Set("config-version", 5);
-    		config.SaveConfig();
-    		
-    		if(config.HasKey("skin-token.material")) {
-				config.Set("token.skin.material", config.Get("skin-token.material"));
-				config.Set("token.skin.custommodeldata", config.Get("skin-token.custommodeldata"));
-				config.Set("token.skin.displayname", config.Get("skin-token.display-name"));
-				config.Set("token.skin.lore", config.Get("skin-token.lore"));
-				
-				config.Set("skin-token.display-name", null);
-				config.Set("skin-token.material", null);
-				config.Set("skin-token.custommodeldata", null);
-				config.Set("skin-token.lore", null);
-				config.Set("skin-token", null);
-				
-				config.SaveConfig();
-			}
-    	}
-	}
-    
-    List<String> GetBags(@NotNull String player){
-		Log.Debug(Main.plugin, "[DI-21] " + player);
-		try {
-			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
-					.filter(file -> !file.isDirectory())
-					.filter(file -> !file.getName().contains(".yml"))
-					.map(File::getName)
-					.collect(Collectors.toList());
-			for(int i = 0; i < bags.size(); i++) {
-				//Log.Debug(Main.plugin, bags.get(i));
-				bags.set(i, bags.get(i).replace(".yml", ""));
-			}
-			return bags;
-		} catch (Exception e) {
-			return new ArrayList<String>();
-		}
-	}
-    
     /*void TimeTable() {
     	if(config.GetInt("config-version") < 3) {
     		Log.Warning(plugin, "Old configuration found, updating time table!");
@@ -483,13 +325,13 @@ public final class Main extends JavaPlugin implements Listener {
     		boolean c = false;
     		for(int s = 9; s <= 54; s += 9) {
     			if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag-textures.size-" + s))){
-    				config.Set("bag-textures.size-" + s, config.GetString("bag-texture"));
+    				config.Set("bag-textures.size-" + s, config.GetString("bag.texture"));
     				c = true;
     			}
 			}
     		for(int s = 9; s <= 54; s += 9) {
     			if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag-textures.size-ownerless-" + s))){
-    				config.Set("bag-textures.size-ownerless-" + s, config.GetString("bag-texture"));
+    				config.Set("bag-textures.size-ownerless-" + s, config.GetString("bag.texture"));
     				c = true;
     			}
 			}

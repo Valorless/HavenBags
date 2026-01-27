@@ -43,7 +43,7 @@ public class BagCarryLimit implements Listener {
 		if(e.getClickedInventory().getType() == InventoryType.PLAYER && holdingBag){
 			int size = PDC.GetInteger(e.getCursor(), "size");
 			if(e.getRawSlot() >= size) return;
-			if(HavenBags.GetBagsInInventory(player) >= limit) {
+			if(HavenBags.GetBagsInInventoryCarryLimit(player) >= limit) {
 				//e.setCancelled(true);
 				player.sendMessage(Lang.Parse(Lang.Get("carry-limit").replace("%max%", limit + ""), player));
 			}
@@ -62,7 +62,10 @@ public class BagCarryLimit implements Listener {
 		Player player = (Player)e.getEntity();
 		int limit = getBagCarryLimit(player);
 		if(limit == 0) return;
-		if(HavenBags.GetBagsInInventory(player) >= limit) {
+		if(PDC.Has(e.getItem().getItemStack(), "climit") && PDC.GetBoolean(e.getItem().getItemStack(), "climit")) {
+			return;
+		}
+		if(HavenBags.GetBagsInInventoryCarryLimit(player) >= limit) {
 			e.setCancelled(true);
 			e.getItem().setPickupDelay(100);
 			player.sendMessage(Lang.Parse(Lang.Get("carry-limit").replace("%max%", limit + ""), player));
@@ -75,9 +78,12 @@ public class BagCarryLimit implements Listener {
 		Player player = (Player) e.getPlayer();
 		int limit = getBagCarryLimit(player);
 		if(limit == 0) return;
-		if(HavenBags.GetBagsInInventory(player) > limit) {
+		if(HavenBags.GetBagsInInventoryCarryLimit(player) > limit) {
 			for(ItemStack item : player.getInventory().getContents()) {
 				if(HavenBags.IsBag(item)) {
+					if(PDC.Has(item, "climit") && PDC.GetBoolean(item, "climit")) {
+						continue;
+					}
 					ItemStack drop = item.clone();
 					item.setAmount(0);
 					player.getWorld().dropItem(player.getLocation(), drop);

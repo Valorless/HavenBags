@@ -15,7 +15,6 @@ import org.bukkit.util.Vector;
 
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
-import valorless.havenbags.hooks.Essentials;
 import valorless.havenbags.hooks.EssentialsHook;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;

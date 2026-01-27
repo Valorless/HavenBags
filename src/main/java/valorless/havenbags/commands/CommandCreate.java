@@ -26,7 +26,7 @@ public class CommandCreate {
 
 	public static boolean Run(HBCommand command) {
 		ItemStack bagItem = new ItemStack(Material.DIRT);
-		bagTexture = Main.config.GetString("bag-texture");
+		bagTexture = Main.config.GetString("bag.texture");
 		
 		List<Placeholder> placeholders = new ArrayList<Placeholder>();
 		if (command.args.length >= 2){
@@ -35,7 +35,7 @@ public class CommandCreate {
 					//int size = Utils.Clamp(Integer.parseInt(command.args[2]), 1, 6);
 					int size = Integer.parseInt(command.args[2]);
 					int slots = HavenBags.findClosestNine(size);
-					if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+					if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")){
 						if(Main.config.GetBool("bag-textures.enabled")) {
 							for(int s = 9; s <= 54; s += 9) {
 								if(slots == s) {
@@ -45,15 +45,15 @@ public class CommandCreate {
 						}else {
 							bagItem = HeadCreator.itemFromBase64(bagTexture);
 						}
-					} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-						bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+					} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
+						bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
 					} else {
 						command.sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
 						return true;
 					}
 					ItemMeta bagMeta = bagItem.getItemMeta();
-					if(Main.config.GetInt("bag-custom-model-data") != 0) {
-						bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+					if(Main.config.GetInt("bag.modeldata") != 0) {
+						bagMeta.setCustomModelData(Main.config.GetInt("bag.modeldata"));
 					}
 					if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
 						for(int s = 9; s <= 54; s += 9) {
@@ -75,8 +75,8 @@ public class CommandCreate {
 					bagMeta.setLore(lore);
 					bagItem.setItemMeta(bagMeta);
 					
-					if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-item-model"))) {
-						ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-item-model"));
+					if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag.itemmodel"))) {
+						ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag.itemmodel"));
 					}
 					
 					//PDC.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
@@ -106,8 +106,8 @@ public class CommandCreate {
 						}else {
 							bagItem = HeadCreator.itemFromBase64(bagTexture);
 						}
-					} else if(Main.config.GetString("bag-type").equalsIgnoreCase("ITEM")) {
-						bagItem = new ItemStack(Main.config.GetMaterial("bag-material"));
+					} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
+						bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
 					} else {
 						command.sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
 						return true;
@@ -117,8 +117,8 @@ public class CommandCreate {
 						PDC.SetString(bagItem, "uuid", "null");
 						bagMeta = bagItem.getItemMeta();
 			        }
-					if(Main.config.GetInt("bag-custom-model-data") != 0) {
-						bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-data"));
+					if(Main.config.GetInt("bag.modeldata") != 0) {
+						bagMeta.setCustomModelData(Main.config.GetInt("bag.modeldata"));
 					}
 					if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
 						for(int s = 9; s <= 54; s += 9) {
