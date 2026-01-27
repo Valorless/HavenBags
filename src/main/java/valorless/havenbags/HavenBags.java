@@ -1342,7 +1342,7 @@ public class HavenBags {
 		int bags = 0;
 		for(ItemStack i : player.getInventory().getContents()) {
 			if(HavenBags.IsBag(i)) { 
-				if(PDC.GetBoolean(i, "climit")) {
+				if(PDC.Has(i, "climit") && PDC.GetBoolean(i, "climit")) {
 					continue;
 				}
 				bags++;

@@ -62,7 +62,7 @@ public class BagCarryLimit implements Listener {
 		Player player = (Player)e.getEntity();
 		int limit = getBagCarryLimit(player);
 		if(limit == 0) return;
-		if(PDC.GetBoolean(e.getItem().getItemStack(), "climit")) {
+		if(PDC.Has(e.getItem().getItemStack(), "climit") && PDC.GetBoolean(e.getItem().getItemStack(), "climit")) {
 			return;
 		}
 		if(HavenBags.GetBagsInInventoryCarryLimit(player) >= limit) {
@@ -81,7 +81,7 @@ public class BagCarryLimit implements Listener {
 		if(HavenBags.GetBagsInInventoryCarryLimit(player) > limit) {
 			for(ItemStack item : player.getInventory().getContents()) {
 				if(HavenBags.IsBag(item)) {
-					if(PDC.GetBoolean(item, "climit")) {
+					if(PDC.Has(item, "climit") && PDC.GetBoolean(item, "climit")) {
 						continue;
 					}
 					ItemStack drop = item.clone();

@@ -7,8 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import valorless.havenbags.BagData;
 import valorless.havenbags.Lang;
 import valorless.havenbags.database.EtherealBags;
+import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.gui.EtherealGUI;
 
 public class CommandOpen {
@@ -16,6 +18,12 @@ public class CommandOpen {
 	public static boolean Run(HBCommand command) {
 
 		if(command.sender instanceof Player player) {
+			
+			for(Data dat : BagData.GetOpenBags()) {
+				if(dat.getViewer().getUniqueId().equals(((Player)command.sender).getUniqueId())) {
+					return true;
+				}
+			}
 
 			if (command.args.length == 2){
 				String id = command.args[1];
