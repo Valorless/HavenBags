@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -340,8 +342,8 @@ public class MySQL {
 		return null;
 	}
 	
-	public List<Data> loadAllBags() {
-	    List<Data> bags = new ArrayList<>();
+	public HashMap<UUID, Data> loadAllBags() {
+		HashMap<UUID, Data> bags = new HashMap<>();
 	    String sql = "SELECT * FROM bags";
 	    
 	    try {
@@ -356,8 +358,9 @@ public class MySQL {
 	         ResultSet rs = stmt.executeQuery()) {
 
 	        while (rs.next()) {
+	        	String uuid = rs.getString("uuid");
 	        	Data data = new Data(
-	                    rs.getString("uuid"),
+	                    uuid,
 	                    rs.getString("owner")
 	                );
 	                data.setCreator(rs.getString("creator"));
@@ -374,7 +377,7 @@ public class MySQL {
 	                
 	                DatabaseUtils.ApplyExtra(data, rs.getString("extra"));
 	                
-	                bags.add(data);
+	                bags.put(UUID.fromString(uuid), data);
 	        }
 
 	    } catch (SQLException e) {
