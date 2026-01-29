@@ -62,7 +62,6 @@ public class BagData {
 	public enum UpdateSource { NULL, PLAYER }
 	
 	private static HashMap<UUID, Data> data = new HashMap<UUID, Data>();
-	private static HashMap<UUID, Data> dataMap = new HashMap<UUID, Data>();
 	private static HashMap<UUID, Data> changedBags = new HashMap<UUID, Data>();
 	public static long interval;
 	
@@ -220,7 +219,7 @@ public class BagData {
 				m_source = source[0];
 			}
 		}
-		Data bag = dataMap.get(UUID.fromString(uuid));
+		Data bag = data.get(UUID.fromString(uuid));
 		if(bag != null) {
 			if(m_source == UpdateSource.PLAYER) {
 				bag.setOpen(true);
