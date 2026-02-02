@@ -27,6 +27,8 @@ mysql:
  name: 'minecraft'
  user: 'admin'
  password: 'pass'
+ connect_timeout: 30 # Seconds
+ socket_timeout: 60 # Seconds
 
 auto-save:
  # How often should we save bags onto the server?

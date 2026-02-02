@@ -45,6 +45,8 @@ public class MySQL {
 		database = Main.config.GetString("mysql.name");
 		username = Main.config.GetString("mysql.user");
 		password = Main.config.GetString("mysql.password");
+		connectTimeout = Main.config.GetInt("mysql.connect_timeout") * 1000;
+		socketTimeout = Main.config.GetInt("mysql.socket_timeout") * 1000;
 
 		try {
 			connect();
@@ -52,8 +54,8 @@ public class MySQL {
 			createTables();
 		} catch (SQLException e) {
 			Log.Error(Main.plugin,"Could not connect to MySQL!");
-			Bukkit.getPluginManager().disablePlugin(Main.plugin);
 			e.printStackTrace();
+			Bukkit.getPluginManager().disablePlugin(Main.plugin);
 		}
 	}
 
@@ -69,6 +71,7 @@ public class MySQL {
 	public void disconnect() throws SQLException {
 		if (connection != null && !connection.isClosed()) {
 			connection.close();
+			Log.Info(Main.plugin,"Disconnected from MySQL!");
 		}
 	}
 
@@ -246,7 +249,7 @@ public class MySQL {
 	                 "itemmodel, trusted, auto_pickup, weight, weight_max, content, open, extra) VALUES ";
 
 	    try {
-			if(connection.isClosed()) {
+			if(connection == null || connection.isClosed() || !connection.isValid(connectTimeout)) {
 				connect();
 			}
 		} catch (SQLException e) {

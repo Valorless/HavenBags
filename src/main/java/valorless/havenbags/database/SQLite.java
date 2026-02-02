@@ -40,6 +40,7 @@ public class SQLite {
 			Log.Info(Main.plugin,"Connected to SQLite!");
             setupTables();
         } catch (SQLException e) {
+			Log.Error(Main.plugin,"Could not connect to SQLite!");
             e.printStackTrace();
         }
     }
@@ -61,6 +62,7 @@ public class SQLite {
     public void close() throws SQLException {
         if (connection != null && !connection.isClosed()) {
             connection.close();
+            Log.Info(Main.plugin, "Disconnected from SQLite!");
         }
     }
 
