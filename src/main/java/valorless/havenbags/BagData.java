@@ -503,7 +503,7 @@ public class BagData {
 		if(toSave.isEmpty()) {
 			return;
 		}
-		if(Main.config.GetBool("auto-save.message")) Log.Info(Main.plugin, "Saving bags..");
+		if(Main.config.GetBool("auto-save.message") || shutdown) Log.Info(Main.plugin, "Saving bags..");
 		for(Data bag : toSave) {
 			String uuid = bag.getUuid();
 	    	String owner = bag.getOwner();
@@ -556,7 +556,7 @@ public class BagData {
 		
 		long endTime = System.currentTimeMillis();
 		long duration = endTime - startTime;
-		if(Main.config.GetBool("auto-save.message")) Log.Info(Main.plugin, String.format("Saved %s bags. %sms", toSave.size(), duration));
+		if(Main.config.GetBool("auto-save.message") || shutdown) Log.Info(Main.plugin, String.format("Saved %s bags. %sms", toSave.size(), duration));
 	}
 	
 	public static void RemoveBag(@NotNull String uuid) {
@@ -574,7 +574,7 @@ public class BagData {
 	}
 	
 	public static Boolean DeleteBag(@NotNull String uuid) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			if(getDatabase() == DatabaseType.FILES) {
 				try {
@@ -639,7 +639,7 @@ public class BagData {
 	}
 	
 	public static boolean IsBagOpen(@NotNull String uuid,  ItemStack bagItem) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			return bag.isOpen();
 		}
@@ -660,7 +660,7 @@ public class BagData {
 		}catch(IllegalArgumentException e) {
 			return false;
 		}
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			return bag.isOpen();
 		}
@@ -668,7 +668,7 @@ public class BagData {
 	}
 	
 	public static Player BagOpenBy(@NotNull String uuid,  ItemStack bagItem) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			if(IsBagOpen(uuid, bagItem)) {
 				return bag.getViewer();
@@ -680,7 +680,7 @@ public class BagData {
 	}
 	
 	public static void MarkBagOpen(@NotNull String uuid, ItemStack bagItem, Player player) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setOpen(true);
 			bag.setViewer(player);
@@ -696,7 +696,7 @@ public class BagData {
 	}
 	
 	public static void MarkBagOpen(@NotNull String uuid, ItemStack bagItem, Player player, BagGUI gui) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setOpen(true);
 			bag.setViewer(player);
@@ -729,22 +729,22 @@ public class BagData {
 	}
 	
 	public List<String> GetTrusted(@NotNull String uuid) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		return bag != null ? bag.getTrusted() : null;
 	}
 	
 	public static String GetOwner(@NotNull String uuid) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		return bag != null ? bag.getOwner() : null;
 	}
 	
 	public static String GetCreator(@NotNull String uuid) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		return bag != null ? bag.getCreator() : null;
 	}
 	
 	public static void AddTrusted(@NotNull String uuid, @NotNull String player) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			List<String> trusted = bag.getTrusted();
 			if(!trusted.contains(player)) {
@@ -758,7 +758,7 @@ public class BagData {
 	}
 	
 	public static void RemoveTrusted(@NotNull String uuid, @NotNull String player) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			List<String> trusted = bag.getTrusted();
 			if(trusted.size() == 0) return;
@@ -775,7 +775,7 @@ public class BagData {
 	}
 	
 	public static void SetAutoPickup(@NotNull String uuid, @NotNull String filter) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setAutopickup(filter);
 			bag.setChanged(true);
@@ -785,12 +785,12 @@ public class BagData {
 	}
 	
 	public static String GetAutoPickup(@NotNull String uuid) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		return bag != null ? bag.getAutopickup() : null;
 	}
 	
 	public static void RemoveAutoPickup(@NotNull String uuid) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setAutopickup("null");
 			bag.setChanged(true);
@@ -800,7 +800,7 @@ public class BagData {
 	}
 	
 	public static void SetWeight(@NotNull String uuid, @NotNull double weight) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setWeight(weight);
 			bag.setChanged(true);
@@ -810,7 +810,7 @@ public class BagData {
 	}
 	
 	public static void SetWeightMax(@NotNull String uuid, @NotNull double weightmax) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setWeightMax(weightmax);
 			bag.setChanged(true);
@@ -821,7 +821,7 @@ public class BagData {
 	
 	@SuppressWarnings("unused")
 	private void MarkBagChanged(@NotNull String uuid) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setChanged(true);
 			if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
@@ -958,7 +958,7 @@ public class BagData {
 	}
 	
 	public static Boolean ClearBagContent(@NotNull String uuid) {
-		Data bag = data.get(UUID.fromString(uuid));
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			if(bag.getGui() != null) {
 				bag.getGui().Close(true);
