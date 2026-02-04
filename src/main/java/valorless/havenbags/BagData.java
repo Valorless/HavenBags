@@ -207,19 +207,29 @@ public class BagData {
 		}
 		else return false;
 	}
-	
+
 	public static Boolean BagExists(@NotNull String uuid) {
+		if("null".equalsIgnoreCase(uuid)) {
+			return false;
+		}
+
+		try {
+			UUID.fromString(uuid);
+		}catch(IllegalArgumentException e) {
+			return false;
+		}
 		return data.containsKey(UUID.fromString(uuid));
 	}
 	
-	public static Data GetBag(@NotNull String uuid,  @Nullable ItemStack bagItem, @Nullable UpdateSource... source) {
+	public static Data GetBag(@NotNull String uuid, @Nullable ItemStack bagItem, @Nullable UpdateSource... source) {
 		UpdateSource m_source = UpdateSource.NULL;
 		if(source != null) {
 			if(source.length != 0) {
 				m_source = source[0];
 			}
 		}
-		Data bag = data.get(UUID.fromString(uuid));
+		
+		Data bag = getbag(uuid);
 		if(bag != null) {
 			if(m_source == UpdateSource.PLAYER) {
 				bag.setOpen(true);
@@ -230,6 +240,21 @@ public class BagData {
 		Log.Debug(Main.plugin, "If you keep seeing this error, please replace the bag causing it.");
 		//if(bagItem != null) bagItem.setAmount(0);
 		return null;
+	}
+	
+	private static Data getbag(String uuid) {
+		
+		if("null".equalsIgnoreCase(uuid)) {
+			return null;
+		}
+		
+		try {
+			UUID.fromString(uuid);
+		}catch(IllegalArgumentException e) {
+			return null;
+		}
+		
+		return data.get(UUID.fromString(uuid));
 	}
 	
 	public static void UpdateBag(@NotNull String uuid, @NotNull List<ItemStack> content, @Nullable UpdateSource... source) {
@@ -626,6 +651,15 @@ public class BagData {
 	public static boolean IsBagOpen(ItemStack bagItem) {
 		if(HavenBags.BagState(bagItem) != BagState.Used) return false;
 		String uuid = HavenBags.GetBagUUID(bagItem);
+		if("null".equalsIgnoreCase(uuid)) {
+			return false;
+		}
+		
+		try {
+			UUID.fromString(uuid);
+		}catch(IllegalArgumentException e) {
+			return false;
+		}
 		Data bag = data.get(UUID.fromString(uuid));
 		if(bag != null) {
 			return bag.isOpen();
