@@ -1179,7 +1179,8 @@ public class HavenBags {
 		String skin = null;
 		List<String> lore = Main.config.GetStringList("token.skin.lore");
 		List<Placeholder> ph = new ArrayList<Placeholder>();
-		if(value.chars().count() < 30) {
+		boolean isBase64 = value.chars().count() > 30;
+		if(!isBase64) {
 			skin = Main.textures.GetString(String.format("textures.%s", value));
 		}
 		//Log.Info(Main.plugin, "Creating skin token with value: " + value + " and resolved skin: " + skin);
@@ -1204,13 +1205,13 @@ public class HavenBags {
 		List<String> l = new ArrayList<String>();
 		for (String line : lore) {
 			if(!Utils.IsStringNullOrEmpty(line)) {
-				l.add(Lang.Parse(line.replace("%skin%", value.chars().count() > 30 ? "" : value), null));
+				l.add(Lang.Parse(line.replace("%skin%", isBase64 ? "" : value), null));
 			}
 		}
 		meta.setLore(l);
 		item.setItemMeta(meta);
 		
-		if(material == Material.PLAYER_HEAD && (value.chars().count() > 30 || skin != null)) {
+		if(material == Material.PLAYER_HEAD && (isBase64 || skin != null)) {
 			BagData.setTextureValue(item, skin != null ? skin : value);
 		}
 		
