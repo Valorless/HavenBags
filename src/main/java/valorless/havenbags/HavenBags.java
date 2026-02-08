@@ -1172,17 +1172,17 @@ public class HavenBags {
 		return false;
 	}*/
 	
-	public static ItemStack CreateSkinToken(String value, TokenType type ) {
+	public static ItemStack CreateSkinToken(String value, TokenType type) {
 		String name = Main.config.GetString("token.skin.displayname");
 		Material material = Main.config.GetMaterial("token.skin.material");
 		int cmd = Main.config.GetInt("token.skin.custommodeldata");
+		String skin = null;
 		List<String> lore = Main.config.GetStringList("token.skin.lore");
 		List<Placeholder> ph = new ArrayList<Placeholder>();
-		if(!Base64Validator.isValidBase64(value)) {
-			ph.add(new Placeholder("%skin%", value));
-		}else {
-			ph.add(new Placeholder("%skin%", ""));
+		if(value.chars().count() < 30) {
+			skin = Main.textures.GetString(String.format("textures.%s", value));
 		}
+		//Log.Info(Main.plugin, "Creating skin token with value: " + value + " and resolved skin: " + skin);
 		
 		ItemStack item = new ItemStack(material);
 		// Set this first to give the item ItemMeta
@@ -1204,14 +1204,14 @@ public class HavenBags {
 		List<String> l = new ArrayList<String>();
 		for (String line : lore) {
 			if(!Utils.IsStringNullOrEmpty(line)) {
-				l.add(Lang.Parse(line, ph));
+				l.add(Lang.Parse(line.replace("%skin%", value.chars().count() > 30 ? "" : value), null));
 			}
 		}
 		meta.setLore(l);
 		item.setItemMeta(meta);
 		
-		if(material == Material.PLAYER_HEAD && Base64Validator.isValidBase64(value)) {
-			BagData.setTextureValue(item, value);
+		if(material == Material.PLAYER_HEAD && (value.chars().count() > 30 || skin != null)) {
+			BagData.setTextureValue(item, skin != null ? skin : value);
 		}
 		
 		return item;

@@ -28,40 +28,22 @@ public class CommandToken {
 					target = Bukkit.getPlayer(command.args[3]);
 				}
 				if(command.args[1].equalsIgnoreCase("texture")) {
-					if(command.args[2].chars().count() > 30) {
-						if(Base64Validator.isValidBase64(command.args[2])) {
-							ItemStack token = HavenBags.CreateSkinToken(command.args[2], TokenType.Texture);
-							if(target != null) {
-								if(target.getInventory().firstEmpty() != -1) {
-									target.getInventory().addItem(token);
-								} else {
-									target.getWorld().dropItem(player.getLocation(), token);
-								}
-								Log.Info(Main.plugin, String.format("Gave token %s to %s.", command.args[2], command.args[3]));
-							}else {
-								player.getInventory().addItem(token);
+					String value = command.args[2];
+					ItemStack token = null;
+					token = HavenBags.CreateSkinToken(value, TokenType.Texture);
+					if(token != null) {
+						if(target != null) {
+							if(target.getInventory().firstEmpty() != -1) {
+								target.getInventory().addItem(token);
+							} else {
+								target.getWorld().dropItem(player.getLocation(), token);
 							}
+							Log.Info(Main.plugin, String.format("Gave token %s to %s.", command.args[2], command.args[3]));
 						}else {
-							player.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
-							return true;
+							player.getInventory().addItem(token);
 						}
 					}else {
-						if(Base64Validator.isValidBase64(Main.textures.GetString(String.format("textures.%s", command.args[2])))) {
-							ItemStack token = HavenBags.CreateSkinToken(Main.textures.GetString(String.format("textures.%s", command.args[2])), TokenType.Texture);
-							if(target != null) {
-								if(target.getInventory().firstEmpty() != -1) {
-									target.getInventory().addItem(token);
-								} else {
-									target.getWorld().dropItem(player.getLocation(), token);
-								}
-								Log.Info(Main.plugin, String.format("Gave token %s to %s.", command.args[2], command.args[3]));
-							}else {
-								player.getInventory().addItem(token);
-							}
-						}else {
-							player.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
-							return true;
-						}
+						player.sendMessage(Name + "§cInvalid texture value.");
 					}
 				}
 				else if(command.args[1].equalsIgnoreCase("custommodeldata")) {
