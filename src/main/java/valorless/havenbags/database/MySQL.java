@@ -31,6 +31,11 @@ public class MySQL {
 	private int port;
 	private Connection connection;
 	
+	private int maxChunkSize = 200;
+	public int getMaxChunkSize() {
+		return maxChunkSize;
+	}
+
 	private int connectTimeout = 30000;
 	private int socketTimeout = 60000;
 
@@ -47,6 +52,7 @@ public class MySQL {
 		password = Main.config.GetString("mysql.password");
 		connectTimeout = Main.config.GetInt("mysql.connect_timeout") * 1000;
 		socketTimeout = Main.config.GetInt("mysql.socket_timeout") * 1000;
+		maxChunkSize = Main.config.GetInt("mysql.max_chunk_size");
 
 		try {
 			connect();
@@ -108,6 +114,15 @@ public class MySQL {
 	public MySQL getDatabase() {
 		return mysql;
 	}
+	
+	public <T> List<List<T>> chunkify(List<T> list, int chunkSize) {
+        if (chunkSize <= 0) chunkSize = maxChunkSize; // Fallback to default if invalid size
+        List<List<T>> chunks = new ArrayList<>();
+        for (int i = 0; i < list.size(); i += chunkSize) {
+            chunks.add(list.subList(i, Math.min(list.size(), i + chunkSize)));
+        }
+        return chunks;
+    }
 
 	public List<String> getAllBagUUIDs() {
 		List<String> uuids = new ArrayList<>();

@@ -535,10 +535,16 @@ public class BagData {
 	    	if(getDatabase() == DatabaseType.MYSQL) {
 	    		Log.Debug(Main.plugin, "[DI-232] [MYSQL] " + "Attempting to write bags onto database");
 	    		if(shutdown || conversion != null) {
-	    			getMysql().saveBags(toSave);
+	    			for(List<Data> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
+	    				getMysql().saveBags(chunk);
+	    			}
+	    			//getMysql().saveBags(toSave);
 	    		}else {
 	    			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
-	    				getMysql().saveBags(toSave);
+		    			for(List<Data> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
+		    				getMysql().saveBags(chunk);
+		    			}
+	    				//getMysql().saveBags(toSave);
 	    			});
 	    		}
 	    	}
