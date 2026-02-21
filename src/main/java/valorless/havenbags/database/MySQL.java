@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.gson.JsonObject;
+import com.mysql.cj.jdbc.exceptions.PacketTooBigException;
 
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.utils.FoodComponentFixer;
@@ -311,6 +312,9 @@ public class MySQL {
 	            stmt.setString(index++, DatabaseUtils.Extra(bag));
 	        }
 	        stmt.executeUpdate();
+	    } catch (PacketTooBigException e) {
+	    	Log.Error(Main.plugin, "Failed to save bags: PacketTooBigException. Too much data is being sent at once, consider lowering the 'mysql.max_chunk_size' in config.yml.");
+	    	e.printStackTrace();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
