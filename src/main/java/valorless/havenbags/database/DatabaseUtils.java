@@ -36,6 +36,7 @@ public class DatabaseUtils {
 		text += String.format(", magnet:%s", data.hasMagnet());
 		text += String.format(", refill:%s", data.hasRefill());
 		text += String.format(", effect:%s", data.getEffect());
+		text += String.format(", tooltip:%s", data.getTooltipStyle());
 		
 		text += "}";
 		//Log.Info(Main.plugin, text);
@@ -53,6 +54,7 @@ public class DatabaseUtils {
         if(extra.containsKey("magnet")) data.setMagnet((Boolean) extra.get("magnet"));
         if(extra.containsKey("refill")) data.setRefill((Boolean) extra.get("refill"));
         if(extra.containsKey("effect")) data.setEffect((String) extra.get("effect"));
+        if(extra.containsKey("tooltip")) data.setTooltipStyle((String) extra.get("tooltip"));
 	}
 	
 	public static Object formatList(List<String> list) {

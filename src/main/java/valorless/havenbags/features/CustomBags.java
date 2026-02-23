@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,6 +18,8 @@ import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.utils.Utils;
@@ -56,6 +59,11 @@ public class CustomBags {
 				meta.setDisplayName(Lang.Parse(file.GetString(String.format("bags.%s.displayname", key)), null));
 			if(file.HasKey(String.format("bags.%s.modeldata", key)))
 				meta.setCustomModelData(file.GetInt(String.format("bags.%s.modeldata", key)));
+			if(file.HasKey(String.format("bags.%s.tooltip", key))) {
+	        	if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+	        		meta.setTooltipStyle(NamespacedKey.fromString(file.GetString(String.format("bags.%s.tooltip", key))));
+	        	}
+			}
 			item.setItemMeta(meta);
 			
 			if(file.HasKey(String.format("bags.%s.itemmodel", key)))
@@ -77,6 +85,7 @@ public class CustomBags {
 			PDC.SetBoolean(item, "igb", file.GetBool(String.format("bags.%s.properties.ignoreglobalblacklist", key)));
 			PDC.SetString(item, "filter", file.GetString(String.format("bags.%s.properties.autopickup", key)));
 			PDC.SetBoolean(item, "climit", file.GetBool(String.format("bags.%s.properties.carry-limit", key)));
+			PDC.SetString(item, "tooltip", file.GetString(String.format("bags.%s.tooltip", key)));
 			
 			bags.put(key, item);
 		}

@@ -61,6 +61,8 @@ public class Data {
 	private boolean refill = false;
 	/** Effect identifier string */
 	private String effect = "null";
+	/** Tooltip style string */
+	private String tooltipStyle = null;
 	
 	/** Indicates if the data has changed since last save */
 	boolean changed = false;
@@ -502,6 +504,12 @@ public class Data {
 		this.changed = true;
 	}
 	
+	public String getTooltipStyle() {
+		return tooltipStyle;
+	}
+	public void setTooltipStyle(String tooltipStyle) {
+		this.tooltipStyle = tooltipStyle;
+	}
 	/** @return true if bag is bound to an owner */
 	public boolean isBound() { 
 		return this.owner != null && !this.owner.equalsIgnoreCase("null") && !this.owner.equalsIgnoreCase("");

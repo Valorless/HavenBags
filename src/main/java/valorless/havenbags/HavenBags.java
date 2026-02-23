@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -451,6 +452,12 @@ public class HavenBags {
         	}
         }
         
+        if(PDC.Has(bag, "tooltip")) {
+        	if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+        		bagMeta.setTooltipStyle(NamespacedKey.fromString(PDC.GetString(bag, "tooltip")));
+        	}
+		}
+        
         bagMeta.setLore(lore);
 		bag.setItemMeta(bagMeta);
 	}
@@ -659,6 +666,21 @@ public class HavenBags {
         		lore.add(Lang.Get("bag-content-and-more"));
         	}
         }
+        
+        if(data.getTooltipStyle() != null) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				bagMeta.setTooltipStyle(NamespacedKey.fromString(data.getTooltipStyle()));
+			}
+        }else {
+        	if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
+			}
+        }
+        if(PDC.Has(bag, "tooltip")) {
+        	if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+        		bagMeta.setTooltipStyle(NamespacedKey.fromString(PDC.GetString(bag, "tooltip")));
+        	}
+		}
         
         bagMeta.setLore(lore);
 		bag.setItemMeta(bagMeta);

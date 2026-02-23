@@ -400,6 +400,10 @@ public class BagData {
 			dat.setIgnoreGlobalBlacklist(PDC.GetBoolean(bag, "igb"));
 		}
 		
+		if(PDC.Has(bag, "tooltip")) {
+			dat.setTooltipStyle(PDC.GetString(bag, "tooltip"));
+		}
+		
 		dat.setChanged(true);
 		data.put(UUID.fromString(uuid), dat);
 		if(database == DatabaseType.MYSQLPLUS) {

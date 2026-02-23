@@ -75,6 +75,8 @@ bag:
  modeldata: 0
  # Item Model if the bag-type is 'ITEM'
  itemmodel: ''
+ # Tooltip Style
+ tooltip-style: ''
 
 # Want CustomModelData per size instead?
 # You can fill these with the same method as above.

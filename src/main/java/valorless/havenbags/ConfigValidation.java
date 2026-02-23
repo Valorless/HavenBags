@@ -56,6 +56,7 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("bag.material", "ENDER_CHEST");
 	Main.config.AddValidationEntry("bag.modeldata", 0);
 	Main.config.AddValidationEntry("bag.itemmodel", "");
+	Main.config.AddValidationEntry("bag.tooltip-style", "");
 	
 	// Per-size model data and textures
 	Main.config.AddValidationEntry("bag-custom-model-datas.enabled", false);
