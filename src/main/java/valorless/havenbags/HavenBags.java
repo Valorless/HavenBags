@@ -26,6 +26,7 @@ import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.AutoSorter;
@@ -41,7 +42,6 @@ import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.havenbags.utils.TextFeatures;
-import valorless.valorlessutils.sound.SFX;
 import valorless.valorlessutils.utils.Utils;
 
 public class HavenBags {
@@ -123,9 +123,11 @@ public class HavenBags {
         			player.getInventory().addItem(bag);
         		} else {
         			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
-    				SFX.Play(Main.config.GetString("sound.inventory-full.key"), 
-    						Main.config.GetDouble("sound.inventory-full.volume").floatValue(), 
-    						Main.config.GetDouble("sound.inventory-full.pitch").floatValue(), player);
+
+    				Sound sound = new Sound(Main.config.GetString("sound.inventory-full.key"), 
+    		    			Main.config.GetDouble("sound.inventory-full.volume"), 
+    		    			Main.config.GetDouble("sound.inventory-full.pitch"));	
+    				sound.play(player);
         			player.getWorld().dropItem(player.getLocation(), bag);
         		}
     		}
@@ -142,9 +144,10 @@ public class HavenBags {
     			player.getInventory().addItem(bag);
     		} else {
     			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
-				SFX.Play(Main.config.GetString("sound.inventory-full.key"), 
-						Main.config.GetDouble("sound.inventory-full.volume").floatValue(), 
-						Main.config.GetDouble("sound.inventory-full.pitch").floatValue(), player);
+				Sound sound = new Sound(Main.config.GetString("sound.inventory-full.key"), 
+		    			Main.config.GetDouble("sound.inventory-full.volume"), 
+		    			Main.config.GetDouble("sound.inventory-full.pitch"));	
+				sound.play(player);
     			player.getWorld().dropItem(player.getLocation(), bag);
     		}
     	}
@@ -704,9 +707,11 @@ public class HavenBags {
 		Log.Debug(Main.plugin, "[DI-110] " + "Attempting to initialize bag items");
 		//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, player);
 		List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
-		SFX.Play(Main.config.GetString("sound.close.key"), 
-				Main.config.GetDouble("sound.close.volume").floatValue(), 
-				Main.config.GetDouble("sound.close.pitch").floatValue(), player);
+
+		Sound sound = new Sound(Main.config.GetString("sound.close.key"), 
+    			Main.config.GetDouble("sound.close.volume"), 
+    			Main.config.GetDouble("sound.close.pitch"));	
+		sound.play(player);
 		for(int i = 0; i < content.size(); i++) {
 			try {
 				if(PDC.Has(content.get(i), "locked")) continue;

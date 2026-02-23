@@ -111,12 +111,13 @@ public class BagEffects implements Listener {
 			//Log.Debug(Main.plugin, e.getName());
 			if(e.getName().equalsIgnoreCase(key)) return e;
 		}
-		PotionEffectType legacy = LegacyEffect(key);
-		if(legacy != null) return legacy;
-		else throw new Exception(String.format("Invalid PotionEffectType '%s'.", key));
+		//PotionEffectType legacy = LegacyEffect(key);
+		//if(legacy != null) return legacy;
+		//else 
+		throw new Exception(String.format("Invalid PotionEffectType '%s'.", key));
 	}
 	
-	private static PotionEffectType LegacyEffect(String key) {
+	/*private static PotionEffectType LegacyEffect(String key) {
 		// Just as a backup for new effect names, as HavenBags is 1.20 native,
 		// and new names were set in 1.21.
 		// Mainly for if you use 1.21 names while on 1.20.
@@ -138,7 +139,7 @@ public class BagEffects implements Listener {
 				return PotionEffectType.JUMP;
 		}
 		return null;
-	}
+	}*/
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {

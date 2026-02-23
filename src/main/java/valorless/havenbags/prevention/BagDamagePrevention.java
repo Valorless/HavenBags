@@ -22,7 +22,7 @@ public class BagDamagePrevention implements Listener{
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
-		if(e.getEntity().getType() == EntityType.DROPPED_ITEM) {
+		if(e.getEntity().getType() == EntityType.ITEM) {
 	    // Log.Debug(HavenBags.plugin, "Dropped item: " + e.getEntity().getName());
 	    	if(e.getEntity() instanceof Item dropped){
 		    	//Log.Debug(HavenBags.plugin, "Dropped item can be Item.");
