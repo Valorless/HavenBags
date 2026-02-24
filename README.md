@@ -10,6 +10,9 @@
 <a href="" rel="nofollow"><img src="https://img.shields.io/github/repo-size/valorless/havenbags" alt="Dependency" style="max-width: 100%;"/></a>
 <a href="" rel="nofollow"><img src="https://img.shields.io/github/v/release/valorless/havenbags" alt="Dependency" style="max-width: 100%;"/></a>
 <a href="" rel="nofollow"><img src="https://img.shields.io/spiget/version/110420" alt="Dependency" style="max-width: 100%;"/></a>
+[![Build Plugin](https://github.com/Valorless/HavenBags/actions/workflows/maven.yml/badge.svg)](https://github.com/Valorless/HavenBags/actions/workflows/maven.yml)
+[![Build Plugin](https://github.com/Valorless/HavenBags/actions/workflows/maven-main.yml/badge.svg)](https://github.com/Valorless/HavenBags/actions/workflows/maven-main.yml)
+[![Build Dev](https://github.com/Valorless/HavenBags/actions/workflows/maven-dev.yml/badge.svg)](https://github.com/Valorless/HavenBags/actions/workflows/maven-dev.yml)
 <br>
 
 Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
@@ -17,8 +20,8 @@ Create shulker-like bags of varying sizes bound to a player, or accessible by an
 ## Config Files
 [/resources](/src/main/resources)
 
-# API (Coming soon in 1.37.2)
-[https://valorless.github.io/HavenBags](https://valorless.github.io/HavenBags)
+# API
+JavaDocs: [https://valorless.github.io/HavenBags](https://valorless.github.io/HavenBags)
 
 ## Maven
 ```xml
@@ -32,6 +35,7 @@ Create shulker-like bags of varying sizes bound to a player, or accessible by an
 	<dependency>
 	    <groupId>com.github.Valorless</groupId>
 	    <artifactId>HavenBags</artifactId>
-	    <version>1.37.2</version>
+	    <version>main-SNAPSHOT</version>
+		<!-- Either "main-SNAPSHOT" (Latest release), or like "1.40.0" from this list: https://github.com/Valorless/HavenBags/tags -->
 	</dependency>
 ```
