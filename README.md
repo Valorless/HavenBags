@@ -10,9 +10,8 @@
 <a href="" rel="nofollow"><img src="https://img.shields.io/github/repo-size/valorless/havenbags" alt="Dependency" style="max-width: 100%;"/></a>
 <a href="" rel="nofollow"><img src="https://img.shields.io/github/v/release/valorless/havenbags" alt="Dependency" style="max-width: 100%;"/></a>
 <a href="" rel="nofollow"><img src="https://img.shields.io/spiget/version/110420" alt="Dependency" style="max-width: 100%;"/></a>
-[![Build Plugin](https://github.com/Valorless/HavenBags/actions/workflows/maven.yml/badge.svg)](https://github.com/Valorless/HavenBags/actions/workflows/maven.yml)
-[![Build Plugin](https://github.com/Valorless/HavenBags/actions/workflows/maven-main.yml/badge.svg)](https://github.com/Valorless/HavenBags/actions/workflows/maven-main.yml)
-[![Build Dev](https://github.com/Valorless/HavenBags/actions/workflows/maven-dev.yml/badge.svg)](https://github.com/Valorless/HavenBags/actions/workflows/maven-dev.yml)
+[![Build Plugin](https://github.com/Valorless/HavenBags/actions/workflows/build-main.yml/badge.svg)](https://github.com/Valorless/HavenBags/actions/workflows/build-main.yml)
+[![Build Dev](https://github.com/Valorless/HavenBags/actions/workflows/build-dev.yml/badge.svg)](https://github.com/Valorless/HavenBags/actions/workflows/build-dev.yml)
 <br>
 
 Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
