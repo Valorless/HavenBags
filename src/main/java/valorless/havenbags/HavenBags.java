@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -26,6 +27,7 @@ import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.AutoSorter;
@@ -41,7 +43,6 @@ import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.nbt.NBT;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.havenbags.utils.TextFeatures;
-import valorless.valorlessutils.sound.SFX;
 import valorless.valorlessutils.utils.Utils;
 
 public class HavenBags {
@@ -123,9 +124,11 @@ public class HavenBags {
         			player.getInventory().addItem(bag);
         		} else {
         			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
-    				SFX.Play(Main.config.GetString("sound.inventory-full.key"), 
-    						Main.config.GetDouble("sound.inventory-full.volume").floatValue(), 
-    						Main.config.GetDouble("sound.inventory-full.pitch").floatValue(), player);
+
+    				Sound sound = new Sound(Main.config.GetString("sound.inventory-full.key"), 
+    		    			Main.config.GetDouble("sound.inventory-full.volume"), 
+    		    			Main.config.GetDouble("sound.inventory-full.pitch"));	
+    				sound.play(player);
         			player.getWorld().dropItem(player.getLocation(), bag);
         		}
     		}
@@ -142,9 +145,10 @@ public class HavenBags {
     			player.getInventory().addItem(bag);
     		} else {
     			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
-				SFX.Play(Main.config.GetString("sound.inventory-full.key"), 
-						Main.config.GetDouble("sound.inventory-full.volume").floatValue(), 
-						Main.config.GetDouble("sound.inventory-full.pitch").floatValue(), player);
+				Sound sound = new Sound(Main.config.GetString("sound.inventory-full.key"), 
+		    			Main.config.GetDouble("sound.inventory-full.volume"), 
+		    			Main.config.GetDouble("sound.inventory-full.pitch"));	
+				sound.play(player);
     			player.getWorld().dropItem(player.getLocation(), bag);
     		}
     	}
@@ -448,6 +452,12 @@ public class HavenBags {
         	}
         }
         
+        if(PDC.Has(bag, "tooltip")) {
+        	if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+        		bagMeta.setTooltipStyle(NamespacedKey.fromString(PDC.GetString(bag, "tooltip")));
+        	}
+		}
+        
         bagMeta.setLore(lore);
 		bag.setItemMeta(bagMeta);
 	}
@@ -657,6 +667,21 @@ public class HavenBags {
         	}
         }
         
+        if(data.getTooltipStyle() != null) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				bagMeta.setTooltipStyle(NamespacedKey.fromString(data.getTooltipStyle()));
+			}
+        }else {
+        	if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
+			}
+        }
+        if(PDC.Has(bag, "tooltip")) {
+        	if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+        		bagMeta.setTooltipStyle(NamespacedKey.fromString(PDC.GetString(bag, "tooltip")));
+        	}
+		}
+        
         bagMeta.setLore(lore);
 		bag.setItemMeta(bagMeta);
 	}
@@ -704,9 +729,11 @@ public class HavenBags {
 		Log.Debug(Main.plugin, "[DI-110] " + "Attempting to initialize bag items");
 		//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, player);
 		List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
-		SFX.Play(Main.config.GetString("sound.close.key"), 
-				Main.config.GetDouble("sound.close.volume").floatValue(), 
-				Main.config.GetDouble("sound.close.pitch").floatValue(), player);
+
+		Sound sound = new Sound(Main.config.GetString("sound.close.key"), 
+    			Main.config.GetDouble("sound.close.volume"), 
+    			Main.config.GetDouble("sound.close.pitch"));	
+		sound.play(player);
 		for(int i = 0; i < content.size(); i++) {
 			try {
 				if(PDC.Has(content.get(i), "locked")) continue;
@@ -1172,17 +1199,18 @@ public class HavenBags {
 		return false;
 	}*/
 	
-	public static ItemStack CreateSkinToken(String value, TokenType type ) {
+	public static ItemStack CreateSkinToken(String value, TokenType type) {
 		String name = Main.config.GetString("token.skin.displayname");
 		Material material = Main.config.GetMaterial("token.skin.material");
 		int cmd = Main.config.GetInt("token.skin.custommodeldata");
+		String skin = null;
 		List<String> lore = Main.config.GetStringList("token.skin.lore");
 		List<Placeholder> ph = new ArrayList<Placeholder>();
-		if(!Base64Validator.isValidBase64(value)) {
-			ph.add(new Placeholder("%skin%", value));
-		}else {
-			ph.add(new Placeholder("%skin%", ""));
+		boolean isBase64 = value.chars().count() > 30;
+		if(!isBase64) {
+			skin = Main.textures.GetString(String.format("textures.%s", value));
 		}
+		//Log.Info(Main.plugin, "Creating skin token with value: " + value + " and resolved skin: " + skin);
 		
 		ItemStack item = new ItemStack(material);
 		// Set this first to give the item ItemMeta
@@ -1204,14 +1232,14 @@ public class HavenBags {
 		List<String> l = new ArrayList<String>();
 		for (String line : lore) {
 			if(!Utils.IsStringNullOrEmpty(line)) {
-				l.add(Lang.Parse(line, ph));
+				l.add(Lang.Parse(line.replace("%skin%", isBase64 ? "" : value), null));
 			}
 		}
 		meta.setLore(l);
 		item.setItemMeta(meta);
 		
-		if(material == Material.PLAYER_HEAD && Base64Validator.isValidBase64(value)) {
-			BagData.setTextureValue(item, value);
+		if(material == Material.PLAYER_HEAD && (isBase64 || skin != null)) {
+			BagData.setTextureValue(item, skin != null ? skin : value);
 		}
 		
 		return item;

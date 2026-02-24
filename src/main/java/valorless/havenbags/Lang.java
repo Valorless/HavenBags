@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -22,19 +21,7 @@ public class Lang {
 	
 	public static String Parse(String text, OfflinePlayer player) {
 		if(!Utils.IsStringNullOrEmpty(text)) {
-
-			if(player != null) {
-				text = ParsePlaceholderAPI(text, player);
-			} else {
-				OfflinePlayer[] offp = Bukkit.getOfflinePlayers();
-				// Choose random player as placeholder to parse strings, without a defined player.
-				try {
-					text = ParsePlaceholderAPI(text, offp[0]);
-				}catch(Exception e) {
-					text = ParsePlaceholderAPI(text, null);
-				}
-			}
-		
+			text = ParsePlaceholderAPI(text, player);
 			text = hex(text);
 			text = text.replace("&", "§");
 			text = text.replace("\\n", "\n");
@@ -48,11 +35,12 @@ public class Lang {
 	public static String Parse(String text, List<Placeholder> placeholders, OfflinePlayer... player) {
 		for(Placeholder ph : placeholders) {
 			text = text.replace(ph.getKey(), ph.getValue());
-			if(player.length != 0) {
-				text = Parse(text, player[0]);
-			}else {
-				text = Parse(text, null);
-			}
+		}
+		// Parse once after applying placeholders
+		if(player.length != 0) {
+			text = Parse(text, player[0]);
+		}else {
+			text = Parse(text, null);
 		}
 		return text;
 	}

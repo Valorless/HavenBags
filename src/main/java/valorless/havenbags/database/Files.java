@@ -67,6 +67,7 @@ public class Files {
 		file.Set("magnet", data.hasMagnet());
 		file.Set("refill", data.hasRefill());
 		file.Set("effect", data.getEffect());
+		file.Set("tooltip-style", data.getTooltipStyle());
 		
 		file.Set("content", JsonUtils.toJson(data.getContent()).replace("'", "◊"));
 		file.SaveConfig();
@@ -95,6 +96,7 @@ public class Files {
 		data.setMagnet(file.GetBool("magnet"));
 		data.setRefill(file.GetBool("refill"));
 		data.setEffect(file.GetString("effect"));
+		data.setTooltipStyle(file.GetString("tooltip-style"));
 		
 		return data;
 	}

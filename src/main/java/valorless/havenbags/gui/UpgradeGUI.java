@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import valorless.havenbags.*;
 import valorless.havenbags.HavenBags.BagState;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.events.gui.PrepareUpgradeEvent;
 import valorless.havenbags.features.BagEffects;
@@ -31,7 +32,6 @@ import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.items.ItemUtils;
-import valorless.valorlessutils.sound.SFX;
 
 /**
  * UpgradeGUI is a GUI for upgrading bags or applying skins to them.
@@ -267,12 +267,9 @@ public class UpgradeGUI implements Listener {
 		if(event.getInventory().getItem(resultSlot) == null) return;
 		
 		Player player = (Player) event.getWhoClicked();
-		try {
-			player.playSound(player.getLocation(), Main.config.GetString("upgrade-gui.success-sound"), 1.0f, 1.0f);
-		} catch (Exception e) {
-			SFX.Play(Main.config.GetString("upgrade-gui.success-sound"), 1.0f, 1.0f, player);
-		}
-		
+		Sound sound = Sound.parse(Main.config.GetString("upgrade-gui.success-sound"));
+	    sound.play(player);
+	    
 		ItemStack clicked = event.getInventory().getItem(resultSlot);
 
 		ItemStack token = null;

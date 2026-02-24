@@ -27,6 +27,9 @@ mysql:
  name: 'minecraft'
  user: 'admin'
  password: 'pass'
+ connect_timeout: 30 # Seconds
+ socket_timeout: 60 # Seconds
+ max_chunk_size: 200
 
 auto-save:
  # How often should we save bags onto the server?
@@ -73,6 +76,8 @@ bag:
  modeldata: 0
  # Item Model if the bag-type is 'ITEM'
  itemmodel: ''
+ # Tooltip Style
+ tooltip-style: ''
 
 # Want CustomModelData per size instead?
 # You can fill these with the same method as above.

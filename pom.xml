@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>valorless.havenbags</groupId>
     <artifactId>HavenBags</artifactId>
-    <version>1.40.0</version>
+    <version>1.41.0</version>
     <scm>
         <connection>scm:svn:http://127.0.0.1/dummy</connection>
         <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -215,7 +215,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20-R0.1-SNAPSHOT</version>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
             <!--change this value depending on the version or use LATEST-->
             <type>jar</type>
             <scope>provided</scope>

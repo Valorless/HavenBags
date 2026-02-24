@@ -22,11 +22,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import valorless.valorlessutils.sound.SFX;
 import valorless.havenbags.*;
 import valorless.havenbags.BagData.UpdateSource;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.events.BagCloseEvent;
 import valorless.havenbags.events.BagOpenEvent;
@@ -412,9 +412,14 @@ public class BagGUI implements Listener {
     	//if(!HavenBags.IsBagOpen(bagItem)) return;
     	if(!BagData.IsBagOpen(uuid, bagItem)) return;
 
-		SFX.Play(Main.config.GetString("sound.close.key"), 
-				Main.config.GetDouble("sound.close.volume").floatValue(), 
-				Main.config.GetDouble("sound.close.pitch").floatValue(), player);
+    	Sound sound = new Sound(Main.config.GetString("sound.close.key"), 
+    			Main.config.GetDouble("sound.close.volume"), 
+    			Main.config.GetDouble("sound.close.pitch"));	
+    	sound.play(player);
+    	
+		//SFX.Play(Main.config.GetString("sound.close.key"), 
+		//		Main.config.GetDouble("sound.close.volume").floatValue(), 
+		//		Main.config.GetDouble("sound.close.pitch").floatValue(), player);
     	
         Log.Debug(plugin, "[DI-44] " + "Bag closed, attempting to save bag. (" + bag + ")");
 

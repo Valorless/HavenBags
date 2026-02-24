@@ -3,7 +3,6 @@ package valorless.havenbags.commands.fun;
 import java.util.List;
 import java.util.Random;
 
-import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,9 +13,9 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.commands.HBCommand;
+import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.sound.SFX;
 
 public class CommandExplode {
 	
@@ -44,7 +43,8 @@ public class CommandExplode {
 		Random random = new Random();
 		String uuid = PDC.GetString(bag, "uuid");
 		List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
-		SFX.Play(Sound.ENTITY_GENERIC_EXPLODE.toString(), 1.0f, 1.0f, player);
+		Sound sound = Sound.parse("ENTITY_GENERIC_EXPLODE:1.0:1.0");
+		sound.play(player);
 		for(int i = 0; i < content.size(); i++) {
 			try {
 				if(PDC.Has(content.get(i), "locked")) continue;

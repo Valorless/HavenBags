@@ -12,10 +12,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import valorless.valorlessutils.sound.SFX;
 import valorless.havenbags.*;
 import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.EtherealBagSettings;
+import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.features.AutoSorter;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
@@ -58,9 +58,14 @@ public class EtherealGUI implements Listener {
     	
 		//OpenInventory(player);
 		
-		SFX.Play(Main.config.GetString("sound.open.key"), 
-				Main.config.GetDouble("sound.open.volume").floatValue(), 
-				Main.config.GetDouble("sound.open.pitch").floatValue(), player);
+		//SFX.Play(Main.config.GetString("sound.open.key"), 
+		//		Main.config.GetDouble("sound.open.volume").floatValue(), 
+		//		Main.config.GetDouble("sound.open.pitch").floatValue(), player);
+		
+		Sound sound = new Sound(Main.config.GetString("sound.open.key"), 
+    			Main.config.GetDouble("sound.open.volume"), 
+    			Main.config.GetDouble("sound.open.pitch"));	
+    	sound.play(player);
     }
     
 	public void InitializeItems() {
@@ -131,9 +136,14 @@ public class EtherealGUI implements Listener {
     		player.closeInventory();
     	}
 
-		SFX.Play(Main.config.GetString("sound.close.key"), 
-				Main.config.GetDouble("sound.close.volume").floatValue(), 
-				Main.config.GetDouble("sound.close.pitch").floatValue(), player);
+		//SFX.Play(Main.config.GetString("sound.close.key"), 
+		//		Main.config.GetDouble("sound.close.volume").floatValue(), 
+		//		Main.config.GetDouble("sound.close.pitch").floatValue(), player);
+		
+		Sound sound = new Sound(Main.config.GetString("sound.close.key"), 
+    			Main.config.GetDouble("sound.close.volume"), 
+    			Main.config.GetDouble("sound.close.pitch"));	
+    	sound.play(player);
     	
         Log.Debug(Main.plugin, "[EtherealGUI][DI-297] " + "Bag closed, attempting to save ethereal bag. (" + key + ")");
         

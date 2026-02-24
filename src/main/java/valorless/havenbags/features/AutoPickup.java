@@ -37,13 +37,13 @@ import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Message;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.datamodels.PluginTags;
+import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.TextFeatures;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
-import valorless.valorlessutils.sound.SFX;
 import valorless.valorlessutils.tags.TagType;
 import valorless.valorlessutils.tags.Tags;
 import valorless.valorlessutils.utils.Utils;
@@ -211,11 +211,11 @@ public class AutoPickup implements Listener {
 			int count = 10;
 			double force = 0.1;
 			try {
-				player.spawnParticle(Particle.BLOCK_DUST, event.getItem().getLocation(), count, 0, 0.1, 0, force, item.getType().createBlockData());
+				player.spawnParticle(Particle.BLOCK, event.getItem().getLocation(), count, 0, 0.1, 0, force, item.getType().createBlockData());
 			} catch (Exception e) {
-				player.spawnParticle(Particle.ITEM_CRACK, event.getItem().getLocation(), count, 0, 0.1, 0, force, item);
+				player.spawnParticle(Particle.ITEM, event.getItem().getLocation(), count, 0, 0.1, 0, force, item);
 			}
-			player.spawnParticle(Particle.SMOKE_NORMAL, event.getItem().getLocation(), 5, 0, 0.1, 0, 0.02);
+			player.spawnParticle(Particle.SMOKE, event.getItem().getLocation(), 5, 0, 0.1, 0, 0.02);
 			event.getArrow().remove();
 			event.getItem().remove();
 		}
@@ -820,9 +820,11 @@ public class AutoPickup implements Listener {
 			pitch = Utils.RandomRange(Main.config.GetDouble("auto-pickup.sound.pitch.min"), Main.config.GetDouble("auto-pickup.sound.pitch.max"));
 		}
 		
-		SFX.Play(Main.config.GetString("auto-pickup.sound.key"), 
-				Main.config.GetDouble("auto-pickup.sound.volume").floatValue(), 
-				pitch.floatValue(), player);
+
+		Sound sound = new Sound(Main.config.GetString("auto-pickup.sound.key"), 
+    			Main.config.GetDouble("auto-pickup.sound.volume"), 
+    			pitch);	
+		sound.play(player);
 		
 	}
 	
@@ -884,10 +886,10 @@ public class AutoPickup implements Listener {
 		int count = 10;
 		double force = 0.1;
 		try {
-			player.spawnParticle(Particle.BLOCK_DUST, loc, count, 0, 0.1, 0, force, item.getType().createBlockData());
+			player.spawnParticle(Particle.BLOCK, loc, count, 0, 0.1, 0, force, item.getType().createBlockData());
 		} catch (Exception e) {
-			player.spawnParticle(Particle.ITEM_CRACK, loc, count, 0, 0.1, 0, force, item);
+			player.spawnParticle(Particle.ITEM, loc, count, 0, 0.1, 0, force, item);
 		}
-		player.spawnParticle(Particle.SMOKE_NORMAL, loc, 5, 0, 0.1, 0, 0.02);
+		player.spawnParticle(Particle.SMOKE, loc, 5, 0, 0.1, 0, 0.02);
 	}
 }

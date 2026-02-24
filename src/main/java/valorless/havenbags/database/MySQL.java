@@ -7,12 +7,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.gson.JsonObject;
+import com.mysql.cj.jdbc.exceptions.PacketTooBigException;
 
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.utils.FoodComponentFixer;
@@ -29,6 +32,11 @@ public class MySQL {
 	private int port;
 	private Connection connection;
 	
+	private int maxChunkSize = 200;
+	public int getMaxChunkSize() {
+		return maxChunkSize;
+	}
+
 	private int connectTimeout = 30000;
 	private int socketTimeout = 60000;
 
@@ -43,6 +51,9 @@ public class MySQL {
 		database = Main.config.GetString("mysql.name");
 		username = Main.config.GetString("mysql.user");
 		password = Main.config.GetString("mysql.password");
+		connectTimeout = Main.config.GetInt("mysql.connect_timeout") * 1000;
+		socketTimeout = Main.config.GetInt("mysql.socket_timeout") * 1000;
+		maxChunkSize = Main.config.GetInt("mysql.max_chunk_size");
 
 		try {
 			connect();
@@ -50,8 +61,8 @@ public class MySQL {
 			createTables();
 		} catch (SQLException e) {
 			Log.Error(Main.plugin,"Could not connect to MySQL!");
-			Bukkit.getPluginManager().disablePlugin(Main.plugin);
 			e.printStackTrace();
+			Bukkit.getPluginManager().disablePlugin(Main.plugin);
 		}
 	}
 
@@ -67,6 +78,7 @@ public class MySQL {
 	public void disconnect() throws SQLException {
 		if (connection != null && !connection.isClosed()) {
 			connection.close();
+			Log.Info(Main.plugin,"Disconnected from MySQL!");
 		}
 	}
 
@@ -103,6 +115,15 @@ public class MySQL {
 	public MySQL getDatabase() {
 		return mysql;
 	}
+	
+	public <T> List<List<T>> chunkify(List<T> list, int chunkSize) {
+        if (chunkSize <= 0) chunkSize = maxChunkSize; // Fallback to default if invalid size
+        List<List<T>> chunks = new ArrayList<>();
+        for (int i = 0; i < list.size(); i += chunkSize) {
+            chunks.add(list.subList(i, Math.min(list.size(), i + chunkSize)));
+        }
+        return chunks;
+    }
 
 	public List<String> getAllBagUUIDs() {
 		List<String> uuids = new ArrayList<>();
@@ -244,7 +265,7 @@ public class MySQL {
 	                 "itemmodel, trusted, auto_pickup, weight, weight_max, content, open, extra) VALUES ";
 
 	    try {
-			if(connection.isClosed()) {
+			if(connection == null || connection.isClosed() || !connection.isValid(connectTimeout)) {
 				connect();
 			}
 		} catch (SQLException e) {
@@ -291,6 +312,9 @@ public class MySQL {
 	            stmt.setString(index++, DatabaseUtils.Extra(bag));
 	        }
 	        stmt.executeUpdate();
+	    } catch (PacketTooBigException e) {
+	    	Log.Error(Main.plugin, "Failed to save bags: PacketTooBigException. Too much data is being sent at once, consider lowering the 'mysql.max_chunk_size' in config.yml.");
+	    	e.printStackTrace();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
@@ -340,8 +364,8 @@ public class MySQL {
 		return null;
 	}
 	
-	public List<Data> loadAllBags() {
-	    List<Data> bags = new ArrayList<>();
+	public HashMap<UUID, Data> loadAllBags() {
+		HashMap<UUID, Data> bags = new HashMap<>();
 	    String sql = "SELECT * FROM bags";
 	    
 	    try {
@@ -356,8 +380,9 @@ public class MySQL {
 	         ResultSet rs = stmt.executeQuery()) {
 
 	        while (rs.next()) {
+	        	String uuid = rs.getString("uuid");
 	        	Data data = new Data(
-	                    rs.getString("uuid"),
+	                    uuid,
 	                    rs.getString("owner")
 	                );
 	                data.setCreator(rs.getString("creator"));
@@ -374,7 +399,7 @@ public class MySQL {
 	                
 	                DatabaseUtils.ApplyExtra(data, rs.getString("extra"));
 	                
-	                bags.add(data);
+	                bags.put(UUID.fromString(uuid), data);
 	        }
 
 	    } catch (SQLException e) {

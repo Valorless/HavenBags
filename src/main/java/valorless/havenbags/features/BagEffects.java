@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -111,9 +112,14 @@ public class BagEffects implements Listener {
 			//Log.Debug(Main.plugin, e.getName());
 			if(e.getName().equalsIgnoreCase(key)) return e;
 		}
+		for(PotionEffectType e : Registry.EFFECT) {
+			//Log.Debug(Main.plugin, e.getName());
+			if(e.getKey().toString().equalsIgnoreCase(key)) return e;
+		}
 		PotionEffectType legacy = LegacyEffect(key);
 		if(legacy != null) return legacy;
-		else throw new Exception(String.format("Invalid PotionEffectType '%s'.", key));
+		else 
+		throw new Exception(String.format("Invalid PotionEffectType '%s'.", key));
 	}
 	
 	private static PotionEffectType LegacyEffect(String key) {
@@ -123,19 +129,19 @@ public class BagEffects implements Listener {
 		switch(key) {
 			case "RESISTANCE" : 
 				Log.Debug(Main.plugin, "Legacy Effect: RESISTANCE - PotionEffectType.DAMAGE_RESISTANCE");
-				return PotionEffectType.DAMAGE_RESISTANCE;
+				return PotionEffectType.RESISTANCE;
 			case "STRENGTH" : 
 				Log.Debug(Main.plugin, "Legacy Effect: STRENGTH - PotionEffectType.INCREASE_DAMAGE");
-				return PotionEffectType.INCREASE_DAMAGE;
+				return PotionEffectType.STRENGTH;
 			case "HASTE" : 
 				Log.Debug(Main.plugin, "Legacy Effect: HASTE - PotionEffectType.FAST_DIGGING");
-				return PotionEffectType.FAST_DIGGING;
+				return PotionEffectType.HASTE;
 			case "MINING_FATIGUE" : 
 				Log.Debug(Main.plugin, "Legacy Effect: MINING_FATIGUE - PotionEffectType.SLOW_DIGGING");
-				return PotionEffectType.SLOW_DIGGING;
+				return PotionEffectType.MINING_FATIGUE;
 			case "JUMP_BOOST" : 
 				Log.Debug(Main.plugin, "Legacy Effect: JUMP_BOOST - PotionEffectType.JUMP");
-				return PotionEffectType.JUMP;
+				return PotionEffectType.JUMP_BOOST;
 		}
 		return null;
 	}

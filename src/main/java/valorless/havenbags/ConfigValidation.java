@@ -39,6 +39,9 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("mysql.name", "minecraft");
 	Main.config.AddValidationEntry("mysql.user", "admin");
 	Main.config.AddValidationEntry("mysql.password", "pass");
+	Main.config.AddValidationEntry("mysql.connect_timeout", 30);
+	Main.config.AddValidationEntry("mysql.socket_timeout", 60);
+	Main.config.AddValidationEntry("mysql.max_chunk_size", 200);
 	
 	// Auto-save
 	Main.config.AddValidationEntry("auto-save.interval", 1200);
@@ -53,6 +56,7 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("bag.material", "ENDER_CHEST");
 	Main.config.AddValidationEntry("bag.modeldata", 0);
 	Main.config.AddValidationEntry("bag.itemmodel", "");
+	Main.config.AddValidationEntry("bag.tooltip-style", "");
 	
 	// Per-size model data and textures
 	Main.config.AddValidationEntry("bag-custom-model-datas.enabled", false);
