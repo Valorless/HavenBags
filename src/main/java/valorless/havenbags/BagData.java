@@ -50,6 +50,7 @@ import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.nbtapi.iface.ReadWriteNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBTList;
+import valorless.valorlessutils.utils.Utils;
 
 public class BagData {
 	
