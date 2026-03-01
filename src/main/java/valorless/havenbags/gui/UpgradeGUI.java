@@ -319,8 +319,27 @@ public class UpgradeGUI implements Listener {
 					clicked.setItemMeta(meta);
 				}
 			}catch(Exception e) {
-				Log.Debug(Main.plugin, "[DI-288] " + "[BagSkin] Texture Skin.");
-				BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(value);
+				if(value.chars().count() < 30) {
+					Log.Debug(Main.plugin, "[DI-278] [UpgradeGUI] Textures.yml Skin.");
+					String texture = Main.textures.GetString(String.format("textures.%s", value));
+					if(HavenBags.BagState(clicked) == BagState.New) {
+						BagData.setTextureValue(clicked, texture);
+					}else {
+						BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(texture);
+					}
+				}else {
+					Log.Debug(Main.plugin, "[DI-278] [UpgradeGUI] Texture Skin.");
+					if(Base64Validator.isValidBase64(value)) {
+						if(HavenBags.BagState(clicked) == BagState.New) {
+							BagData.setTextureValue(clicked, value);
+						}else {
+							BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(value);
+						}
+					}else {
+						Log.Debug(Main.plugin, "[DI-278] [UpgradeGUI] Invalid Skin.");
+						return;
+					}
+				}
 			}
 			Log.Debug(Main.plugin, "[DI-289] " + "[BagSkin] Applied skin!");
 		}
@@ -568,13 +587,20 @@ public class UpgradeGUI implements Listener {
 		
 		if(type != null) {
 			if(type ==  TokenType.Texture) {
-				if(Base64Validator.isValidBase64(value)) {
-					Log.Debug(Main.plugin, "[DI-276] [UpgradeGUI] Texture Skin.");
-					BagData.setTextureValue(item, value);
+				if(value.chars().count() < 30) {
+					Log.Debug(Main.plugin, "[DI-276] [UpgradeGUI] Textures.yml Skin.");
+					String texture = Main.textures.GetString(String.format("textures.%s", value));
+					BagData.setTextureValue(item, texture);
 				}else {
-					Log.Debug(Main.plugin, "[DI-277] [UpgradeGUI] Invalid Skin.");
-					item = new ItemStack(Material.AIR);
+					Log.Debug(Main.plugin, "[DI-276] [UpgradeGUI] Texture Skin.");
+					if(Base64Validator.isValidBase64(value)) {
+						BagData.setTextureValue(item, value);
+					}else {
+						Log.Debug(Main.plugin, "[DI-277] [UpgradeGUI] Invalid Skin.");
+						item = new ItemStack(Material.AIR);
+					}
 				}
+				
 			}
 			else if(type == TokenType.ModelData) {
 				try {
@@ -600,12 +626,18 @@ public class UpgradeGUI implements Listener {
 					item.setItemMeta(meta);
 				}
 			}catch(Exception e) {
-				if(Base64Validator.isValidBase64(value)) {
-					Log.Debug(Main.plugin, "[DI-281] [UpgradeGUI] Texture Skin.");
-					BagData.setTextureValue(item, value);
+				if(value.chars().count() < 30) {
+					Log.Debug(Main.plugin, "[DI-281] [UpgradeGUI] Textures.yml Skin.");
+					String texture = Main.textures.GetString(String.format("textures.%s", value));
+					BagData.setTextureValue(item, texture);
 				}else {
-					Log.Debug(Main.plugin, "[DI-282] [UpgradeGUI] Invalid Skin.");
-					item = new ItemStack(Material.AIR);
+					Log.Debug(Main.plugin, "[DI-281] [UpgradeGUI] Texture Skin.");
+					if(Base64Validator.isValidBase64(value)) {
+						BagData.setTextureValue(item, value);
+					}else {
+						Log.Debug(Main.plugin, "[DI-282] [UpgradeGUI] Invalid Skin.");
+						item = new ItemStack(Material.AIR);
+					}
 				}
 			}
 
