@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -198,6 +199,11 @@ public class UpgradeGUI implements Listener {
 		if (!event.getInventory().equals(inv)) return;
 		//Log.Debug(Main.plugin, "[DI-2xx] [UpgradeGUI] " + event.getRawSlot());
 		
+		if(event.getAction() == InventoryAction.HOTBAR_SWAP) {
+			event.setCancelled(true);
+			return;
+		}
+		
 		BukkitRunnable task = new BukkitRunnable() {
 		    @Override
 		    public void run() {
@@ -261,6 +267,10 @@ public class UpgradeGUI implements Listener {
 	@EventHandler
 	public void onInventoryClickResult(InventoryClickEvent event) {
 		if (!event.getInventory().equals(inv)) return;
+		if(event.getAction() == InventoryAction.HOTBAR_SWAP) {
+			event.setCancelled(true);
+			return;
+		}
 		if(event.getRawSlot() != resultSlot) return; // Only handle clicks in the result slot
 		if(event.getInventory().getItem(itemSlot1) == null) return;
 		if(event.getInventory().getItem(itemSlot2) == null) return;

@@ -7,15 +7,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.BagArmorStand;
 import valorless.valorlessutils.ValorlessUtils.Log;
-import valorless.valorlessutils.ValorlessUtils.Tags;
+import valorless.valorlessutils.tags.TagType;
+import valorless.valorlessutils.tags.Tags;
 
-@SuppressWarnings("deprecation")
 public class BackBag implements Listener {
 	
 	public static HashMap<Player, BagArmorStand> tracking = new HashMap<Player, BagArmorStand>();
@@ -56,7 +55,7 @@ public class BackBag implements Listener {
 	                        Main.plugin, 
 	                        stand.getPersistentDataContainer(), 
 	                        "HavenBags", 
-	                        PersistentDataType.STRING)) {
+	                        TagType.STRING)) {
 
 	                    boolean tracked = tracking.values().stream()
 	                        .anyMatch(tracker -> tracker.getStand() != null && tracker.getStand().equals(stand));

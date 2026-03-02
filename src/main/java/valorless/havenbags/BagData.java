@@ -50,7 +50,6 @@ import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.nbtapi.iface.ReadWriteNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBTList;
-import valorless.valorlessutils.utils.Utils;
 
 public class BagData {
 	
@@ -403,6 +402,12 @@ public class BagData {
 		
 		if(PDC.Has(bag, "tooltip")) {
 			dat.setTooltipStyle(PDC.GetString(bag, "tooltip"));
+		}else {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {
+				if(bag.getItemMeta().hasTooltipStyle()) {
+					dat.setTooltipStyle(bag.getItemMeta().getTooltipStyle().getKey());
+				}
+			}
 		}
 		
 		dat.setChanged(true);

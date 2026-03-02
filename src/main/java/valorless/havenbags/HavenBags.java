@@ -667,13 +667,30 @@ public class HavenBags {
         	}
         }
         
+        if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+			if(bagMeta.hasTooltipStyle()) {
+				if(bagMeta.getTooltipStyle().toString().equalsIgnoreCase("minecraft:null") || bagMeta.getTooltipStyle().toString().equalsIgnoreCase("minecraft:minecraft")) {
+					if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag.tooltip-style"))) {
+						bagMeta.setTooltipStyle(null);
+						data.setTooltipStyle(null);
+					}
+					else {
+						bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
+						data.setTooltipStyle(Main.config.GetString("bag.tooltip-style"));
+					}
+				}
+			}
+		}
+        
         if(data.getTooltipStyle() != null) {
 			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
 				bagMeta.setTooltipStyle(NamespacedKey.fromString(data.getTooltipStyle()));
 			}
         }else {
         	if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
-				bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
+        		if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag.tooltip-style"))) {
+        			bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
+        		}
 			}
         }
         if(PDC.Has(bag, "tooltip")) {
