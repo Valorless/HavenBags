@@ -123,7 +123,6 @@ bag-textures:
  
 # Should we change the bag's texture regarless of other settings,
 # based on how full the bag is?
-# NOTE: This function glitches if 'keep-bags' is set to false.
 capacity-based-textures:
  enabled: false
  # Defined capacities and their defined textures.
@@ -228,13 +227,13 @@ quiver-shield-fix: 2
 # If enabled, nearby drops will move towards the player.
 magnet:
  enabled: true
- tick-rate: 2 # How often the task should run
+ tick-rate: 2 # How often the task should run.
  range: 5.0
  speed: 0.1
  vertical: false # Should drops ignore gravity to move vertically towards the player?
  require-autopickup: false
  only-autopickup-items: false
- instant: false # This will teleport the items to the player instantly
+ instant: false # This will teleport the items to the player instantly,
  # instead of moving them over time.
  
 effects:
