@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -930,6 +931,11 @@ public class AdminGUI implements Listener {
 			//	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size), player));
 			//}
 			bagMeta.setLore(lore);
+			
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
+			}
+			
 			bagItem.setItemMeta(bagMeta);
 
 			modifyMaxStack(bagItem, 1);
@@ -1010,6 +1016,10 @@ public class AdminGUI implements Listener {
 			///	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size), player));
 			//}
 			bagMeta.setLore(lore);
+			
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
+			}
 			bagItem.setItemMeta(bagMeta);
 
 			modifyMaxStack(bagItem, 1);

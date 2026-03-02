@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -16,6 +17,8 @@ import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.features.CustomBags;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.utils.Utils;
@@ -111,6 +114,10 @@ public class CommandGive {
 					//	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), receiver));
 					//}
 					bagMeta.setLore(lore);
+					
+					if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+						bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
+					}
 					bagItem.setItemMeta(bagMeta);
 					if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag.itemmodel"))) {
 						ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag.itemmodel"));
@@ -180,6 +187,10 @@ public class CommandGive {
 					lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, receiver));
 
 					bagMeta.setLore(lore);
+					
+					if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+						bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
+					}
 					bagItem.setItemMeta(bagMeta);
 
 					PDC.SetString(bagItem, "uuid", "null");

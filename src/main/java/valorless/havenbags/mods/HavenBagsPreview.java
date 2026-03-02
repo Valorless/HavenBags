@@ -68,6 +68,10 @@ public class HavenBagsPreview {
             if (meta.hasCustomModelData()) {
                 itemData.m = meta.getCustomModelData();
             }
+            
+            if(meta.hasItemModel()) {
+				itemData.im = meta.getItemModel().toString();
+			}
         }
 
         this.items.add(itemData);
@@ -96,5 +100,8 @@ public class HavenBagsPreview {
 
         /** Custom model data, if any. */
         private int m;
+        
+        /** Item model, if applicable. */
+        private String im; 
     }
 }

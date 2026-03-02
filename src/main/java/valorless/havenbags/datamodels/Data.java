@@ -509,6 +509,7 @@ public class Data {
 	}
 	public void setTooltipStyle(String tooltipStyle) {
 		this.tooltipStyle = tooltipStyle;
+		this.changed = true;
 	}
 	/** @return true if bag is bound to an owner */
 	public boolean isBound() { 

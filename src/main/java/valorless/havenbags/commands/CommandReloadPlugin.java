@@ -7,7 +7,7 @@ import valorless.valorlessutils.reloader.PluginReloader;
 public class CommandReloadPlugin {
 	
 	public static boolean Run(HBCommand command) {
-		command.sender.sendMessage(Lang.Parse("Reloading the HavenBags plugin, please wait around 10 seconds", null));
+		command.sender.sendMessage(Lang.Parse("Reloading the HavenBags plugin, please wait..", null));
 		PluginReloader.reloadPlugin(Main.plugin, 200, false);
 		return true;
 	}
