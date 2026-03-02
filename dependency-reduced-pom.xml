@@ -215,7 +215,7 @@
     <dependency>
       <groupId>com.github.Valorless</groupId>
       <artifactId>ValorlessUtils</artifactId>
-      <version>5a3fbe01ed</version>
+      <version>1.17.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
