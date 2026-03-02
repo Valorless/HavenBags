@@ -1,6 +1,7 @@
 package valorless.havenbags;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import valorless.havenbags.features.AutoPickup;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -28,38 +29,77 @@ public class ConfigValidation {
 	
 	private static void Config() {
 	// Core
-	Main.config.AddValidationEntry("debug", false);
-	Main.config.AddValidationEntry("config-version", 5);
-	Main.config.AddValidationEntry("check-updates", true);
-	Main.config.AddValidationEntry("save-type", "sqlite");
+		Main.config.AddValidationEntry("config-version", 5, List.of("DO NOT EDIT - Used for config updates"));
+	Main.config.AddValidationEntry("debug", false, List.of("Additional messages used for debugging."));
+	Main.config.AddValidationEntry("check-updates", true, List.of("# Should we check for plugin updates?"));
+	Main.config.AddValidationEntry("save-type", "sqlite", List.of(
+			"How should HavenBags store the bag data?",
+			"'files' - Store each bag as individual files.",
+			"'sqlite' - Store all data in a database file.",
+			"'mysql' -  Store all data in an external database.",
+			"'mysqlplus' -  Store all bags on an external database, loading/saving directly to the database. Can be used to use bags across servers."));
 	
 	// Database
-	Main.config.AddValidationEntry("mysql.host", "localhost");
+	Main.config.AddValidationEntry("mysql.host", "localhost", List.of("MySQL database settings."));
 	Main.config.AddValidationEntry("mysql.port", 3306);
-	Main.config.AddValidationEntry("mysql.name", "minecraft");
-	Main.config.AddValidationEntry("mysql.user", "admin");
-	Main.config.AddValidationEntry("mysql.password", "pass");
-	Main.config.AddValidationEntry("mysql.connect_timeout", 30);
-	Main.config.AddValidationEntry("mysql.socket_timeout", 60);
-	Main.config.AddValidationEntry("mysql.max_chunk_size", 200);
+	Main.config.AddValidationEntry("mysql.name", "minecraft", List.of("Database name."));
+	Main.config.AddValidationEntry("mysql.user", "admin", List.of(""));
+	Main.config.AddValidationEntry("mysql.password", "pass", List.of(""));
+	Main.config.AddValidationEntry("mysql.connect_timeout", 30, List.of("Connection timeout in seconds."));
+	Main.config.AddValidationEntry("mysql.socket_timeout", 60, List.of("Socket timeout in seconds."));
+	Main.config.AddValidationEntry("mysql.max_chunk_size", 200, List.of("Maximum number of bags to load/save in a single database chunk.",
+			"Adjust based on your server's performance and memory."));
 	
 	// Auto-save
-	Main.config.AddValidationEntry("auto-save.interval", 1200);
-	Main.config.AddValidationEntry("auto-save.message", true);
+	Main.config.AddValidationEntry("auto-save.interval", 1200, List.of(
+			"How often should we save bags onto the server?",
+			"In seconds.",
+			"Default: 1200 = 20min"));
+	Main.config.AddValidationEntry("auto-save.message", true, List.of("Should HavenBags write in the console when saving?"));
 	
 	// Language
-	Main.config.AddValidationEntry("language", "en_us");
+	Main.config.AddValidationEntry("language", "en_us", List.of(
+			"Language used when translating material and item names.",
+			"# Supported languages:",
+			"English (US) --------- en_us",
+			"English -------------- en_gb",
+			"English (Pirate) ----- en_pt",
+			"Danish --------------- da_dk",
+			"German --------------- de_de",
+			"Spanish -------------- es_es",
+			"French --------------- fr_fr",
+			"Turkish -------------- tr_tr",
+			"Dutch ---------------- nl_nl",
+			"Japenese ------------- ja_jp",
+			"Korean --------------- ko_kr",
+			"Chinese (Simplified) - zh_cn",
+			"Russian -------------- ru_ru",
+			"Polish --------------- pl_pl",
+			"Portuguese ----------- pt_pt",
+			"Portuguese (Brazil) -- pt_br"));
 	
 	// Bag base config (nested keys)
-	Main.config.AddValidationEntry("bag.type", "HEAD");
-	Main.config.AddValidationEntry("bag.texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=");
-	Main.config.AddValidationEntry("bag.material", "ENDER_CHEST");
-	Main.config.AddValidationEntry("bag.modeldata", 0);
-	Main.config.AddValidationEntry("bag.itemmodel", "");
-	Main.config.AddValidationEntry("bag.tooltip-style", "");
+	Main.config.AddValidationEntry("bag.type", "HEAD", List.of(
+			"Should the bags use heads or items?",
+			"HEAD - use Player Heads.",
+			"ITEM - use regular items."));
+	Main.config.AddValidationEntry("bag.texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=", 
+			List.of("Texture of the bag if the bag-type is 'HEAD'. Must be Base64 format.",
+					"You can get textures from https://minecraft-heads.com/",
+					"The texture by default: https://minecraft-heads.com/custom-heads/decoration/1906-bag",
+					"At the bottom of the page there's a section called \"For Developers\".",
+					"Inside \"For Developers\" is a value based off of a large amount of random letters, numbers and symbols. That is the Base64 texture."));
+	Main.config.AddValidationEntry("bag.material", "ENDER_CHEST", List.of("Item material if the bag-type is 'ITEM'"));
+	Main.config.AddValidationEntry("bag.modeldata", 0, List.of("Custom Model Data if the bag-type is 'ITEM'"));
+	Main.config.AddValidationEntry("bag.itemmodel", "", List.of("Item Model if the bag-type is 'ITEM'"));
+	Main.config.AddValidationEntry("bag.tooltip-style", "", List.of("Tooltip Style"));
 	
 	// Per-size model data and textures
-	Main.config.AddValidationEntry("bag-custom-model-datas.enabled", false);
+	Main.config.AddValidationEntry("bag-custom-model-datas.enabled", false, List.of(
+			"Want CustomModelData per size instead?",
+			"You can fill these with the same method as above.",
+			"Existing bags are not updated.",
+			"Accepts item models too."));
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-9", 0);
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-18", 0);
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-27", 0);
@@ -73,7 +113,10 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-ownerless-45", 0);
 	Main.config.AddValidationEntry("bag-custom-model-datas.size-ownerless-54", 0);
 	
-	Main.config.AddValidationEntry("bag-textures.enabled", false);
+	Main.config.AddValidationEntry("bag-textures.enabled", false, List.of(
+			"Want textures per size instead?",
+			"You can fill these with the same method as above.",
+			"Existing bags are not updated."));
 	Main.config.AddValidationEntry("bag-textures.size-9", "");
 	Main.config.AddValidationEntry("bag-textures.size-18", "");
 	Main.config.AddValidationEntry("bag-textures.size-27", "");
@@ -87,124 +130,183 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("bag-textures.size-ownerless-45", "");
 	Main.config.AddValidationEntry("bag-textures.size-ownerless-54", "");
 	
-	Main.config.AddValidationEntry("capacity-based-textures.enabled", false);
-	Main.config.AddValidationEntry("capacity-based-textures.textures.0", "");
+	Main.config.AddValidationEntry("capacity-based-textures.enabled", false, List.of(
+			"Should we change the bag's texture regarless of other settings,",
+			"based on how full the bag is?"));
+	Main.config.AddValidationEntry("capacity-based-textures.textures.0", "", List.of(
+			"Defined capacities and their defined textures.",
+			"If a bag is over the capacity defined, they get the texture."));
 	
 	// Sound (nested)
-	Main.config.AddValidationEntry("sound.open.key", "ITEM_BUNDLE_INSERT");
+	Main.config.AddValidationEntry("sound.open.key", "ITEM_BUNDLE_INSERT", List.of(
+			"Sound played when opening a bag.",
+			"Sounds: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html"));
 	Main.config.AddValidationEntry("sound.open.volume", 1.0);
 	Main.config.AddValidationEntry("sound.open.pitch", 1.0);
-	Main.config.AddValidationEntry("sound.close.key", "ITEM_BUNDLE_DROP_CONTENTS");
+	Main.config.AddValidationEntry("sound.close.key", "ITEM_BUNDLE_DROP_CONTENTS", List.of("Sound played when closing a bag."));
 	Main.config.AddValidationEntry("sound.close.volume", 1.0);
 	Main.config.AddValidationEntry("sound.close.pitch", 1.0);
-	Main.config.AddValidationEntry("sound.inventory-full.key", "ENTITY_VILLAGER_NO");
+	Main.config.AddValidationEntry("sound.inventory-full.key", "ENTITY_VILLAGER_NO", List.of("Sound played when a bag is dropped due to the inventory being full."));
 	Main.config.AddValidationEntry("sound.inventory-full.volume", 1.0);
 	Main.config.AddValidationEntry("sound.inventory-full.pitch", 1.0);
 	
 	// Limits and protection
-	Main.config.AddValidationEntry("max-bags", 9);
-	Main.config.AddValidationEntry("carry-limit", 3);
-	Main.config.AddValidationEntry("protect-bags", true);
-	Main.config.AddValidationEntry("protect-bags-players", false);
-	Main.config.AddValidationEntry("bags-in-bags", false);
-	Main.config.AddValidationEntry("bags-in-shulkers", true);
-	Main.config.AddValidationEntry("bags-in-bundles", false);
-	Main.config.AddValidationEntry("inventory-lock.enabled", false);
+	Main.config.AddValidationEntry("max-bags", 9, List.of(
+			"The max amount of bags a player can create.",
+			"Note that is they lose a bag, they'll need it restored, ",
+			"or their max-bags would essentially be 8. (if 9)",
+			"(Ownerless bags do not count, set 0 for unlimited)"));
+	Main.config.AddValidationEntry("carry-limit", 3, List.of(
+			"How many bags the player can carry at a time.",
+			"set 0 for unlimited."));
+	Main.config.AddValidationEntry("protect-bags", true, List.of("Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?"));
+	Main.config.AddValidationEntry("protect-bags-players", false, List.of("Should dropped bags only be able to be picked up by their owner?"));
+	Main.config.AddValidationEntry("bags-in-bags", false, List.of("Can bags be put inside other bags?"));
+	Main.config.AddValidationEntry("bags-in-shulkers", true, List.of("Can bags be put inside shulkers?"));
+	Main.config.AddValidationEntry("bags-in-bundles", false, List.of("Can bags be put inside bundles?"));
+	Main.config.AddValidationEntry("inventory-lock.enabled", false, List.of(
+			"Should bags always remain in the player's inventory?",
+			"Good to use alongside Soulbound, otherwise death will drop the item."));
 	Main.config.AddValidationEntry("inventory-lock.unbound", false);
 	Main.config.AddValidationEntry("inventory-lock.bound", true);
 	Main.config.AddValidationEntry("inventory-lock.unused", false);
 	Main.config.AddValidationEntry("inventory-lock.used", true);
-	Main.config.AddValidationEntry("soulbound", false);
-	Main.config.AddValidationEntry("old-help-menu", false);
+	Main.config.AddValidationEntry("soulbound", false, List.of(
+			"Should bags be kept through death?",
+			"May be incompatible with other plugins."));
+	Main.config.AddValidationEntry("old-help-menu", false, List.of("Should /havenbags help, show commands without mouseover text, and the information below each command?"));
 	
 	// Auto-pickup (nested)
-	Main.config.AddValidationEntry("auto-pickup.enabled", true);
+	Main.config.AddValidationEntry("auto-pickup.enabled", true, List.of("Can bags automatically pick up drops?"));
 	Main.config.AddValidationEntry("auto-pickup.sound.key", "ENTITY_ITEM_PICKUP");
 	Main.config.AddValidationEntry("auto-pickup.sound.volume", 0.8);
 	Main.config.AddValidationEntry("auto-pickup.sound.pitch.min", 1.05);
 	Main.config.AddValidationEntry("auto-pickup.sound.pitch.max", 1.25);
-	Main.config.AddValidationEntry("auto-pickup.inventory.enabled", true);
+	Main.config.AddValidationEntry("auto-pickup.inventory.enabled", true, List.of("Should Auto-Pickup put items from the inventory into the bag as well?"));
 	Main.config.AddValidationEntry("auto-pickup.inventory.events.onBlockBreak", true);
 	Main.config.AddValidationEntry("auto-pickup.inventory.events.onItemPickup", true);
 	
 	// Trusting and quiver
-	Main.config.AddValidationEntry("trusting", true);
-	Main.config.AddValidationEntry("quiver-bags", true);
-	Main.config.AddValidationEntry("quiver-shield-fix", 2);
+	Main.config.AddValidationEntry("trusting", true, List.of("Can players trust other players with access to their bound bags?"));
+	Main.config.AddValidationEntry("quiver-bags", true, List.of(
+			"Should bags be able to used as quivers?",
+			"Will prioritize offhand over inventory."));
+	Main.config.AddValidationEntry("quiver-shield-fix", 2, List.of(
+			"Holding a shield while using the quiver feature tends to bug out.",
+			"Here are a few fixes you can choose:",
+			"0 - No fix.",
+			"1 - Semi fix, shield animation blocked and arrow gets drawn, but bow/crossbow isnt charged.",
+			"2 - Quivers are disabled if holding a shield."));
 	
 	// Magnet (nested booleans and numbers)
-	Main.config.AddValidationEntry("magnet.enabled", true);
-	Main.config.AddValidationEntry("magnet.tick-rate", 2);
+	Main.config.AddValidationEntry("magnet.enabled", true, List.of(
+			"Should players be able to magnify their bags?",
+			"If enabled, nearby drops will move towards the player."));
+	Main.config.AddValidationEntry("magnet.tick-rate", 2, List.of("How often the task should run."));
 	Main.config.AddValidationEntry("magnet.range", 5.0);
 	Main.config.AddValidationEntry("magnet.speed", 0.1);
-	Main.config.AddValidationEntry("magnet.vertical", false);
+	Main.config.AddValidationEntry("magnet.vertical", false, List.of("Should drops ignore gravity to move vertically towards the player?"));
 	Main.config.AddValidationEntry("magnet.require-autopickup", false);
 	Main.config.AddValidationEntry("magnet.only-autopickup-items", false);
-	Main.config.AddValidationEntry("magnet.instant", false);
+	Main.config.AddValidationEntry("magnet.instant", false, List.of(
+			"This will teleport the items to the player instantly,",
+			"instead of moving them over time."));
 	
 	// Effects
-	Main.config.AddValidationEntry("effects.refresh-rate", 100);
+	Main.config.AddValidationEntry("effects.refresh-rate", 100, List.of("How often the task should run. 100 ticks = 5s."));
 	
 	// Upgrades
-	Main.config.AddValidationEntry("upgrades.enabled", false);
-	Main.config.AddValidationEntry("upgrades.keep-texture", false);
-	Main.config.AddValidationEntry("upgrades.from-9-to-18", "EMERALD:5:90000");
+	Main.config.AddValidationEntry("upgrades.enabled", false, List.of(
+			"Bag Upgrades",
+			"If enabled, remember to allow \"ANVIL\" in 'allowed-containers'.",
+			"Can players upgrade bags in Anvils?"));
+	Main.config.AddValidationEntry("upgrades.keep-texture", false, List.of(
+			"Should bags keep their texture or upgrade to the next bag size?",
+			"(Ignored if 'bag-textures' is disabled)"));
+	Main.config.AddValidationEntry("upgrades.from-9-to-18", "EMERALD:5:90000", List.of(
+			"Bag upgrades.",
+			"<> = Optional",
+			"MATERIAL:AMOUNT:<CUSTOMMODELDATA>"));
 	Main.config.AddValidationEntry("upgrades.from-18-to-27", "DIAMOND:10:90001");
 	Main.config.AddValidationEntry("upgrades.from-27-to-36", "NETHERITE_INGOT:1:90002");
 	Main.config.AddValidationEntry("upgrades.from-36-to-45", "NETHERITE_BLOCK:1:90003");
 	Main.config.AddValidationEntry("upgrades.from-45-to-54", "END_CRYSTAL:1");
 	
 	// Tokens (nested)
-	Main.config.AddValidationEntry("token.skin.displayname", "&aSkin Token");
-	Main.config.AddValidationEntry("token.skin.material", "PLAYER_HEAD");
-	Main.config.AddValidationEntry("token.skin.custommodeldata", 0);
+	Main.config.AddValidationEntry("token.skin.displayname", "&aSkin Token", List.of(
+			"Token",
+			"Used to create a generic token, which you can edit in-game.",
+			"The rest of the data for the token is given when using the command.",
+			"You can create skins in the 'textures.yml' file.",
+			"You can create effects in the 'effects.yml' file.",
+			"Placeholders work in names and lore."));
+	Main.config.AddValidationEntry("token.skin.material", "PLAYER_HEAD", List.of("If material is PLAYER_HEAD, the head's texture will be the same as the skin."));
+	Main.config.AddValidationEntry("token.skin.custommodeldata", 0, List.of("# 0 to ignore"));
+	Main.config.AddValidationEntry("token.skin.itemmodel", "");
 	Main.config.AddValidationEntry("token.skin.lore", new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
 		{ add("&7Combine with a bag in a fletching table to apply."); add("&7Skin: &e%skin%"); }
-	});
+	}, List.of(
+			"Placeholders:",
+			"%skin% - Name of the skin found in textures.yml. ",
+			"You can add extra lore in-game, with things such as which skin it is."));
 	Main.config.AddValidationEntry("token.effect.displayname", "&eEffect Token");
 	Main.config.AddValidationEntry("token.effect.material", "PLAYER_HEAD");
-	Main.config.AddValidationEntry("token.effect.texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMzNGQxMmY3YWM5MzliMTE1MWQxMjE0NmQwMjM5ZWYwMTg4ZTQwM2VlMTk2NmQzZGIxOTllNjY0ZmYzODI4MyJ9fX0=");
-	Main.config.AddValidationEntry("token.effect.custommodeldata", 0);
+	Main.config.AddValidationEntry("token.effect.texture", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMzNGQxMmY3YWM5MzliMTE1MWQxMjE0NmQwMjM5ZWYwMTg4ZTQwM2VlMTk2NmQzZGIxOTllNjY0ZmYzODI4MyJ9fX0=", 
+			List.of("base64 texture for PLAYER_HEAD material, can also be a value from textures.yml."));
+	Main.config.AddValidationEntry("token.effect.custommodeldata", 0, List.of("0 to ignore"));
+	Main.config.AddValidationEntry("token.effect.itemmodel", "");
 	Main.config.AddValidationEntry("token.effect.lore", new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
 		{ add("&7Combine with a bag in a fletching table to apply."); add("&7Effect: &e%effect%"); }
-	});
+	}, List.of(
+			"Placeholders:",
+			"%effect% - Name of the effect found in effects.yml. ",
+			"You can add extra lore in-game, with things such as effect effects."));
 	
 	// Anvil upgrades and GUI
-	Main.config.AddValidationEntry("bag-upgrades-anvil", false);
-	Main.config.AddValidationEntry("upgrade-gui.enabled", true);
+	Main.config.AddValidationEntry("bag-upgrades-anvil", false, List.of("Should upgrades and skins be applied through an anvil?"));
+	Main.config.AddValidationEntry("upgrade-gui.enabled", true, List.of("Custom GUI used to upgrade and skin bags."));
 	Main.config.AddValidationEntry("upgrade-gui.block", "FLETCHING_TABLE");
-	Main.config.AddValidationEntry("upgrade-gui.noteblock.instrument", "BASS_DRUM");
+	Main.config.AddValidationEntry("upgrade-gui.noteblock.instrument", "BASS_DRUM", List.of(
+			"Requires \"block\" to be NOTE_BLOCK.",
+			"https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Instrument.html"));
 	Main.config.AddValidationEntry("upgrade-gui.noteblock.note", 0);
 	Main.config.AddValidationEntry("upgrade-gui.title", "&eBag Upgrade");
-	Main.config.AddValidationEntry("upgrade-gui.gui-size", 27);
-	Main.config.AddValidationEntry("upgrade-gui.slots.bag", 10);
+	Main.config.AddValidationEntry("upgrade-gui.gui-size", 27, List.of("Must be to the power of 9. i.e. Rows*9, 3*9 = 27"));
+	Main.config.AddValidationEntry("upgrade-gui.slots.bag", 10, List.of("Bag and Token can be used interchangeable."));
 	Main.config.AddValidationEntry("upgrade-gui.slots.token", 12);
-	Main.config.AddValidationEntry("upgrade-gui.slots.result", 15);
-	Main.config.AddValidationEntry("upgrade-gui.filler", "GRAY_STAINED_GLASS_PANE");
+	Main.config.AddValidationEntry("upgrade-gui.slots.result", 15, List.of("upgrade/skin result"));
+	Main.config.AddValidationEntry("upgrade-gui.filler", "GRAY_STAINED_GLASS_PANE", List.of("Set to AIR to have no fillers, useful when using custom gui."));
 	if(!Main.config.HasKey("upgrade-gui.custom-filler")) {
-		Main.config.AddValidationEntry("upgrade-gui.custom-filler.0", "LIME_STAINED_GLASS_PANE");
+		Main.config.AddValidationEntry("upgrade-gui.custom-filler.0", "LIME_STAINED_GLASS_PANE", List.of("Each corner of the 27 slot gui."));
 		Main.config.AddValidationEntry("upgrade-gui.custom-filler.8", "LIME_STAINED_GLASS_PANE");
 		Main.config.AddValidationEntry("upgrade-gui.custom-filler.18", "LIME_STAINED_GLASS_PANE");
 		Main.config.AddValidationEntry("upgrade-gui.custom-filler.26", "LIME_STAINED_GLASS_PANE");
 	}
-	Main.config.AddValidationEntry("upgrade-gui.success-sound", "ENTITY_VILLAGER_WORK_FLETCHER");
+	Main.config.AddValidationEntry("upgrade-gui.success-sound", "ENTITY_VILLAGER_WORK_FLETCHER", List.of("https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html"));
 	
 	// Blacklist worlds and allowed containers
 	Main.config.AddValidationEntry("blacklist", new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
 		{ add("world_name"); add("world_name_nether"); add("another_world"); }
-	});
+	}, List.of(
+			"Which containers are the player allowed to interact with bags?",
+			"Use this to prevent the player using bags in unintended ways, such as crafting.",
+			"Full list of InventoryTypes: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/inventory/InventoryType.html",
+			"Default: CRAFTING, HOPPER, PLAYER, CREATIVE"));
 	Main.config.AddValidationEntry("allowed-containers", new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
 		{ add("CHEST"); add("ENDER_CHEST"); add("BARREL"); add("SHULKER_BOX"); add("MERCHANT"); add("ANVIL"); }
-	});
+	}, List.of(
+			"Specify if bags should not work in specific worlds.",
+			"Worlds do not include _nether or _the_end.",
+			"You have to manually add those."));
 	
 	// Player GUI
-	Main.config.AddValidationEntry("player-gui.enabled", false);
-	Main.config.AddValidationEntry("player-gui.self-restore", true);
-	Main.config.AddValidationEntry("player-gui.self-delete", true);
+	Main.config.AddValidationEntry("player-gui.enabled", false, List.of("GUI where the players can restore or delete their own bags."));
+	Main.config.AddValidationEntry("player-gui.self-restore", true, List.of("Can players restore their own bags?"));
+	Main.config.AddValidationEntry("player-gui.self-delete", true, List.of("Can players delete their own bags?"));
 	Log.Debug(Main.plugin, "[DI-2] Validating config.yml");
 	Main.config.Validate();
 	}

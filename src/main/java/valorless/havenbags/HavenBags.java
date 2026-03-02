@@ -1221,6 +1221,7 @@ public class HavenBags {
 		String name = Main.config.GetString("token.skin.displayname");
 		Material material = Main.config.GetMaterial("token.skin.material");
 		int cmd = Main.config.GetInt("token.skin.custommodeldata");
+		String itemModel = Main.config.GetString("token.skin.itemmodel");
 		String skin = null;
 		List<String> lore = Main.config.GetStringList("token.skin.lore");
 		List<Placeholder> ph = new ArrayList<Placeholder>();
@@ -1254,6 +1255,9 @@ public class HavenBags {
 			}
 		}
 		meta.setLore(l);
+		if(!Utils.IsStringNullOrEmpty(itemModel)) {
+			meta.setItemModel(NamespacedKey.fromString(itemModel));
+		}
 		item.setItemMeta(meta);
 		
 		if(material == Material.PLAYER_HEAD && (isBase64 || skin != null)) {
@@ -1269,6 +1273,7 @@ public class HavenBags {
 		int cmd = Main.config.GetInt("token.effect.custommodeldata");
 		List<String> lore = Main.config.GetStringList("token.effect.lore");
 		String skin = Main.config.GetString("token.effect.texture");
+		String itemModel = Main.config.GetString("token.effect.itemmodel");
 		List<Placeholder> ph = new ArrayList<Placeholder>();
 		ph.add(new Placeholder("%effect%", BagEffects.getEffectDisplayname(value)));
 		
@@ -1288,6 +1293,9 @@ public class HavenBags {
 			}
 		}
 		meta.setLore(l);
+		if(!Utils.IsStringNullOrEmpty(itemModel)) {
+			meta.setItemModel(NamespacedKey.fromString(itemModel));
+		}
 		item.setItemMeta(meta);
 		
 		if(material == Material.PLAYER_HEAD) {

@@ -24,11 +24,16 @@ save-type: 'sqlite'
 mysql:
  host: 'localhost'
  port: 3306
+ # Database name.
  name: 'minecraft'
  user: 'admin'
  password: 'pass'
- connect_timeout: 30 # Seconds
- socket_timeout: 60 # Seconds
+ # Connection timeout in seconds
+ connect_timeout: 30
+ # Socket timeout in seconds
+ socket_timeout: 60
+ # Maximum number of bags to load/save in a single database chunk.
+ # Adjust based on your server's performance and memory.
  max_chunk_size: 200
 
 auto-save:
@@ -264,6 +269,7 @@ token:
   # If material is PLAYER_HEAD, the head's texture will be the same as the skin.
   material: PLAYER_HEAD
   custommodeldata: 0 # 0 to ignore
+  itemmodel: ''
   # Placeholders:
   # %skin% - Name of the skin found in textures.yml. 
   lore:
@@ -276,6 +282,7 @@ token:
   # base64 texture for PLAYER_HEAD material, can also be a value from textures.yml.
   texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMzNGQxMmY3YWM5MzliMTE1MWQxMjE0NmQwMjM5ZWYwMTg4ZTQwM2VlMTk2NmQzZGIxOTllNjY0ZmYzODI4MyJ9fX0='
   custommodeldata: 0 # 0 to ignore
+  itemmodel: ''
   # Placeholders:
   # %effect% - Name of the effect found in effects.yml. 
   lore:
