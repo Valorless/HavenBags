@@ -405,7 +405,7 @@ public class BagData {
 		}else {
 			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {
 				if(bag.getItemMeta().hasTooltipStyle()) {
-					dat.setTooltipStyle(bag.getItemMeta().getTooltipStyle().getKey());
+					dat.setTooltipStyle(bag.getItemMeta().getTooltipStyle().toString());
 				}
 			}
 		}
