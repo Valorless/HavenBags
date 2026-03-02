@@ -472,11 +472,11 @@ public class HavenBags {
 			inventory = AutoSorter.SortInventory(inventory);
 		}
 		if(Main.plugins.GetBool("mods.HavenBagsPreview.enabled")) {
-			/*try {
+			try {
 				NBT.SetString(bag, "bag-preview-content", gson.toJson(new HavenBagsPreview(inventory)));
 				NBT.SetString(bag, "bag-uuid", "yes");
 				NBT.SetInt(bag, "bag-size", PDC.GetInteger(bag, "size"));
-			}catch(Exception e) {} // Moved away from NBT, but need it for the mod.*/
+			}catch(Exception e) {} // Moved away from NBT, but need it for the mod.
 			PDC.SetString(bag, "mod", gson.toJson(new HavenBagsPreview(inventory)));
 		}
 
