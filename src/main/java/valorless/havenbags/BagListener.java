@@ -217,6 +217,7 @@ public class BagListener implements Listener{
 		return lastBlock;
 	}
 	
+	@SuppressWarnings("deprecation")
 	private boolean CreateBag(ItemStack bag, boolean ownerless, Player player, List<Placeholder> placeholders) {
 		if(!PDC.GetString(bag, "owner").equalsIgnoreCase("null")) return false;
 		
@@ -426,7 +427,7 @@ public class BagListener implements Listener{
 				if(BagData.GetBags(player.getUniqueId().toString()).size() >= limit) {
 					return true;
 				}
-			}else return true; // if bypass, return true to allow creation.
+			}
 		}
 		return false;
 	}

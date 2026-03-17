@@ -39,6 +39,7 @@ import valorless.havenbags.database.SQLite;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.events.BagCreateEvent;
+import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Reflex;
@@ -595,7 +596,7 @@ public class BagData {
 		Log.Error(Main.plugin, String.format("Failed to remove cached data for %s.", uuid));
 	}
 	
-	public static Boolean DeleteBag(@NotNull String uuid) {
+	public static Boolean DeleteBag(@NotNull String uuid,  @Nullable Player... player) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			if(getDatabase() == DatabaseType.FILES) {
@@ -612,7 +613,12 @@ public class BagData {
 	    	else if(getDatabase() == DatabaseType.SQLITE) {
 	    		sqlite.deleteBag(uuid);
 	    	}
-			
+
+			if(player != null && player.length > 0) {
+				Bukkit.getPluginManager().callEvent(new BagDeleteEvent(player[0], bag.clone()));
+			}else {
+				Bukkit.getPluginManager().callEvent(new BagDeleteEvent(null, bag.clone()));
+			}
 			RemoveBag(uuid);
 			if(changedBags.containsKey(UUID.fromString(uuid))) {
 				changedBags.remove(UUID.fromString(uuid));

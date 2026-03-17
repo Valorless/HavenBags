@@ -159,6 +159,7 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("carry-limit", 3, List.of(
 			"How many bags the player can carry at a time.",
 			"set 0 for unlimited."));
+	Main.config.AddValidationEntry("hardcore-bags", false, List.of("Should bags' data get deleted if the bag item is destroyed?"));
 	Main.config.AddValidationEntry("protect-bags", true, List.of("Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?"));
 	Main.config.AddValidationEntry("protect-bags-players", false, List.of("Should dropped bags only be able to be picked up by their owner?"));
 	Main.config.AddValidationEntry("bags-in-bags", false, List.of("Can bags be put inside other bags?"));

@@ -162,6 +162,9 @@ max-bags: 9
 # set 0 for unlimited.
 carry-limit: 3
 
+# Should bags' data get deleted if the bag item is destroyed?
+hardcore-bags: false
+
 # Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?
 protect-bags: true
 

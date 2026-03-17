@@ -323,9 +323,7 @@ public class PlayerGUI implements Listener {
 				String uuid = PDC.GetString(selectedBag, "uuid");
 
 				Data data = BagData.GetBag(uuid, null).clone();
-				if(BagData.DeleteBag(uuid)) {
-					Bukkit.getPluginManager().callEvent(new BagDeleteEvent(player, data));
-				}
+				BagData.DeleteBag(uuid);
 
 				type = GUIType.Deletion;
 				Reload(e);
