@@ -402,18 +402,21 @@ public class BagListener implements Listener{
 	}
 	
 	public static int getPlayerBagLimit(Player player) {
+        Integer highestNumber = 0;
 	    for (PermissionAttachmentInfo perm : player.getEffectivePermissions()) {
 	        String permName = perm.getPermission();
 
 	        if (permName.startsWith("havenbags.max.")) {
 	            try {
-	                return Integer.parseInt(permName.substring("havenbags.max.".length())); // Extract full number
-	            } catch (NumberFormatException e) {
-	                return Main.config.GetInt("max-bags");
+	            	Integer num = Integer.parseInt(permName.substring("havenbags.max.".length())); // Extract full number
+	                if(num > highestNumber) highestNumber = num;
+	            } catch (Exception e) {
+	                return Main.config.GetInt("max-bags"); // Fallback if parsing fails
 	            }
 	        }
+	     
 	    }
-	    return Main.config.GetInt("max-bags");
+	    return highestNumber != 0 ? highestNumber : Main.config.GetInt("max-bags");
 	}
 	
 	public boolean creationLimit(Player player) {
@@ -423,7 +426,7 @@ public class BagListener implements Listener{
 				if(BagData.GetBags(player.getUniqueId().toString()).size() >= limit) {
 					return true;
 				}
-			}
+			}else return true; // if bypass, return true to allow creation.
 		}
 		return false;
 	}
