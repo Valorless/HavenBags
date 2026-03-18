@@ -364,6 +364,8 @@ public class ConfigValidation {
 		Lang.lang.AddValidationEntry("ethereal-open", "&cThe player is currently using their bag.");
 		Lang.lang.AddValidationEntry("effects-command", "&fEffect has been set to: %value%.");
 		Lang.lang.AddValidationEntry("ethereal-open-admin", "&cThis bag is currently being viewed by an admin.");
+		Lang.lang.AddValidationEntry("insurance.fail", "&cYou do not have enough money.");
+		Lang.lang.AddValidationEntry("insurance.cooldown", "&cYour insurance is still on cooldown.");
 		
 		// Admin Lang
 		//Lang.lang.AddValidationEntry("bag-create", ""); //unsure wtf this was for
