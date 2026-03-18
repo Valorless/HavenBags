@@ -116,6 +116,8 @@ public final class Main extends JavaPlugin implements Listener {
 		// Check if a correct version of ValorlessUtils is in use, otherwise don't run the rest of the code.
 		if(!ValorlessUtils()) return;
 		
+		registerSoftCrash();
+		
 		ConfigValidation.Validate();
 		
 		if(PlaceholderAPIHook.Hook()) {
@@ -199,6 +201,24 @@ public final class Main extends JavaPlugin implements Listener {
 
 	@Override
     public void onDisable() {		
+    	CloseBags(); // Close all open bags to prevent duping and other issues.
+    	if(!BackBag.tracking.isEmpty()) {
+    		for(Player player : BackBag.tracking.keySet()) {
+    			BackBag.tracking.get(player).despawn();
+    		}
+    	}
+    	if(BackBag.cleantask != null) BackBag.cleantask.cancel();
+    	BagData.SaveData(true); // Save all bag data on shutdown. The "true" parameter marks this as a shutdown save.
+    	BagData.Shutdown(); // Close all database connections.
+    	Crafting.RemoveRecipes();
+    	BagEffects.shutdown(); // Stop the bag effects tasks.
+    	UpgradeGUI.OpenGUIs.CloseAll(); // Close all open upgrade GUIs.
+    	SkinCache.shutdown(); // Save skin cache.
+    	EtherealBags.shutdown(); // Close and save ethereal bags.
+    	Insurance.shutdown(); // Save insurance data.
+    }
+	
+	public void onCrashDisable() {
     	CloseBags();
     	if(!BackBag.tracking.isEmpty()) {
     		for(Player player : BackBag.tracking.keySet()) {
@@ -207,13 +227,14 @@ public final class Main extends JavaPlugin implements Listener {
     	}
     	if(BackBag.cleantask != null) BackBag.cleantask.cancel();
     	BagData.SaveData(true);
-    	BagData.Shutdown();
     	Crafting.RemoveRecipes();
     	BagEffects.shutdown();
     	UpgradeGUI.OpenGUIs.CloseAll();
     	SkinCache.shutdown();
     	EtherealBags.shutdown();
-    }
+    	Insurance.shutdown();
+		
+	}
     
     public static void CloseBags() {
     	if(BagData.GetOpenBags().size() != 0) {
@@ -340,5 +361,21 @@ public final class Main extends JavaPlugin implements Listener {
     		
     		if(c) config.SaveConfig();
     	}
+    }
+    
+    void registerSoftCrash() {
+    	Log.Debug(plugin, "Registering shutdown hook for crash detection.");
+    	try {
+    		Runtime.getRuntime().addShutdownHook(
+    				new Thread(() -> {
+    					Log.Error(plugin, "Detected possible crash. Attempting to save data, close bags properly and shutting down.");
+    					onCrashDisable(); // Attempt to run the onDisable method to save data and close bags properly. This won't work on hard crashes, but should work on soft crashes.
+    					Bukkit.getServer().getPluginManager().disablePlugin(this); // Disable the plugin to prevent further issues. Again, this won't work on hard crashes.
+    				}, "HavenBags-Shutdown-Hook")
+    		);
+    		Log.Debug(plugin, "Registered shutdown hook for crash detection.");
+        } catch (Exception e) {
+        	Log.Error(plugin, "Failed to register shutdown hook for crash detection. Data may not be saved properly on crashes.");
+        }
     }
 }
