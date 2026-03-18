@@ -19,7 +19,7 @@ import valorless.valorlessutils.config.Config;
  *
  * Invocation is intended for internal use during plugin initialization.
  */
-public class TokenConfigConversion {
+public class CV5_TokenConfigConversion {
 	
 	/**
 	 * Checks the provided configuration and, if {@code config-version < 5},

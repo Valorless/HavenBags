@@ -32,7 +32,7 @@ import valorless.valorlessutils.uuid.UUIDFetcher;
  *   <li>Invocation is intended for internal startup-time checks only.</li>
  * </ul>
  */
-public class BagConversion {
+public class CV2_BagConversion {
 
 	/**
 	 * Checks the provided configuration for an outdated {@code config-version}

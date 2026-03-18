@@ -48,7 +48,7 @@ import valorless.valorlessutils.json.JsonUtils;
  *       components access the data directory.</li>
  * </ul>
  */
-public class DataConversion {
+public class CV4_DataConversion {
 	
 	/**
 	 * Checks the provided configuration and, if {@code config-version < 4},

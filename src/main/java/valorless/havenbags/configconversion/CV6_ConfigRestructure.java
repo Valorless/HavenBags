@@ -26,7 +26,7 @@ import java.nio.file.StandardCopyOption;
  * be called directly from user code.
  * </p>
  */
-public class ConfigRestructure {
+public class CV6_ConfigRestructure {
 	
 	/**
 	 * Checks the provided config and, if needed, performs a one-shot migration to

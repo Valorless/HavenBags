@@ -163,10 +163,20 @@ max-bags: 9
 carry-limit: 3
 
 # Should bags' data get deleted if the bag item is destroyed?
-hardcore-bags: false
+hardcore-bags:
+ enabled: false
+ unbound: true
+ bound: true
+ unused: true
+ used: true
 
 # Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?
-protect-bags: true
+protect-bags:
+ enabled: true
+ unbound: true
+ bound: true
+ unused: true
+ used: true
 
 # Should dropped bags only be able to be picked up by their owner?
 protect-bags-players: false

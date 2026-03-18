@@ -1,9 +1,10 @@
 package valorless.havenbags;
 
-import valorless.havenbags.configconversion.BagConversion;
-import valorless.havenbags.configconversion.ConfigRestructure;
-import valorless.havenbags.configconversion.DataConversion;
-import valorless.havenbags.configconversion.TokenConfigConversion;
+import valorless.havenbags.configconversion.CV2_BagConversion;
+import valorless.havenbags.configconversion.CV6_ConfigRestructure;
+import valorless.havenbags.configconversion.CV7_ConfigRestructure;
+import valorless.havenbags.configconversion.CV4_DataConversion;
+import valorless.havenbags.configconversion.CV5_TokenConfigConversion;
 import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.database.SkinCache;
@@ -142,13 +143,14 @@ public final class Main extends JavaPlugin implements Listener {
 		ValidateSizeTextures();
 		
 		// Config-Version checks
-		BagConversion.check(config); // Config 1 -> 2
+		CV2_BagConversion.check(config); // Config 1 -> 2
 		//TimeTableConversion.check(); Would've been Config 2 -> 3
 		try {
-			DataConversion.check(config);// Config 3 -> 4
+			CV4_DataConversion.check(config);// Config 3 -> 4
 		} catch (InvalidConfigurationException e) {} 
-		TokenConfigConversion.check(config); // Config 4 -> 5
-		ConfigRestructure.check(config); // Config 5 -> 6
+		CV5_TokenConfigConversion.check(config); // Config 4 -> 5
+		CV6_ConfigRestructure.check(config); // Config 5 -> 6
+		CV7_ConfigRestructure.check(config); // Config 6 -> 7
         
 		
 		BagData.Initiate();
