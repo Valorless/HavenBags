@@ -343,3 +343,27 @@ player-gui:
  self-restore: true
  # Can players delete their own bags?
  self-delete: true
+ 
+# Allow players to make "Insurance Claims" in order to
+# restore/delete their bags from the PlayerGUI.
+# Requires 'player-gui' to be enabled.
+insurance:
+ enabled: false 
+ # The default claim cost.
+ default-cost: 1000
+ # Should the cost be increased by adding a static value or percentage?
+ # Valid types: ADD, PERCENT
+ type: PERCENT
+ # Cost increase, by either a static value or percentage.
+ # 2000 = Increase by 2000 each restore.
+ # 0.20 = Increase by 20% each restore. i.e 1200 if default is 1000. Next would be 1440, then 1728, etc.
+ increment-value: 0.20
+ # How often can players make claims?
+ cooldown-seconds: 300 # 300s = 5m
+ # How often should the cost increase reset?
+ # Set -1 for never
+ reset-time-seconds: 3600 # 3600s = 1h
+ # Lore added to bags in the gui showing the cost, max 1 line.
+ # Placeholders: %cost% - The cost of the claim.
+ lore: "&fCost: &a$%cost%"
+ 

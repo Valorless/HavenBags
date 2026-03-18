@@ -13,10 +13,10 @@ public class ProtocolLibHook {
 		
 		Log.Debug(plugin, "[DI-228] " + "Attempting to hook ProtocolLib.");
 		if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
-    		Log.Info(plugin, "ProtocolLib integrated!");
+    		//Log.Info(plugin, "ProtocolLib integrated!");
     		return true;
 		}else {
-			Log.Debug(plugin, "[DI-229] " + "ProtocolLib not detected.");
+			//Log.Debug(plugin, "[DI-229] " + "ProtocolLib not detected.");
 			return false;
 		}
 	}

@@ -29,8 +29,9 @@ import valorless.havenbags.*;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.enums.GUIAction;
-import valorless.havenbags.events.BagDeleteEvent;
+import valorless.havenbags.features.Insurance;
 import valorless.havenbags.persistentdatacontainer.PDC;
+import valorless.havenbags.utils.Extra;
 import valorless.havenbags.utils.GUI;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.havenbags.utils.TaskUtils;
@@ -257,6 +258,29 @@ public class PlayerGUI implements Listener {
 			}
 
 			ItemStack giveItem = clickedItem.clone();
+			
+			Insurance insurance = Insurance.getInstance();	
+			if(insurance != null) {
+				if(insurance.canClaim(player)) {
+					if(insurance.claimInsurance(player)) {
+						//player.sendMessage(Lang.Get("insurance.claimed"));
+					}else {
+						player.sendMessage(Lang.Get("prefix") + Lang.Get("insurance.fail"));
+						e.setCancelled(true);
+						return;
+					}
+				}else {
+					player.sendMessage(Lang.Get("prefix") + Lang.Get("insurance.cooldown"));
+					e.setCancelled(true);
+					return;
+				}
+				
+				ItemMeta m = giveItem.getItemMeta();
+				List<String> lore = m.getLore();
+				lore.remove(lore.size() - 1); // Remove insurance lore from bag item in restoration menu
+				m.setLore(lore);
+				giveItem.setItemMeta(m);
+			}
 			player.getInventory().addItem(giveItem);
 			e.setCancelled(true);
 			return;
@@ -320,6 +344,22 @@ public class PlayerGUI implements Listener {
 			}
 
 			if(action != null && action.equalsIgnoreCase("confirm")){
+				Insurance insurance = Insurance.getInstance();	
+				if(insurance != null) {
+					if(insurance.canClaim(player)) {
+						if(insurance.claimInsurance(player)) {
+							//player.sendMessage(Lang.Get("insurance.claimed"));
+						}else {
+							player.sendMessage(Lang.Get("prefix") + Lang.Get("insurance.fail"));
+							e.setCancelled(true);
+							return;
+						}
+					}else {
+						player.sendMessage(Lang.Get("prefix") + Lang.Get("insurance.cooldown"));
+						e.setCancelled(true);
+						return;
+					}
+				}
 				String uuid = PDC.GetString(selectedBag, "uuid");
 
 				Data data = BagData.GetBag(uuid, null).clone();
@@ -463,6 +503,18 @@ public class PlayerGUI implements Listener {
 				HavenBags.UpdateBagItem(bagItem, player);
 			}catch(Exception e) {
 				HavenBags.UpdateBagItem(bagItem, null);
+			}
+			
+			Insurance insurance = Insurance.getInstance();	
+			if(insurance != null) {
+				double cost = insurance.getCurrentInsuranceCost(player);
+				String line = Main.config.GetString("insurance.lore").replace("%cost%", Extra.formatDouble(cost));
+				ItemMeta m = bagItem.getItemMeta();
+				List<String> lore = m.getLore();
+				if(lore == null) lore = new ArrayList<String>();
+				lore.add(Lang.Parse(line, player));
+				m.setLore(lore);
+				bagItem.setItemMeta(m);
 			}
 
 			bags.add(bagItem);

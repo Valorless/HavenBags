@@ -16,6 +16,7 @@ import valorless.havenbags.features.BagUpgrade;
 import valorless.havenbags.features.Crafting;
 import valorless.havenbags.features.CustomBags;
 import valorless.havenbags.features.Encumbering;
+import valorless.havenbags.features.Insurance;
 import valorless.havenbags.features.InventoryLock;
 import valorless.havenbags.features.Magnet;
 import valorless.havenbags.features.Quiver;
@@ -128,6 +129,7 @@ public final class Main extends JavaPlugin implements Listener {
 		}
 		
 		EssentialsHook.Hook();
+		new Insurance(); // Initialize insurance system if enabled in config. Requires Essentials to be hooked.
 		
 		//OraxenHook.Hook();
 		
