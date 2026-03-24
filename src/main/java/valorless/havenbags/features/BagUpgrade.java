@@ -92,7 +92,7 @@ public class BagUpgrade implements Listener{
 				}else return;
 			}
 		}catch(Exception e) { //ItemModel
-			if(split.length == 3 && Server.VersionHigherOrEqualTo(Version.v1_20_5)) {
+			if(split.length == 3 && Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
 				model = split[2];
 				if(upgrade.hasItemMeta()) {
 					if(ItemUtils.GetItemModel(upgrade) == null) return;
@@ -155,7 +155,7 @@ public class BagUpgrade implements Listener{
 					}else return;
 				}
 			}catch(Exception e) { //ItemModel
-				if(split.length == 3 && Server.VersionHigherOrEqualTo(Version.v1_20_5)) {
+				if(split.length == 3 && Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
 					Log.Debug(Main.plugin, "[DI-81] " + "[BagUpgrade] Checking ItemModel");
 					model = split[2];
 					Log.Debug(Main.plugin, "[DI-82] " + "[BagUpgrade] " + model);

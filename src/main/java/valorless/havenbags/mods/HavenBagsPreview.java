@@ -8,6 +8,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Server.Version;
+
 /**
  * A utility class to create a simplified preview of a list of {@link ItemStack}s,
  * typically for visual representation or storage without the full complexity of Bukkit's ItemStack.
@@ -69,9 +72,11 @@ public class HavenBagsPreview {
                 itemData.m = meta.getCustomModelData();
             }
             
-            if(meta.hasItemModel()) {
-				itemData.im = meta.getItemModel().toString();
-			}
+            if(Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
+            	if(meta.hasItemModel()) {
+            		itemData.im = meta.getItemModel().toString();
+				}
+            }
         }
 
         this.items.add(itemData);

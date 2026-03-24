@@ -497,7 +497,7 @@ public class UpgradeGUI implements Listener {
 					}else return null;
 				}
 			}catch(Exception e) { //ItemModel
-				if(split.length == 3 && Server.VersionHigherOrEqualTo(Version.v1_20_5)) {
+				if(split.length == 3 && Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
 					model = split[2];
 					if(token.hasItemMeta()) {
 						if(ItemUtils.GetItemModel(token) == null) return null;
@@ -622,7 +622,7 @@ public class UpgradeGUI implements Listener {
 					}
 				}catch(Exception e) {}
 			}
-			else if(type == TokenType.ItemModel && Server.VersionHigherOrEqualTo(Version.v1_20_5)) {
+			else if(type == TokenType.ItemModel && Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
 				Log.Debug(Main.plugin, "[DI-279] [UpgradeGUI] ItemModel Skin.");
 				ItemUtils.SetItemModel(item, value);
 			}
