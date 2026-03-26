@@ -611,12 +611,13 @@ public class HavenBagsAPI {
      * @param binding Whether the bag should be bound to an owner upon creation.
      * @return The created unused bag ItemStack.
      */
-    public static ItemStack createUnusedBagItem(int size, boolean binding) {
+    @SuppressWarnings("deprecation")
+	public static ItemStack createUnusedBagItem(int size, boolean binding) {
 		Config config = valorless.havenbags.Main.config;
 		String bagTexture = config.GetString("bag.texture");
 		ItemStack bagItem = new ItemStack(Material.AIR);
 
-		if(config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+		if(config.GetString("bag.type").equalsIgnoreCase("HEAD")){
 			if(config.GetBool("bag-textures.enabled")) {
 				for(int s = 9; s <= 54; s += 9) {
 					if(size == s) {
@@ -693,6 +694,36 @@ public class HavenBagsAPI {
     	return bagData;
     }
     */
+    
+    /**
+	 * Checks if the bag is empty.
+	 * 
+	 * @param uuid The item of the bag to check.
+	 * @return true if the bag is empty, false otherwise.
+	 */
+	public static boolean isBagEmpty(ItemStack bag) {
+		return HavenBags.isBagEmpty(bag);
+	}
+	
+	/**
+	 * Checks if the bag with the specified UUID is empty.
+	 * 
+	 * @param uuid The UUID of the bag to check.
+	 * @return true if the bag is empty, false otherwise.
+	 */
+	public static boolean isBagEmpty(UUID uuid) {
+		return HavenBags.isBagEmpty(uuid);
+	}
+	
+	/**
+	 * Checks if the bag with the specified UUID is empty.
+	 * 
+	 * @param uuid The UUID string of the bag to check.
+	 * @return true if the bag is empty, false otherwise.
+	 */
+	public static boolean isBagEmpty(String uuid) {
+		return HavenBags.isBagEmpty(uuid);
+	}
     
     /**
 	 * GUI-related utilities for HavenBags.

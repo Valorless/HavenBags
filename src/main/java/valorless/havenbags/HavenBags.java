@@ -1358,6 +1358,47 @@ public class HavenBags {
 		}
 	}
 
+	public static boolean isBagEmpty(ItemStack bag) {
+		try {
+			int size = PDC.GetInteger(bag, "size");
+			List<ItemStack> content = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
+			content.removeIf(item -> item.getType() == Material.AIR);
+			content.removeIf(item -> item == null);
+			if(size == 0 || content.size() == 0) return true;
+			else return false;
+		}catch(Exception e) {
+			return false;
+		}
+	}
+
+	public static boolean isBagEmpty(UUID uuid) {
+		try {
+			Data data = BagCache.get(uuid);
+			int size = data.getSize();
+			List<ItemStack> content = data.getContent();
+			content.removeIf(item -> item.getType() == Material.AIR);
+			content.removeIf(item -> item == null);
+			if(size == 0 || content.size() == 0) return true;
+			else return false;
+		}catch(Exception e) {
+			return false;
+		}
+	}
+
+	public static boolean isBagEmpty(String uuid) {
+		try {
+			Data data = BagCache.get(UUID.fromString(uuid));
+			int size = data.getSize();
+			List<ItemStack> content = data.getContent();
+			content.removeIf(item -> item.getType() == Material.AIR);
+			content.removeIf(item -> item == null);
+			if(size == 0 || content.size() == 0) return true;
+			else return false;
+		}catch(Exception e) {
+			return false;
+		}
+	}
+
 	public static int SlotsEmpty(ItemStack bag) {
 		int size = PDC.GetInteger(bag, "size");
 		List<ItemStack> content = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
