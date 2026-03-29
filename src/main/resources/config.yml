@@ -380,6 +380,7 @@ insurance:
 # Automatically write extra "tags" onto bag items when they update.
 # You can set different tags per bag size (9, 18, etc.), stored either as NBT or plugin-namespaced PDC keys.
 custom-data:
+ # Should we apply custom data entries onto bags when they update?
  enabled: false
  '9': # Affect 9 slot bags, can hold multiple entries.
   example:

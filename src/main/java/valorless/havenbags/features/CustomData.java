@@ -200,7 +200,7 @@ public class CustomData {
 					}
 				}
 				dataModels.add(dataModel);
-				Log.Info(Main.plugin, "Loaded custom data model: " + dataModel);
+				Log.Debug(Main.plugin, "Loaded custom data model: " + dataModel);
 			}
 		}
 	}
