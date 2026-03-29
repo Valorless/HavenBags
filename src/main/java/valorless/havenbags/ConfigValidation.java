@@ -314,6 +314,54 @@ public class ConfigValidation {
 			"Worlds do not include _nether or _the_end.",
 			"You have to manually add those."));
 	
+	//add custom data section
+	if(!Main.config.HasKey("custom-.data")) {
+		Main.config.AddValidationEntry("custom-data", "",
+			List.of("Automatically write extra \"tags\" onto bag items when they update.",
+					"You can set different tags per bag size (9, 18, etc.), stored either as NBT or plugin-namespaced PDC keys."));
+		
+		Main.config.AddValidationEntry("custom-data.enabled", false, List.of(
+				"Automatically write extra \"tags\" onto bag items when they update.",
+				"You can set different tags per bag size (9, 18, etc.), stored either as NBT or plugin-namespaced PDC keys.",
+				"Should we apply custom data entries onto bags when they update?"));
+		
+		Main.config.AddValidationEntry("custom-data.9", "", List.of("Affect 9 slot bags, can hold multiple entries."));
+		Main.config.AddValidationEntry("custom-data.18", "", List.of("Affect 18 slot bags, can hold multiple entries."));
+		
+		Main.config.AddValidationEntry("custom-data.9.example.type", "NBT", List.of(
+				"Affect 9 slot bags, can hold multiple entries.",
+				"Storage backend for this entry, either NBT or PDC."));
+		Main.config.AddValidationEntry("custom-data.9.example.key", "coolKey", List.of("The key for this entry."));
+		Main.config.AddValidationEntry("custom-data.9.example.value", 44, List.of(
+				"The value for this entry.",
+				"Supports: String/Integer/Double/Boolean/Float/UUID"));
+		
+		Main.config.AddValidationEntry("custom-data.9.example2.type", "PDC", List.of(
+				"Storage backend for this entry, either NBT or PDC."));
+		Main.config.AddValidationEntry("custom-data.9.example2.plugin", "HavenBags", List.of(
+				"Plugin name used for PDC namespacing."));
+		Main.config.AddValidationEntry("custom-data.9.example2.key", "coolKey2", List.of(
+				"The key for this entry."));
+		Main.config.AddValidationEntry("custom-data.9.example2.value", "awesomeValue", List.of(
+				"The value for this entry."));
+		Main.config.AddValidationEntry("custom-data.9.example2.pdc-type", "STRING", List.of(
+				"PersistentDataType - PDC only.",
+				"Supports: String/Integer/Double/Boolean/Float/UUID."));
+		
+		Main.config.AddValidationEntry("custom-data.18.example.type", "PDC", List.of(
+				"Affect 18 slot bags, can hold multiple entries.",
+				"Storage backend for this entry, either NBT or PDC."));
+		Main.config.AddValidationEntry("custom-data.18.example.plugin", "HavenBags", List.of(
+				"Plugin name used for PDC namespacing."));
+		Main.config.AddValidationEntry("custom-data.18.example.key", "coolKey", List.of(
+				"The key for this entry."));
+		Main.config.AddValidationEntry("custom-data.18.example.value", 44, List.of(
+				"The value for this entry."));
+		Main.config.AddValidationEntry("custom-data.18.example.pdc-type", "INTEGER", List.of(
+				"PersistentDataType - PDC only.",
+				"Supports: String/Integer/Double/Boolean/Float/UUID."));
+	}
+	
 	// Player GUI
 	Main.config.AddValidationEntry("player-gui.enabled", false, List.of("GUI where the players can restore or delete their own bags."));
 	Main.config.AddValidationEntry("player-gui.self-restore", true, List.of("Can players restore their own bags?"));

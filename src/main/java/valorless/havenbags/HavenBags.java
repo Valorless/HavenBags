@@ -32,6 +32,7 @@ import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.AutoSorter;
 import valorless.havenbags.features.BagEffects;
+import valorless.havenbags.features.CustomData;
 import valorless.havenbags.mods.HavenBagsPreview;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
@@ -402,6 +403,14 @@ public class HavenBags {
 		}
 
 		String uuid = HavenBags.GetBagUUID(bag);
+		
+		try {
+			// Apply custom data before anything else, so that it can be used in the following methods.
+			CustomData.updateBag(bag);
+		} catch(Exception e) {
+			//Log.Error(Main.plugin, "Failed to apply custom data to bag " + uuid + " for player " + player.getName());
+			e.printStackTrace();
+		}
 
 		if(BagState(bag) == BagState.Used) {
 			if(preview.length == 0) {
@@ -672,6 +681,26 @@ public class HavenBags {
 			}
 		}
 
+		if(data.getTooltipStyle() != null) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				if(!Utils.IsStringNullOrEmpty(data.getTooltipStyle())) {
+					bagMeta.setTooltipStyle(NamespacedKey.fromString(data.getTooltipStyle()));
+				}
+				
+			}
+		}else {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag.tooltip-style"))) {
+					bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
+				}
+			}
+		}
+		if(PDC.Has(bag, "tooltip")) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				bagMeta.setTooltipStyle(NamespacedKey.fromString(PDC.GetString(bag, "tooltip")));
+			}
+		}
+
 		if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
 			if(bagMeta.hasTooltipStyle()) {
 				if(bagMeta.getTooltipStyle().toString().equalsIgnoreCase("minecraft:null") || bagMeta.getTooltipStyle().toString().equalsIgnoreCase("minecraft:minecraft")) {
@@ -684,23 +713,6 @@ public class HavenBags {
 						data.setTooltipStyle(Main.config.GetString("bag.tooltip-style"));
 					}
 				}
-			}
-		}
-
-		if(data.getTooltipStyle() != null) {
-			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
-				bagMeta.setTooltipStyle(NamespacedKey.fromString(data.getTooltipStyle()));
-			}
-		}else {
-			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
-				if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag.tooltip-style"))) {
-					bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
-				}
-			}
-		}
-		if(PDC.Has(bag, "tooltip")) {
-			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
-				bagMeta.setTooltipStyle(NamespacedKey.fromString(PDC.GetString(bag, "tooltip")));
 			}
 		}
 

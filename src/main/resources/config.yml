@@ -377,3 +377,43 @@ insurance:
  # Placeholders: %cost% - The cost of the claim.
  lore: "&fCost: &a$%cost%"
  
+# Automatically write extra "tags" onto bag items when they update.
+# You can set different tags per bag size (9, 18, etc.), stored either as NBT or plugin-namespaced PDC keys.
+custom-data:
+ enabled: false
+ '9': # Affect 9 slot bags, can hold multiple entries.
+  example:
+   # Storage backend for a configured data entry, either NBT or PDC.
+   type: NBT
+   # The key for this entry.
+   key: 'coolKey'
+   # The value for this entry.
+   # Supports: String/Integer/Double/Boolean/Float/UUID
+   value: 44
+  example2:
+   # Storage backend for this entry, either NBT or PDC.
+   type: PDC
+   # Plugin name used for PDC namespacing.
+   plugin: 'HavenBags'
+   # The key for this entry.
+   key: 'coolKey2'
+   # The value for this entry.
+   value: 'awesomeValue'
+   # PersistentDataType - PDC only
+   # Supports: String/Integer/Double/Boolean/Float/UUID
+   pdc-type: STRING
+ '18': # Affect 18 slot bags, can hold multiple entries.
+  example:
+   # Storage backend for this entry, either NBT or PDC.
+   type: PDC
+   # Plugin name used for PDC namespacing.
+   plugin: 'HavenBags'
+   # The key for this entry.
+   key: 'coolKey'
+   # The value for this entry.
+   value: 44
+   # PersistentDataType - PDC only
+   # Supports: String/Integer/Double/Boolean/Float/UUID
+   pdc-type: INTEGER
+
+ 

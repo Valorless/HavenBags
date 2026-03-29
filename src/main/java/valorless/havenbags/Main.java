@@ -16,6 +16,7 @@ import valorless.havenbags.features.BagSkin;
 import valorless.havenbags.features.BagUpgrade;
 import valorless.havenbags.features.Crafting;
 import valorless.havenbags.features.CustomBags;
+import valorless.havenbags.features.CustomData;
 import valorless.havenbags.features.Encumbering;
 import valorless.havenbags.features.Insurance;
 import valorless.havenbags.features.InventoryLock;
@@ -152,6 +153,7 @@ public final class Main extends JavaPlugin implements Listener {
 		CV6_ConfigRestructure.check(config); // Config 5 -> 6
 		CV7_ConfigRestructure.check(config); // Config 6 -> 7
         
+		CustomData.init();
 		
 		BagData.Initiate();
 		
