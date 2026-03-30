@@ -113,8 +113,28 @@ public class CustomData {
 		@Override
 		public String toString() {
 			return String.format(
-					"DataModel{dataType=%s, slots=%d, pluginName='%s', key='%s', value=%s, type=%s}",
-					dataType, slots, pluginName, key, value, dataType == DataType.PDC ? type.toString() : null);
+					"DataModel{dataType=%s, slots=%d, pluginName=%s, key=%s, value=%s, type=%s}",
+					dataType, slots, pluginName, key, value, dataType == DataType.PDC ? toString(type) : null);
+		}
+		
+		/** Helper to convert PersistentDataType to a readable string for debugging. */
+		@SuppressWarnings("rawtypes")
+		private String toString(PersistentDataType type) {
+			if(type == PersistentDataType.STRING) {
+				return "STRING";
+			} else if(type == PersistentDataType.INTEGER) {
+				return "INTEGER";
+			} else if(type == PersistentDataType.DOUBLE) {
+				return "DOUBLE";
+			} else if(type == PersistentDataType.BOOLEAN) {
+				return "BOOLEAN";
+			} else if(type == PersistentDataType.FLOAT) {
+				return "FLOAT";
+			} else if(type == PersistentDataType.STRING && value instanceof UUID) {
+				return "UUID";
+			} else {
+				return null;
+			}
 		}
 	}
 

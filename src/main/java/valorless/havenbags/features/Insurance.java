@@ -55,7 +55,7 @@ public class Insurance {
 		}
 		if(!EssentialsHook.isHooked()) throw new IllegalStateException("Essentials must be hooked to use insurance feature.");
 		instance = this;
-		this.data = new Config("insurance");
+		this.data = Main.insurance;
 		this.type = InsuranceType.fromString(data.GetString("type"));
 		this.defaultCost = data.GetDouble("default-cost");
 		this.incrementValue = data.GetDouble("increment-value");

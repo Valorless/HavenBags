@@ -24,6 +24,7 @@ public class ConfigValidation {
 		Weight();
 		Blacklist();
 		Filters();
+		Insurance();
 		Plugins();
 	}
 	
@@ -316,17 +317,11 @@ public class ConfigValidation {
 	
 	//add custom data section
 	if(!Main.config.HasKey("custom-.data")) {
-		Main.config.AddValidationEntry("custom-data", "",
-			List.of("Automatically write extra \"tags\" onto bag items when they update.",
-					"You can set different tags per bag size (9, 18, etc.), stored either as NBT or plugin-namespaced PDC keys."));
 		
 		Main.config.AddValidationEntry("custom-data.enabled", false, List.of(
 				"Automatically write extra \"tags\" onto bag items when they update.",
 				"You can set different tags per bag size (9, 18, etc.), stored either as NBT or plugin-namespaced PDC keys.",
 				"Should we apply custom data entries onto bags when they update?"));
-		
-		Main.config.AddValidationEntry("custom-data.9", "", List.of("Affect 9 slot bags, can hold multiple entries."));
-		Main.config.AddValidationEntry("custom-data.18", "", List.of("Affect 18 slot bags, can hold multiple entries."));
 		
 		Main.config.AddValidationEntry("custom-data.9.example.type", "NBT", List.of(
 				"Affect 9 slot bags, can hold multiple entries.",
@@ -366,29 +361,6 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("player-gui.enabled", false, List.of("GUI where the players can restore or delete their own bags."));
 	Main.config.AddValidationEntry("player-gui.self-restore", true, List.of("Can players restore their own bags?"));
 	Main.config.AddValidationEntry("player-gui.self-delete", true, List.of("Can players delete their own bags?"));
-	
-	Main.config.AddValidationEntry("insurance.enabled", false, List.of(
-			"Allow players to make \"Insurance Claims\" in order to",
-			"restore/delete their bags from the PlayerGUI.",
-			"Requires 'player-gui' to be enabled."));
-	Main.config.AddValidationEntry("insurance.default-cost", 1000, List.of("The default claim cost."));
-	Main.config.AddValidationEntry("insurance.type", "PERCENT", List.of(
-			"Should the cost be increased by adding a static value or percentage?",
-			"Valid types: ADD, PERCENT"));
-	Main.config.AddValidationEntry("insurance.increment-value", 0.20, List.of(
-			"Cost increase, by either a static value or percentage.",
-			"2000 = Increase by 2000 each restore.",
-			"0.20 = Increase by 20% each restore. i.e 1200 if default is 1000. Next would be 1440, then 1728, etc."));
-	Main.config.AddValidationEntry("insurance.cooldown-seconds", 300, List.of(
-			"How often can players make claims?",
-			"300s = 5m"));
-	Main.config.AddValidationEntry("insurance.reset-time-seconds", 3600, List.of(
-			"How often should the cost increase reset?",
-			"Set -1 for never",
-			"3600s = 1h"));
-	Main.config.AddValidationEntry("insurance.lore", "&fCost: &a$%cost%", List.of(
-			"Lore added to bags in the gui showing the cost, max 1 line.",
-			"Placeholders: %cost% - The cost of the claim."));
 	
 	Log.Debug(Main.plugin, "[DI-2] Validating config.yml");
 	Main.config.Validate();
@@ -675,6 +647,34 @@ public class ConfigValidation {
 		
 		Log.Debug(Main.plugin, "[DI-6] Validating filters.yml");
 		AutoPickup.filter.Validate();
+	}
+	
+	private static void Insurance() {
+		Main.insurance.AddValidationEntry("insurance.enabled", false, List.of(
+				"Allow players to make \"Insurance Claims\" in order to",
+				"restore/delete their bags from the PlayerGUI.",
+				"Requires 'player-gui' to be enabled."));
+		Main.insurance.AddValidationEntry("insurance.default-cost", 1000, List.of("The default claim cost."));
+		Main.insurance.AddValidationEntry("insurance.type", "PERCENT", List.of(
+				"Should the cost be increased by adding a static value or percentage?",
+				"Valid types: ADD, PERCENT"));
+		Main.insurance.AddValidationEntry("insurance.increment-value", 0.20, List.of(
+				"Cost increase, by either a static value or percentage.",
+				"2000 = Increase by 2000 each restore.",
+				"0.20 = Increase by 20% each restore. i.e 1200 if default is 1000. Next would be 1440, then 1728, etc."));
+		Main.insurance.AddValidationEntry("insurance.cooldown-seconds", 300, List.of(
+				"How often can players make claims?",
+				"300s = 5m"));
+		Main.insurance.AddValidationEntry("insurance.reset-time-seconds", 3600, List.of(
+				"How often should the cost increase reset?",
+				"Set -1 for never",
+				"3600s = 1h"));
+		Main.insurance.AddValidationEntry("insurance.lore", "&fCost: &a$%cost%", List.of(
+				"Lore added to bags in the gui showing the cost, max 1 line.",
+				"Placeholders: %cost% - The cost of the claim."));
+		
+		Log.Debug(Main.plugin, "[DI-6] Validating insurance.yml");
+		Main.insurance.Validate();
 	}
 	
 	private static void Plugins() {

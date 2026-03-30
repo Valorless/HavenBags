@@ -55,6 +55,7 @@ public final class Main extends JavaPlugin implements Listener {
 	public static Config plugins;
 	public static Config textures;
 	public static Config effects;
+	public static Config insurance;
 	protected static PlaceholderAPI papi;
 	//public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
@@ -81,6 +82,7 @@ public final class Main extends JavaPlugin implements Listener {
 		plugins = new Config(this, "plugins.yml");
 		textures = new Config(this, "textures.yml");
 		effects = new Config(this, "effects.yml");
+		insurance = new Config(this, "insurance.yml");
 	}
 	
 	@SuppressWarnings("unused")
