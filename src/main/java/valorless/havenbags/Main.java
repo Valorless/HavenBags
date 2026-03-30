@@ -135,7 +135,11 @@ public final class Main extends JavaPlugin implements Listener {
 		}
 		
 		EssentialsHook.Hook();
-		new Insurance(); // Initialize insurance system if enabled in config. Requires Essentials to be hooked.
+		try {
+			new Insurance(); // Initialize insurance system if enabled in config. Requires Essentials to be hooked.
+		} catch (Exception e) {
+			Log.Error(plugin, "Failed to initialize insurance system: " + e.getMessage());
+		}
 		
 		//OraxenHook.Hook();
 		
