@@ -23,6 +23,7 @@ import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.EtherealBagSettings;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.enums.TokenType;
+import valorless.havenbags.features.BagHealth;
 import valorless.havenbags.items.BagItemFactory;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
@@ -723,6 +724,67 @@ public class HavenBagsAPI {
 	 */
 	public static boolean isBagEmpty(String uuid) {
 		return HavenBags.isBagEmpty(uuid);
+	}
+
+	/**
+	 * Checks whether the bag health (durability) feature is enabled in the configuration.
+	 * 
+	 * @return true if bag health is enabled, false otherwise
+	 */
+	public static boolean isBagHealthEnabled() {
+		return BagHealth.isEnabled();
+	}
+
+	/**
+	 * Gets the current stored damage value for a bag item.
+	 * <p>
+	 * Damage is stored in the bag's persistent data and is used to derive remaining health.
+	 * 
+	 * @param bag bag ItemStack
+	 * @return current damage value, or 0 if not set
+	 */
+	public static int getBagDamage(ItemStack bag) {
+		return BagHealth.getDamage(bag);
+	}
+
+	/**
+	 * Sets the stored damage value for a bag item.
+	 * 
+	 * @param bag bag ItemStack
+	 * @param damage new damage value to store
+	 */
+	public static void setBagDamage(ItemStack bag, int damage) {
+		BagHealth.setDamage(bag, damage);
+	}
+
+	/**
+	 * Adds damage to a bag item.
+	 * 
+	 * @param bag bag ItemStack
+	 * @param damageToAdd amount of damage to add
+	 */
+	public static void addBagDamage(ItemStack bag, int damageToAdd) {
+		BagHealth.addDamage(bag, damageToAdd);
+	}
+
+	/**
+	 * Gets the current remaining health for a bag item.
+	 * 
+	 * @param bag bag ItemStack
+	 * @return current remaining health
+	 */
+	public static int getBagCurrentHealth(ItemStack bag) {
+		return BagHealth.getCurrentHealth(bag);
+	}
+
+	/**
+	 * Gets the maximum health for a bag item based on its configured size tier.
+	 * 
+	 * @param bag bag ItemStack
+	 * @return maximum health for the bag
+	 */
+	public static int getBagMaxHealth(ItemStack bag) {
+		return BagHealth.getMaxHealth(bag);
 	}
     
     /**

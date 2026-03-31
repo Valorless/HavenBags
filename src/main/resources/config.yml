@@ -177,6 +177,21 @@ protect-bags:
  bound: true
  unused: true
  used: true
+ bag-health:
+  # Should protected bags have a certain amount of health, before they break?
+  enabled: false
+  # Delay between taking damage.
+  damage-delay: 5 # 5 second delay
+  # Health based on the amount of slots
+  health:
+   # Default health if the desired slot isnt on the list.
+   default: 3
+   '9': 3
+   '18': 4
+   '27': 5
+   '36': 6
+   '45': 8
+   '54': 10
 
 # Should dropped bags only be able to be picked up by their owner?
 protect-bags-players: false

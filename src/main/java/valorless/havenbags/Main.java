@@ -12,6 +12,7 @@ import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.BagCarryLimit;
 import valorless.havenbags.features.BagEffects;
+import valorless.havenbags.features.BagHealth;
 import valorless.havenbags.features.BagSkin;
 import valorless.havenbags.features.BagUpgrade;
 import valorless.havenbags.features.Crafting;
@@ -160,6 +161,8 @@ public final class Main extends JavaPlugin implements Listener {
 		CV7_ConfigRestructure.check(config); // Config 6 -> 7
         
 		CustomData.init();
+		
+		BagHealth.init();
 		
 		BagData.Initiate();
 		

@@ -30,7 +30,7 @@ public class ConfigValidation {
 	
 	private static void Config() {
 	// Core
-		Main.config.AddValidationEntry("config-version", 5, List.of("DO NOT EDIT - Used for config updates"));
+		Main.config.AddValidationEntry("config-version", 6, List.of("DO NOT EDIT - Used for config updates"));
 	Main.config.AddValidationEntry("debug", false, List.of("Additional messages used for debugging."));
 	Main.config.AddValidationEntry("check-updates", true, List.of("# Should we check for plugin updates?"));
 	Main.config.AddValidationEntry("save-type", "sqlite", List.of(
@@ -171,6 +171,23 @@ public class ConfigValidation {
 	Main.config.AddValidationEntry("protect-bags.bound", true);
 	Main.config.AddValidationEntry("protect-bags.unused", true);
 	Main.config.AddValidationEntry("protect-bags.used", true);
+	
+	Main.config.AddValidationEntry("protect-bags.bag-health.enabled", false, List.of(
+			"Should protected bags have a certain amount of health, before they break?"));
+	Main.config.AddValidationEntry("protect-bags.bag-health.damage-delay", 5, List.of(
+			"Delay between taking damage.",
+			"5 second delay"));
+	if(!Main.config.HasKey("protect-bags.bag-health.health")) {
+		Main.config.AddValidationEntry("protect-bags.bag-health.health.default", 3, List.of(
+				"Health based on the amount of slots",
+				"Default health if the desired slot isnt on the list."));
+		Main.config.AddValidationEntry("protect-bags.bag-health.health.9", 3);
+		Main.config.AddValidationEntry("protect-bags.bag-health.health.18", 4);
+		Main.config.AddValidationEntry("protect-bags.bag-health.health.27", 5);
+		Main.config.AddValidationEntry("protect-bags.bag-health.health.36", 6);
+		Main.config.AddValidationEntry("protect-bags.bag-health.health.45", 8);
+		Main.config.AddValidationEntry("protect-bags.bag-health.health.54", 10);
+	}
 	
 	Main.config.AddValidationEntry("protect-bags-players", false, List.of("Should dropped bags only be able to be picked up by their owner?"));
 	Main.config.AddValidationEntry("bags-in-bags", false, List.of("Can bags be put inside other bags?"));

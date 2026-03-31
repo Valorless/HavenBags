@@ -6,6 +6,7 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.features.AutoPickup;
+import valorless.havenbags.features.BagHealth;
 import valorless.havenbags.features.Crafting;
 import valorless.havenbags.features.CustomBags;
 import valorless.havenbags.features.CustomData;
@@ -42,6 +43,7 @@ public class CommandReload {
 			CustomBags.Initiate();
 			Main.textures.Reload();
 			CustomData.reload();
+			BagHealth.reload();
 			Main.translator = new Translator(Main.config.GetString("language"));
 
 			if (command.args.length >= 2){
