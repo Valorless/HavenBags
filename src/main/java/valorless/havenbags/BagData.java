@@ -424,6 +424,7 @@ public class BagData {
 	}
 	
 	public static Data CreateBag(@NotNull Data dat) {
+		if(dat == null) throw new IllegalArgumentException("Data cannot be null");
 		dat.setChanged(true);
 		data.put(UUID.fromString(dat.getUuid()), dat);
 		if(database == DatabaseType.MYSQLPLUS) {

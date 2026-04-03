@@ -484,6 +484,11 @@ public class PlayerGUI implements Listener {
 			}else {
 				meta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), player));
 			}
+			
+			if(data.getModeldata() != null && data.getModeldata() != 0) {
+				meta.setCustomModelData(data.getModeldata());
+			}
+			
 			bagItem.setItemMeta(meta);
 
 			if(Server.VersionHigherOrEqualTo(Version.v1_21_2)) {

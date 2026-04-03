@@ -34,7 +34,7 @@ public class Data {
 	/** Custom name of the bag */
 	private String name = "";
 	/** Custom model data integer */
-	int modeldata;
+	Integer modeldata = null;
 	/** Item model identifier string */
 	String itemmodel;
 	/** List of trusted player UUIDs */
@@ -184,7 +184,7 @@ public class Data {
 	}
 
 	/** @return custom model data int */
-	public int getModeldata() {
+	public Integer getModeldata() {
 		return modeldata;
 	}
 
