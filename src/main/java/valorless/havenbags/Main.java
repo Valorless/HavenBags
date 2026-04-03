@@ -1,5 +1,6 @@
 package valorless.havenbags;
 
+import valorless.havenbags.commands.debug.DebugHandler;
 import valorless.havenbags.configconversion.CV2_BagConversion;
 import valorless.havenbags.configconversion.CV6_ConfigRestructure;
 import valorless.havenbags.configconversion.CV7_ConfigRestructure;
@@ -95,10 +96,10 @@ public final class Main extends JavaPlugin implements Listener {
 		String ver = Bukkit.getPluginManager().getPlugin("ValorlessUtils").getDescription().getVersion();
 		//Log.Debug(plugin, ver);
 		String[] split = ver.split("[.]");
-		int major = Integer.valueOf(split[0]);
-		int minor = Integer.valueOf(split[1]);
-		int hotfix = Integer.valueOf(split[2]);
-		int build = Integer.valueOf(split[3]);
+		int major = Integer.parseInt(split[0]);
+		int minor = Integer.parseInt(split[1]);
+		int hotfix = Integer.parseInt(split[2]);
+		int build = Integer.parseInt(split[3]);
 		
 		if(build < requiresBuild) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -134,7 +135,7 @@ public final class Main extends JavaPlugin implements Listener {
 		if(ProtocolLibHook.Hook()) {
 			//WeightTooltipProtocollib.registerTooltipListener(this);
 		}
-		
+
 		EssentialsHook.Hook();
 		try {
 			new Insurance(); // Initialize insurance system if enabled in config. Requires Essentials to be hooked.
@@ -250,7 +251,7 @@ public final class Main extends JavaPlugin implements Listener {
 	}
     
     public static void CloseBags() {
-    	if(BagData.GetOpenBags().size() != 0) {
+    	if(!BagData.GetOpenBags().isEmpty()) {
     		Log.Info(plugin, "Closing all open bags.");
     		try {
     			for(Data bag : BagData.GetOpenBags()) {
@@ -264,11 +265,11 @@ public final class Main extends JavaPlugin implements Listener {
     }
     
     protected void RegisterCommands() {
-    	for (int i = 0; i < commands.length; i++) {
-    		Log.Debug(plugin, "[DI-20] Registering Command: " + commands[i]);
-    		getCommand(commands[i]).setExecutor(new CommandListener());
-    		getCommand(commands[i]).setTabCompleter(new TabCompletion());
-    	}
+        for (String command : commands) {
+			Log.Debug(plugin, "[DI-20] Registering Command: " + command);
+			getCommand(command).setExecutor(new CommandListener());
+			getCommand(command).setTabCompleter(new TabCompletion());
+		}
     }
     
 	protected void RegisterListeners() {

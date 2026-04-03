@@ -30,6 +30,7 @@ import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
+import valorless.havenbags.annotations.DoNotCall;
 import valorless.havenbags.annotations.NotNull;
 import valorless.havenbags.annotations.Nullable;
 import valorless.havenbags.database.Files;
@@ -1015,5 +1016,24 @@ public class BagData {
 
 	protected static void setMysql(MySQL mysql) {
 		BagData.mysql = mysql;
+	}
+
+	/**
+	 * Reset the tooltip-styles of ALL bags to the default one specified in the config.<br>
+	 * This is used when the tooltip-style is changed in the config, to update all bags to the new style.
+	 * <p>
+	 * If the server is a version that does not support TooltipStyle, then all are set null.
+	 */
+	@DoNotCall("This method is used internally to reset the tooltip-styles of all bags to the value in config.yml. It should not be called outside of HavenBags.")
+	public static void resetTooltipStyles() {
+		for (Data data : data.values()) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {
+				data.setTooltipStyle(Main.config.GetString("bag.tooltip-style"));
+			}else {
+				data.setTooltipStyle(null);
+			}
+		}
+		// Forcefully save all changes
+		SaveData(true);
 	}
 }
