@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -62,7 +63,7 @@ public class CommandInfo {
 				message.addCopyToClipboardEvent(uuid);
 				message.Send(sender);
 
-				if(!Utils.IsStringNullOrEmpty(data.getTexture())) { 
+				if(!Utils.IsStringNullOrEmpty(data.getTexture()) && hand.getType() == Material.PLAYER_HEAD) { 
 					Message texture = new Message(ChatMessageType.CHAT, 
 							"  §fTexture: ... §7(§eClick to copy§7)"
 							);
@@ -137,7 +138,7 @@ public class CommandInfo {
 					for(String blacked : data.getBlacklist()) {
 						infoList.add("    §f" + blacked);
 					}
-					infoList.add("  §fWhitelist:" + data.isWhitelist());
+					infoList.add("  §fWhitelist: " + data.isWhitelist());
 				}
 				
 				//if(lore != null) { infoList.add("  §fLore:§r" + _lore); }

@@ -259,7 +259,7 @@ public class HavenBags {
 				}
 			}
 		}else {
-			int cmd = data.getModeldata();
+			int cmd = data.getModeldata() != null ? data.getModeldata() : 0;
 			if(cmd != 0) {
 				if(bag.hasItemMeta()) {
 					bag.getItemMeta().setCustomModelData(cmd);
@@ -335,7 +335,7 @@ public class HavenBags {
 				}
 			}
 		}else {
-			int cmd = data.getModeldata();
+			int cmd = data.getModeldata() != null ? data.getModeldata() : 0;
 			if(cmd != 0) {
 				if(bag.hasItemMeta()) {
 					bag.getItemMeta().setCustomModelData(cmd);
