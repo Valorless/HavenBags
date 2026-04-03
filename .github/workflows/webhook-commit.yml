@@ -4,9 +4,16 @@ on:
   push:
     branches:
       - '**'
+  pull_request:
+    types: [closed]
 
 jobs:
-  discord_notify:
+  # ──────────────────────────────────────────────────────────────
+  # Job 1: Per-commit notifications — only for direct pushes,
+  #         NOT for pushes that belong to an open pull request.
+  # ──────────────────────────────────────────────────────────────
+  discord_commit_notify:
+    if: github.event_name == 'push' && github.event.pull_request == null
     runs-on: ubuntu-latest
     env:
       DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
@@ -17,12 +24,11 @@ jobs:
       - name: Checkout (optional)
         uses: actions/checkout@v4
 
-      - name: Send a Discord message per commit (fixed here-doc)
+      - name: Send a Discord message per commit
         shell: bash
         run: |
           set -euo pipefail
 
-          # Ensure jq is available
           if ! command -v jq >/dev/null 2>&1; then
             echo "Installing jq..."
             sudo apt-get update -y
@@ -42,12 +48,9 @@ jobs:
 
           BRANCH=${REF#refs/heads/}
 
-          # Create a small Python script once that reads env vars and prints JSON payload.
-          # We write it to /tmp/discord_payload.py to avoid embedding a here-doc inside a command substitution,
-          # which can lead to "unexpected EOF" errors when the delimiters don't match exactly.
           cat > /tmp/discord_payload.py <<'PY'
           import os, json, datetime, time
-          
+
           sha = os.environ.get('SHA', '')
           msg = os.environ.get('COMMIT_MSG', '').strip().replace('\r', '')
           author = os.environ.get('AUTHOR', 'unknown')
@@ -56,8 +59,7 @@ jobs:
           branch = os.environ.get('BRANCH', '')
           short_sha = sha[:7] if sha else "(no sha)"
           commit_url = f"https://github.com/{repo}/commit/{sha}" if sha else ""
-          
-          # Convert ISO8601 timestamp to UNIX for Discord (<t:UNIX:T>)
+
           try:
               if timestamp:
                   dt = datetime.datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
@@ -66,19 +68,17 @@ jobs:
                   unix_time = int(time.time())
           except Exception:
               unix_time = int(time.time())
-          
-          # Split title/body
+
           lines = msg.split("\n", 1)
           title = lines[0].strip() if lines and lines[0].strip() != "" else "(no title)"
           body = lines[1].strip() if len(lines) > 1 else ""
-          
+
           embed = {
               "author": {
                   "name": author,
                   "icon_url": f"https://github.com/{author}.png?size=64"
               },
               "title": title or "(no title)",
-              # Use description only if there is body text
               **({"description": body} if body else {}),
               "fields": [
                   {
@@ -89,11 +89,10 @@ jobs:
               ],
               "color": 7506394
           }
-          
+
           print(json.dumps({"embeds": [embed]}, ensure_ascii=False))
           PY
 
-          # Iterate commits[] and send one payload per commit
           jq -c '.commits[]' "$GITHUB_EVENT_PATH" | while read -r commit_json; do
             sha=$(echo "$commit_json" | jq -r '.id // empty')
             msg=$(echo "$commit_json" | jq -r '.message // empty')
@@ -112,15 +111,77 @@ jobs:
               author="unknown"
             fi
 
-            # Export values for the Python script to pick up
             export SHA="$sha" COMMIT_MSG="$msg" AUTHOR="$author" TIMESTAMP="$timestamp" REPO="$REPO" BRANCH="$BRANCH"
-
-            # Run the Python script (it reads env vars) and capture its output
             PAYLOAD=$(python3 /tmp/discord_payload.py)
-
-            # Post to Discord
             curl -s -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK"
-
-            # Small pause to reduce chance of hitting rate limits
             sleep 0.5
           done
+
+  # ──────────────────────────────────────────────────────────────
+  # Job 2: Single PR notification — only when merged
+  # ──────────────────────────────────────────────────────────────
+  discord_pr_notify:
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+    steps:
+      - name: Send Discord PR merged notification
+        shell: bash
+        env:
+          PR_NUMBER:    ${{ github.event.pull_request.number }}
+          PR_TITLE:     ${{ github.event.pull_request.title }}
+          PR_BODY:      ${{ github.event.pull_request.body }}
+          PR_URL:       ${{ github.event.pull_request.html_url }}
+          PR_AUTHOR:    ${{ github.event.pull_request.user.login }}
+          PR_HEAD:      ${{ github.event.pull_request.head.ref }}
+          PR_BASE:      ${{ github.event.pull_request.base.ref }}
+          PR_COMMITS:   ${{ github.event.pull_request.commits }}
+          PR_ADDITIONS: ${{ github.event.pull_request.additions }}
+          PR_DELETIONS: ${{ github.event.pull_request.deletions }}
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+
+          pr_number   = os.environ.get('PR_NUMBER', '')
+          pr_title    = os.environ.get('PR_TITLE', '(no title)')
+          pr_body     = (os.environ.get('PR_BODY') or '').strip()[:500]
+          pr_url      = os.environ.get('PR_URL', '')
+          pr_author   = os.environ.get('PR_AUTHOR', 'unknown')
+          head        = os.environ.get('PR_HEAD', '')
+          base        = os.environ.get('PR_BASE', '')
+          commits     = os.environ.get('PR_COMMITS', '?')
+          additions   = os.environ.get('PR_ADDITIONS', '?')
+          deletions   = os.environ.get('PR_DELETIONS', '?')
+          webhook_url = os.environ.get('DISCORD_WEBHOOK', '')
+
+          embed = {
+              "author": {
+                  "name": pr_author,
+                  "icon_url": f"https://github.com/{pr_author}.png?size=64"
+              },
+              "title": f"[PR #{pr_number}] {pr_title}",
+              "url": pr_url,
+              "fields": [
+                  {"name": "Branch", "value": f"`{head}` → `{base}`", "inline": True},
+                  {"name": "Commits", "value": str(commits), "inline": True},
+                  {"name": "Changes", "value": f"+{additions} / -{deletions}", "inline": True},
+              ],
+              "footer": {"text": "🔀 Merged"},
+              "color": 6559412,  # purple
+          }
+
+          if pr_body:
+              embed["description"] = pr_body
+
+          payload = json.dumps({"embeds": [embed]}, ensure_ascii=False)
+
+          req = urllib.request.Request(
+              webhook_url,
+              data=payload.encode('utf-8'),
+              headers={'Content-Type': 'application/json'},
+              method='POST'
+          )
+          with urllib.request.urlopen(req) as resp:
+              print(f"Discord response: {resp.status}")
+          PY
