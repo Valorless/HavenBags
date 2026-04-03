@@ -21,10 +21,27 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.utils.Utils;
 
+/**
+ * Utility command to convert player backpacks from the Minepacks plugin
+ * into the HavenBags format.
+ *
+ * <p>This class contains the command entrypoint used to migrate cached
+ * Minepacks data into HavenBags bags and a helper to create placeholder
+ * bag ItemStacks for migrated players.
+ *
+ * @since 1.26.0
+ */
 public class CommandConvertMinepacks {
 	
 	static String prefix = "§7[§aHaven§bBags§7]§r ";
 
+	/**
+	 * Execute the Minepacks -> HavenBags conversion routine.
+	 *
+	 * @param command the HBCommand representing the command invocation context
+	 * @return true when the command completes (successfully or after error handling)
+	 * @since 1.26.0
+	 */
 	public static boolean Run(HBCommand command) {
 		Config config = new Config(Main.plugin, "minepacks/players.yml");
 		try {
@@ -70,7 +87,17 @@ public class CommandConvertMinepacks {
 		}
 	}
 	
-	
+	/**
+	 * Create a placeholder bag ItemStack for the provided owner.
+	 *
+	 * <p>The returned ItemStack will have the necessary persistent data
+	 * (uuid, owner, size, binding) and will include display name and lore
+	 * based on the plugin's language configuration.
+	 *
+	 * @param owner the owner for whom the placeholder bag is created
+	 * @return an ItemStack representing the placeholder bag
+	 * @since 1.26.0
+	 */
 	static ItemStack PlaceholderBag(OfflinePlayer owner) {
 		ItemStack bagItem = new ItemStack(Material.DIRT);
 		String bagTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
