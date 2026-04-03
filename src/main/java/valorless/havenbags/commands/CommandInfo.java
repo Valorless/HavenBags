@@ -100,10 +100,10 @@ public class CommandInfo {
 				}else {
 					infoList.add("  §fCreator: §enull");
 				}
-				if(canBind != null) { infoList.add("  §fCanBind: §e" + canBind.toString()); }
+				if(canBind != null) { infoList.add("  §fBinding: §e" + canBind.toString()); }
 				if(size != null) { infoList.add("  §fSize: §e" + size.toString()); }
 				//if(filter != null) { infoList.add("  §fFilter: §e" + filter; }
-				if(!Utils.IsStringNullOrEmpty(filter)) {
+				if(!Utils.IsStringNullOrEmpty(filter) && !"null".equalsIgnoreCase(filter)) {
 					infoList.add("  §fFilter: §e" + filter);
 				}else {
 					infoList.add("  §fFilter: §enone");
