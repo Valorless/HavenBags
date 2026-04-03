@@ -30,13 +30,13 @@ import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
-import valorless.havenbags.HavenBags.BagState;
 import valorless.havenbags.annotations.NotNull;
 import valorless.havenbags.annotations.Nullable;
 import valorless.havenbags.database.Files;
 import valorless.havenbags.database.MySQL;
 import valorless.havenbags.database.SQLite;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.events.BagCreateEvent;
 import valorless.havenbags.events.BagDeleteEvent;
@@ -678,7 +678,7 @@ public class BagData {
 	}
 	
 	public static boolean IsBagOpen(ItemStack bagItem) {
-		if(HavenBags.BagState(bagItem) != BagState.Used) return false;
+		if(BagState.getState(bagItem) != BagState.USED) return false;
 		String uuid = HavenBags.GetBagUUID(bagItem);
 		if("null".equalsIgnoreCase(uuid)) {
 			return false;

@@ -25,9 +25,11 @@ import com.google.gson.Gson;
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
+import valorless.havenbags.datamodels.BlacklistNBT;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.datamodels.Sound;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.AutoSorter;
@@ -49,6 +51,7 @@ import valorless.valorlessutils.utils.Utils;
 public class HavenBags {
 	private static final Gson gson = new Gson();
 
+	// ngl, forgot what this is used for..
 	public static class BagHashes {
 
 		// Static list of HashCodes from bags.
@@ -89,20 +92,6 @@ public class HavenBags {
 		if(IsBag(item)) return PDC.GetString(item, "uuid");
 		else return null;
 	}
-
-	public enum BagState { Null, New, Used }
-	public static BagState BagState(ItemStack item) {
-		if(item == null) return BagState.Null;
-		if(IsBag(item)) {
-			if(!BagData.BagExists(GetBagUUID(item))) {
-				return BagState.New;
-			}else {
-				return BagState.Used;
-			}
-		}
-		return BagState.Null;
-	}
-
 
 	public static void ReturnBag(ItemStack bag, Player player) {
 		Log.Debug(Main.plugin, "[DI-104] " + "Returning bag to " + player.getName());
@@ -412,12 +401,12 @@ public class HavenBags {
 			e.printStackTrace();
 		}
 
-		if(BagState(bag) == BagState.Used) {
+		if(valorless.havenbags.enums.BagState.getState(bag) == BagState.USED) {
 			if(preview.length == 0) {
 				UpdatePDC(bag);
 			}
 			UpdateUsed(bag, BagData.GetBag(uuid, bag), player);
-		}else if (BagState(bag) == BagState.New) {
+		}else if (valorless.havenbags.enums.BagState.getState(bag) == BagState.NEW) {
 			UpdateNew(bag, player);
 		}
 	}
@@ -1199,14 +1188,6 @@ public class HavenBags {
 		return false;
 	}
 
-	public static class BlacklistNBT {
-		public String key;
-		public String value;
-		public BlacklistNBT(String key, String value) {
-			this.key = key; this.value = value;
-		}
-	}
-
 	public static boolean CanCarryMoreBags(Player player) {
 		int max = Main.config.GetInt("bags-carry-max");
 		int invBags = 0;
@@ -1436,7 +1417,7 @@ public class HavenBags {
 		List<Bag> bags = new ArrayList<Bag>();
 		//Log.Debug(Main.plugin, "[DI-156-1] " + "Checking for bags.");
 		for(ItemStack i : player.getInventory().getContents()) {
-			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
+			if(HavenBags.IsBag(i) && valorless.havenbags.enums.BagState.getState(i) == BagState.USED) { 
 				bags.add(new Bag(i, HavenBags.LoadBagContentFromServer(i)));
 			}
 		}

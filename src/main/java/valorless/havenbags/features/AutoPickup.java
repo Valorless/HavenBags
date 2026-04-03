@@ -38,6 +38,7 @@ import valorless.havenbags.datamodels.Message;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.datamodels.PluginTags;
 import valorless.havenbags.datamodels.Sound;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.TextFeatures;
 import valorless.valorlessutils.Server;
@@ -469,7 +470,7 @@ public class AutoPickup implements Listener {
 		Log.Debug(Main.plugin, "[DI-156] " + "Checking for bags.");
 		for(ItemStack i : player.getInventory().getContents()) {
 			//Log.Debug(Main.plugin, HavenBags.BagState(i).toString());
-			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
+			if(HavenBags.IsBag(i) && BagState.getState(i) == BagState.USED) { 
 				if(PDC.Has(i, "filter")) {
 					bags.add(new Bag(i, HavenBags.LoadBagContentFromServer(i)));
 				}

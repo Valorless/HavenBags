@@ -9,8 +9,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import valorless.havenbags.BagData;
-import valorless.havenbags.HavenBags.BagState;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.utils.TextFeatures;
@@ -25,7 +25,7 @@ public class CommandInfo {
 		ItemStack hand = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand();
 		ItemMeta meta = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand().getItemMeta();
 			
-		if(HavenBags.IsBag(hand) && HavenBags.BagState(hand) == BagState.Used) {
+		if(HavenBags.IsBag(hand) && BagState.getState(hand) == BagState.USED) {
 			Data data = BagData.GetBag(HavenBags.GetBagUUID(hand), hand);
 			
 			String uuid = data.getUuid();

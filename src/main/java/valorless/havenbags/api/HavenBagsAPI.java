@@ -22,6 +22,7 @@ import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.EtherealBagSettings;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.features.BagHealth;
 import valorless.havenbags.items.BagItemFactory;
@@ -162,6 +163,18 @@ public class HavenBagsAPI {
 	 */
 	public static boolean isBagOpen(String uuid) {
 		return BagData.IsBagOpen(uuid, null);
+	}
+	
+	/**
+	 * Closes the bag with the specified UUID if it is currently open.
+	 * @param uuid bag UUID
+	 * @return true if the bag was open and is now closed, false if it was not open
+	 */
+	public static boolean closeBag(String uuid) {
+		if(isBagOpen(uuid)) {
+			 return BagData.GetBag(uuid, null).getGui().Close(true);
+		}
+		else return false;
 	}
 	
 	/**
@@ -576,7 +589,7 @@ public class HavenBagsAPI {
 	 * May return "NULL" if the item is not a valid bag.
 	 */
     public static String bagState(ItemStack item) {
-		return HavenBags.BagState(item).toString().toUpperCase();
+		return BagState.getState(item).toString().toUpperCase();
 	}
     
     /** Extracts the URL from a Base64-encoded texture string.
@@ -785,6 +798,17 @@ public class HavenBagsAPI {
 	 */
 	public static int getBagMaxHealth(ItemStack bag) {
 		return BagHealth.getMaxHealth(bag);
+	}
+	
+	/**
+	 * Checks the state of the bag (e.g., "NEW", "USED", "NULL") based on its contents and configuration.
+	 * The state is determined by factors such as whether the has been used before, or if the item is not a valid bag.
+	 * 
+	 * @param bag ItemStack to evaluate
+	 * @return the BagState enum value representing the bag's state, or BagState.NULL if the item is not a valid bag
+	 */
+	public static BagState getBagState(ItemStack bag) {
+		return BagState.getState(bag);
 	}
     
     /**

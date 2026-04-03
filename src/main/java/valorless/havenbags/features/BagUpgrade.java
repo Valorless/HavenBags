@@ -17,7 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
-import valorless.havenbags.HavenBags.BagState;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
@@ -74,7 +74,7 @@ public class BagUpgrade implements Listener{
 		Log.Debug(Main.plugin, "[DI-240] [BagUpgrade] Is bag max size?");
 		if(size == 54) return;
 		Log.Debug(Main.plugin, "[DI-241] [BagUpgrade] Is bag used?");
-		if(HavenBags.BagState(bag) == BagState.New) return;
+		if(BagState.getState(bag) == BagState.NEW) return;
 		Log.Debug(Main.plugin, "[DI-242] [BagUpgrade] Is player allowed to upgrade this size?");
 		if(!event.getView().getPlayer().hasPermission(String.format("havenbags.upgrade.%s", size))) return;
 

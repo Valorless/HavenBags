@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.features.BagHealth;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -40,25 +41,25 @@ public class BagDamagePrevention implements Listener{
 							safe = BagHealth.isBagSafe(dropped);
 						}
 						
-						if(Main.config.GetBool("protect-bags.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+						if(Main.config.GetBool("protect-bags.unbound") && BagState.getState(item) == BagState.NEW &&
 								PDC.GetBoolean(item, "binding") == true) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								protect = true;
 							}
 						}
-						if(Main.config.GetBool("protect-bags.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+						if(Main.config.GetBool("protect-bags.bound") && BagState.getState(item) == BagState.USED &&
 								PDC.GetBoolean(item, "binding") == true) {
 							if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								protect = true;
 							}
 						}
-						if(Main.config.GetBool("protect-bags.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+						if(Main.config.GetBool("protect-bags.unused") && BagState.getState(item) == BagState.NEW &&
 								PDC.GetBoolean(item, "binding") == false) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								protect = true;
 							}
 						}
-						if(Main.config.GetBool("protect-bags.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+						if(Main.config.GetBool("protect-bags.used") && BagState.getState(item) == BagState.USED &&
 								PDC.GetBoolean(item, "binding") == false) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
 								protect = true;
@@ -76,28 +77,28 @@ public class BagDamagePrevention implements Listener{
 					// This is to prevent players from dropping unprotected bags and leaving them to despawn, which would allow them to bypass the protection settings.
 					if(Main.config.GetBool("hardcore-bags.enabled")) {
 						String bagID = HavenBags.GetBagUUID(item);
-						if(Main.config.GetBool("hardcore-bags.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+						if(Main.config.GetBool("hardcore-bags.unbound") && BagState.getState(item) == BagState.NEW &&
 								PDC.GetBoolean(item, "binding") == true) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								BagData.DeleteBag(bagID);
 								return;
 							}
 						}
-						if(Main.config.GetBool("hardcore-bags.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+						if(Main.config.GetBool("hardcore-bags.bound") && BagState.getState(item) == BagState.USED &&
 								PDC.GetBoolean(item, "binding") == true) {
 							if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								BagData.DeleteBag(bagID);
 								return;
 							}
 						}
-						if(Main.config.GetBool("hardcore-bags.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+						if(Main.config.GetBool("hardcore-bags.unused") && BagState.getState(item) == BagState.NEW &&
 								PDC.GetBoolean(item, "binding") == false) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								BagData.DeleteBag(bagID);
 								return;
 							}
 						}
-						if(Main.config.GetBool("hardcore-bags.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+						if(Main.config.GetBool("hardcore-bags.used") && BagState.getState(item) == BagState.USED &&
 								PDC.GetBoolean(item, "binding") == false) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
 								BagData.DeleteBag(bagID);
@@ -127,25 +128,25 @@ public class BagDamagePrevention implements Listener{
 							safe = BagHealth.isBagSafe(dropped);
 						}
 						
-						if(Main.config.GetBool("protect-bags.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+						if(Main.config.GetBool("protect-bags.unbound") && BagState.getState(item) == BagState.NEW &&
 								PDC.GetBoolean(item, "binding") == true) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								protect = true;
 							}
 						}
-						if(Main.config.GetBool("protect-bags.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+						if(Main.config.GetBool("protect-bags.bound") && BagState.getState(item) == BagState.USED &&
 								PDC.GetBoolean(item, "binding") == true) {
 							if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								protect = true;
 							}
 						}
-						if(Main.config.GetBool("protect-bags.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+						if(Main.config.GetBool("protect-bags.unused") && BagState.getState(item) == BagState.NEW &&
 								PDC.GetBoolean(item, "binding") == false) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								protect = true;
 							}
 						}
-						if(Main.config.GetBool("protect-bags.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+						if(Main.config.GetBool("protect-bags.used") && BagState.getState(item) == BagState.USED &&
 								PDC.GetBoolean(item, "binding") == false) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
 								protect = true;
@@ -164,28 +165,28 @@ public class BagDamagePrevention implements Listener{
 					// This is to prevent players from dropping unprotected bags and leaving them to despawn, which would allow them to bypass the protection settings.
 					if(Main.config.GetBool("hardcore-bags.enabled")) {
 						String bagID = HavenBags.GetBagUUID(item);
-						if(Main.config.GetBool("hardcore-bags.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+						if(Main.config.GetBool("hardcore-bags.unbound") && BagState.getState(item) == BagState.NEW &&
 								PDC.GetBoolean(item, "binding") == true) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								BagData.DeleteBag(bagID);
 								return;
 							}
 						}
-						if(Main.config.GetBool("hardcore-bags.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+						if(Main.config.GetBool("hardcore-bags.bound") && BagState.getState(item) == BagState.USED &&
 								PDC.GetBoolean(item, "binding") == true) {
 							if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								BagData.DeleteBag(bagID);
 								return;
 							}
 						}
-						if(Main.config.GetBool("hardcore-bags.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+						if(Main.config.GetBool("hardcore-bags.unused") && BagState.getState(item) == BagState.NEW &&
 								PDC.GetBoolean(item, "binding") == false) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 								BagData.DeleteBag(bagID);
 								return;
 							}
 						}
-						if(Main.config.GetBool("hardcore-bags.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+						if(Main.config.GetBool("hardcore-bags.used") && BagState.getState(item) == BagState.USED &&
 								PDC.GetBoolean(item, "binding") == false) {
 							if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
 								BagData.DeleteBag(bagID);
