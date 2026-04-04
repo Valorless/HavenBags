@@ -100,20 +100,20 @@ jobs:
             author_name=$(echo "$commit_json" | jq -r '.author.name // empty')
             author_email=$(echo "$commit_json" | jq -r '.author.email // empty')
             timestamp=$(echo "$commit_json" | jq -r '.timestamp // empty')
-			
-			# Skip merge commits
+            
+            # Skip merge commits
             if echo "$msg" | grep -qE '^Merge pull request|^Merge branch'; then
               echo "Skipping merge commit: $msg"
               continue
             fi
-			
-			# Skip commits that are associated with a PR
+            
+            # Skip commits that are associated with a PR
             pr_count=$(curl -s \
               -H "Authorization: Bearer $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               "https://api.github.com/repos/$REPO/commits/$sha/pulls" \
               | jq 'if type == "array" then length else 0 end')
-
+            
             if [ "$pr_count" -gt 0 ]; then
               echo "Skipping commit $sha — associated with a PR"
               continue
