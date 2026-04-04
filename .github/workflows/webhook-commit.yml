@@ -142,7 +142,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           cat > /tmp/discord_pr_payload.py <<'PY'
-          import os, json, urllib.request
+          import os, json
           
           pr_number   = os.environ.get('PR_NUMBER', '')
           pr_title    = os.environ.get('PR_TITLE', '(no title)')
@@ -154,36 +154,27 @@ jobs:
           commits     = os.environ.get('PR_COMMITS', '?')
           additions   = os.environ.get('PR_ADDITIONS', '?')
           deletions   = os.environ.get('PR_DELETIONS', '?')
-          webhook_url = os.environ.get('DISCORD_WEBHOOK', '')
           
           embed = {
-          	"author": {
-          		"name": pr_author,
-          		"icon_url": f"https://github.com/{pr_author}.png?size=64"
-          	},
-          	"title": f"[PR #{pr_number}] {pr_title}",
-          	"url": pr_url,
-          	"fields": [
-          		{"name": "Branch", "value": f"`{head}` → `{base}`", "inline": True},
-          		{"name": "Commits", "value": str(commits), "inline": True},
-          		{"name": "Changes", "value": f"+{additions} / -{deletions}", "inline": True},
-          	],
-          	"footer": {"text": "→ Merged"},
-          	"color": 6559412,
+              "author": {
+                  "name": pr_author,
+                  "icon_url": f"https://github.com/{pr_author}.png?size=64"
+              },
+              "title": f"[PR #{pr_number}] {pr_title}",
+              "url": pr_url,
+              "fields": [
+                  {"name": "Branch", "value": f"`{head}` → `{base}`", "inline": True},
+                  {"name": "Commits", "value": str(commits), "inline": True},
+                  {"name": "Changes", "value": f"+{additions} / -{deletions}", "inline": True},
+              ],
+              "footer": {"text": "🔀 Merged"},
+              "color": 6559412,
           }
           
           if pr_body:
-          	embed["description"] = pr_body
+              embed["description"] = pr_body
           
-          payload = json.dumps({"embeds": [embed]}, ensure_ascii=False)
-          
-          req = urllib.request.Request(
-          	webhook_url,
-          	data=payload.encode('utf-8'),
-          	headers={'Content-Type': 'application/json'},
-          	method='POST'
-          )
-          with urllib.request.urlopen(req) as resp:
-          	print(f"Discord response: {resp.status}")
+          print(json.dumps({"embeds": [embed]}, ensure_ascii=False))
           PY
-          python3 /tmp/discord_pr_payload.py
+          PAYLOAD=$(python3 /tmp/discord_pr_payload.py)
+          curl -s -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK"
