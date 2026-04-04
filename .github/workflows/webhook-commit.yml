@@ -168,7 +168,7 @@ jobs:
           		{"name": "Commits", "value": str(commits), "inline": True},
           		{"name": "Changes", "value": f"+{additions} / -{deletions}", "inline": True},
           	],
-          	"footer": {"text": "🔀 Merged"},
+          	"footer": {"text": "→ Merged"},
           	"color": 6559412,
           }
           
