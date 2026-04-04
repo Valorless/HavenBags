@@ -139,6 +139,7 @@ jobs:
           PR_COMMITS:   ${{ github.event.pull_request.commits }}
           PR_ADDITIONS: ${{ github.event.pull_request.additions }}
           PR_DELETIONS: ${{ github.event.pull_request.deletions }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           python3 - <<'PY'
           import os, json, urllib.request
