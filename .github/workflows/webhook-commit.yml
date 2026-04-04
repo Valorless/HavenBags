@@ -4,8 +4,14 @@ on:
   push:
     branches:
       - '**'
+  pull_request:
+    types: [closed]
 
 jobs:
+  # ──────────────────────────────────────────────────────────────
+  # Job 1: Per-commit notifications — only for direct pushes,
+  #         NOT for pushes that belong to an open pull request.
+  # ──────────────────────────────────────────────────────────────
   discord_commit_notify:
     if: github.event_name == 'push' && github.event.pull_request == null
     runs-on: ubuntu-latest
@@ -45,7 +51,7 @@ jobs:
 
           cat > /tmp/discord_payload.py <<'PY'
           import os, json, datetime, time
-          
+
           sha = os.environ.get('SHA', '')
           msg = os.environ.get('COMMIT_MSG', '').strip().replace('\r', '')
           author = os.environ.get('AUTHOR', 'unknown')
@@ -54,7 +60,7 @@ jobs:
           branch = os.environ.get('BRANCH', '')
           short_sha = sha[:7] if sha else "(no sha)"
           commit_url = f"https://github.com/{repo}/commit/{sha}" if sha else ""
-          
+
           try:
               if timestamp:
                   dt = datetime.datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
@@ -63,11 +69,11 @@ jobs:
                   unix_time = int(time.time())
           except Exception:
               unix_time = int(time.time())
-          
+
           lines = msg.split("\n", 1)
           title = lines[0].strip() if lines and lines[0].strip() != "" else "(no title)"
           body = lines[1].strip() if len(lines) > 1 else ""
-          
+
           embed = {
               "author": {
                   "name": author,
@@ -84,7 +90,7 @@ jobs:
               ],
               "color": 7506394
           }
-          
+
           print(json.dumps({"embeds": [embed]}, ensure_ascii=False))
           PY
 
@@ -95,14 +101,20 @@ jobs:
             author_name=$(echo "$commit_json" | jq -r '.author.name // empty')
             author_email=$(echo "$commit_json" | jq -r '.author.email // empty')
             timestamp=$(echo "$commit_json" | jq -r '.timestamp // empty')
-
+            
+            # Skip merge commits
+            if echo "$msg" | grep -qE '^Merge pull request|^Merge branch'; then
+              echo "Skipping merge commit: $msg"
+              continue
+            fi
+            
             # Skip commits that are associated with a PR
             pr_count=$(curl -s \
               -H "Authorization: Bearer $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               "https://api.github.com/repos/$REPO/commits/$sha/pulls" \
               | jq 'if type == "array" then length else 0 end')
-
+            
             if [ "$pr_count" -gt 0 ]; then
               echo "Skipping commit $sha — associated with a PR"
               continue
