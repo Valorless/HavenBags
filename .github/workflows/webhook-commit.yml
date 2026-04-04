@@ -162,7 +162,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           cat > /tmp/discord_pr_payload.py <<'PY'
-          import os, json
+          import os, json, datetime, time
           
           pr_number   = os.environ.get('PR_NUMBER', '')
           pr_title    = os.environ.get('PR_TITLE', '(no title)')
