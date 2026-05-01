@@ -2,7 +2,9 @@ valorless.havenbags
 valorless.havenbags.annotations
 valorless.havenbags.api
 valorless.havenbags.commands
+valorless.havenbags.commands.debug
 valorless.havenbags.commands.fun
+valorless.havenbags.configconversion
 valorless.havenbags.database
 valorless.havenbags.datamodels
 valorless.havenbags.enums

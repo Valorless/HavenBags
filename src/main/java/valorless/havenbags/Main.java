@@ -91,7 +91,7 @@ public final class Main extends JavaPlugin implements Listener {
 	boolean ValorlessUtils() {
 		Log.Debug(plugin, "[DI-0] Checking ValorlessUtils");
 		
-		int requiresBuild = 346; // The build number of ValorlessUtils that is required for HavenBags to run.
+		int requiresBuild = 374; // The build number of ValorlessUtils that is required for HavenBags to run.
 		
 		String ver = Bukkit.getPluginManager().getPlugin("ValorlessUtils").getDescription().getVersion();
 		//Log.Debug(plugin, ver);

@@ -63,6 +63,8 @@ public class Message {
 		comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Lang.Parse(message, null)).create()));
 		return comp;
 	}
+
+	@SuppressWarnings("deprecation")
 	public void SetHoverText(String message) {
 		this.message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Lang.Parse(message, null)).create()));
 	}
