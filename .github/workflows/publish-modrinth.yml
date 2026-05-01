@@ -11,6 +11,9 @@ jobs:
       contents: read
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download release assets
         run: gh release download "${{ github.ref_name }}" --pattern "*.jar" --dir ./release-assets
         env:
