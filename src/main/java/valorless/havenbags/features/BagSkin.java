@@ -17,7 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
-import valorless.havenbags.HavenBags.BagState;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -63,7 +63,7 @@ public class BagSkin implements Listener{
 				return;
 			}
 		}
-		if(HavenBags.BagState(bag) == BagState.New) return;
+		if(BagState.getState(bag) == BagState.NEW) return;
 		Log.Debug(Main.plugin, "[DI-67] " + "[BagSkin] BagState.Used");
 		if(!PDC.Has(skin, "token-skin")) return;
 		Log.Debug(Main.plugin, "[DI-68] " + "[BagSkin] Found skin.");
@@ -106,7 +106,7 @@ public class BagSkin implements Listener{
 				if(value.chars().count() < 30) {
 					Log.Debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.GetString(String.format("textures.%s", value));
-					if(HavenBags.BagState(clicked) == BagState.New) {
+					if(BagState.getState(clicked) == BagState.NEW) {
 						BagData.setTextureValue(clicked, texture);
 					}else {
 						BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(texture);
@@ -114,7 +114,7 @@ public class BagSkin implements Listener{
 				}else {
 					Log.Debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						if(HavenBags.BagState(clicked) == BagState.New) {
+						if(BagState.getState(clicked) == BagState.NEW) {
 							BagData.setTextureValue(clicked, value);
 						}else {
 							BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(value);

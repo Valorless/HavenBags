@@ -12,6 +12,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import valorless.havenbags.commands.HBCommand;
+import valorless.havenbags.commands.debug.DebugHandler;
 import valorless.havenbags.commands.fun.CommandExplode;
 import valorless.havenbags.gui.PlayerGUI;
 import valorless.havenbags.commands.CommandAutoSort;
@@ -75,6 +76,11 @@ public class CommandListener implements CommandExecutor {
 			try {
 				if(args[0].equalsIgnoreCase("reload") && sender.hasPermission("havenbags.reload")) {
 					return CommandReload.Run(cmd);
+				}
+
+				if(args[0].equalsIgnoreCase("debug")){
+					DebugHandler.debug(cmd);
+					return true;
 				}
 
 				if(BagData.isReady() == false) {

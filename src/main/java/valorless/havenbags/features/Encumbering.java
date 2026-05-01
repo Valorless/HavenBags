@@ -19,6 +19,7 @@ import org.bukkit.potion.PotionEffectType;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.utils.Utils;
@@ -162,7 +163,7 @@ public class Encumbering implements Listener {
 		}
 		for(ItemStack i : player.getInventory().getContents()) {
 			//Log.Debug(Main.plugin, HavenBags.BagState(i).toString());
-			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
+			if(HavenBags.IsBag(i) && BagState.getState(i) == BagState.USED) { 
 				String uuid = PDC.GetString(i, "uuid");
 				if(uuid.equalsIgnoreCase("null")) continue;
 				if(PDC.Has(i, "weight")) {

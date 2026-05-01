@@ -36,7 +36,7 @@ public class DatabaseUtils {
 		text += String.format(", magnet:%s", data.hasMagnet());
 		text += String.format(", refill:%s", data.hasRefill());
 		text += String.format(", effect:%s", data.getEffect());
-		text += String.format(", tooltip:%s", data.getTooltipStyle());
+		text += String.format(", tooltip:%s", formatNamespacedKey(data.getTooltipStyle()));
 		
 		text += "}";
 		//Log.Info(Main.plugin, text);
@@ -54,7 +54,7 @@ public class DatabaseUtils {
         if(extra.containsKey("magnet")) data.setMagnet((Boolean) extra.get("magnet"));
         if(extra.containsKey("refill")) data.setRefill((Boolean) extra.get("refill"));
         if(extra.containsKey("effect")) data.setEffect((String) extra.get("effect"));
-        if(extra.containsKey("tooltip")) data.setTooltipStyle((String) extra.get("tooltip"));
+        if(extra.containsKey("tooltip")) data.setTooltipStyle(parseNamespacedKey((String) extra.get("tooltip")));
 	}
 	
 	public static Object formatList(List<String> list) {
@@ -83,24 +83,69 @@ public class DatabaseUtils {
 
         String content = extraMatcher.group(1); // Extract content inside extra{}
 
-        // Updated regex to handle values with escaped quotes (e.g., name:"Shulker \"King\"")
-        Matcher pairMatcher = Pattern.compile("(\\w+):(\"(?:\\\\\"|[^\"])*\"|\\w+)").matcher(content);
-        while (pairMatcher.find()) {
-            String key = pairMatcher.group(1);
-            String value = pairMatcher.group(2);
+		// Split key/value pairs on commas, but only when outside quoted strings.
+		List<String> tokens = splitPairs(content);
+		for (String token : tokens) {
+			int colonIndex = token.indexOf(':');
+			if (colonIndex <= 0) continue;
 
-            // Remove surrounding quotes if present
-            if (value.startsWith("\"") && value.endsWith("\"")) {
-                value = value.substring(1, value.length() - 1).replace("\\\"", "\""); // Unescape quotes
-            }
+			String key = token.substring(0, colonIndex).trim();
+			String value = token.substring(colonIndex + 1).trim();
 
-            // Parse the value into the appropriate data type
-            Object parsedValue = parseValue(value);
-            extraData.put(key, parsedValue);
-        }
+			// Remove surrounding quotes if present and unescape inner quotes.
+			if (value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")) {
+				value = value.substring(1, value.length() - 1).replace("\\\"", "\"");
+			}
+
+			Object parsedValue = parseValue(value);
+			extraData.put(key, parsedValue);
+		}
 
         return extraData;
     }
+
+	private static List<String> splitPairs(String content) {
+		List<String> pairs = new ArrayList<>();
+		StringBuilder current = new StringBuilder();
+		boolean inQuotes = false;
+		boolean escaping = false;
+
+		for (int i = 0; i < content.length(); i++) {
+			char c = content.charAt(i);
+
+			if (escaping) {
+				current.append(c);
+				escaping = false;
+				continue;
+			}
+
+			if (c == '\\') {
+				current.append(c);
+				escaping = true;
+				continue;
+			}
+
+			if (c == '"') {
+				inQuotes = !inQuotes;
+				current.append(c);
+				continue;
+			}
+
+			if (c == ',' && !inQuotes) {
+				String token = current.toString().trim();
+				if (!token.isEmpty()) pairs.add(token);
+				current.setLength(0);
+				continue;
+			}
+
+			current.append(c);
+		}
+
+		String token = current.toString().trim();
+		if (!token.isEmpty()) pairs.add(token);
+
+		return pairs;
+	}
 
     private static Object parseValue(String value) {
         if ("true".equalsIgnoreCase(value)) return true;
@@ -110,5 +155,13 @@ public class DatabaseUtils {
         if (value.matches("-?\\d+[lL]")) return Long.parseLong(value.substring(0, value.length() - 1)); // Long (e.g., 12345L)
         return value; // Default to String
     }
+
+	private static String formatNamespacedKey(String key) {
+		return key.replace(":", "=");
+	}
+
+	private static String parseNamespacedKey(String key) {
+		return key.replace("=", ":");
+	}
 	
 }

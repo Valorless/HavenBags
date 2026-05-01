@@ -23,10 +23,27 @@ import valorless.valorlessutils.ValorlessUtils.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.utils.Utils;
 
+/**
+ * Utility command to convert data from the EpicBackpacks plugin into
+ * HavenBags format.
+ *
+ * <p>This class provides methods used by the conversion command to read
+ * EpicBackpacks player files, create corresponding HavenBags and register
+ * them in the plugin's player mapping.
+ *
+ * @since 1.27.0
+ */
 public class CommandConvertEpicBackpacks {
 	
 	static String prefix = "§7[§aHaven§bBags§7]§r ";
 
+	/**
+	 * Execute the EpicBackpacks -> HavenBags conversion routine.
+	 *
+	 * @param command the HBCommand representing the command invocation context
+	 * @return true if the command execution completed (either successfully or after handling an error)
+	 * @since 1.27.0
+	 */
 	public static boolean Run(HBCommand command) {
 		Config config = new Config(Main.plugin, "epicbackpacks/players.yml");
 		try {
@@ -82,7 +99,18 @@ public class CommandConvertEpicBackpacks {
 		}
 	}
 	
-	
+	/**
+	 * Create a placeholder bag ItemStack for the provided owner.
+	 *
+	 * <p>The returned ItemStack will contain the necessary persistent data
+	 * entries used by HavenBags (uuid, owner, size, binding) and will have its
+	 * display name and lore populated according to the plugin's language
+	 * configuration.
+	 *
+	 * @param owner the owner for whom the placeholder bag is created
+	 * @return an ItemStack representing the placeholder bag
+	 * @since 1.27.0
+	 */
 	static ItemStack PlaceholderBag(OfflinePlayer owner) {
 		ItemStack bagItem = new ItemStack(Material.DIRT);
 		String bagTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
@@ -143,6 +171,14 @@ public class CommandConvertEpicBackpacks {
 		return bagItem;
 	}
 	
+	/**
+	 * Return a list of file names contained in the given folder that end with
+	 * the .yml extension. The returned names will not include the .yml suffix.
+	 *
+	 * @param folder the directory to scan for .yml files
+	 * @return a list of file names (without the .yml extension)
+	 * @since 1.27.0
+	 */
 	public static List<String> getFiles(File folder) {
         List<String> fileNames = new ArrayList<>();
 

@@ -13,7 +13,7 @@
  *       {@code token.skin.*} (upgrade to {@code config-version} 5).</li>
  *   <li>Restructuring flat config keys into hierarchical paths and creating
  *       a backup before changes (upgrade to {@code config-version} 6).
- *       See {@link valorless.havenbags.configconversion.ConfigRestructure}.</li>
+ *       See {@link valorless.havenbags.configconversion.CV6_ConfigRestructure}.</li>
  * </ul>
  *
  * Conventions:
@@ -26,9 +26,10 @@
  * </ul>
  *
  * See also:
- * {@link valorless.havenbags.configconversion.BagConversion},
- * {@link valorless.havenbags.configconversion.DataConversion},
- * {@link valorless.havenbags.configconversion.TokenConfigConversion},
- * {@link valorless.havenbags.configconversion.ConfigRestructure}
+ * {@link valorless.havenbags.configconversion.CV2_BagConversion},
+ * {@link valorless.havenbags.configconversion.CV4_DataConversion},
+ * {@link valorless.havenbags.configconversion.CV5_TokenConfigConversion},
+ * {@link valorless.havenbags.configconversion.CV6_ConfigRestructure},
+ * {@link valorless.havenbags.configconversion.CV7_ConfigRestructure}
  */
 package valorless.havenbags.configconversion;

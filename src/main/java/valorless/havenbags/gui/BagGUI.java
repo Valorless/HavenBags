@@ -394,7 +394,7 @@ public class BagGUI implements Listener {
         if(!preview) Close(false);
     }
     
-    public void Close(boolean forced) {
+    public boolean Close(boolean forced) {
     	if(forced) {
     		Log.Warning(plugin, String.format("%s forcefully closed! Attempting to save it and return it to %s!", bag, player.getName()));
     		player.closeInventory();
@@ -410,7 +410,7 @@ public class BagGUI implements Listener {
 		}
     	
     	//if(!HavenBags.IsBagOpen(bagItem)) return;
-    	if(!BagData.IsBagOpen(uuid, bagItem)) return;
+    	if(!BagData.IsBagOpen(uuid, bagItem)) return false;
 
     	Sound sound = new Sound(Main.config.GetString("sound.close.key"), 
     			Main.config.GetDouble("sound.close.volume"), 
@@ -474,6 +474,7 @@ public class BagGUI implements Listener {
 		Bukkit.getPluginManager().callEvent(new BagCloseEvent(inv, player, bagItem, BagData.GetBag(uuid, null), forced));
 		
 		//UpdateTimestamp();
+		return true;
     }
     
     /*void UpdateTimestamp() {

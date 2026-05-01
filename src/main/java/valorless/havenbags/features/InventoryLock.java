@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.gui.UpgradeGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -32,28 +33,28 @@ public class InventoryLock implements Listener {
 			Player player = (Player) e.getSource().getViewers().get(0);
 			ItemStack item = e.getItem();
 			if(HavenBags.IsBag(item) && e.getSource() == player.getInventory()) {
-				if(Main.config.GetBool("inventory-lock.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+				if(Main.config.GetBool("inventory-lock.unbound") && BagState.getState(item) == BagState.NEW &&
 						PDC.GetBoolean(item, "binding") == true) {
 					if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 						e.setCancelled(true);
 						return;
 					}
 				}
-				if(Main.config.GetBool("inventory-lock.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+				if(Main.config.GetBool("inventory-lock.bound") && BagState.getState(item) == BagState.USED &&
 						PDC.GetBoolean(item, "binding") == true) {
 					if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 						e.setCancelled(true);
 						return;
 					}
 				}
-				if(Main.config.GetBool("inventory-lock.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+				if(Main.config.GetBool("inventory-lock.unused") && BagState.getState(item) == BagState.NEW &&
 						PDC.GetBoolean(item, "binding") == false) {
 					if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 						e.setCancelled(true);
 						return;
 					}
 				}
-				if(Main.config.GetBool("inventory-lock.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+				if(Main.config.GetBool("inventory-lock.used") && BagState.getState(item) == BagState.USED &&
 						PDC.GetBoolean(item, "binding") == false) {
 					if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
 						e.setCancelled(true);
@@ -88,28 +89,28 @@ public class InventoryLock implements Listener {
     	
     	if(e.getRawSlot() < inv.getSize() && holdingBag){
     		ItemStack item = cursorItem;
-    		if(Main.config.GetBool("inventory-lock.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+    		if(Main.config.GetBool("inventory-lock.unbound") && BagState.getState(item) == BagState.NEW &&
 					PDC.GetBoolean(item, "binding") == true) {
 				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 					e.setCancelled(true);
 					return;
 				}
 			}
-			if(Main.config.GetBool("inventory-lock.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+			if(Main.config.GetBool("inventory-lock.bound") && BagState.getState(item) == BagState.USED &&
 					PDC.GetBoolean(item, "binding") == true) {
 				if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 					e.setCancelled(true);
 					return;
 				}
 			}
-			if(Main.config.GetBool("inventory-lock.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+			if(Main.config.GetBool("inventory-lock.unused") && BagState.getState(item) == BagState.NEW &&
 					PDC.GetBoolean(item, "binding") == false) {
 				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 					e.setCancelled(true);
 					return;
 				}
 			}
-			if(Main.config.GetBool("inventory-lock.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+			if(Main.config.GetBool("inventory-lock.used") && BagState.getState(item) == BagState.USED &&
 					PDC.GetBoolean(item, "binding") == false) {
 				if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
 					e.setCancelled(true);
@@ -119,28 +120,28 @@ public class InventoryLock implements Listener {
         }
 		else if(e.getRawSlot() > inv.getSize() && clickedBag && e.isShiftClick()){
 			ItemStack item = clickedItem;
-			if(Main.config.GetBool("inventory-lock.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+			if(Main.config.GetBool("inventory-lock.unbound") && BagState.getState(item) == BagState.NEW &&
 					PDC.GetBoolean(item, "binding") == true) {
 				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 					e.setCancelled(true);
 					return;
 				}
 			}
-			if(Main.config.GetBool("inventory-lock.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+			if(Main.config.GetBool("inventory-lock.bound") && BagState.getState(item) == BagState.USED &&
 					PDC.GetBoolean(item, "binding") == true) {
 				if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 					e.setCancelled(true);
 					return;
 				}
 			}
-			if(Main.config.GetBool("inventory-lock.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+			if(Main.config.GetBool("inventory-lock.unused") && BagState.getState(item) == BagState.NEW &&
 					PDC.GetBoolean(item, "binding") == false) {
 				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 					e.setCancelled(true);
 					return;
 				}
 			}
-			if(Main.config.GetBool("inventory-lock.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+			if(Main.config.GetBool("inventory-lock.used") && BagState.getState(item) == BagState.USED &&
 					PDC.GetBoolean(item, "binding") == false) {
 				if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
 					e.setCancelled(true);
@@ -156,28 +157,28 @@ public class InventoryLock implements Listener {
 		if(!Main.config.GetBool("inventory-lock.enabled")) return;
 		ItemStack item = e.getItemDrop().getItemStack();
 		if(HavenBags.IsBag(item)) {
-			if(Main.config.GetBool("inventory-lock.unbound") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+			if(Main.config.GetBool("inventory-lock.unbound") && BagState.getState(item) == BagState.NEW &&
 					PDC.GetBoolean(item, "binding") == true) {
 				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 					e.setCancelled(true);
 					return;
 				}
 			}
-			if(Main.config.GetBool("inventory-lock.bound") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+			if(Main.config.GetBool("inventory-lock.bound") && BagState.getState(item) == BagState.USED &&
 					PDC.GetBoolean(item, "binding") == true) {
 				if(!PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 					e.setCancelled(true);
 					return;
 				}
 			}
-			if(Main.config.GetBool("inventory-lock.unused") && HavenBags.BagState(item) == HavenBags.BagState.New &&
+			if(Main.config.GetBool("inventory-lock.unused") && BagState.getState(item) == BagState.NEW &&
 					PDC.GetBoolean(item, "binding") == false) {
 				if(PDC.GetString(item, "owner").equalsIgnoreCase("null")) {
 					e.setCancelled(true);
 					return;
 				}
 			}
-			if(Main.config.GetBool("inventory-lock.used") && HavenBags.BagState(item) == HavenBags.BagState.Used &&
+			if(Main.config.GetBool("inventory-lock.used") && BagState.getState(item) == BagState.USED &&
 					PDC.GetBoolean(item, "binding") == false) {
 				if(PDC.GetString(item, "owner").equalsIgnoreCase("ownerless")) {
 					e.setCancelled(true);

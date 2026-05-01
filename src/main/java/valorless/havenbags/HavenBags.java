@@ -25,13 +25,16 @@ import com.google.gson.Gson;
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
+import valorless.havenbags.datamodels.BlacklistNBT;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.datamodels.Sound;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.AutoSorter;
 import valorless.havenbags.features.BagEffects;
+import valorless.havenbags.features.CustomData;
 import valorless.havenbags.mods.HavenBagsPreview;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
@@ -48,24 +51,25 @@ import valorless.valorlessutils.utils.Utils;
 public class HavenBags {
 	private static final Gson gson = new Gson();
 
+	// ngl, forgot what this is used for..
 	public static class BagHashes {
-		
+
 		// Static list of HashCodes from bags.
 		private static ArrayList<Integer> hashes = new ArrayList<Integer>();
-		
+
 		public static void Add(Integer hash) {
 			if(!hashes.contains(hash)) {
 				hashes.add(hash);
 			}
 		}
-		
+
 		public static Boolean Contains(Integer hash) {
 			if(hashes.contains(hash)) return true;
 			return false;
 		}
-		
+
 	}
-	
+
 	public static Boolean IsBag(ItemStack item) {
 		if(item == null) return false;
 		if(PDC.Has(item, "uuid")) {
@@ -83,83 +87,69 @@ public class HavenBags {
 		}
 		return false;
 	}
-	
+
 	public static String GetBagUUID(@NotNull ItemStack item) {
 		if(IsBag(item)) return PDC.GetString(item, "uuid");
 		else return null;
 	}
-	
-	public enum BagState { Null, New, Used }
-	public static BagState BagState(ItemStack item) {
-		if(item == null) return BagState.Null;
-		if(IsBag(item)) {
-			if(!BagData.BagExists(GetBagUUID(item))) {
-				return BagState.New;
-			}else {
-				return BagState.Used;
-			}
-		}
-		return BagState.Null;
-	}
 
-	
 	public static void ReturnBag(ItemStack bag, Player player) {
 		Log.Debug(Main.plugin, "[DI-104] " + "Returning bag to " + player.getName());
 		Log.Debug(Main.plugin, "[DI-105] " + "health " + player.getHealth());
-    	
-    	if(player.isDead()) {
-    		if (Bukkit.getPluginManager().getPlugin("AngelChest") == null) {
-    			Log.Debug(Main.plugin, "[DI-106] " + "Player dead, dropping bag instead.");
-    			player.getWorld().dropItem(player.getLocation(), bag);
-    			return;
-    		}else {
-    			if(player.getInventory().getItemInMainHand() != null) {
-        			if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
-    	   	 			Log.Debug(Main.plugin, "[DI-107] " + "Hand Empty.");
-        				player.getInventory().setItemInMainHand(bag);
-        				return;
-        			}
-        		}
-        		if(player.getInventory().firstEmpty() != -1) {
-        			player.getInventory().addItem(bag);
-        		} else {
-        			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
 
-    				Sound sound = new Sound(Main.config.GetString("sound.inventory-full.key"), 
-    		    			Main.config.GetDouble("sound.inventory-full.volume"), 
-    		    			Main.config.GetDouble("sound.inventory-full.pitch"));	
-    				sound.play(player);
-        			player.getWorld().dropItem(player.getLocation(), bag);
-        		}
-    		}
-    	}else {
-    		Log.Debug(Main.plugin, "[DI-108] " + "Player alive.");
-    		if(player.getInventory().getItemInMainHand() != null) {
-    			if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
-	   	 			Log.Debug(Main.plugin, "[DI-109] " + "Hand Empty.");
-    				player.getInventory().setItemInMainHand(bag);
-    				return;
-    			}
-    		}
-    		if(player.getInventory().firstEmpty() != -1) {
-    			player.getInventory().addItem(bag);
-    		} else {
-    			player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
+		if(player.isDead()) {
+			if (Bukkit.getPluginManager().getPlugin("AngelChest") == null) {
+				Log.Debug(Main.plugin, "[DI-106] " + "Player dead, dropping bag instead.");
+				player.getWorld().dropItem(player.getLocation(), bag);
+				return;
+			}else {
+				if(player.getInventory().getItemInMainHand() != null) {
+					if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
+						Log.Debug(Main.plugin, "[DI-107] " + "Hand Empty.");
+						player.getInventory().setItemInMainHand(bag);
+						return;
+					}
+				}
+				if(player.getInventory().firstEmpty() != -1) {
+					player.getInventory().addItem(bag);
+				} else {
+					player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
+
+					Sound sound = new Sound(Main.config.GetString("sound.inventory-full.key"), 
+							Main.config.GetDouble("sound.inventory-full.volume"), 
+							Main.config.GetDouble("sound.inventory-full.pitch"));	
+					sound.play(player);
+					player.getWorld().dropItem(player.getLocation(), bag);
+				}
+			}
+		}else {
+			Log.Debug(Main.plugin, "[DI-108] " + "Player alive.");
+			if(player.getInventory().getItemInMainHand() != null) {
+				if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
+					Log.Debug(Main.plugin, "[DI-109] " + "Hand Empty.");
+					player.getInventory().setItemInMainHand(bag);
+					return;
+				}
+			}
+			if(player.getInventory().firstEmpty() != -1) {
+				player.getInventory().addItem(bag);
+			} else {
+				player.sendMessage(Lang.Get("prefix") + Lang.Get("inventory-full"));
 				Sound sound = new Sound(Main.config.GetString("sound.inventory-full.key"), 
-		    			Main.config.GetDouble("sound.inventory-full.volume"), 
-		    			Main.config.GetDouble("sound.inventory-full.pitch"));	
+						Main.config.GetDouble("sound.inventory-full.volume"), 
+						Main.config.GetDouble("sound.inventory-full.pitch"));	
 				sound.play(player);
-    			player.getWorld().dropItem(player.getLocation(), bag);
-    		}
-    	}
+				player.getWorld().dropItem(player.getLocation(), bag);
+			}
+		}
 	}
-	
-	
+
+
 	/*public static void WriteBagToServer(ItemStack bag, List<ItemStack> inventory, Player player) {
 		String uuid = PDC.GetString(bag, "bag-uuid");
     	String owner = PDC.GetString(bag, "bag-owner");
     	Log.Debug(Main.plugin, "Attempting to write bag " + owner + "/" + uuid + " onto server");
-    	
+
     	File bagData;
     	List<ItemStack> cont = new ArrayList<ItemStack>();
         for(int i = 0; i < inventory.size(); i++) {
@@ -178,7 +168,7 @@ public class HavenBags {
                 Log.Debug(Main.plugin, String.format("Bag data for (%s) %s does not exist, creating new.", owner, uuid));
             }
     	}
-    	
+
     	Path path = Paths.get(Main.plugin.getDataFolder() + "/bags/", owner + "/" + uuid + ".json");
     	List<String> lines = Arrays.asList(JsonUtils.toPrettyJson(cont));
     	try {
@@ -187,12 +177,12 @@ public class HavenBags {
 			player.sendMessage("§7[§aHaven§bBags§7]§r §c Something went wrong! \n§fPlayer tell the owner this: '§eHavenBags:BagGUI:WriteToServer()§f'. \nThank you! §4❤§r");
 			e.printStackTrace();
     	}
-    	
+
     }
-	
+
 	public static List<ItemStack> LoadBagContentFromServer(String uuid, String owner, @Nullable Player player){
 		String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
-		
+
 		File bagData;
 		try {
 			bagData = new File(path);
@@ -217,14 +207,14 @@ public class HavenBags {
 			return null;
 		}
 	}*/
-	
+
 	public static List<ItemStack> LoadBagContentFromServer(ItemStack bag){
 		return BagData.GetBag(GetBagUUID(bag), bag).getContent();
 	}
-	
+
 	/*public static boolean DoesBagExist(String uuid, String owner, @Nullable Player player) {
 		String path = String.format("%s/bags/%s/%s.json", Main.plugin.getDataFolder(), owner, uuid);
-		
+
 		File bagData;
 		try {
 			bagData = new File(path);
@@ -240,7 +230,7 @@ public class HavenBags {
         }
         return true;
 	}*/
-	
+
 	public static void UpdatePDC(ItemStack bag) {
 		String uuid = PDC.GetString(bag, "uuid");
 		//String display = bag.getItemMeta().getDisplayName();
@@ -249,16 +239,16 @@ public class HavenBags {
 		//Log.Error(Main.plugin, uuid);
 		//Log.Error(Main.plugin, id);
 		//Log.Error(Main.plugin, data + "");
-		
+
 		//ItemStack skull = HeadCreator.itemFromBase64(data.GetString("texture"));
 		//if(!Utils.IsStringNullOrEmpty(data.GetString("texture"))) {
 		//	bag.setItemMeta((SkullMeta)HeadCreator.itemFromBase64(data.GetString("texture")).getItemMeta());
 		//}
-		
+
 		//ItemMeta meta = bag.getItemMeta();
 		//meta.setDisplayName(display);
 		//bag.setItemMeta(meta);
-		
+
 		//PDC.SetString(bag, "bag-uuid", uuid);
 
 		if(bag.getType() == Material.PLAYER_HEAD) {
@@ -269,23 +259,25 @@ public class HavenBags {
 				}
 			}
 		}else {
-			int cmd = data.getModeldata();
+			int cmd = data.getModeldata() != null ? data.getModeldata() : 0;
 			if(cmd != 0) {
 				if(bag.hasItemMeta()) {
 					bag.getItemMeta().setCustomModelData(cmd);
 				}
 			}
-			String im = data.getItemmodel();
-			if(!Utils.IsStringNullOrEmpty(im)) {
-				if(bag.hasItemMeta()) {
-					ItemUtils.SetItemModel(bag, im);
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
+				String im = data.getItemmodel();
+				if(!Utils.IsStringNullOrEmpty(im)) {
+					if(bag.hasItemMeta()) {
+						ItemUtils.SetItemModel(bag, im);
+					}
 				}
 			}
 		}
-		
-		
+
+
 		PDC.SetString(bag, "owner", data.getOwner());
-		
+
 		if(data.getOwner().equalsIgnoreCase("ownerless")) {
 			PDC.SetBoolean(bag, "binding", false);
 		} else {
@@ -294,7 +286,7 @@ public class HavenBags {
 		if(isPowerOfNine(data.getSize())) {
 			PDC.SetInteger(bag, "size", data.getSize());
 		}
-		
+
 		if(data.getAutopickup().equalsIgnoreCase("null")) {
 			PDC.SetString(bag, "filter", null);
 		}else {
@@ -315,7 +307,7 @@ public class HavenBags {
 		}
 		//PDC.SetString(bag, "bag-creator", data.getCreator());
 	}
-	
+
 	public static void UpdatePDC(ItemStack bag, Data data) {
 		String uuid = PDC.GetString(bag, "uuid");
 		//String display = bag.getItemMeta().getDisplayName();
@@ -323,16 +315,16 @@ public class HavenBags {
 		//Log.Error(Main.plugin, uuid);
 		//Log.Error(Main.plugin, id);
 		//Log.Error(Main.plugin, data + "");
-		
+
 		//ItemStack skull = HeadCreator.itemFromBase64(data.GetString("texture"));
 		//if(!Utils.IsStringNullOrEmpty(data.GetString("texture"))) {
 		//	bag.setItemMeta((SkullMeta)HeadCreator.itemFromBase64(data.GetString("texture")).getItemMeta());
 		//}
-		
+
 		//ItemMeta meta = bag.getItemMeta();
 		//meta.setDisplayName(display);
 		//bag.setItemMeta(meta);
-		
+
 		//PDC.SetString(bag, "bag-uuid", uuid);
 
 		if(bag.getType() == Material.PLAYER_HEAD) {
@@ -343,23 +335,25 @@ public class HavenBags {
 				}
 			}
 		}else {
-			int cmd = data.getModeldata();
+			int cmd = data.getModeldata() != null ? data.getModeldata() : 0;
 			if(cmd != 0) {
 				if(bag.hasItemMeta()) {
 					bag.getItemMeta().setCustomModelData(cmd);
 				}
 			}
-			String im = data.getItemmodel();
-			if(!Utils.IsStringNullOrEmpty(im)) {
-				if(bag.hasItemMeta()) {
-					ItemUtils.SetItemModel(bag, im);
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
+				String im = data.getItemmodel();
+				if(!Utils.IsStringNullOrEmpty(im)) {
+					if(bag.hasItemMeta()) {
+						ItemUtils.SetItemModel(bag, im);
+					}
 				}
 			}
 		}
-		
-		
+
+
 		PDC.SetString(bag, "owner", data.getOwner());
-		
+
 		if(data.getOwner().equalsIgnoreCase("ownerless")) {
 			PDC.SetBoolean(bag, "binding", false);
 		} else {
@@ -368,7 +362,7 @@ public class HavenBags {
 		if(isPowerOfNine(data.getSize())) {
 			PDC.SetInteger(bag, "size", data.getSize());
 		}
-		
+
 		if(data.getAutopickup().equalsIgnoreCase("null")) {
 			PDC.SetString(bag, "filter", null);
 		}else {
@@ -396,24 +390,32 @@ public class HavenBags {
 					+ "It's possible they have a mod allowing them to move the item away.", player.getName()));
 			return;
 		}
-		
-		String uuid = HavenBags.GetBagUUID(bag);
 
-		if(BagState(bag) == BagState.Used) {
+		String uuid = HavenBags.GetBagUUID(bag);
+		
+		try {
+			// Apply custom data before anything else, so that it can be used in the following methods.
+			CustomData.updateBag(bag);
+		} catch(Exception e) {
+			//Log.Error(Main.plugin, "Failed to apply custom data to bag " + uuid + " for player " + player.getName());
+			e.printStackTrace();
+		}
+
+		if(valorless.havenbags.enums.BagState.getState(bag) == BagState.USED) {
 			if(preview.length == 0) {
 				UpdatePDC(bag);
 			}
 			UpdateUsed(bag, BagData.GetBag(uuid, bag), player);
-		}else if (BagState(bag) == BagState.New) {
+		}else if (valorless.havenbags.enums.BagState.getState(bag) == BagState.NEW) {
 			UpdateNew(bag, player);
 		}
 	}
-	
+
 	private static void UpdateNew(ItemStack bag, OfflinePlayer player) {
 		if(Server.VersionHigherOrEqualTo(Version.v1_21)) {
 			ItemUtils.SetMaxStackSize(bag, 1);
 		}
-		
+
 		List<Placeholder> placeholders = new ArrayList<Placeholder>();
 
 		ItemMeta bagMeta = bag.getItemMeta();
@@ -440,33 +442,33 @@ public class HavenBags {
 			//lore.add(Lang.Parse(Lang.Parse(String.format(Lang.Get("bag-auto-pickup"), AutoPickup.GetFilterDisplayname(PDC.GetString(bag, "bag-filter"))), player)));
 			//lore.add(Lang.Parse("&7Auto Loot: " + AutoPickup.GetFilterDisplayname(PDC.GetString(bag, "bag-filter")), player));
 		}
-		
-        for(String line : Lang.lang.GetStringList("bag-lore-add")) {
-        	if(line.contains("%bag-auto-pickup%")) {
-        		if(!PDC.Has(bag, "filter")) continue;
-        		if(PDC.GetString(bag, "filter").equalsIgnoreCase("null")) continue;
-        		lore.add(Lang.Parse(line, placeholders, player));
-        	}
-        	if(line.contains("%bag-size%")) {
-        		lore.add(Lang.Parse(line, placeholders, player));
-        	}
-        }
-        
-        if(PDC.Has(bag, "tooltip")) {
-        	if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
-        		bagMeta.setTooltipStyle(NamespacedKey.fromString(PDC.GetString(bag, "tooltip")));
-        	}
+
+		for(String line : Lang.lang.GetStringList("bag-lore-add")) {
+			if(line.contains("%bag-auto-pickup%")) {
+				if(!PDC.Has(bag, "filter")) continue;
+				if(PDC.GetString(bag, "filter").equalsIgnoreCase("null")) continue;
+				lore.add(Lang.Parse(line, placeholders, player));
+			}
+			if(line.contains("%bag-size%")) {
+				lore.add(Lang.Parse(line, placeholders, player));
+			}
 		}
-        
-        bagMeta.setLore(lore);
+
+		if(PDC.Has(bag, "tooltip")) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				bagMeta.setTooltipStyle(NamespacedKey.fromString(PDC.GetString(bag, "tooltip")));
+			}
+		}
+
+		bagMeta.setLore(lore);
 		bag.setItemMeta(bagMeta);
 	}
-	
+
 	public static void UpdateUsed(ItemStack bag, Data data, OfflinePlayer player) {
 		if(Server.VersionHigherOrEqualTo(Version.v1_21)) {
 			ItemUtils.SetMaxStackSize(bag, 1);
 		}
-		
+
 		List<ItemStack> inventory = data.getContent();
 		if(data.hasAutoSort()) {
 			inventory = AutoSorter.SortInventory(inventory);
@@ -550,7 +552,7 @@ public class HavenBags {
 				}
 			}
 		}
-		
+
 		List<String> lore = new ArrayList<String>();
 		for (String l : Lang.lang.GetStringList("bag-lore")) {
 			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
@@ -608,7 +610,7 @@ public class HavenBags {
 
 			if(!Utils.IsStringNullOrEmpty(trusted)) hasTrust = true;
 		}
-		
+
 		if(data.hasAutoSort()) {
 			placeholders.add(new Placeholder("%sorting%", Lang.Parse(Lang.Get("bag-autosort-on"), placeholders, player)));
 		}else {
@@ -634,41 +636,61 @@ public class HavenBags {
 			placeholders.add(new Placeholder("%effect%", Lang.Parse(BagEffects.getEffectDisplayname(data.getEffect()), placeholders, player)));
 		}
 		placeholders.add(new Placeholder("%bag-effect%", Lang.Parse(Lang.Get("bag-effect"), placeholders, player)));
-		
-        for(String line : Lang.lang.GetStringList("bag-lore-add")) {
-        	if(line.contains("%bound-to%") && !PDC.GetBoolean(bag, "binding")) continue;
-    		if(line.contains("%bag-effect%")) {
-    			if(Lang.lang.GetBool("bag-effect-hide")) continue;
-    			if(data.getEffect() == null) continue;
-    			if(data.getEffect() != null && data.getEffect().equalsIgnoreCase("null")) continue;
-    		}
-    		if(line.contains("%bag-trusted%") && !hasTrust) continue;
-    		if(line.contains("%bag-auto-pickup%") && !PDC.Has(bag, "filter")) continue;
-    		if(line.contains("%bag-weight%") && !Main.weight.GetBool("enabled")) continue;
-    		if(line.contains("%bag-autosort%") && Lang.lang.GetBool("bag-autosort-off-hide")) continue;
-    		if(line.contains("%bag-magnet%") && Lang.lang.GetBool("bag-magnet-off-hide")) continue;
-    		if(line.contains("%bag-refill%") && Lang.lang.GetBool("bag-refill-off-hide")) continue;
-        	lore.add(Lang.Parse(line, placeholders, player));
-        }
-        
-        for(int i = 0; i < lore.size(); i++) {
-        	if(lore.get(i).contains("%bag-weight%")) lore.remove(i);
-        }
-        
-        if(a > 0 && Lang.lang.GetBool("show-bag-content")) {
-        	lore.add(Lang.Parse(Lang.Get("bag-content-title"), player));
-        	for(int k = 0; k < items.size(); k++) {
-        		if(k < Lang.lang.GetInt("bag-content-preview-size")) {
-        			lore.add("  " + items.get(k));
-        		}
 
-        	}
-        	if(a > Lang.lang.GetInt("bag-content-preview-size")) {
-        		lore.add(Lang.Get("bag-content-and-more"));
-        	}
-        }
-        
-        if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+		for(String line : Lang.lang.GetStringList("bag-lore-add")) {
+			if(line.contains("%bound-to%") && !PDC.GetBoolean(bag, "binding")) continue;
+			if(line.contains("%bag-effect%")) {
+				if(Lang.lang.GetBool("bag-effect-hide")) continue;
+				if(data.getEffect() == null) continue;
+				if(data.getEffect() != null && data.getEffect().equalsIgnoreCase("null")) continue;
+			}
+			if(line.contains("%bag-trusted%") && !hasTrust) continue;
+			if(line.contains("%bag-auto-pickup%") && !PDC.Has(bag, "filter")) continue;
+			if(line.contains("%bag-weight%") && !Main.weight.GetBool("enabled")) continue;
+			if(line.contains("%bag-autosort%") && Lang.lang.GetBool("bag-autosort-off-hide")) continue;
+			if(line.contains("%bag-magnet%") && Lang.lang.GetBool("bag-magnet-off-hide")) continue;
+			if(line.contains("%bag-refill%") && Lang.lang.GetBool("bag-refill-off-hide")) continue;
+			lore.add(Lang.Parse(line, placeholders, player));
+		}
+
+		for(int i = 0; i < lore.size(); i++) {
+			if(lore.get(i).contains("%bag-weight%")) lore.remove(i);
+		}
+
+		if(a > 0 && Lang.lang.GetBool("show-bag-content")) {
+			lore.add(Lang.Parse(Lang.Get("bag-content-title"), player));
+			for(int k = 0; k < items.size(); k++) {
+				if(k < Lang.lang.GetInt("bag-content-preview-size")) {
+					lore.add("  " + items.get(k));
+				}
+
+			}
+			if(a > Lang.lang.GetInt("bag-content-preview-size")) {
+				lore.add(Lang.Get("bag-content-and-more"));
+			}
+		}
+
+		if(data.getTooltipStyle() != null) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				if(!Utils.IsStringNullOrEmpty(data.getTooltipStyle())) {
+					bagMeta.setTooltipStyle(NamespacedKey.fromString(data.getTooltipStyle()));
+				}
+				
+			}
+		}else {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag.tooltip-style"))) {
+					bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
+				}
+			}
+		}
+		if(PDC.Has(bag, "tooltip")) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
+				bagMeta.setTooltipStyle(NamespacedKey.fromString(PDC.GetString(bag, "tooltip")));
+			}
+		}
+
+		if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
 			if(bagMeta.hasTooltipStyle()) {
 				if(bagMeta.getTooltipStyle().toString().equalsIgnoreCase("minecraft:null") || bagMeta.getTooltipStyle().toString().equalsIgnoreCase("minecraft:minecraft")) {
 					if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag.tooltip-style"))) {
@@ -682,28 +704,11 @@ public class HavenBags {
 				}
 			}
 		}
-        
-        if(data.getTooltipStyle() != null) {
-			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
-				bagMeta.setTooltipStyle(NamespacedKey.fromString(data.getTooltipStyle()));
-			}
-        }else {
-        	if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
-        		if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag.tooltip-style"))) {
-        			bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
-        		}
-			}
-        }
-        if(PDC.Has(bag, "tooltip")) {
-        	if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
-        		bagMeta.setTooltipStyle(NamespacedKey.fromString(PDC.GetString(bag, "tooltip")));
-        	}
-		}
-        
-        bagMeta.setLore(lore);
+
+		bagMeta.setLore(lore);
 		bag.setItemMeta(bagMeta);
 	}
-	
+
 	public static String CapacityTexture(ItemStack bag, List<ItemStack> content) {
 		Double capacity = UsedCapacity(bag, content);
 		//Log.Error(Main.plugin, capacity + "");
@@ -714,16 +719,16 @@ public class HavenBags {
 			map.put(key, value);
 		}
 		// Sorting the map by keys in descending order
-        Map<Double, String> sortedMap = map.entrySet()
-                .stream()
-                .sorted((e1, e2) -> e2.getKey().compareTo(e1.getKey())) // Descending order
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue, // Handle duplicate keys
-                        LinkedHashMap::new // Maintain sorted order
-                ));
-        
+		Map<Double, String> sortedMap = map.entrySet()
+				.stream()
+				.sorted((e1, e2) -> e2.getKey().compareTo(e1.getKey())) // Descending order
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						Map.Entry::getValue,
+						(oldValue, newValue) -> oldValue, // Handle duplicate keys
+						LinkedHashMap::new // Maintain sorted order
+						));
+
 		for(Entry<Double, String> entry : sortedMap.entrySet()) {
 			if(capacity >= entry.getKey()) {
 				//Log.Error(Main.plugin, entry.getKey() + "");
@@ -732,7 +737,7 @@ public class HavenBags {
 		}
 		return BagData.getTextureValue(bag);
 	}
-	
+
 	public static void UpdateBagLore(ItemStack bag, Player player, boolean...preview) {
 		try {
 			UpdateBagItem(bag, player, preview);
@@ -740,17 +745,17 @@ public class HavenBags {
 			UpdateBagItem(bag, player, preview);
 		}
 	}
-	
+
 	public static void EmptyBag(ItemStack bag, Player player) {
 		String uuid = PDC.GetString(bag, "uuid");
-    	//String owner = PDC.GetString(bag, "bag-owner");
+		//String owner = PDC.GetString(bag, "bag-owner");
 		Log.Debug(Main.plugin, "[DI-110] " + "Attempting to initialize bag items");
 		//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, player);
 		List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
 
 		Sound sound = new Sound(Main.config.GetString("sound.close.key"), 
-    			Main.config.GetDouble("sound.close.volume"), 
-    			Main.config.GetDouble("sound.close.pitch"));	
+				Main.config.GetDouble("sound.close.volume"), 
+				Main.config.GetDouble("sound.close.pitch"));	
 		sound.play(player);
 		for(int i = 0; i < content.size(); i++) {
 			try {
@@ -766,12 +771,12 @@ public class HavenBags {
 		BagData.UpdateBag(uuid, content);
 		UpdateBagItem(bag, player);
 	}
-	
+
 	public static boolean IsOwner(ItemStack bag, Player player) {
-    	String owner = PDC.GetString(bag, "owner");
-    	if(owner.equalsIgnoreCase("ownerless")) {
-    		return true;
-    	} else if (player.hasPermission("havenbags.bypass")) {
+		String owner = PDC.GetString(bag, "owner");
+		if(owner.equalsIgnoreCase("ownerless")) {
+			return true;
+		} else if (player.hasPermission("havenbags.bypass")) {
 			return true;
 		} else if (owner.equalsIgnoreCase(Bukkit.getPlayer(player.getName()).getUniqueId().toString())) {
 			return true;
@@ -779,7 +784,7 @@ public class HavenBags {
 			return false;
 		}
 	}
-	
+
 	public static boolean InventoryContainsBag(Player player) {
 		for(ItemStack item : player.getInventory().getContents()) {
 			if(IsBag(item)) return true;
@@ -787,7 +792,7 @@ public class HavenBags {
 		if(EtherealBags.hasBags(player.getUniqueId())) return true;
 		return false;
 	}
-	
+
 	public static ItemStack GetDisplayBagItem() {
 		ItemStack bagItem;
 		String bagTexture = Main.config.GetString("bag.texture");
@@ -801,7 +806,7 @@ public class HavenBags {
 		}
 		return bagItem;
 	}
-	
+
 	public static Double GetWeight(ItemStack bag) {
 		if(PDC.Has(bag, "weight")) {
 			return PDC.GetDouble(bag, "weight");
@@ -809,7 +814,7 @@ public class HavenBags {
 			try {
 				Double weight = 0.0;
 				String uuid = PDC.GetString(bag, "uuid");
-    			//String owner = PDC.GetString(bag, "bag-owner");
+				//String owner = PDC.GetString(bag, "bag-owner");
 				//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, null);
 				List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
 				for(ItemStack item : content) {
@@ -823,7 +828,7 @@ public class HavenBags {
 			}
 		}
 	}
-	
+
 	public static Double GetWeight(List<ItemStack> content) {
 		Double weight = 0.0;
 		for(ItemStack item : content) {
@@ -853,7 +858,7 @@ public class HavenBags {
 		}
 		return weight;
 	}
-	
+
 	public static Double ItemWeight(ItemStack item) {
 		if(item == null) return 0.0;
 		if(item.hasItemMeta() && item.getItemMeta().hasCustomModelData()) {
@@ -866,17 +871,17 @@ public class HavenBags {
 		}else {
 			return Main.weight.GetDouble(item.getType().toString()) * item.getAmount();
 		}
-		
+
 		//return Main.weight.GetDouble(item.getType().toString()) * item.getAmount();
 	}
-	
+
 	public static boolean CanCarry(ItemStack item, ItemStack bag) {
 		Log.Debug(Main.plugin, "[DI-111] " + "Can carry?");
 		HasWeightLimit(bag);
 		double maxWeight = PDC.GetDouble(bag, "weight-limit");
 		double weight = GetWeight(bag);
 		double itemWeight = ItemWeight(item);
-		
+
 		Log.Debug(Main.plugin, "[DI-112] " + (weight + itemWeight) + "");
 		if(weight + itemWeight <= maxWeight) {
 			Log.Debug(Main.plugin, "[DI-113] " + "true");
@@ -886,7 +891,7 @@ public class HavenBags {
 			return false;
 		}
 	}
-	
+
 	public static boolean CanCarry(ItemStack item, ItemStack bag, List<ItemStack> content) {
 		Log.Debug(Main.plugin, "[DI-115] " + "Can carry?");
 		if(bag == null) return false;
@@ -894,7 +899,7 @@ public class HavenBags {
 		double maxWeight = PDC.GetDouble(bag, "weight-limit");
 		double weight = GetWeight(content);
 		double itemWeight = ItemWeight(item);
-		
+
 		Log.Debug(Main.plugin, (weight + itemWeight) + "");
 		if(weight + itemWeight <= maxWeight) {
 			Log.Debug(Main.plugin, "[DI-116] " + "true");
@@ -904,7 +909,7 @@ public class HavenBags {
 			return false;
 		}
 	}
-	
+
 	public static boolean HasWeightLimit(ItemStack bag) {
 		if(PDC.Has(bag, "weight-limit")) {
 			return true;
@@ -919,132 +924,132 @@ public class HavenBags {
 		}
 		return false;
 	}
-	
+
 	public static boolean AddItemToInventory(List<ItemStack> items, int inventorySlots, ItemStack itemToAdd, Player player) {
 		Log.Debug(Main.plugin, "[DI-118] " + "Put item in bag?");	
-		
+
 		items = RemoveAir(items);
-		
-	    // Check if there is still space in the list for new items
-		
-	    if (items.size() >= inventorySlots && allSlotsFull(items, itemToAdd)) {
+
+		// Check if there is still space in the list for new items
+
+		if (items.size() >= inventorySlots && allSlotsFull(items, itemToAdd)) {
 			Log.Debug(Main.plugin, "[DI-119] " + "bag full!");	
-	        return false; // The bag is full and item is dropped
-	    }
-		
-	    boolean added = false;
+			return false; // The bag is full and item is dropped
+		}
+
+		boolean added = false;
 		Log.Debug(Main.plugin, "[DI-120] " + "checking bag.");	
-	    for (ItemStack stack : items) {
-	    	if(stack == null) continue;
-	        if (stack.isSimilar(itemToAdd)) {
-	            int maxStackSize = stack.getMaxStackSize();
-	            int totalAmount = stack.getAmount() + itemToAdd.getAmount();
+		for (ItemStack stack : items) {
+			if(stack == null) continue;
+			if (stack.isSimilar(itemToAdd)) {
+				int maxStackSize = stack.getMaxStackSize();
+				int totalAmount = stack.getAmount() + itemToAdd.getAmount();
 
-	            if (totalAmount <= maxStackSize) {
-	        		Log.Debug(Main.plugin, "[DI-121] " + "stack has space.");	
-	                stack.setAmount(totalAmount); // Perfect fit or less
-	                return true;
-	            } else {
-	        		Log.Debug(Main.plugin, "[DI-122] " + "stack overflow, adjusting.");	
-	                stack.setAmount(maxStackSize); // Max out the stack
-	                itemToAdd.setAmount(totalAmount - maxStackSize); // Adjust remaining
-	                added = true; // Partially added
-	            }
-	        }
-	    }
+				if (totalAmount <= maxStackSize) {
+					Log.Debug(Main.plugin, "[DI-121] " + "stack has space.");	
+					stack.setAmount(totalAmount); // Perfect fit or less
+					return true;
+				} else {
+					Log.Debug(Main.plugin, "[DI-122] " + "stack overflow, adjusting.");	
+					stack.setAmount(maxStackSize); // Max out the stack
+					itemToAdd.setAmount(totalAmount - maxStackSize); // Adjust remaining
+					added = true; // Partially added
+				}
+			}
+		}
 
-	    // Try to add remaining part of itemToAdd in a new slot if not all added
-	    if (!added || itemToAdd.getAmount() > 0) {
-	        if (items.size() < inventorySlots) {
-	            items.add(itemToAdd.clone());
-	            itemToAdd.setAmount(0);
-        		Log.Debug(Main.plugin, "[DI-123] " + "success.");	
-	            return true; // New stack added successfully
-	        } else {
-        		Log.Debug(Main.plugin, "[DI-124] " + "no space.");	
-	            DropItem(player.getLocation(), itemToAdd); // No space left, drop the remaining items
-	            return false;
-	        }
-	    }
+		// Try to add remaining part of itemToAdd in a new slot if not all added
+		if (!added || itemToAdd.getAmount() > 0) {
+			if (items.size() < inventorySlots) {
+				items.add(itemToAdd.clone());
+				itemToAdd.setAmount(0);
+				Log.Debug(Main.plugin, "[DI-123] " + "success.");	
+				return true; // New stack added successfully
+			} else {
+				Log.Debug(Main.plugin, "[DI-124] " + "no space.");	
+				DropItem(player.getLocation(), itemToAdd); // No space left, drop the remaining items
+				return false;
+			}
+		}
 		Log.Debug(Main.plugin, "[DI-125] " + "failed.");	
 
-	    return true; // This line is theoretically unreachable
+		return true; // This line is theoretically unreachable
 	}
-	
+
 	public static HashMap<Boolean, List<ItemStack>> AddItemToEtherealInventory(Player player, String bagId, ItemStack itemToAdd) {
 		HashMap<Boolean, List<ItemStack>> result = new HashMap<Boolean, List<ItemStack>>();
 		Log.Debug(Main.plugin, "[DI-118] " + "Put item in bag? (ethereal)");	
-		
+
 		List<ItemStack> items = EtherealBags.getBagContentsOrNull(player.getUniqueId(), bagId);
-		
-	    // Check if there is still space in the list for new items
-		
-	    if (EtherealBags.isBagFull(player.getUniqueId(), bagId)) {
+
+		// Check if there is still space in the list for new items
+
+		if (EtherealBags.isBagFull(player.getUniqueId(), bagId)) {
 			Log.Debug(Main.plugin, "[DI-119] " + "bag full!");	
-            result.put(false, items);
-            return result;
-	    }
-		
+			result.put(false, items);
+			return result;
+		}
+
 		Log.Debug(Main.plugin, "[DI-120] " + "checking bag.");	
-	    for (ItemStack stack : items) {
-	    	if(stack == null) continue;
-	        if (stack.isSimilar(itemToAdd)) {
-	            int maxStackSize = stack.getMaxStackSize();
-	            int totalAmount = stack.getAmount() + itemToAdd.getAmount();
+		for (ItemStack stack : items) {
+			if(stack == null) continue;
+			if (stack.isSimilar(itemToAdd)) {
+				int maxStackSize = stack.getMaxStackSize();
+				int totalAmount = stack.getAmount() + itemToAdd.getAmount();
 
-	            if (totalAmount <= maxStackSize) {
-	        		Log.Debug(Main.plugin, "[DI-121] " + "stack has space.");	
-	                stack.setAmount(totalAmount); // Perfect fit or less
-	                result.put(true, items);
-	                return result;
-	            } else {
-	        		Log.Debug(Main.plugin, "[DI-122] " + "stack overflow, adjusting.");	
-	                stack.setAmount(maxStackSize); // Max out the stack
-	                itemToAdd.setAmount(totalAmount - maxStackSize); // Adjust remaining
-	            }
-	        }
-	    }
+				if (totalAmount <= maxStackSize) {
+					Log.Debug(Main.plugin, "[DI-121] " + "stack has space.");	
+					stack.setAmount(totalAmount); // Perfect fit or less
+					result.put(true, items);
+					return result;
+				} else {
+					Log.Debug(Main.plugin, "[DI-122] " + "stack overflow, adjusting.");	
+					stack.setAmount(maxStackSize); // Max out the stack
+					itemToAdd.setAmount(totalAmount - maxStackSize); // Adjust remaining
+				}
+			}
+		}
 
-	    // Try to add remaining part of itemToAdd in a new slot if not all added
-	    if (itemToAdd.getAmount() > 0) {
-	    	Log.Debug(Main.plugin, "[DI-124] " + "adding new stack.");
-	    	int free = -1;
-	    	for(int i = 0; i < items.size(); i++) {
-	    		if(items.get(i) == null || items.get(i).getType() == Material.AIR) {
-	    			free = i;
-	    			break;
-	    		}
-	    	}
-	    	if(free != -1) {
-	    		items.set(free, itemToAdd.clone());
-	            itemToAdd.setAmount(0);
-	    		Log.Debug(Main.plugin, "[DI-123] " + "success.");	
-	            result.put(true, items);
-	            return result;
-	    	}else {
-	            result.put(false, items);
-	            return result;
-	    	}
-	    }
+		// Try to add remaining part of itemToAdd in a new slot if not all added
+		if (itemToAdd.getAmount() > 0) {
+			Log.Debug(Main.plugin, "[DI-124] " + "adding new stack.");
+			int free = -1;
+			for(int i = 0; i < items.size(); i++) {
+				if(items.get(i) == null || items.get(i).getType() == Material.AIR) {
+					free = i;
+					break;
+				}
+			}
+			if(free != -1) {
+				items.set(free, itemToAdd.clone());
+				itemToAdd.setAmount(0);
+				Log.Debug(Main.plugin, "[DI-123] " + "success.");	
+				result.put(true, items);
+				return result;
+			}else {
+				result.put(false, items);
+				return result;
+			}
+		}
 		Log.Debug(Main.plugin, "[DI-125] " + "failed.");
-        result.put(false, items);
-        return result;
+		result.put(false, items);
+		return result;
 	}
-	
+
 	private static boolean allSlotsFull(List<ItemStack> items, ItemStack add) {
-	    for (ItemStack item : items) {
-	    	if(item.getAmount() == item.getMaxStackSize()) continue;
-	    	if(item.isSimilar(add)) {
-	    		if(item.getMaxStackSize() >= item.getAmount() + add.getAmount()) {
-	    			return false;
-	    		}else {
-	    			return true;
-	    		}
-	    	}
-	    }
-	    return true; // All stacks are full
+		for (ItemStack item : items) {
+			if(item.getAmount() == item.getMaxStackSize()) continue;
+			if(item.isSimilar(add)) {
+				if(item.getMaxStackSize() >= item.getAmount() + add.getAmount()) {
+					return false;
+				}else {
+					return true;
+				}
+			}
+		}
+		return true; // All stacks are full
 	}
-	
+
 	private static List<ItemStack> RemoveAir(List<ItemStack> items){
 		Log.Debug(Main.plugin, "[DI-126] " + "removing air, if any.");	
 		for(int i = 0; i < items.size(); i++) {
@@ -1059,13 +1064,13 @@ public class HavenBags {
 	}
 
 	private static void DropItem(Location location, ItemStack itemStack) {
-	    location.getWorld().dropItemNaturally(location, itemStack);
+		location.getWorld().dropItemNaturally(location, itemStack);
 	}
-	
+
 	public static boolean IsItemBlacklisted(ItemStack item, Data... bagData) {
 		if(item == null) return false;
 		if(item.getType() == Material.AIR) return false;
-		
+
 		// Check bag's own blacklist
 		if(bagData != null && bagData.length != 0) {
 			Data data = bagData[0];
@@ -1106,8 +1111,8 @@ public class HavenBags {
 				if(data.isIngoreGlobalBlacklist()) return false; // If ignoring global blacklist, return false
 			}
 		}
-		
-		
+
+
 		Config blacklist = Main.blacklist;
 		if(!blacklist.GetBool("enabled")) {
 			return false;
@@ -1122,16 +1127,16 @@ public class HavenBags {
 		List<String> names = blacklist.GetStringList("blacklist.displayname");
 		List<Integer> cmd = blacklist.GetIntList("blacklist.custommodeldata");
 		List<BlacklistNBT> nbt = new ArrayList<BlacklistNBT>();
-		
+
 		for(String mat : blacklist.GetStringList("blacklist.materials")) {
 			//Log.Debug(Main.plugin, "Blacklisted Material: " + mat);	
 			materials.add(Material.valueOf(mat));
 		}
-		
+
 		for(@SuppressWarnings("unused") String name : names) {
 			//Log.Debug(Main.plugin, "Blacklisted Name: " + name);	
 		}
-		
+
 		for(String n : blacklist.GetStringList("blacklist.nbt")) {
 			String[] split = n.split(":");
 			if(split.length != 1) {
@@ -1144,13 +1149,13 @@ public class HavenBags {
 				nbt.add(new BlacklistNBT(split[0], null));
 			}
 		}
-		
+
 		if(materials.contains(item.getType())) {
 			Log.Debug(Main.plugin, "[DI-129] " + "Material blacklisted!");	
 			if(whitelist) return false;
 			return true;
 		}
-		
+
 		if(item.hasItemMeta()) {
 			for(String name : names) {
 				if(name.equalsIgnoreCase(Lang.RemoveColorFormatting(item.getItemMeta().getDisplayName()))) {
@@ -1159,7 +1164,7 @@ public class HavenBags {
 					return true;
 				}
 			}
-			
+
 			for(Integer c : cmd) {
 				if(item.getItemMeta().hasCustomModelData()) {
 					if(c == item.getItemMeta().getCustomModelData()) {
@@ -1170,7 +1175,7 @@ public class HavenBags {
 				}
 			}
 		}
-		
+
 		for(BlacklistNBT nk : nbt) {
 			if(PDC.Has(item, nk.key)) {
 				Log.Debug(Main.plugin, "[DI-131] " + "NBT blacklisted!");	
@@ -1182,30 +1187,22 @@ public class HavenBags {
 		if(whitelist) return true;
 		return false;
 	}
-	
-	public static class BlacklistNBT {
-		public String key;
-		public String value;
-		public BlacklistNBT(String key, String value) {
-			this.key = key; this.value = value;
-		}
-	}
-	
+
 	public static boolean CanCarryMoreBags(Player player) {
 		int max = Main.config.GetInt("bags-carry-max");
 		int invBags = 0;
-		
+
 		for(ItemStack item : player.getInventory().getContents()) {
 			if(IsBag(item)) invBags++;
 		}
-		
+
 		if(invBags >= max) {
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/*public static boolean IsPlayerTrusted(ItemStack item, String player) {
 		if(!PDC.Has(item, "bag-trust")) return false;
 		List<String> list = PDC.GetStringList(item, "bag-trust");
@@ -1216,11 +1213,12 @@ public class HavenBags {
 		}
 		return false;
 	}*/
-	
+
 	public static ItemStack CreateSkinToken(String value, TokenType type) {
 		String name = Main.config.GetString("token.skin.displayname");
 		Material material = Main.config.GetMaterial("token.skin.material");
 		int cmd = Main.config.GetInt("token.skin.custommodeldata");
+		String itemModel = Main.config.GetString("token.skin.itemmodel");
 		String skin = null;
 		List<String> lore = Main.config.GetStringList("token.skin.lore");
 		List<Placeholder> ph = new ArrayList<Placeholder>();
@@ -1229,7 +1227,7 @@ public class HavenBags {
 			skin = Main.textures.GetString(String.format("textures.%s", value));
 		}
 		//Log.Info(Main.plugin, "Creating skin token with value: " + value + " and resolved skin: " + skin);
-		
+
 		ItemStack item = new ItemStack(material);
 		// Set this first to give the item ItemMeta
 		PDC.SetString(item, "token-skin", value);
@@ -1254,24 +1252,30 @@ public class HavenBags {
 			}
 		}
 		meta.setLore(l);
+		if(!Utils.IsStringNullOrEmpty(itemModel)) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
+				meta.setItemModel(NamespacedKey.fromString(itemModel));
+			}
+		}
 		item.setItemMeta(meta);
-		
+
 		if(material == Material.PLAYER_HEAD && (isBase64 || skin != null)) {
 			BagData.setTextureValue(item, skin != null ? skin : value);
 		}
-		
+
 		return item;
 	}
-	
+
 	public static ItemStack CreateEffectToken(String value) {
 		String name = Main.config.GetString("token.effect.displayname");
 		Material material = Main.config.GetMaterial("token.effect.material");
 		int cmd = Main.config.GetInt("token.effect.custommodeldata");
 		List<String> lore = Main.config.GetStringList("token.effect.lore");
 		String skin = Main.config.GetString("token.effect.texture");
+		String itemModel = Main.config.GetString("token.effect.itemmodel");
 		List<Placeholder> ph = new ArrayList<Placeholder>();
 		ph.add(new Placeholder("%effect%", BagEffects.getEffectDisplayname(value)));
-		
+
 		ItemStack item = new ItemStack(material);
 		// Set this first to give the item ItemMeta
 		PDC.SetString(item, "token-effect", value);
@@ -1288,8 +1292,13 @@ public class HavenBags {
 			}
 		}
 		meta.setLore(l);
+		if(!Utils.IsStringNullOrEmpty(itemModel)) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
+				meta.setItemModel(NamespacedKey.fromString(itemModel));
+			}
+		}
 		item.setItemMeta(meta);
-		
+
 		if(material == Material.PLAYER_HEAD) {
 			if(Base64Validator.isValidBase64(skin)) {
 				BagData.setTextureValue(item, skin);
@@ -1297,10 +1306,10 @@ public class HavenBags {
 				Log.Error(Main.plugin, "token.effect.texture is not a valid base64 skin.");
 			}
 		}
-		
+
 		return item;
 	}
-	
+
 	public static boolean IsBagFull(ItemStack bag) {
 		try {
 			int size = PDC.GetInteger(bag, "size");
@@ -1313,7 +1322,7 @@ public class HavenBags {
 			return false;
 		}
 	}
-	
+
 	public static boolean IsBagFull(UUID uuid) {
 		try {
 			Data data = BagCache.get(uuid);
@@ -1327,7 +1336,7 @@ public class HavenBags {
 			return false;
 		}
 	}
-	
+
 	public static boolean IsBagFull(String uuid) {
 		try {
 			Data data = BagCache.get(UUID.fromString(uuid));
@@ -1341,7 +1350,48 @@ public class HavenBags {
 			return false;
 		}
 	}
-	
+
+	public static boolean isBagEmpty(ItemStack bag) {
+		try {
+			int size = PDC.GetInteger(bag, "size");
+			List<ItemStack> content = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
+			content.removeIf(item -> item.getType() == Material.AIR);
+			content.removeIf(item -> item == null);
+			if(size == 0 || content.size() == 0) return true;
+			else return false;
+		}catch(Exception e) {
+			return false;
+		}
+	}
+
+	public static boolean isBagEmpty(UUID uuid) {
+		try {
+			Data data = BagCache.get(uuid);
+			int size = data.getSize();
+			List<ItemStack> content = data.getContent();
+			content.removeIf(item -> item.getType() == Material.AIR);
+			content.removeIf(item -> item == null);
+			if(size == 0 || content.size() == 0) return true;
+			else return false;
+		}catch(Exception e) {
+			return false;
+		}
+	}
+
+	public static boolean isBagEmpty(String uuid) {
+		try {
+			Data data = BagCache.get(UUID.fromString(uuid));
+			int size = data.getSize();
+			List<ItemStack> content = data.getContent();
+			content.removeIf(item -> item.getType() == Material.AIR);
+			content.removeIf(item -> item == null);
+			if(size == 0 || content.size() == 0) return true;
+			else return false;
+		}catch(Exception e) {
+			return false;
+		}
+	}
+
 	public static int SlotsEmpty(ItemStack bag) {
 		int size = PDC.GetInteger(bag, "size");
 		List<ItemStack> content = BagData.GetBag(HavenBags.GetBagUUID(bag), null).getContent();
@@ -1349,7 +1399,7 @@ public class HavenBags {
 		content.removeIf(item -> item.getType() == Material.AIR);
 		return size - content.size();
 	}
-	
+
 	public static double UsedCapacity(ItemStack bag, List<ItemStack> content) {
 		//Log.Error(Main.plugin, "content " + PDC.GetInt(bag, "bag-size"));
 		Double size = Double.valueOf(PDC.GetInteger(bag, "size") + ".0");
@@ -1362,18 +1412,18 @@ public class HavenBags {
 		//Log.Error(Main.plugin, "used " + used.size());
 		return (used.size()/size)*100;
 	}
-	
+
 	public static List<Bag> GetBagsDataInInventory(Player player) {
 		List<Bag> bags = new ArrayList<Bag>();
 		//Log.Debug(Main.plugin, "[DI-156-1] " + "Checking for bags.");
 		for(ItemStack i : player.getInventory().getContents()) {
-			if(HavenBags.IsBag(i) && HavenBags.BagState(i) == HavenBags.BagState.Used) { 
+			if(HavenBags.IsBag(i) && valorless.havenbags.enums.BagState.getState(i) == BagState.USED) { 
 				bags.add(new Bag(i, HavenBags.LoadBagContentFromServer(i)));
 			}
 		}
 		return bags;
 	}
-	
+
 	public static int GetBagsInInventory(Player player) {
 		int bags = 0;
 		for(ItemStack i : player.getInventory().getContents()) {
@@ -1383,7 +1433,7 @@ public class HavenBags {
 		}
 		return bags;
 	}
-	
+
 	public static int GetBagsInInventoryCarryLimit(Player player) {
 		int bags = 0;
 		for(ItemStack i : player.getInventory().getContents()) {
@@ -1396,18 +1446,18 @@ public class HavenBags {
 		}
 		return bags;
 	}
-	
-    public static int countItems(List<ItemStack> items, Material material) {
-        int count = 0;
-        for (ItemStack item : items) {
-            if (item != null && item.getType() == material) {
-                count += item.getAmount();
-            }
-        }
-        return count;
-    }
-    
-    public static int GetBagSlotsInInventory(Player player) {
+
+	public static int countItems(List<ItemStack> items, Material material) {
+		int count = 0;
+		for (ItemStack item : items) {
+			if (item != null && item.getType() == material) {
+				count += item.getAmount();
+			}
+		}
+		return count;
+	}
+
+	public static int GetBagSlotsInInventory(Player player) {
 		int count = 0;
 
 		for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
@@ -1415,21 +1465,21 @@ public class HavenBags {
 		}
 
 		return count;
-    }
-    
-    public static boolean HasOthersBag(Player player) {
-    	boolean access = false;
-    	String uuid = player.getUniqueId().toString();
-    	for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
-    		if(BagData.GetBag(HavenBags.GetBagUUID(bag.item), null).getOwner().equalsIgnoreCase(uuid)) access = true;
-    		for(String trusted : BagData.GetBag(HavenBags.GetBagUUID(bag.item), null).getTrusted()) {
-    			if(trusted.equalsIgnoreCase(uuid)) access = true;
-    		}
-    		if(player.hasPermission("havenbags.bypass")) access = true;
+	}
+
+	public static boolean HasOthersBag(Player player) {
+		boolean access = false;
+		String uuid = player.getUniqueId().toString();
+		for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
+			if(BagData.GetBag(HavenBags.GetBagUUID(bag.item), null).getOwner().equalsIgnoreCase(uuid)) access = true;
+			for(String trusted : BagData.GetBag(HavenBags.GetBagUUID(bag.item), null).getTrusted()) {
+				if(trusted.equalsIgnoreCase(uuid)) access = true;
+			}
+			if(player.hasPermission("havenbags.bypass")) access = true;
 		}
 
 		return !access;
-    }
+	}
 
 	public static Integer findClosestNine(Integer size) {
 		if(size <= 9) return 9;
@@ -1440,7 +1490,7 @@ public class HavenBags {
 		if(size <= 54) return 54;
 		return 54;
 	}
-	
+
 	public static boolean isPowerOfNine(int size) {
 		if(size % 9 == 0) return true;
 		return false;

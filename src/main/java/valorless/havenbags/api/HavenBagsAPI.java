@@ -22,7 +22,9 @@ import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.EtherealBagSettings;
 import valorless.havenbags.datamodels.Placeholder;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.enums.TokenType;
+import valorless.havenbags.features.BagHealth;
 import valorless.havenbags.items.BagItemFactory;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
@@ -161,6 +163,18 @@ public class HavenBagsAPI {
 	 */
 	public static boolean isBagOpen(String uuid) {
 		return BagData.IsBagOpen(uuid, null);
+	}
+	
+	/**
+	 * Closes the bag with the specified UUID if it is currently open.
+	 * @param uuid bag UUID
+	 * @return true if the bag was open and is now closed, false if it was not open
+	 */
+	public static boolean closeBag(String uuid) {
+		if(isBagOpen(uuid)) {
+			 return BagData.GetBag(uuid, null).getGui().Close(true);
+		}
+		else return false;
 	}
 	
 	/**
@@ -575,7 +589,7 @@ public class HavenBagsAPI {
 	 * May return "NULL" if the item is not a valid bag.
 	 */
     public static String bagState(ItemStack item) {
-		return HavenBags.BagState(item).toString().toUpperCase();
+		return BagState.getState(item).toString().toUpperCase();
 	}
     
     /** Extracts the URL from a Base64-encoded texture string.
@@ -611,12 +625,13 @@ public class HavenBagsAPI {
      * @param binding Whether the bag should be bound to an owner upon creation.
      * @return The created unused bag ItemStack.
      */
-    public static ItemStack createUnusedBagItem(int size, boolean binding) {
+    @SuppressWarnings("deprecation")
+	public static ItemStack createUnusedBagItem(int size, boolean binding) {
 		Config config = valorless.havenbags.Main.config;
 		String bagTexture = config.GetString("bag.texture");
 		ItemStack bagItem = new ItemStack(Material.AIR);
 
-		if(config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+		if(config.GetString("bag.type").equalsIgnoreCase("HEAD")){
 			if(config.GetBool("bag-textures.enabled")) {
 				for(int s = 9; s <= 54; s += 9) {
 					if(size == s) {
@@ -693,6 +708,108 @@ public class HavenBagsAPI {
     	return bagData;
     }
     */
+    
+    /**
+	 * Checks if the bag is empty.
+	 * 
+	 * @param uuid The item of the bag to check.
+	 * @return true if the bag is empty, false otherwise.
+	 */
+	public static boolean isBagEmpty(ItemStack bag) {
+		return HavenBags.isBagEmpty(bag);
+	}
+	
+	/**
+	 * Checks if the bag with the specified UUID is empty.
+	 * 
+	 * @param uuid The UUID of the bag to check.
+	 * @return true if the bag is empty, false otherwise.
+	 */
+	public static boolean isBagEmpty(UUID uuid) {
+		return HavenBags.isBagEmpty(uuid);
+	}
+	
+	/**
+	 * Checks if the bag with the specified UUID is empty.
+	 * 
+	 * @param uuid The UUID string of the bag to check.
+	 * @return true if the bag is empty, false otherwise.
+	 */
+	public static boolean isBagEmpty(String uuid) {
+		return HavenBags.isBagEmpty(uuid);
+	}
+
+	/**
+	 * Checks whether the bag health (durability) feature is enabled in the configuration.
+	 * 
+	 * @return true if bag health is enabled, false otherwise
+	 */
+	public static boolean isBagHealthEnabled() {
+		return BagHealth.isEnabled();
+	}
+
+	/**
+	 * Gets the current stored damage value for a bag item.
+	 * <p>
+	 * Damage is stored in the bag's persistent data and is used to derive remaining health.
+	 * 
+	 * @param bag bag ItemStack
+	 * @return current damage value, or 0 if not set
+	 */
+	public static int getBagDamage(ItemStack bag) {
+		return BagHealth.getDamage(bag);
+	}
+
+	/**
+	 * Sets the stored damage value for a bag item.
+	 * 
+	 * @param bag bag ItemStack
+	 * @param damage new damage value to store
+	 */
+	public static void setBagDamage(ItemStack bag, int damage) {
+		BagHealth.setDamage(bag, damage);
+	}
+
+	/**
+	 * Adds damage to a bag item.
+	 * 
+	 * @param bag bag ItemStack
+	 * @param damageToAdd amount of damage to add
+	 */
+	public static void addBagDamage(ItemStack bag, int damageToAdd) {
+		BagHealth.addDamage(bag, damageToAdd);
+	}
+
+	/**
+	 * Gets the current remaining health for a bag item.
+	 * 
+	 * @param bag bag ItemStack
+	 * @return current remaining health
+	 */
+	public static int getBagCurrentHealth(ItemStack bag) {
+		return BagHealth.getCurrentHealth(bag);
+	}
+
+	/**
+	 * Gets the maximum health for a bag item based on its configured size tier.
+	 * 
+	 * @param bag bag ItemStack
+	 * @return maximum health for the bag
+	 */
+	public static int getBagMaxHealth(ItemStack bag) {
+		return BagHealth.getMaxHealth(bag);
+	}
+	
+	/**
+	 * Checks the state of the bag (e.g., "NEW", "USED", "NULL") based on its contents and configuration.
+	 * The state is determined by factors such as whether the has been used before, or if the item is not a valid bag.
+	 * 
+	 * @param bag ItemStack to evaluate
+	 * @return the BagState enum value representing the bag's state, or BagState.NULL if the item is not a valid bag
+	 */
+	public static BagState getBagState(ItemStack bag) {
+		return BagState.getState(bag);
+	}
     
     /**
 	 * GUI-related utilities for HavenBags.

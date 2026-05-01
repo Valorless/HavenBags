@@ -1,9 +1,11 @@
 package valorless.havenbags;
 
-import valorless.havenbags.configconversion.BagConversion;
-import valorless.havenbags.configconversion.ConfigRestructure;
-import valorless.havenbags.configconversion.DataConversion;
-import valorless.havenbags.configconversion.TokenConfigConversion;
+import valorless.havenbags.commands.debug.DebugHandler;
+import valorless.havenbags.configconversion.CV2_BagConversion;
+import valorless.havenbags.configconversion.CV6_ConfigRestructure;
+import valorless.havenbags.configconversion.CV7_ConfigRestructure;
+import valorless.havenbags.configconversion.CV4_DataConversion;
+import valorless.havenbags.configconversion.CV5_TokenConfigConversion;
 import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.database.SkinCache;
@@ -11,11 +13,14 @@ import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.BagCarryLimit;
 import valorless.havenbags.features.BagEffects;
+import valorless.havenbags.features.BagHealth;
 import valorless.havenbags.features.BagSkin;
 import valorless.havenbags.features.BagUpgrade;
 import valorless.havenbags.features.Crafting;
 import valorless.havenbags.features.CustomBags;
+import valorless.havenbags.features.CustomData;
 import valorless.havenbags.features.Encumbering;
+import valorless.havenbags.features.Insurance;
 import valorless.havenbags.features.InventoryLock;
 import valorless.havenbags.features.Magnet;
 import valorless.havenbags.features.Quiver;
@@ -52,6 +57,7 @@ public final class Main extends JavaPlugin implements Listener {
 	public static Config plugins;
 	public static Config textures;
 	public static Config effects;
+	public static Config insurance;
 	protected static PlaceholderAPI papi;
 	//public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
@@ -78,21 +84,22 @@ public final class Main extends JavaPlugin implements Listener {
 		plugins = new Config(this, "plugins.yml");
 		textures = new Config(this, "textures.yml");
 		effects = new Config(this, "effects.yml");
+		insurance = new Config(this, "insurance.yml");
 	}
 	
 	@SuppressWarnings("unused")
 	boolean ValorlessUtils() {
 		Log.Debug(plugin, "[DI-0] Checking ValorlessUtils");
 		
-		int requiresBuild = 313; // The build number of ValorlessUtils that is required for HavenBags to run.
+		int requiresBuild = 374; // The build number of ValorlessUtils that is required for HavenBags to run.
 		
 		String ver = Bukkit.getPluginManager().getPlugin("ValorlessUtils").getDescription().getVersion();
 		//Log.Debug(plugin, ver);
 		String[] split = ver.split("[.]");
-		int major = Integer.valueOf(split[0]);
-		int minor = Integer.valueOf(split[1]);
-		int hotfix = Integer.valueOf(split[2]);
-		int build = Integer.valueOf(split[3]);
+		int major = Integer.parseInt(split[0]);
+		int minor = Integer.parseInt(split[1]);
+		int hotfix = Integer.parseInt(split[2]);
+		int build = Integer.parseInt(split[3]);
 		
 		if(build < requiresBuild) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -115,6 +122,8 @@ public final class Main extends JavaPlugin implements Listener {
 		// Check if a correct version of ValorlessUtils is in use, otherwise don't run the rest of the code.
 		if(!ValorlessUtils()) return;
 		
+		registerSoftCrash();
+		
 		ConfigValidation.Validate();
 		
 		if(PlaceholderAPIHook.Hook()) {
@@ -126,8 +135,13 @@ public final class Main extends JavaPlugin implements Listener {
 		if(ProtocolLibHook.Hook()) {
 			//WeightTooltipProtocollib.registerTooltipListener(this);
 		}
-		
+
 		EssentialsHook.Hook();
+		try {
+			new Insurance(); // Initialize insurance system if enabled in config. Requires Essentials to be hooked.
+		} catch (Exception e) {
+			Log.Error(plugin, "Failed to initialize insurance system: " + e.getMessage());
+		}
 		
 		//OraxenHook.Hook();
 		
@@ -138,14 +152,18 @@ public final class Main extends JavaPlugin implements Listener {
 		ValidateSizeTextures();
 		
 		// Config-Version checks
-		BagConversion.check(config); // Config 1 -> 2
+		CV2_BagConversion.check(config); // Config 1 -> 2
 		//TimeTableConversion.check(); Would've been Config 2 -> 3
 		try {
-			DataConversion.check(config);// Config 3 -> 4
+			CV4_DataConversion.check(config);// Config 3 -> 4
 		} catch (InvalidConfigurationException e) {} 
-		TokenConfigConversion.check(config); // Config 4 -> 5
-		ConfigRestructure.check(config); // Config 5 -> 6
+		CV5_TokenConfigConversion.check(config); // Config 4 -> 5
+		CV6_ConfigRestructure.check(config); // Config 5 -> 6
+		CV7_ConfigRestructure.check(config); // Config 6 -> 7
         
+		CustomData.init();
+		
+		BagHealth.init();
 		
 		BagData.Initiate();
 		
@@ -197,6 +215,24 @@ public final class Main extends JavaPlugin implements Listener {
 
 	@Override
     public void onDisable() {		
+    	CloseBags(); // Close all open bags to prevent duping and other issues.
+    	if(!BackBag.tracking.isEmpty()) {
+    		for(Player player : BackBag.tracking.keySet()) {
+    			BackBag.tracking.get(player).despawn();
+    		}
+    	}
+    	if(BackBag.cleantask != null) BackBag.cleantask.cancel();
+    	BagData.SaveData(true); // Save all bag data on shutdown. The "true" parameter marks this as a shutdown save.
+    	BagData.Shutdown(); // Close all database connections.
+    	Crafting.RemoveRecipes();
+    	BagEffects.shutdown(); // Stop the bag effects tasks.
+    	UpgradeGUI.OpenGUIs.CloseAll(); // Close all open upgrade GUIs.
+    	SkinCache.shutdown(); // Save skin cache.
+    	EtherealBags.shutdown(); // Close and save ethereal bags.
+    	Insurance.shutdown(); // Save insurance data.
+    }
+	
+	public void onCrashDisable() {
     	CloseBags();
     	if(!BackBag.tracking.isEmpty()) {
     		for(Player player : BackBag.tracking.keySet()) {
@@ -205,16 +241,17 @@ public final class Main extends JavaPlugin implements Listener {
     	}
     	if(BackBag.cleantask != null) BackBag.cleantask.cancel();
     	BagData.SaveData(true);
-    	BagData.Shutdown();
     	Crafting.RemoveRecipes();
     	BagEffects.shutdown();
     	UpgradeGUI.OpenGUIs.CloseAll();
     	SkinCache.shutdown();
     	EtherealBags.shutdown();
-    }
+    	Insurance.shutdown();
+		
+	}
     
     public static void CloseBags() {
-    	if(BagData.GetOpenBags().size() != 0) {
+    	if(!BagData.GetOpenBags().isEmpty()) {
     		Log.Info(plugin, "Closing all open bags.");
     		try {
     			for(Data bag : BagData.GetOpenBags()) {
@@ -228,11 +265,11 @@ public final class Main extends JavaPlugin implements Listener {
     }
     
     protected void RegisterCommands() {
-    	for (int i = 0; i < commands.length; i++) {
-    		Log.Debug(plugin, "[DI-20] Registering Command: " + commands[i]);
-    		getCommand(commands[i]).setExecutor(new CommandListener());
-    		getCommand(commands[i]).setTabCompleter(new TabCompletion());
-    	}
+        for (String command : commands) {
+			Log.Debug(plugin, "[DI-20] Registering Command: " + command);
+			getCommand(command).setExecutor(new CommandListener());
+			getCommand(command).setTabCompleter(new TabCompletion());
+		}
     }
     
 	protected void RegisterListeners() {
@@ -338,5 +375,21 @@ public final class Main extends JavaPlugin implements Listener {
     		
     		if(c) config.SaveConfig();
     	}
+    }
+    
+    void registerSoftCrash() {
+    	Log.Debug(plugin, "Registering shutdown hook for crash detection.");
+    	try {
+    		Runtime.getRuntime().addShutdownHook(
+    				new Thread(() -> {
+    					Log.Error(plugin, "Detected possible crash. Attempting to save data, close bags properly and shutting down.");
+    					onCrashDisable(); // Attempt to run the onDisable method to save data and close bags properly. This won't work on hard crashes, but should work on soft crashes.
+    					Bukkit.getServer().getPluginManager().disablePlugin(this); // Disable the plugin to prevent further issues. Again, this won't work on hard crashes.
+    				}, "HavenBags-Shutdown-Hook")
+    		);
+    		Log.Debug(plugin, "Registered shutdown hook for crash detection.");
+        } catch (Exception e) {
+        	Log.Error(plugin, "Failed to register shutdown hook for crash detection. Data may not be saved properly on crashes.");
+        }
     }
 }

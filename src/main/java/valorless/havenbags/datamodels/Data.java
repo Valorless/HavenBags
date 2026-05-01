@@ -8,8 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import valorless.havenbags.Main;
 import valorless.havenbags.annotations.DoNotCall;
 import valorless.havenbags.gui.BagGUI;
+import valorless.valorlessutils.ValorlessUtils;
 
 /**
  * Data model representing a HavenBag's persistent and runtime state.
@@ -34,7 +36,7 @@ public class Data {
 	/** Custom name of the bag */
 	private String name = "";
 	/** Custom model data integer */
-	int modeldata;
+	Integer modeldata = null;
 	/** Item model identifier string */
 	String itemmodel;
 	/** List of trusted player UUIDs */
@@ -183,9 +185,9 @@ public class Data {
 		this.texture = base64;
 	}
 
-	/** @return custom model data int */
-	public int getModeldata() {
-		return modeldata;
+	/** @return custom model data or 0 if not set */
+	public Integer getModeldata() {
+		return modeldata != null ? modeldata : 0;
 	}
 
 	/**

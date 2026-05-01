@@ -30,15 +30,17 @@ import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
-import valorless.havenbags.HavenBags.BagState;
+import valorless.havenbags.annotations.DoNotCall;
 import valorless.havenbags.annotations.NotNull;
 import valorless.havenbags.annotations.Nullable;
 import valorless.havenbags.database.Files;
 import valorless.havenbags.database.MySQL;
 import valorless.havenbags.database.SQLite;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.events.BagCreateEvent;
+import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Reflex;
@@ -423,6 +425,7 @@ public class BagData {
 	}
 	
 	public static Data CreateBag(@NotNull Data dat) {
+		if(dat == null) throw new IllegalArgumentException("Data cannot be null");
 		dat.setChanged(true);
 		data.put(UUID.fromString(dat.getUuid()), dat);
 		if(database == DatabaseType.MYSQLPLUS) {
@@ -595,7 +598,7 @@ public class BagData {
 		Log.Error(Main.plugin, String.format("Failed to remove cached data for %s.", uuid));
 	}
 	
-	public static Boolean DeleteBag(@NotNull String uuid) {
+	public static Boolean DeleteBag(@NotNull String uuid,  @Nullable Player... player) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			if(getDatabase() == DatabaseType.FILES) {
@@ -612,7 +615,12 @@ public class BagData {
 	    	else if(getDatabase() == DatabaseType.SQLITE) {
 	    		sqlite.deleteBag(uuid);
 	    	}
-			
+
+			if(player != null && player.length > 0) {
+				Bukkit.getPluginManager().callEvent(new BagDeleteEvent(player[0], bag.clone()));
+			}else {
+				Bukkit.getPluginManager().callEvent(new BagDeleteEvent(null, bag.clone()));
+			}
 			RemoveBag(uuid);
 			if(changedBags.containsKey(UUID.fromString(uuid))) {
 				changedBags.remove(UUID.fromString(uuid));
@@ -671,7 +679,7 @@ public class BagData {
 	}
 	
 	public static boolean IsBagOpen(ItemStack bagItem) {
-		if(HavenBags.BagState(bagItem) != BagState.Used) return false;
+		if(BagState.getState(bagItem) != BagState.USED) return false;
 		String uuid = HavenBags.GetBagUUID(bagItem);
 		if("null".equalsIgnoreCase(uuid)) {
 			return false;
@@ -1008,5 +1016,24 @@ public class BagData {
 
 	protected static void setMysql(MySQL mysql) {
 		BagData.mysql = mysql;
+	}
+
+	/**
+	 * Reset the tooltip-styles of ALL bags to the default one specified in the config.<br>
+	 * This is used when the tooltip-style is changed in the config, to update all bags to the new style.
+	 * <p>
+	 * If the server is a version that does not support TooltipStyle, then all are set null.
+	 */
+	@DoNotCall("This method is used internally to reset the tooltip-styles of all bags to the value in config.yml. It should not be called outside of HavenBags.")
+	public static void resetTooltipStyles() {
+		for (Data data : data.values()) {
+			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {
+				data.setTooltipStyle(Main.config.GetString("bag.tooltip-style"));
+			}else {
+				data.setTooltipStyle(null);
+			}
+		}
+		// Forcefully save all changes
+		SaveData(true);
 	}
 }

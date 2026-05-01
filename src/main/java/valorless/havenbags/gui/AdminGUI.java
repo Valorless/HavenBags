@@ -753,9 +753,7 @@ public class AdminGUI implements Listener {
 				String uuid = PDC.GetString(selectedBag, "uuid");
 
 				Data data = BagData.GetBag(uuid, null).clone();
-				if(BagData.DeleteBag(uuid)) {
-					Bukkit.getPluginManager().callEvent(new BagDeleteEvent(player, data));
-				}
+				BagData.DeleteBag(uuid);
 
 				type = GUIType.DeletionPlayer;
 				Reload(e);
@@ -1186,6 +1184,11 @@ public class AdminGUI implements Listener {
 			}else {
 				meta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), targetPlayer));
 			}
+			
+			if(data.getModeldata() != null && data.getModeldata() != 0) {
+				meta.setCustomModelData(data.getModeldata());
+			}
+			
 			bagItem.setItemMeta(meta);
 
 			if(Server.VersionHigherOrEqualTo(Version.v1_21_2)) {

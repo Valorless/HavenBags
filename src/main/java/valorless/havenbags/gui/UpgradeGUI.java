@@ -21,9 +21,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import valorless.havenbags.*;
-import valorless.havenbags.HavenBags.BagState;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Sound;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.events.gui.PrepareUpgradeEvent;
 import valorless.havenbags.features.BagEffects;
@@ -332,7 +332,7 @@ public class UpgradeGUI implements Listener {
 				if(value.chars().count() < 30) {
 					Log.Debug(Main.plugin, "[DI-278] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.GetString(String.format("textures.%s", value));
-					if(HavenBags.BagState(clicked) == BagState.New) {
+					if(BagState.getState(clicked) == BagState.NEW) {
 						BagData.setTextureValue(clicked, texture);
 					}else {
 						BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(texture);
@@ -340,7 +340,7 @@ public class UpgradeGUI implements Listener {
 				}else {
 					Log.Debug(Main.plugin, "[DI-278] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						if(HavenBags.BagState(clicked) == BagState.New) {
+						if(BagState.getState(clicked) == BagState.NEW) {
 							BagData.setTextureValue(clicked, value);
 						}else {
 							BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(value);
@@ -478,7 +478,7 @@ public class UpgradeGUI implements Listener {
 			Log.Debug(Main.plugin, "[DI-272] [UpgradeGUI] Is bag max size?");
 			if(size == 54) return null;
 			Log.Debug(Main.plugin, "[DI-273] [UpgradeGUI] Is bag used?");
-			if(HavenBags.BagState(bag) == BagState.New) return null;
+			if(BagState.getState(bag) == BagState.NEW) return null;
 			Log.Debug(Main.plugin, "[DI-274] [UpgradeGUI] Is player allowed to upgrade this size?");
 			if(!player.hasPermission(String.format("havenbags.upgrade.%s", size))) return null;
 
@@ -497,7 +497,7 @@ public class UpgradeGUI implements Listener {
 					}else return null;
 				}
 			}catch(Exception e) { //ItemModel
-				if(split.length == 3 && Server.VersionHigherOrEqualTo(Version.v1_20_5)) {
+				if(split.length == 3 && Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
 					model = split[2];
 					if(token.hasItemMeta()) {
 						if(ItemUtils.GetItemModel(token) == null) return null;
@@ -622,7 +622,7 @@ public class UpgradeGUI implements Listener {
 					}
 				}catch(Exception e) {}
 			}
-			else if(type == TokenType.ItemModel && Server.VersionHigherOrEqualTo(Version.v1_20_5)) {
+			else if(type == TokenType.ItemModel && Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
 				Log.Debug(Main.plugin, "[DI-279] [UpgradeGUI] ItemModel Skin.");
 				ItemUtils.SetItemModel(item, value);
 			}

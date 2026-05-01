@@ -98,10 +98,15 @@ effects-command: '&fEffect has been set to: %value%.'
 # is currently being viewed by someone with 'havenbags.ethereal.admin'.
 ethereal-open-admin: '&cThis bag is currently being viewed by an admin.'
 
+# Messages relating to the insurance feature.
+insurance:
+ fail: '&cYou do not have enough money.'
+ cooldown: '&cYour insurance is still on cooldown.'
+
 ### Admin ###
 
 # Message sent when attempting to fetch a player which does not exist.
-player-no-exist: "&cNo bags found for this player."
+player-no-exist: '&cNo bags found for this player.'
 
 # Message sent when '/bags restore' fails to locate bag of specific UUID.
 bag-not-found: '&cNo bag found with that UUID.'

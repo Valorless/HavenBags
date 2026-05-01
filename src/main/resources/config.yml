@@ -24,11 +24,16 @@ save-type: 'sqlite'
 mysql:
  host: 'localhost'
  port: 3306
+ # Database name.
  name: 'minecraft'
  user: 'admin'
  password: 'pass'
- connect_timeout: 30 # Seconds
- socket_timeout: 60 # Seconds
+ # Connection timeout in seconds
+ connect_timeout: 30
+ # Socket timeout in seconds
+ socket_timeout: 60
+ # Maximum number of bags to load/save in a single database chunk.
+ # Adjust based on your server's performance and memory.
  max_chunk_size: 200
 
 auto-save:
@@ -118,7 +123,6 @@ bag-textures:
  
 # Should we change the bag's texture regarless of other settings,
 # based on how full the bag is?
-# NOTE: This function glitches if 'keep-bags' is set to false.
 capacity-based-textures:
  enabled: false
  # Defined capacities and their defined textures.
@@ -158,8 +162,36 @@ max-bags: 9
 # set 0 for unlimited.
 carry-limit: 3
 
+# Should bags' data get deleted if the bag item is destroyed?
+hardcore-bags:
+ enabled: false
+ unbound: true
+ bound: true
+ unused: true
+ used: true
+
 # Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?
-protect-bags: true
+protect-bags:
+ enabled: true
+ unbound: true
+ bound: true
+ unused: true
+ used: true
+ bag-health:
+  # Should protected bags have a certain amount of health, before they break?
+  enabled: false
+  # Delay between taking damage.
+  damage-delay: 5 # 5 second delay
+  # Health based on the amount of slots
+  health:
+   # Default health if the desired slot isnt on the list.
+   default: 3
+   '9': 3
+   '18': 4
+   '27': 5
+   '36': 6
+   '45': 8
+   '54': 10
 
 # Should dropped bags only be able to be picked up by their owner?
 protect-bags-players: false
@@ -223,13 +255,13 @@ quiver-shield-fix: 2
 # If enabled, nearby drops will move towards the player.
 magnet:
  enabled: true
- tick-rate: 2 # How often the task should run
+ tick-rate: 2 # How often the task should run.
  range: 5.0
  speed: 0.1
  vertical: false # Should drops ignore gravity to move vertically towards the player?
  require-autopickup: false
  only-autopickup-items: false
- instant: false # This will teleport the items to the player instantly
+ instant: false # This will teleport the items to the player instantly,
  # instead of moving them over time.
  
 effects:
@@ -264,6 +296,7 @@ token:
   # If material is PLAYER_HEAD, the head's texture will be the same as the skin.
   material: PLAYER_HEAD
   custommodeldata: 0 # 0 to ignore
+  itemmodel: ''
   # Placeholders:
   # %skin% - Name of the skin found in textures.yml. 
   lore:
@@ -276,6 +309,7 @@ token:
   # base64 texture for PLAYER_HEAD material, can also be a value from textures.yml.
   texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMzNGQxMmY3YWM5MzliMTE1MWQxMjE0NmQwMjM5ZWYwMTg4ZTQwM2VlMTk2NmQzZGIxOTllNjY0ZmYzODI4MyJ9fX0='
   custommodeldata: 0 # 0 to ignore
+  itemmodel: ''
   # Placeholders:
   # %effect% - Name of the effect found in effects.yml. 
   lore:
@@ -334,3 +368,45 @@ player-gui:
  self-restore: true
  # Can players delete their own bags?
  self-delete: true
+ 
+# Automatically write extra "tags" onto bag items when they update.
+# You can set different tags per bag size (9, 18, etc.), stored either as NBT or plugin-namespaced PDC keys.
+custom-data:
+ # Should we apply custom data entries onto bags when they update?
+ enabled: false
+ '9': # Affect 9 slot bags, can hold multiple entries.
+  example:
+   # Storage backend for a configured data entry, either NBT or PDC.
+   type: NBT
+   # The key for this entry.
+   key: 'coolKey'
+   # The value for this entry.
+   # Supports: String/Integer/Double/Boolean/Float/UUID
+   value: 44
+  example2:
+   # Storage backend for this entry, either NBT or PDC.
+   type: PDC
+   # Plugin name used for PDC namespacing.
+   plugin: 'HavenBags'
+   # The key for this entry.
+   key: 'coolKey2'
+   # The value for this entry.
+   value: 'awesomeValue'
+   # PersistentDataType - PDC only
+   # Supports: String/Integer/Double/Boolean/Float/UUID
+   pdc-type: STRING
+ '18': # Affect 18 slot bags, can hold multiple entries.
+  example:
+   # Storage backend for this entry, either NBT or PDC.
+   type: PDC
+   # Plugin name used for PDC namespacing.
+   plugin: 'HavenBags'
+   # The key for this entry.
+   key: 'coolKey'
+   # The value for this entry.
+   value: 44
+   # PersistentDataType - PDC only
+   # Supports: String/Integer/Double/Boolean/Float/UUID
+   pdc-type: INTEGER
+
+ 
