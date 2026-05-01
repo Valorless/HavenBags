@@ -19,6 +19,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Find JAR file
+        id: find-jar
+        run: echo "path=$(ls ./release-assets/*.jar | head -n 1)" >> $GITHUB_OUTPUT
+
       - name: Publish to Modrinth
         uses: cloudnode-pro/modrinth-publish@v2
         with:
@@ -49,5 +53,5 @@ jobs:
             1.21.9
             1.21.10
             1.21.11
-          files: ./release-assets/*.jar
+          files: ${{ steps.find-jar.outputs.path }}
           changelog: ${{ github.event.release.body }}
