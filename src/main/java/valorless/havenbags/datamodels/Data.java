@@ -2,12 +2,14 @@ package valorless.havenbags.datamodels;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import valorless.havenbags.BagData;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.DoNotCall;
 import valorless.havenbags.gui.BagGUI;
@@ -462,6 +464,7 @@ public class Data {
 	 */
 	public void setChanged(boolean changed) {
 		this.changed = changed;
+		BagData.changedBags.put(UUID.fromString(this.uuid), this);
 	}
 
 	/** @return true if magnet feature active */

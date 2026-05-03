@@ -110,7 +110,7 @@ public class BagListener implements Listener{
 
 			    interactCooldowns.put(uuid, now);
 			    
-				if(BagData.isReady() == false) {
+				if(!BagData.isReady()) {
 					event.setCancelled(true);
 					return;
 				}
