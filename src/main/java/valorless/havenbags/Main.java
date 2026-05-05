@@ -130,6 +130,7 @@ public final class Main extends JavaPlugin implements Listener {
 			papi = new PlaceholderAPI();
 			papi.register();
 		}
+		new NexoHook();
 		ChestSortHook.Hook();
 		PvPManagerHook.Hook();
 		if(ProtocolLibHook.Hook()) {

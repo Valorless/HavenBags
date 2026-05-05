@@ -250,7 +250,7 @@ public class BagData {
 	private static Data getbag(String uuid) {
 		
 		if("null".equalsIgnoreCase(uuid)) {
-			Log.error(Main.plugin, "Attempted to get bag with UUID 'null'.");
+			//Log.error(Main.plugin, "Attempted to get bag with UUID 'null'.");
 			return null;
 		}
 		

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.nexomc.nexo.api.NexoItems;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -38,21 +39,28 @@ public class CustomBags {
 
 		for (String key : List()) {
 			ItemStack item;
-			Material mat = file.GetMaterial(String.format("bags.%s.material", key));
-			if(mat == Material.PLAYER_HEAD) {
-				String texture = file.GetString(String.format("bags.%s.texture", key));
-				if(!Utils.IsStringNullOrEmpty(texture)) {
-					if(texture.chars().count() > 30) {
-						item = HeadCreator.itemFromBase64(!Utils.IsStringNullOrEmpty(texture) ? 
-								texture : Main.config.GetString("bag.texture"));
-					}else {
-						item = HeadCreator.itemFromBase64(Main.textures.GetString(String.format("textures.%s", texture)));
+			String material = file.getString(String.format("bags.%s.material", key));
+			if(material.startsWith("nexo:")){
+				String nexoId = material.substring(5);
+				item = NexoItems.exists(nexoId) ? NexoItems.itemFromId(nexoId).build() : new ItemStack(Material.PLAYER_HEAD);
+			}
+			else {
+				Material mat = file.GetMaterial(String.format("bags.%s.material", key));
+				if (mat == Material.PLAYER_HEAD) {
+					String texture = file.GetString(String.format("bags.%s.texture", key));
+					if (!Utils.IsStringNullOrEmpty(texture)) {
+						if (texture.chars().count() > 30) {
+							item = HeadCreator.itemFromBase64(!Utils.IsStringNullOrEmpty(texture) ?
+									texture : Main.config.GetString("bag.texture"));
+						} else {
+							item = HeadCreator.itemFromBase64(Main.textures.GetString(String.format("textures.%s", texture)));
+						}
+					} else {
+						item = new ItemStack(mat);
 					}
-				}else {
+				} else {
 					item = new ItemStack(mat);
 				}
-			}else {
-				item = new ItemStack(mat);
 			}
 			ItemMeta meta = item.getItemMeta();
 			if(file.HasKey(String.format("bags.%s.displayname", key)))

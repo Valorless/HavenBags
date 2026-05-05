@@ -129,23 +129,23 @@
                     </execution>
                 </executions>
             </plugin>
-            
-    <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.5.0</version>
-            <configuration>
-                <failOnError>false</failOnError> <!-- don’t fail build if Javadocs missing -->
-                <quiet>true</quiet>              <!-- suppress warnings -->
-            </configuration>
-      <executions>
-        <execution>
-          <goals>
-            <goal>javadoc</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <failOnError>false</failOnError> <!-- don’t fail build if Javadocs missing -->
+                    <quiet>true</quiet>              <!-- suppress warnings -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <repositories>
@@ -165,10 +165,10 @@
             <id>minecraft-repo</id>
             <url>https://libraries.minecraft.net/</url>
         </repository>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
         <repository>
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/releases/</url>
@@ -194,21 +194,31 @@
             <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
         <repository>
-    <id>codemc-releases</id>
-    <url>https://repo.codemc.io/repository/maven-releases/</url>
-</repository>
-<repository>
-    <id>codemc-snapshots</id>
-    <url>https://repo.codemc.io/repository/maven-snapshots/</url>
-</repository>
-    <repository>
-        <id>papermc</id>
-        <url>https://papermc.io/repo/repository/maven-public/</url>
-    </repository>
-     <repository>
-    <id>matteodev</id>
-    <url>https://maven.devs.beer/</url>
-</repository>
+            <id>codemc-releases</id>
+            <url>https://repo.codemc.io/repository/maven-releases/</url>
+        </repository>
+        <repository>
+            <id>codemc-snapshots</id>
+            <url>https://repo.codemc.io/repository/maven-snapshots/</url>
+        </repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>matteodev</id>
+            <url>https://maven.devs.beer/</url>
+        </repository>
+        <repository>
+            <id>hmc-repo-releases</id>
+            <name>HibiscusMC Repository</name>
+            <url>https://repo.hibiscusmc.com/releases</url>
+        </repository>
+        <repository>
+            <id>nexomc</id>
+            <!--<url>https://repo.nexomc.com/snapshots</url>-->
+            <url>https://repo.nexomc.com/releases</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -284,7 +294,7 @@
             <!-- Update to latest version -->
             <scope>compile</scope>
         </dependency>
-        <!--  
+        <!--
         <dependency>
             <groupId>net.essentialsx</groupId>
             <artifactId>EssentialsX</artifactId>
@@ -313,34 +323,47 @@
     <scope>system</scope>
     <systemPath>${basedir}\dependencies\SCore.jar</systemPath>
 </dependency> -->
-<dependency>
-    <groupId>com.github.retrooper</groupId>
-    <artifactId>packetevents-spigot</artifactId>
-    <version>2.9.3</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-    <groupId>dev.lone</groupId>
-    <artifactId>api-itemsadder</artifactId>
-    <!-- Replace {version} with the latest version -->
-    <version>4.0.10</version>
-    <scope>provided</scope>
-</dependency>
-		<dependency>
-			<groupId>net.essentialsx</groupId>
-			<artifactId>EssentialsX</artifactId>
-			<version>2.19.0</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bstats</groupId>
-					<artifactId>bstats-bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.papermc</groupId>
-					<artifactId>paperlib</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+        <dependency>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-spigot</artifactId>
+            <version>2.9.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.lone</groupId>
+            <artifactId>api-itemsadder</artifactId>
+            <!-- Replace {version} with the latest version -->
+            <version>4.0.10</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.essentialsx</groupId>
+            <artifactId>EssentialsX</artifactId>
+            <version>2.19.0</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bstats</groupId>
+                    <artifactId>bstats-bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.papermc</groupId>
+                    <artifactId>paperlib</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.nexomc</groupId>
+            <artifactId>nexo</artifactId>
+            <!-- <version>1.17.0</version> -->
+            <version>1.23</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 </project>

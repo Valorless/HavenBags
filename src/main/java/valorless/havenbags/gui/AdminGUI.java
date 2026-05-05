@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import com.nexomc.nexo.api.NexoItems;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -27,6 +28,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.scheduler.BukkitTask;
 
+import valorless.havenbags.items.BagItemFactory;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -873,7 +875,7 @@ public class AdminGUI implements Listener {
 		return buttons;
 	}
 
-	public void modifyMaxStack(ItemStack item, int amount) {
+	public static void modifyMaxStack(ItemStack item, int amount) {
 		if(Server.VersionHigherOrEqualTo(Version.v1_20_5)){
 			ItemUtils.SetMaxStackSize(item, amount);
 		}
@@ -884,82 +886,7 @@ public class AdminGUI implements Listener {
 
 		//Bound
 		for(int i = 1; i <= 6; i++) {
-			List<Placeholder> placeholders = new ArrayList<Placeholder>();
-			String bagTexture = Main.config.GetString("bag.texture");
-			ItemStack bagItem = new ItemStack(Material.AIR);
-
-			int size = i*9;
-
-			if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")){
-				if(Main.config.GetBool("bag-textures.enabled")) {
-					for(int s = 9; s <= 54; s += 9) {
-						if(size == s) {
-							bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size));
-						}
-					}
-				}else {
-					bagItem = HeadCreator.itemFromBase64(bagTexture);
-				}
-			} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
-				bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
-			} else {
-				player.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
-				player.closeInventory();
-			}
-			ItemMeta bagMeta = bagItem.getItemMeta();
-			if(Main.config.GetInt("bag.modeldata") != 0 && Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
-				bagMeta.setCustomModelData(Main.config.GetInt("bag.modeldata"));
-				if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
-					for(int s = 9; s <= 54; s += 9) {
-						if(size == s) {
-							bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
-						}
-					}
-				}
-			}
-
-			bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
-			List<String> lore = new ArrayList<String>();
-			for (String l : Lang.lang.GetStringList("bag-lore")) {
-				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
-			}
-			placeholders.add(new Placeholder("%size%", size));
-			lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
-			//for (String l : Lang.lang.GetStringList("bag-size")) {
-			//	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size), player));
-			//}
-			bagMeta.setLore(lore);
-			
-			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
-				bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
-			}
-			
-			bagItem.setItemMeta(bagMeta);
-
-			modifyMaxStack(bagItem, 1);
-
-			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
-				for(int s = 9; s <= 54; s += 9) {
-					if(size == s) {
-						if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-custom-model-datas.size-" + size)) && 
-								!Main.config.GetString("bag-custom-model-datas.size-" + size).matches("-?\\d+(\\.\\d+)?")) {
-							ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-custom-model-datas.size-" + size));
-						}
-						//bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
-					}
-				}
-			}
-
-			if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag.itemmodel"))) {
-				ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag.itemmodel"));
-			}
-
-			//Log.Warning(plugin, bagItem.toString());
-			//PDC.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
-			PDC.SetString(bagItem, "uuid", "null");
-			PDC.SetString(bagItem, "owner", "null");
-			PDC.SetInteger(bagItem, "size", size);
-			PDC.SetBoolean(bagItem, "binding", true);
+			ItemStack bagItem = BagItemFactory.createBagItem(true, i*9, player);
 			templates.add(bagItem);
 		}
 
@@ -970,79 +897,7 @@ public class AdminGUI implements Listener {
 
 		//Ownerless
 		for(int i = 1; i <= 6; i++) {
-			List<Placeholder> placeholders = new ArrayList<Placeholder>();
-			String bagTexture = Main.config.GetString("bag.texture");
-			ItemStack bagItem = new ItemStack(Material.AIR);
-			int size = i*9;
-
-			if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")){
-				if(Main.config.GetBool("bag-textures.enabled")) {
-					for(int s = 9; s <= 54; s += 9) {
-						if(size == s) {
-							bagItem = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-ownerless-" + size));
-						}
-					}
-				}else {
-					bagItem = HeadCreator.itemFromBase64(bagTexture);
-				}
-			} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
-				bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
-			} else {
-				player.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
-				player.closeInventory();
-			}
-			ItemMeta bagMeta = bagItem.getItemMeta();
-			if(Main.config.GetInt("bag.modeldata") != 0 && Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
-				bagMeta.setCustomModelData(Main.config.GetInt("bag.modeldata"));
-				if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
-					for(int s = 9; s <= 54; s += 9) {
-						if(size == s) {
-							bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + size));
-						}
-					}
-				}
-			}
-
-			bagMeta.setDisplayName(Lang.Get("bag-ownerless-unused"));
-			List<String> lore = new ArrayList<String>();
-			for (String l : Lang.lang.GetStringList("bag-lore")) {
-				if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
-			}
-			placeholders.add(new Placeholder("%size%", size));
-			lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
-			//for (String l : Lang.lang.GetStringList("bag-size")) {
-			///	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size), player));
-			//}
-			bagMeta.setLore(lore);
-			
-			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {	
-				bagMeta.setTooltipStyle(NamespacedKey.fromString(Main.config.GetString("bag.tooltip-style")));
-			}
-			bagItem.setItemMeta(bagMeta);
-
-			modifyMaxStack(bagItem, 1);
-
-			if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag.modeldata")) && 
-					!Main.config.GetString("bag.modeldata").matches("-?\\d+(\\.\\d+)?") &&
-					Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
-				ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag.modeldata"));
-			}
-			if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
-				for(int s = 9; s <= 54; s += 9) {
-					if(size == s) {
-						if(!Utils.IsStringNullOrEmpty(Main.config.GetString("bag-custom-model-datas.size-ownerless-" + size)) && 
-								!Main.config.GetString("bag-custom-model-datas").matches("-?\\d+(\\.\\d+)?")) {
-							ItemUtils.SetItemModel(bagItem, Main.config.GetString("bag-custom-model-datas.size-ownerless-" + size));
-						}
-						//bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
-					}
-				}
-			}
-
-			PDC.SetString(bagItem, "uuid", "null");
-			PDC.SetString(bagItem, "owner", "null");
-			PDC.SetInteger(bagItem, "size", size);
-			PDC.SetBoolean(bagItem, "binding", false);
+			ItemStack bagItem = BagItemFactory.createBagItem(false, i*9, player);
 			templates.add(bagItem);
 		}
 
@@ -1054,7 +909,7 @@ public class AdminGUI implements Listener {
 		ItemMeta returnMeta = returnItem.getItemMeta();
 		returnMeta.setDisplayName(Lang.Get("return"));
 		List<String> r_lore = new ArrayList<String>();
-		for(String line : Lang.lang.GetStringList("return-lore")) {
+		for(String line : Lang.lang.getStringList("return-lore")) {
 			r_lore.add(Lang.Parse(line, targetPlayer));
 		}
 		//r_lore.add("§7Go back.");
@@ -1072,7 +927,7 @@ public class AdminGUI implements Listener {
 		//Collection<? extends Player> p = Bukkit.getOnlinePlayers();
 		//List<Player> players = new ArrayList<>(p);
 
-		if(BagData.GetBags("ownerless").size() > 0) {
+		if(!BagData.GetBags("ownerless").isEmpty()) {
 			String bagTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
 			ItemStack ownerless = HeadCreator.itemFromBase64(bagTexture);
 			ItemMeta ownerlessmeta = ownerless.getItemMeta();

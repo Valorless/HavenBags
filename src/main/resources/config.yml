@@ -76,6 +76,7 @@ bag:
  # Inside "For Developers" is a value based off of a large amount of random letters, numbers and symbols. That is the Base64 texture.
  texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0='
  # Item material if the bag-type is 'ITEM'
+ # Supports Nexo by doing 'nexo:id'.
  material: ENDER_CHEST
  # Custom Model Data if the bag-type is 'ITEM'
  modeldata: 0
