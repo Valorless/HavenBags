@@ -31,8 +31,8 @@ public class CommandCreate {
 				if (command.args.length >= 3){
 					//int size = Utils.Clamp(Integer.parseInt(command.args[2]), 1, 6);
 					int size = Integer.parseInt(command.args[2]);
-					int slots = HavenBags.findClosestNine(size);
-					bagItem = BagItemFactory.createBagItem(false, slots, (Player)command.sender);
+					//int slots = HavenBags.findClosestNine(size);
+					bagItem = BagItemFactory.createBagItem(false, size, (Player)command.sender);
 					if(!HavenBags.isPowerOfNine(size)) {
 						PDC.SetBoolean(bagItem, "upgrade", false);
 					}
@@ -47,9 +47,9 @@ public class CommandCreate {
 				try{
 					//int size = Utils.Clamp(Integer.parseInt(command.args[1]), 1, 6);
 					int size = Integer.parseInt(command.args[1]);
-					int slots = HavenBags.findClosestNine(size);
+					//int slots = HavenBags.findClosestNine(size);
 
-					bagItem = BagItemFactory.createBagItem(false, slots, (Player)command.sender);
+					bagItem = BagItemFactory.createBagItem(false, size, (Player)command.sender);
 					if(!HavenBags.isPowerOfNine(size)) {
 						PDC.SetBoolean(bagItem, "upgrade", false);
 					}

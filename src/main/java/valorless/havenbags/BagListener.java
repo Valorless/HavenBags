@@ -29,6 +29,7 @@ import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
+import valorless.valorlessutils.Server;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 /**
@@ -266,6 +267,9 @@ public class BagListener implements Listener{
 				ItemMeta bm = blocker.getItemMeta();
 				bm.setCustomModelData(99999);
 				// hide tooltip
+				if(Server.VersionHigherOrEqualTo(Server.Version.v1_20_5)) {
+					bm.setHideTooltip(true);
+				}
 				bm.setDisplayName(" ");
 				blocker.setItemMeta(bm);
 				PDC.SetBoolean(blocker, "locked", true);

@@ -4,13 +4,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
@@ -30,6 +24,7 @@ import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
+import org.json.JSONException;
 import valorless.annotations.Internal;
 import valorless.havenbags.annotations.DoNotCall;
 import valorless.havenbags.annotations.NotNull;
@@ -44,6 +39,7 @@ import valorless.havenbags.events.BagCreateEvent;
 import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
+import valorless.havenbags.utils.ErrorLog;
 import valorless.havenbags.utils.Reflex;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.logging.Log;
@@ -53,6 +49,7 @@ import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.nbtapi.iface.ReadWriteNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBTList;
+import valorless.valorlessutils.utils.Utils;
 
 public class BagData {
 	
@@ -287,6 +284,7 @@ public class BagData {
 			}
 		}catch(Exception e) {
 			Log.error(Main.plugin, String.format("Failed to update bag '%s'.", uuid));
+			e.printStackTrace();
 		}
 	}
 	
@@ -356,6 +354,7 @@ public class BagData {
 			}
 		}catch(Exception e) {
 			Log.error(Main.plugin, String.format("Failed to update bag '%s'.", uuid));
+			e.printStackTrace();
 			if(m_source == UpdateSource.PLAYER) {
 			}
 		}
@@ -509,14 +508,41 @@ public class BagData {
 			toSave.addAll(data.values());
 		}
 		
-		Iterator<Map.Entry<UUID, Data>> iterator = changedBags.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry<UUID, Data> entry = iterator.next();
-			Data bag = entry.getValue();
-		    toSave.add(bag);
-		    iterator.remove();
-		    bag.setChanged(false);
+		//Iterator<Map.Entry<UUID, Data>> iterator = changedBags.entrySet().iterator();
+		//while (iterator.hasNext()) {
+		//	Map.Entry<UUID, Data> entry = iterator.next();
+		//	Data bag = entry.getValue();
+		//    toSave.add(bag);
+		//    iterator.remove();
+		//    bag.setChanged(false);
+		//}
+
+		List<UUID> keys = new ArrayList<>(changedBags.keySet());
+		for(UUID uuid : keys) {
+			if(uuid == null) continue;
+			Data dat = changedBags.get(uuid);
+			toSave.add(dat);
+			dat.setChanged(false);
 		}
+
+		/*
+		for(Map.Entry<UUID, Data> entry : changedBags.entrySet()) {
+			try {
+				Data bag = entry.getValue();
+				toSave.add(bag);
+				bag.setChanged(false);
+			}catch(Exception e) {
+				Log.error(Main.plugin, String.format("Failed to save bag '%s'.", entry.getKey().toString()));
+				e.printStackTrace();
+				String msg = e.getMessage();
+				msg += "\n Cause: " + e.getCause();
+				for(int i = 0; i < Utils.Clamp(e.getStackTrace().length,0,4); i++)
+					msg += " " + e.getStackTrace()[i];
+				ErrorLog.addLog("Failed to save bag '" + entry.getKey().toString() + "': " + msg);
+				continue;
+			}
+		}
+		*/
 
 		if(toSave.isEmpty()) {
 			return;
@@ -863,6 +889,10 @@ public class BagData {
 			return;
 		}
 	}
+
+	public static String getTextureValue(Data bag) {
+		return bag.getTexture();
+	}
 	
 	public static String getTextureValue(ItemStack head) {
         if (head == null || head.getType() != Material.PLAYER_HEAD) {
@@ -871,6 +901,9 @@ public class BagData {
         
         if(Server.VersionHigherOrEqualTo(Version.v1_21_1)) {
         	SkullMeta meta = (SkullMeta) head.getItemMeta();
+			//if(meta.getOwnerProfile().getTextures().getSkin() == null){
+			//	return getbag(HavenBags.GetBagUUID(head)).getTexture();
+			//}
         	return HeadCreator.convertUrlToBase64(meta.getOwnerProfile().getTextures().getSkin().toString());
         }else {
 
@@ -922,7 +955,9 @@ public class BagData {
             	// Create a new GameProfile with a random UUID and apply the texture
             	PlayerProfile profile = Bukkit.getServer().createPlayerProfile(uuid, "bag");
             	PlayerTextures textures = profile.getTextures();
-            	textures.setSkin(new URL(HeadCreator.extractUrlFromBase64(value)));
+				try {
+					textures.setSkin(new URL(HeadCreator.extractUrlFromBase64(value)));
+				}catch (JSONException e) { return; }
             	profile.setTextures(textures);
 
             	// Use the API method to set the profile (this method was introduced in recent Spigot versions)

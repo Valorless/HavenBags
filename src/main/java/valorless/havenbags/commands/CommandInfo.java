@@ -147,6 +147,7 @@ public class CommandInfo {
 				sender.sendMessage(String.join("\n", infoList));
 				return true;
 			}
+			sender.sendMessage("Cannot yet show info of unopened bags.");
 		}
 		return true;
 	}

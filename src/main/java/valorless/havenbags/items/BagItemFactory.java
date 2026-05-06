@@ -96,8 +96,8 @@ public final class BagItemFactory {
         String bagTexture = Main.config.getString("bag.texture");
         ItemStack bagItem = new ItemStack(Material.AIR);
 
-        if(Main.config.getString("bag.type.material").startsWith("nexo:")){
-            String nexoId = Main.config.getString("bag.type.material").substring(5);
+        if(Main.config.getString("bag.material").startsWith("nexo:")){
+            String nexoId = Main.config.getString("bag.material").substring(5);
             bagItem = NexoItems.exists(nexoId) ? NexoItems.itemFromId(nexoId).build() : new ItemStack(Material.PLAYER_HEAD);
         }else {
             if (Main.config.getString("bag.type").equalsIgnoreCase("HEAD")) {

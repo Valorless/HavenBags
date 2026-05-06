@@ -49,29 +49,28 @@ public class HeadCreator {
         skullOwner.setString("Id", UUID.randomUUID().toString());
         NBTCompound properties = skullOwner.addCompound("Properties");
         properties.getCompoundList("textures").addCompound().setString("Value", base64);*/
-        
+
         BagData.setTextureValue(skull, base64);
-        
+
         //Log.Error(Main.plugin, skull.toString());
         //Log.Error(Main.plugin, nbtItem.getItem().toString());
         return skull;
     }
-    
-    public static ItemStack itemFromUuid(UUID id) {
-    	ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-    	SkullMeta meta = (SkullMeta) item.getItemMeta();
-		meta.setOwningPlayer(Bukkit.getOfflinePlayer(id));
-		
-		item.setItemMeta(meta);
 
-		return item;
-	}
-    
+    public static ItemStack itemFromUuid(UUID id) {
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        meta.setOwningPlayer(Bukkit.getOfflinePlayer(id));
+
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
     public static String extractUrlFromBase64(String base64Texture) {
         // Decode the Base64 string back into the original JSON string
         byte[] decodedBytes = Base64.getDecoder().decode(base64Texture);
         String json = new String(decodedBytes);
-
         // Parse the JSON string to extract the texture URL
         JSONObject jsonObj = new JSONObject(json);
         String textureUrl = jsonObj
@@ -81,7 +80,7 @@ public class HeadCreator {
 
         return textureUrl;
     }
-    
+
 
     public static String convertUrlToBase64(String textureUrl) {
         // Construct the JSON structure with the texture URL

@@ -464,7 +464,15 @@ public class Data {
 	 */
 	public void setChanged(boolean changed) {
 		this.changed = changed;
-		BagData.changedBags.put(UUID.fromString(this.uuid), this);
+		if ("null".equalsIgnoreCase(this.uuid)) {
+			return;
+		}
+		UUID bagId = UUID.fromString(this.uuid);
+		if (changed) {
+			BagData.changedBags.put(bagId, this);
+		} else {
+			BagData.changedBags.remove(bagId);
+		}
 	}
 
 	/** @return true if magnet feature active */
