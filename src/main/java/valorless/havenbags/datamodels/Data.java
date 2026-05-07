@@ -569,7 +569,7 @@ public class Data {
 	 * @return deep copy of this Data
 	 */
 	public Data clone() {
-	    Data copy = new Data(this.uuid, this.owner);
+        Data copy = new Data(this.uuid, this.owner);
 
 	    copy.setCreator(this.creator);
 	    copy.setSize(this.size);
@@ -599,6 +599,7 @@ public class Data {
 	    copy.setMagnet(this.magnet);
 	    copy.setRefill(this.refill);
 	    copy.setEffect(this.effect);
+		copy.setTooltipStyle(this.tooltipStyle);
 
 	    // Deep copy ItemStacks
 	    if (this.content != null) {
