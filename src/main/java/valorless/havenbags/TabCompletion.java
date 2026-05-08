@@ -285,7 +285,7 @@ public class TabCompletion implements TabCompleter {
 				sizes.add("36");
 				sizes.add("45");
 				sizes.add("54");
-				sizes.addAll(CustomBags.List());
+				sizes.addAll(CustomBags.list());
 				StringUtil.copyPartialMatches(cmd, sizes, completions);
 			}
 			if (args[0].equalsIgnoreCase("restore") && sender.hasPermission("havenbags.restore")) {

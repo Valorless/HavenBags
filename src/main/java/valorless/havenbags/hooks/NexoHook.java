@@ -51,7 +51,7 @@ public class NexoHook implements Listener {
 	public void onItemsLoaded(NexoItemsLoadedEvent event) {
 		Log.info(Main.plugin, "Nexo Ready.");
 		ready = true;
-		CustomBags.Initiate();
+		CustomBags.initiate();
 	}
 	
 	/**

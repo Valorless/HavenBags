@@ -1,6 +1,5 @@
 package valorless.havenbags;
 
-import valorless.havenbags.commands.debug.DebugHandler;
 import valorless.havenbags.configconversion.CV2_BagConversion;
 import valorless.havenbags.configconversion.CV6_ConfigRestructure;
 import valorless.havenbags.configconversion.CV7_ConfigRestructure;
@@ -170,7 +169,7 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		AutoPickup.Initiate();
 		
-		CustomBags.Initiate();
+		CustomBags.initiate();
 		
 		EtherealBags.init();
 

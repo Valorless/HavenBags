@@ -39,7 +39,7 @@ public class CommandGive {
 				size = Integer.parseInt(command.args[3]);
 			}catch(Exception E) {
 				try {
-					CustomBags.Give(receiver, command.args[2]);
+					CustomBags.give(receiver, command.args[2]);
 					return true;
 				}catch(Exception ex) {
 					ex.printStackTrace();

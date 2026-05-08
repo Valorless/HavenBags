@@ -40,7 +40,7 @@ public class CommandReload {
 			Main.weight.Reload();
 			Encumbering.Reload();
 			CustomBags.file.Reload();
-			CustomBags.Initiate();
+			CustomBags.initiate();
 			Main.textures.Reload();
 			CustomData.reload();
 			BagHealth.reload();

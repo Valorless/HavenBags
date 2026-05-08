@@ -90,6 +90,17 @@ public final class BagItemFactory {
         }
     }
 
+    /**
+     * Creates a new bag item with the specified properties.
+     * - If binding is true, the bag is considered bound to a player; otherwise it's ownerless.
+     * - The size determines the capacity and may affect the texture/model used.
+     * - Player parameter is used for placeholder parsing in lore and may influence texture/model selection if configured.
+     *
+     * @param binding Whether the bag should be bound to a player
+     * @param size The size/capacity of the bag (e.g., 9, 18, 27, etc.)
+     * @param player Optional player context for placeholder parsing placeholders.
+     * @return A new ItemStack representing the bag with the specified properties
+     */
     public static ItemStack createBagItem(boolean binding, int size, @Nullable Player player){
         List<Placeholder> placeholders = new ArrayList<Placeholder>(); // Old and stupid
         String bagTexture = Main.config.getString("bag.texture");
