@@ -14,6 +14,7 @@ public class DatabaseUtils {
 
 	public class Extra {
 		public boolean autoSort;
+		// Wtf was this even for?
 	}
 	
 	public static String Extra(Data data) {
@@ -157,10 +158,12 @@ public class DatabaseUtils {
     }
 
 	private static String formatNamespacedKey(String key) {
+		if(key == null) return "null";
 		return key.replace(":", "=");
 	}
 
 	private static String parseNamespacedKey(String key) {
+		if(key == null || key.equalsIgnoreCase("null")) return null;
 		return key.replace("=", ":");
 	}
 	
