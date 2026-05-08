@@ -91,8 +91,7 @@ public final class BagItemFactory {
     }
 
     public static ItemStack createBagItem(boolean binding, int size, @Nullable Player player){
-
-        List<Placeholder> placeholders = new ArrayList<Placeholder>();
+        List<Placeholder> placeholders = new ArrayList<Placeholder>(); // Old and stupid
         String bagTexture = Main.config.getString("bag.texture");
         ItemStack bagItem = new ItemStack(Material.AIR);
 
@@ -104,7 +103,9 @@ public final class BagItemFactory {
                 if (Main.config.getBool("bag-textures.enabled")) {
                     for (int s = 9; s <= 54; s += 9) {
                         if (size == s) {
-                            bagItem = HeadCreator.itemFromBase64(Main.config.getString("bag-textures.size-" + size));
+                            bagItem = HeadCreator.itemFromBase64(binding ?
+                                    Main.config.getString("bag-textures.size-" + size) :
+                                    Main.config.getString("bag-textures.size-ownerless-" + size));
                         }
                     }
                 } else {
@@ -123,22 +124,21 @@ public final class BagItemFactory {
             if(Main.config.getBool("bag-custom-model-datas.enabled")) {
                 for(int s = 9; s <= 54; s += 9) {
                     if(size == s) {
-                        bagMeta.setCustomModelData(Main.config.getInt("bag-custom-model-datas.size-" + size));
+                        bagMeta.setCustomModelData(binding ?
+                                Main.config.getInt("bag-custom-model-datas.size-" + size) :
+                                Main.config.getInt("bag-custom-model-datas.size-ownerless-" + size));
                     }
                 }
             }
         }
 
-        bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
+        bagMeta.setDisplayName(binding ? Lang.Get("bag-unbound-name") : Lang.Get("bag-ownerless-unused"));
         List<String> lore = new ArrayList<String>();
         for (String l : Lang.lang.getStringList("bag-lore")) {
             if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
         }
         placeholders.add(new Placeholder("%size%", size));
         lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
-        //for (String l : Lang.lang.GetStringList("bag-size")) {
-        //	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size), player));
-        //}
         bagMeta.setLore(lore);
 
         if(Server.VersionHigherOrEqualTo(Server.Version.v1_21_3)) {
@@ -156,7 +156,6 @@ public final class BagItemFactory {
                             !Main.config.getString("bag-custom-model-datas.size-" + size).matches("-?\\d+(\\.\\d+)?")) {
                         ItemUtils.SetItemModel(bagItem, Main.config.getString("bag-custom-model-datas.size-" + size));
                     }
-                    //bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
                 }
             }
         }
@@ -165,8 +164,11 @@ public final class BagItemFactory {
             ItemUtils.SetItemModel(bagItem, Main.config.getString("bag.itemmodel"));
         }
 
-        //Log.Warning(plugin, bagItem.toString());
-        //PDC.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
+        if(!HavenBags.isPowerOfNine(size)) {
+            // Cannot upgrade non-9 bags.
+            PDC.SetBoolean(bagItem, "upgrade", false);
+        }
+
         PDC.SetString(bagItem, "uuid", "null");
         PDC.SetString(bagItem, "owner", "null");
         PDC.SetInteger(bagItem, "size", size);
