@@ -6,10 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import com.nexomc.nexo.api.NexoItems;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -31,7 +29,7 @@ import org.bukkit.scheduler.BukkitTask;
 import valorless.havenbags.items.BagItemFactory;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.utils.Utils;
 import valorless.havenbags.*;
@@ -39,7 +37,6 @@ import valorless.havenbags.database.SkinCache;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.enums.GUIAction;
-import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.GUI;
 import valorless.havenbags.utils.HeadCreator;
@@ -49,20 +46,20 @@ import valorless.havenbags.utils.TaskUtils;
  * This class allows admins to create, restore, preview, delete, and manage bags of players.
  * It implements the Listener interface to handle various inventory events.
  */
-public class AdminGUI implements Listener {	
+public class AdminGUI implements Listener {
 	public enum GUIType { Main, Creation, Restoration, Player, Preview, PreviewPlayer, Deletion, DeletionPlayer, Confirmation, Content }
 
 	public JavaPlugin plugin;
 	String Name = "§7[§aHaven§bBags§7]§r";
 	private Inventory inv;
-	private Player player;
+	private final Player player;
 	private String target;
 	private OfflinePlayer targetPlayer;
 	private GUIType type;
 	private List<ItemStack> content = new ArrayList<ItemStack>();
 	private ItemStack selectedBag;
 	private int page = 1;
-	
+
 	private boolean unused = false;
 	private BukkitTask loading = null;
 
@@ -79,7 +76,7 @@ public class AdminGUI implements Listener {
 		this.target = player.getUniqueId().toString();
 		this.targetPlayer = player;
 
-		Log.Debug(plugin, "[DI-22] " + type.toString());
+		Log.debug(plugin, "[DI-22] " + type.toString());
 
 		try {
 			content = PrepareMain();
@@ -103,7 +100,7 @@ public class AdminGUI implements Listener {
 		this.target = target.getUniqueId().toString();
 		this.targetPlayer = target;
 
-		Log.Debug(plugin, "[DI-23] " + type.toString());
+		Log.debug(plugin, "[DI-23] " + type.toString());
 
 		try {
 			content = PrepareMain();
@@ -112,7 +109,7 @@ public class AdminGUI implements Listener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/** Reloads the GUI content based on the current type.
 	 * This method is called when the GUI needs to be refreshed or reloaded.
 	 * It prepares the content based on the current GUI type and opens the inventory.
@@ -120,20 +117,20 @@ public class AdminGUI implements Listener {
 	void PrepareContent() {
 		if(type == GUIType.Main) {
 			content = PrepareMain();
-		} 
+		}
 		else if(type == GUIType.Creation) {
 			content = PrepareTemplates();
-		} 
+		}
 		else if(type == GUIType.Restoration || type == GUIType.Preview || type == GUIType.Deletion) {
 			content = PrepareBags();
-			
+
 			// Prepare offline bags asynchronously to avoid blocking the main thread.
 			TaskUtils.runAsyncThenSync(() -> {
 				if(player.getName().equalsIgnoreCase("Alynie")) {
 					player.sendMessage("§c[Debug] Requesting offline bags...");
-					Log.Info(plugin, "[Debug] Requesting offline bags...");
+					Log.info(plugin, "[Debug] Requesting offline bags...");
 				}
-			    return PrepareOfflineBags();
+				return PrepareOfflineBags();
 			}, (offline) -> {
 				if(unused) return;
 				// After preparing all offline players async, add them to the GUI's content and reload the inventory if applicable.
@@ -141,7 +138,7 @@ public class AdminGUI implements Listener {
 					if(type == GUIType.Restoration || type == GUIType.Preview || type == GUIType.Deletion) {
 						if(player.getName().equalsIgnoreCase("Alynie")) {
 							player.sendMessage("§e[Debug] Requested offline bags successfully, adding to GUI...");
-							Log.Info(plugin, "[Debug] Requested offline bags successfully, adding to GUI...");
+							Log.info(plugin, "[Debug] Requested offline bags successfully, adding to GUI...");
 						}
 						for(ItemStack off : offline) {
 							content.add(off);
@@ -149,7 +146,7 @@ public class AdminGUI implements Listener {
 						if(player.getOpenInventory().getTopInventory() != inv) return;
 						if(player.getName().equalsIgnoreCase("Alynie")) {
 							player.sendMessage("§e[Debug] Updating GUI with offline bags...");
-							Log.Info(plugin, "[Debug] Updating GUI with offline bags...");
+							Log.info(plugin, "[Debug] Updating GUI with offline bags...");
 						}
 						Open();
 						return;
@@ -157,24 +154,24 @@ public class AdminGUI implements Listener {
 				}else {
 					if(player.getName().equalsIgnoreCase("Alynie")) {
 						player.sendMessage("§c[Debug] Error, offline bags is null.");
-						Log.Error(plugin, "[Debug] Error, offline bags is null.");
+						Log.error(plugin, "[Debug] Error, offline bags is null.");
 					}
 				}
 			});
 		}
 		else if(type == GUIType.Player || type == GUIType.PreviewPlayer || type == GUIType.DeletionPlayer) {
 			loading = TaskUtils.runAsyncThenSync(() -> {
-			try {
-				content = PreparePlayerBags(target);
-				return content;
-			} catch (Exception e) {
-				player.closeInventory();
-				e.printStackTrace();
-				return null;
-			}
+				try {
+					content = PreparePlayerBags(target);
+					return content;
+				} catch (Exception e) {
+					player.closeInventory();
+					e.printStackTrace();
+					return null;
+				}
 			}, (_content) -> {
 				if(loading == null) {
-					Log.Debug(Main.plugin, "[AdminGUI][DI-265] " + "Loading task was cancelled for " + player.getName());
+					Log.debug(Main.plugin, "[AdminGUI][DI-265] " + "Loading task was cancelled for " + player.getName());
 					return;
 				}
 				loading = null;
@@ -197,7 +194,7 @@ public class AdminGUI implements Listener {
 	 * This method creates the inventory and sets the items based on the content prepared for the current GUI type.
 	 */
 	void Open() {
-		//Log.Debug(plugin, type.toString());
+		//Log.debug(plugin, type.toString());
 
 		if(type == GUIType.Main) {
 			inv = Bukkit.createInventory(player, 9, Lang.Get("gui-main"));
@@ -248,14 +245,12 @@ public class AdminGUI implements Listener {
 		}
 		else if(type == GUIType.Player || type == GUIType.PreviewPlayer || type == GUIType.DeletionPlayer) {
 			page = 1;
-			List<Placeholder> placeholders = new ArrayList<Placeholder>();
 			if(type == GUIType.Player) {
 				if(target.equalsIgnoreCase("ownerless")) {
 					inv = GUI.CreatePage(player, Lang.Get("gui-restore"),
 							page, content, 6);
 				}else {
-					placeholders.add(new Placeholder("%player%", targetPlayer.getName()));
-					inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("bags-of"), placeholders, targetPlayer.getPlayer()),
+					inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("bags-of", targetPlayer), targetPlayer.getPlayer()),
 							page, content, 6);
 				}
 			}else if(type == GUIType.PreviewPlayer) {
@@ -263,17 +258,15 @@ public class AdminGUI implements Listener {
 					inv = GUI.CreatePage(player, Lang.Get("gui-preview"),
 							page, content, 6);
 				}else {
-					placeholders.add(new Placeholder("%player%", targetPlayer.getName()));
-					inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("bags-of"), placeholders, targetPlayer.getPlayer()),
+					inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("bags-of", targetPlayer), targetPlayer.getPlayer()),
 							page, content, 6);
 				}
 			}else if(type == GUIType.DeletionPlayer) {
 				if(target.equalsIgnoreCase("ownerless")) {
-					inv = GUI.CreatePage(player, Lang.Get("gui-delete"),
+					inv = GUI.CreatePage(player, Lang.Get("gui-delete", targetPlayer),
 							page, content, 6);
 				}else {
-					placeholders.add(new Placeholder("%player%", targetPlayer.getName()));
-					inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("bags-of"), placeholders, targetPlayer.getPlayer()),
+					inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("bags-of", targetPlayer), targetPlayer.getPlayer()),
 							page, content, 6);
 				}
 			}
@@ -304,7 +297,7 @@ public class AdminGUI implements Listener {
 	public void OpenInventory(final HumanEntity ent) {
 		ent.openInventory(inv);
 	}
-	
+
 	/** Handles the inventory close event.
 	 * This method checks if the closed inventory is the one managed by this GUI.
 	 * If it is, it resets the type to PreviewPlayer and reloads the GUI after a short delay.
@@ -325,7 +318,7 @@ public class AdminGUI implements Listener {
 
 		}
 	}
-	
+
 	/* * Handles player command events to check if the player is still interacting with the GUI.
 	 * If the player issues a command and the inventory is no longer open, it unregisters the listener.
 	 * @param e The PlayerCommandPreprocessEvent triggered when a player issues a command.
@@ -336,12 +329,12 @@ public class AdminGUI implements Listener {
 
 		InventoryView view = player.getOpenInventory();
 		if (view == null || view.getTopInventory() == null || !view.getTopInventory().equals(inv)) {
-			Log.Debug(Main.plugin, "[AdminGUI][DI-264] Unregistering listener for " + player.getName());
+			Log.debug(Main.plugin, "[AdminGUI][DI-264] Unregistering listener for " + player.getName());
 			HandlerList.unregisterAll(this);
 			unused = true;
 		}
 	}
-	
+
 	/* * Handles inventory click events to manage interactions with the GUI.
 	 * This method processes clicks based on the current GUI type and performs actions accordingly.
 	 * It also handles pagination for restoration and preview types.
@@ -353,9 +346,9 @@ public class AdminGUI implements Listener {
 
 		if(e.getRawSlot() >= inv.getSize()) return;
 
-		ItemStack clickedItem = e.getCurrentItem();        
+		ItemStack clickedItem = e.getCurrentItem();
 		if(clickedItem == null) return;
-		
+
 		if (loading != null) {
 			e.setCancelled(true);
 			String action = PDC.GetString(clickedItem, "bag-action");
@@ -426,19 +419,15 @@ public class AdminGUI implements Listener {
 				}
 
 				if(action.equals(GUIAction.PREV_PAGE)){
-					List<Placeholder> placeholders = new ArrayList<Placeholder>();
 					page--;
-					placeholders.add(new Placeholder("%player%", targetPlayer.getName()));
-					inv = GUI.CreatePage(player, Lang.Get("gui-restore"),
+					inv = GUI.CreatePage(player, Lang.Get("gui-restore", targetPlayer),
 							page, content, 6);
 					player.openInventory(inv);
 				}
 
 				if(action.equals(GUIAction.NEXT_PAGE)){
-					List<Placeholder> placeholders = new ArrayList<Placeholder>();
 					page++;
-					placeholders.add(new Placeholder("%player%", targetPlayer.getName()));
-					inv = GUI.CreatePage(player, Lang.Get("gui-restore"),
+					inv = GUI.CreatePage(player, Lang.Get("gui-restore", targetPlayer),
 							page, content, 6);
 					player.openInventory(inv);
 				}
@@ -450,7 +439,7 @@ public class AdminGUI implements Listener {
 			}
 
 			String owner = PDC.GetString(clickedItem, "owner");
-			Log.Debug(plugin, "[DI-24] " + "Changing Admin target to " + owner);
+			Log.debug(plugin, "[DI-24] " + "Changing Admin target to " + owner);
 			if(owner == null) return;
 			if(owner.equalsIgnoreCase("ownerless")) {
 				target = "ownerless";
@@ -479,19 +468,15 @@ public class AdminGUI implements Listener {
 				}
 
 				if(action.equals(GUIAction.PREV_PAGE)){
-					List<Placeholder> placeholders = new ArrayList<Placeholder>();
 					page--;
-					placeholders.add(new Placeholder("%player%", targetPlayer.getName()));
-					inv = GUI.CreatePage(player, Lang.Get("gui-preview"),
+					inv = GUI.CreatePage(player, Lang.Get("gui-preview", targetPlayer),
 							page, content, 6);
 					player.openInventory(inv);
 				}
 
 				if(action.equals(GUIAction.NEXT_PAGE)){
-					List<Placeholder> placeholders = new ArrayList<Placeholder>();
 					page++;
-					placeholders.add(new Placeholder("%player%", targetPlayer.getName()));
-					inv = GUI.CreatePage(player, Lang.Get("gui-preview"),
+					inv = GUI.CreatePage(player, Lang.Get("gui-preview", targetPlayer),
 							page, content, 6);
 					player.openInventory(inv);
 				}
@@ -503,7 +488,7 @@ public class AdminGUI implements Listener {
 			}
 
 			String owner = PDC.GetString(clickedItem, "owner");
-			Log.Debug(plugin, "[DI-25] " + "Changing Admin target to " + owner);
+			Log.debug(plugin, "[DI-25] " + "Changing Admin target to " + owner);
 			if(owner == null) return;
 			if(owner.equalsIgnoreCase("ownerless")) {
 				target = "ownerless";
@@ -533,19 +518,15 @@ public class AdminGUI implements Listener {
 				}
 
 				if(action.equals(GUIAction.PREV_PAGE)){
-					List<Placeholder> placeholders = new ArrayList<Placeholder>();
 					page--;
-					placeholders.add(new Placeholder("%player%", targetPlayer.getName()));
-					inv = GUI.CreatePage(player, Lang.Get("gui-delete"),
+					inv = GUI.CreatePage(player, Lang.Get("gui-delete", targetPlayer),
 							page, content, 6);
 					player.openInventory(inv);
 				}
 
 				if(action.equals(GUIAction.NEXT_PAGE)){
-					List<Placeholder> placeholders = new ArrayList<Placeholder>();
 					page++;
-					placeholders.add(new Placeholder("%player%", targetPlayer.getName()));
-					inv = GUI.CreatePage(player, Lang.Get("gui-delete"),
+					inv = GUI.CreatePage(player, Lang.Get("gui-delete", targetPlayer),
 							page, content, 6);
 					player.openInventory(inv);
 				}
@@ -557,7 +538,7 @@ public class AdminGUI implements Listener {
 			}
 
 			String owner = PDC.GetString(clickedItem, "owner");
-			Log.Debug(plugin, "[DI-26] " + "Changing Admin target to " + owner);
+			Log.debug(plugin, "[DI-26] " + "Changing Admin target to " + owner);
 			if(owner == null) return;
 			if(owner.equalsIgnoreCase("ownerless")) {
 				target = "ownerless";
@@ -686,7 +667,7 @@ public class AdminGUI implements Listener {
 			return;
 		}
 
-		if (type == GUIType.DeletionPlayer) {        	
+		if (type == GUIType.DeletionPlayer) {
 			GUIAction action = null;
 			try {
 				action = GUIAction.valueOf(PDC.GetString(clickedItem, "bag-action"));
@@ -767,11 +748,11 @@ public class AdminGUI implements Listener {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	/** Reloads the GUI content based on the current type and resets the cursor and current item.
 	 * This method is called when the GUI needs to be refreshed or reloaded.
 	 * @param event The InventoryClickEvent that triggered the reload, can be null.
 	 */
+	@SuppressWarnings("deprecation")
 	void Reload(InventoryClickEvent... event) {
 		try {
 			if(event != null && event.length != 0) {
@@ -797,7 +778,7 @@ public class AdminGUI implements Listener {
 		ItemMeta createMeta = createItem.getItemMeta();
 		createMeta.setDisplayName(Lang.Get("main-create"));
 		List<String> c_lore = new ArrayList<String>();
-		for(String line : Lang.lang.GetStringList("main-create-lore")) {
+		for(String line : Lang.lang.getStringList("main-create-lore")) {
 			c_lore.add(Lang.Parse(line, targetPlayer));
 		}
 		//c_lore.add("§7Create bags easy.");
@@ -814,7 +795,7 @@ public class AdminGUI implements Listener {
 		ItemMeta restoreMeta = restoreItem.getItemMeta();
 		restoreMeta.setDisplayName(Lang.Get("main-restore"));
 		List<String> r_lore = new ArrayList<String>();
-		for(String line : Lang.lang.GetStringList("main-restore-lore")) {
+		for(String line : Lang.lang.getStringList("main-restore-lore")) {
 			r_lore.add(Lang.Parse(line, targetPlayer));
 		}
 		//r_lore.add("§7Restore bags of online players.");
@@ -831,7 +812,7 @@ public class AdminGUI implements Listener {
 		ItemMeta previewMeta = previewItem.getItemMeta();
 		previewMeta.setDisplayName(Lang.Get("main-preview"));
 		List<String> p_lore = new ArrayList<String>();
-		for(String line : Lang.lang.GetStringList("main-preview-lore")) {
+		for(String line : Lang.lang.getStringList("main-preview-lore")) {
 			p_lore.add(Lang.Parse(line, targetPlayer));
 		}
 		previewMeta.setLore(p_lore);
@@ -847,7 +828,7 @@ public class AdminGUI implements Listener {
 		ItemMeta deleteMeta = deleteItem.getItemMeta();
 		deleteMeta.setDisplayName(Lang.Get("main-delete"));
 		List<String> d_lore = new ArrayList<String>();
-		for(String line : Lang.lang.GetStringList("main-delete-lore")) {
+		for(String line : Lang.lang.getStringList("main-delete-lore")) {
 			d_lore.add(Lang.Parse(line, targetPlayer));
 		}
 		deleteMeta.setLore(d_lore);
@@ -864,7 +845,7 @@ public class AdminGUI implements Listener {
 		ItemMeta infoMeta = infoItem.getItemMeta();
 		infoMeta.setDisplayName(Lang.Get("main-info"));
 		List<String> I_lore = new ArrayList<String>();
-		for(String line : Lang.lang.GetStringList("main-info-lore")) {
+		for(String line : Lang.lang.getStringList("main-info-lore")) {
 			I_lore.add(Lang.Parse(line, targetPlayer));
 		}
 		infoMeta.setLore(I_lore);
@@ -945,8 +926,13 @@ public class AdminGUI implements Listener {
 			String uuid = p.getUniqueId().toString();
 			if (BagData.GetBags(uuid).isEmpty()) continue;
 
-			ItemStack entry = HeadCreator.itemFromUuid(p.getUniqueId());
-			ItemMeta meta = entry.getItemMeta();
+			//ItemStack entry = HeadCreator.itemFromUuid(p.getUniqueId()); <-- Causes HTTP 429.
+			ItemStack entry = new ItemStack(Material.PLAYER_HEAD);
+			SkullMeta meta = (SkullMeta) entry.getItemMeta();
+			PlayerProfile profile = SkinCache.getProfile(p.getName());
+			if(profile != null) {
+				meta.setOwnerProfile(profile);
+			}
 			meta.setDisplayName("§a" + p.getName());
 			entry.setItemMeta(meta);
 			PDC.SetString(entry, "owner", uuid);
@@ -955,13 +941,13 @@ public class AdminGUI implements Listener {
 
 		return bags;
 	}
-	
+
 	List<ItemStack> PrepareOfflineBags(){
 		List<ItemStack> bags = new ArrayList<ItemStack>();
-		
+
 		if(player.getName().equalsIgnoreCase("Alynie")) {
 			player.sendMessage("§e[Debug] Preparing offline bags...");
-			Log.Info(plugin, "[Debug] Preparing offline bags...");
+			Log.info(plugin, "[Debug] Preparing offline bags...");
 		}
 
 		// OFFLINE PLAYERS (excluding those who are currently online)
@@ -970,18 +956,18 @@ public class AdminGUI implements Listener {
 				.filter(p -> !BagData.GetBags(p.getUniqueId().toString()).isEmpty())
 				.sorted(Comparator.comparing(OfflinePlayer::getName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
 				.toList();
-		
+
 		if(player.getName().equalsIgnoreCase("Alynie")) {
 			player.sendMessage("§e[Debug] Found " + offlinePlayers.size() + " offline players with bags.");
-			Log.Info(plugin, "[Debug] Found " + offlinePlayers.size() + " offline players with bags.");
+			Log.info(plugin, "[Debug] Found " + offlinePlayers.size() + " offline players with bags.");
 		}
 
 		for (OfflinePlayer p : offlinePlayers) {
 			String uuid = p.getUniqueId().toString();
-			
+
 			if(player.getName().equalsIgnoreCase("Alynie")) {
 				player.sendMessage("§e[Debug] Player: " + p.getName() + " UUID: " + uuid);
-				Log.Info(plugin, "[Debug] Player: " + p.getName() + " UUID: " + uuid);
+				Log.info(plugin, "[Debug] Player: " + p.getName() + " UUID: " + uuid);
 			}
 
 			//ItemStack entry = HeadCreator.itemFromUuid(p.getUniqueId()); <-- Causes HTTP 429.
@@ -1008,7 +994,7 @@ public class AdminGUI implements Listener {
 			List<ItemStack> Content  = data.getContent();
 			if (Content == null) continue;
 
-			String bagTexture = Main.config.GetString("bag.texture");
+			String bagTexture = Main.config.getString("bag.texture");
 			ItemStack bagItem = new ItemStack(Material.AIR);
 
 			if(data.getMaterial() != null) {
@@ -1022,14 +1008,14 @@ public class AdminGUI implements Listener {
 				}
 			}
 			else {
-				if(Main.config.GetString("bag-type").equalsIgnoreCase("HEAD")){
+				if(Main.config.getString("bag-type").equalsIgnoreCase("HEAD")){
 					if(!Utils.IsStringNullOrEmpty(data.getTexture())) {
 						bagItem = HeadCreator.itemFromBase64(data.getTexture());
 					}else {
 						bagItem = HeadCreator.itemFromBase64(bagTexture);
 					}
-				} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
-					bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
+				} else if(Main.config.getString("bag.type").equalsIgnoreCase("ITEM")) {
+					bagItem = new ItemStack(Main.config.getMaterial("bag.material"));
 				}
 			}
 
@@ -1037,17 +1023,17 @@ public class AdminGUI implements Listener {
 			if(!Utils.IsStringNullOrEmpty(data.getName()) && !data.getName().equalsIgnoreCase("null")) {
 				meta.setDisplayName(Lang.Parse(data.getName(), targetPlayer));
 			}else {
-				meta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), targetPlayer));
+				meta.setDisplayName(Lang.Parse(Lang.lang.getString("bag-bound-name"), targetPlayer));
 			}
-			
+
 			if(data.getModeldata() != null && data.getModeldata() != 0) {
 				meta.setCustomModelData(data.getModeldata());
 			}
-			
+
 			bagItem.setItemMeta(meta);
 
 			if(Server.VersionHigherOrEqualTo(Version.v1_21_2)) {
-				ItemUtils.SetItemName(bagItem, Lang.Parse(Lang.lang.GetString("bag-bound-name"), targetPlayer));
+				ItemUtils.SetItemName(bagItem, Lang.Parse(Lang.lang.getString("bag-bound-name"), targetPlayer));
 			}
 
 			PDC.SetString(bagItem, "uuid", data.getUuid());
@@ -1080,7 +1066,7 @@ public class AdminGUI implements Listener {
 		ItemMeta cancelMeta = cancelItem.getItemMeta();
 		cancelMeta.setDisplayName(Lang.Get("confirm-cancel"));
 		List<String> c_lore = new ArrayList<String>();
-		for(String line : Lang.lang.GetStringList("confirm-cancel-lore")) {
+		for(String line : Lang.lang.getStringList("confirm-cancel-lore")) {
 			c_lore.add(Lang.Parse(line, targetPlayer));
 		}
 		cancelMeta.setLore(c_lore);
@@ -1104,7 +1090,7 @@ public class AdminGUI implements Listener {
 		ItemMeta confirmMeta = confirmItem.getItemMeta();
 		confirmMeta.setDisplayName(Lang.Get("confirm-confirm"));
 		List<String> co_lore = new ArrayList<String>();
-		for(String line : Lang.lang.GetStringList("confirm-confirm-lore")) {
+		for(String line : Lang.lang.getStringList("confirm-confirm-lore")) {
 			co_lore.add(Lang.Parse(line, targetPlayer));
 		}
 		confirmMeta.setLore(co_lore);
