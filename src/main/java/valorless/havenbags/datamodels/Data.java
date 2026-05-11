@@ -2,12 +2,14 @@ package valorless.havenbags.datamodels;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import valorless.havenbags.BagData;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.DoNotCall;
 import valorless.havenbags.gui.BagGUI;
@@ -462,6 +464,15 @@ public class Data {
 	 */
 	public void setChanged(boolean changed) {
 		this.changed = changed;
+		if ("null".equalsIgnoreCase(this.uuid)) {
+			return;
+		}
+		UUID bagId = UUID.fromString(this.uuid);
+		if (changed) {
+			BagData.changedBags.put(bagId, this);
+		} else {
+			BagData.changedBags.remove(bagId);
+		}
 	}
 
 	/** @return true if magnet feature active */
@@ -558,7 +569,7 @@ public class Data {
 	 * @return deep copy of this Data
 	 */
 	public Data clone() {
-	    Data copy = new Data(this.uuid, this.owner);
+        Data copy = new Data(this.uuid, this.owner);
 
 	    copy.setCreator(this.creator);
 	    copy.setSize(this.size);
@@ -588,6 +599,7 @@ public class Data {
 	    copy.setMagnet(this.magnet);
 	    copy.setRefill(this.refill);
 	    copy.setEffect(this.effect);
+		copy.setTooltipStyle(this.tooltipStyle);
 
 	    // Deep copy ItemStacks
 	    if (this.content != null) {

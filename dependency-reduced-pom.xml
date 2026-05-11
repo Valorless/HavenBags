@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>valorless.havenbags</groupId>
   <artifactId>HavenBags</artifactId>
-  <version>1.42.0</version>
+  <version>1.42.1</version>
   <scm>
     <connection>scm:svn:http://127.0.0.1/dummy</connection>
     <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
@@ -204,6 +204,15 @@
       <id>matteodev</id>
       <url>https://maven.devs.beer/</url>
     </repository>
+    <repository>
+      <id>hmc-repo-releases</id>
+      <name>HibiscusMC Repository</name>
+      <url>https://repo.hibiscusmc.com/releases</url>
+    </repository>
+    <repository>
+      <id>nexomc</id>
+      <url>https://repo.nexomc.com/releases</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -291,6 +300,18 @@
         <exclusion>
           <artifactId>paperlib</artifactId>
           <groupId>io.papermc</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.nexomc</groupId>
+      <artifactId>nexo</artifactId>
+      <version>1.23</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
         </exclusion>
       </exclusions>
     </dependency>

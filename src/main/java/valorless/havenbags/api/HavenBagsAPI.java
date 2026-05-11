@@ -25,6 +25,7 @@ import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.enums.TokenType;
 import valorless.havenbags.features.BagHealth;
+import valorless.havenbags.features.CustomBags;
 import valorless.havenbags.items.BagItemFactory;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
@@ -220,6 +221,62 @@ public class HavenBagsAPI {
 	 */
 	public static Data createBag(Data bagData) {
 		return BagData.CreateBag(bagData);
+	}
+
+	/**
+	 * Creates a new bag item with the specified properties.
+	 * - If binding is true, the bag is considered bound to a player; otherwise it's ownerless.
+	 * - The size determines the slots and may affect the texture/model used.
+	 * - Player parameter is used for placeholder parsing in lore and may influence texture/model selection if configured.
+	 *
+	 * @param binding Whether the bag should be bound to a player
+	 * @param size The size/slots of the bag (e.g., 9, 18, 27, etc.)
+	 * @param player Optional player context for placeholder parsing placeholders.
+	 * @return A new ItemStack representing the bag with the specified properties
+	 */
+	public static ItemStack createBagItem(boolean binding, int size, @Nullable Player player){
+		return BagItemFactory.createBagItem(binding, size, player);
+	}
+
+	/**
+	 * Creates a custom bag item for the provided key.
+	 * Custom bags are defined in {@code custom-bags.yml}
+	 * <p>
+	 * The {@code player} argument is only used when {@link #customBagRequiresPlayer(String)}
+	 * returns {@code true} for the provided key. If it returns {@code false}, the
+	 * player value is not used for predefined content initialization.
+	 *
+	 * @param key custom bag key
+	 * @param player player context; only required/used when
+	 *               {@link #requiresPlayer(String)} is {@code true}
+	 * @return the created and configured bag {@link ItemStack}
+	 * @throws NullPointerException if a player context is required but {@code player} is {@code null}
+	 * @throws IllegalArgumentException if the provided key does not exist in the custom bags configuration
+	 */
+	public static ItemStack createCustomBagItem(String key, @Nullable Player player){
+		return CustomBags.get(key, player);
+	}
+
+	/**
+	 * Checks if a custom bag key requires a player context when created via
+	 * {@link #createCustomBagItem(String, Player)}.
+	 * <p>
+	 * Returns {@code true} when the bag has predefined/custom content and needs a
+	 * player to initialize owner-bound data.
+	 *
+	 * @param key custom bag key
+	 * @return {@code true} if a player is required for this bag key
+	 */
+	public static boolean customBagRequiresPlayer(String key){
+		return CustomBags.requiresPlayer(key);
+	}
+
+	/**
+	 * Lists all available custom bag keys.
+	 * @return list of custom bag keys
+	 */
+	public static List<String> listCustomBags(){
+		return CustomBags.list();
 	}
 	
 	/**

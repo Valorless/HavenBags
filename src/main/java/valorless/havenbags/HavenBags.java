@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.nexomc.nexo.api.NexoItems;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -796,6 +797,11 @@ public class HavenBags {
 	public static ItemStack GetDisplayBagItem() {
 		ItemStack bagItem;
 		String bagTexture = Main.config.GetString("bag.texture");
+
+		if(Main.config.getString("bag.type.material").startsWith("nexo:")){
+			String nexoId = Main.config.getString("bag.type.material").substring(5);
+			return NexoItems.exists(nexoId) ? NexoItems.itemFromId(nexoId).build() : new ItemStack(Material.PLAYER_HEAD);
+		}
 		if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")){
 			bagItem = HeadCreator.itemFromBase64(bagTexture);
 		} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {

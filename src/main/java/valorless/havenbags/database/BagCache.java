@@ -157,7 +157,7 @@ public class BagCache implements Listener {
 
 	public class Converter {
 		public static void ConvertBag(ItemStack bag) {
-			Log.Info(Main.plugin, String.format("[DI-260] [BagCache] Converting Bag NBT => PDC %s", NBT.GetString(bag, "bag-uuid")));
+			Log.Debug(Main.plugin, String.format("[DI-260] [BagCache] Converting Bag NBT => PDC %s", NBT.GetString(bag, "bag-uuid")));
 			if(NBT.Has(bag, "bag-uuid"))
 				PDC.SetString(bag, "uuid", NBT.GetString(bag, "bag-uuid"));
 				NBT.Remove(bag, "bag-uuid");
@@ -214,7 +214,7 @@ public class BagCache implements Listener {
 		}
 
 		public static void ConvertToken(ItemStack bag) {
-			Log.Info(Main.plugin, String.format("[DI-261] [BagCache] Converting Token NBT => PDC %s", NBT.GetString(bag, "bag-token-type")));
+			Log.Debug(Main.plugin, String.format("[DI-261] [BagCache] Converting Token NBT => PDC %s", NBT.GetString(bag, "bag-token-type")));
 			if(NBT.Has(bag, "bag-token-skin"))
 				PDC.SetString(bag, "token-skin", NBT.GetString(bag, "bag-token-skin"));
 				NBT.Remove(bag, "bag-token-skin");
