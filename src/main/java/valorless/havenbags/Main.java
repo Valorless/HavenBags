@@ -46,6 +46,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.List;
+
 @SuppressWarnings("deprecation")
 public final class Main extends JavaPlugin implements Listener {	
 	public static JavaPlugin plugin;
@@ -73,17 +75,35 @@ public final class Main extends JavaPlugin implements Listener {
 		Log.Debug(plugin, Bukkit.getVersion());
 		Log.Debug(plugin, Bukkit.getBukkitVersion());
 		Server.ResolveVersion();
-		
-		config = new Config(this, "config.yml");
-		Lang.lang = new Config(this, "lang.yml");
+
+		validateConfigs();
+
+	}
+
+	private void validateConfigs() {
+		//config = new Config(this, "config.yml");
+		config = ConfigValidation2.validateAndGetConfig("config.yml", List.of(
+				"custom-data.9.example",
+				"custom-data.9.example2",
+				"custom-data.18.example"
+		));
+		//Lang.lang = new Config(this, "lang.yml");
+		Lang.lang = ConfigValidation2.validateAndGetConfig("lang.yml");
 		//timeTable = new Config(this, "timetable.yml");
-		AutoPickup.filter = new Config(this, "filtering.yml");
-		weight = new Config(this, "weight.yml");
-		blacklist = new Config(this, "blacklist.yml");;
-		plugins = new Config(this, "plugins.yml");
-		textures = new Config(this, "textures.yml");
-		effects = new Config(this, "effects.yml");
-		insurance = new Config(this, "insurance.yml");
+		AutoPickup.filter = new Config(this, "filtering.yml"); // no validation
+		//weight = new Config(this, "weight.yml");
+		weight = ConfigValidation2.validateAndGetConfig("weight.yml", List.of(""));
+		//blacklist = new Config(this, "blacklist.yml");;
+		blacklist = ConfigValidation2.validateAndGetConfig("blacklist.yml", List.of(""));
+		//plugins = new Config(this, "plugins.yml");
+		plugins = ConfigValidation2.validateAndGetConfig("plugins.yml", List.of(""));
+		textures = new Config(this, "textures.yml"); // no validation
+		effects = new Config(this, "effects.yml"); // no validation
+		//insurance = new Config(this, "insurance.yml");
+		insurance = ConfigValidation2.validateAndGetConfig("insurance.yml", List.of(""));
+
+		//old validation
+		ConfigValidation.validate();
 	}
 	
 	@SuppressWarnings("unused")
@@ -123,7 +143,7 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		registerSoftCrash();
 		
-		ConfigValidation.Validate();
+		//ConfigValidation.Validate();
 		
 		if(PlaceholderAPIHook.Hook()) {
 			papi = new PlaceholderAPI();

@@ -179,7 +179,8 @@ bag-ownerless-used: '&aBag'
 # Bag lore.
 bag-lore:
  - '&fA well crafted bag, suited for carrying stuff.'
- - '&8ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ'
+ - '&8⏵ ᴜꜱᴇ ᴛᴏ ᴏᴘᴇɴ'
+ - '&8⏵ ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ ꜰᴇᴀᴛᴜʀᴇꜱ'
 
 ## Additional bag lore, will always be after 'bag-lore'
 # Placeholders are connected to the config entries with the same name.

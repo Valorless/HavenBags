@@ -271,6 +271,11 @@ public class Data {
 		}
 	}
 
+	/** @return true if autopickup enabled (not null/"null") */
+	public boolean hasAutoPickup() {
+		return autopickup != null && !autopickup.equalsIgnoreCase("null");
+	}
+
 	/** @return autopickup mode string */
 	public String getAutopickup() {
 		return autopickup;

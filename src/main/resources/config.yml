@@ -410,4 +410,59 @@ custom-data:
    # Supports: String/Integer/Double/Boolean/Float/UUID
    pdc-type: INTEGER
 
- 
+# GUI where the players can view and toggle different features for the bags.
+# Materials support Nexo by doing 'nexo:id'.
+features-gui:
+ enabled: true
+ # The action used to open the GUI.
+ # Doing this click action on the bag in the inventory will open the GUI.
+ # Available actions: DOUBLE_CLICK, LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT, MIDDLE
+ opens-by: RIGHT
+ # GUI title
+ title: '&eHavenBags Features'
+ # Slot size of the GUI. Must be to the power of 9. i.e. Rows*9, 3*9 = 27.
+ gui-size: 27
+ # Used to fill empty slots in the GUI, so it looks nicer. Set to AIR to have no fillers, useful when using custom gui.
+ filler: GRAY_STAINED_GLASS_PANE
+ # Custom fillers for specific slots. Will override the main filler for the specified slots.
+ custom-filler:
+  '0': LIME_STAINED_GLASS_PANE # Each corner of the 27 slot gui.
+  '8': LIME_STAINED_GLASS_PANE
+  '18': LIME_STAINED_GLASS_PANE
+  '26': LIME_STAINED_GLASS_PANE
+ # Buttons for toggling features.
+ # Will skip any features that are disabled in the main config.
+ # Slot can also be set to -1 to disable.
+ slots:
+  auto-pickup:
+   slot: 10
+   material:
+    enabled: LIME_WOOL
+    disabled: RED_WOOL
+   name: '&eAuto-Pickup'
+   lore:
+    - '&7Automatically pick up drops.'
+  magnet:
+   slot: 12
+   material:
+    enabled: LIME_WOOL
+    disabled: RED_WOOL
+   name: '&eMagnet'
+   lore:
+    - '&7Nearby drops will move towards the player.'
+  auto-sort:
+   slot: 14
+   material:
+    enabled: LIME_WOOL
+    disabled: RED_WOOL
+   name: '&eAuto-Sort'
+   lore:
+    - '&7Automatically sort items in the bag.'
+  refilling:
+   slot: 16
+   material:
+    enabled: LIME_WOOL
+    disabled: RED_WOOL
+   name: '&eAuto-Refill'
+   lore:
+    - '&7Automatically refill stacks in the bag from the inventory.'

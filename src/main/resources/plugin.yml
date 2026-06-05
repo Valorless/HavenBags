@@ -6,6 +6,9 @@ api-version: 1.17 # 1.20 kept not being accepted, so 1.17 it is!
 website: https://www.spigotmc.org/resources/110420/
 description: Create shulker-like bags of varying sizes bound to a player, or accessible by anyone.
 depend: [ValorlessUtils]
+libraries:
+  - org.json:json:20211205
+  - org.yaml:snakeyaml:2.0
 softdepend:
   - ProtocolLib
   #- ChestSort
@@ -26,7 +29,7 @@ softdepend:
 commands:
   havenbags:
     description: Main command.
-    usage:
+    usage: /<command> <subcommand>
     aliases: [bags, bag]
 permissions:
   havenbags.player:
