@@ -92,13 +92,25 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		if(!Main.config.getBool("features-gui.enabled")) return;
+		//if(event.getInventory().getType() != org.bukkit.event.inventory.InventoryType.PLAYER) return; // Only trigger for player inventory
 		ClickType reqClick = ClickType.valueOf(Main.config.getString("features-gui.opens-by").toUpperCase());
 		if(event.getClick() == reqClick) {
-			if (HavenBags.IsBag(event.getCurrentItem())) {
-				Player player = (Player) event.getWhoClicked();
-				ItemStack clickedItem = event.getCurrentItem();
-				Data data = HavenBagsAPI.getBag(HavenBags.GetBagUUID(clickedItem));
+			Player player = (Player) event.getWhoClicked();
+			ItemStack clickedItem = event.getCurrentItem();
+			if (HavenBags.IsBag(clickedItem)) {
 				event.setCancelled(true);
+				if(!player.hasPermission("havenbags.use")) {
+					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-cannot-use"), null));
+					return;
+				}
+
+				Data data = HavenBagsAPI.getBag(HavenBags.GetBagUUID(clickedItem));
+
+				if(!HavenBags.IsOwner(clickedItem, player) && !data.isPlayerTrusted(player.getName())) {
+					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-cannot-use"), player));
+					return;
+				}
+
 				new FeaturesGUI(player, clickedItem, data);
 			}
 		}

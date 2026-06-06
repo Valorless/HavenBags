@@ -465,4 +465,4 @@ features-gui:
     disabled: RED_WOOL
    name: '&eAuto-Refill'
    lore:
-    - '&7Automatically refill stacks in the bag from the inventory.'
+    - '&7Automatically refill stacks in the inventory from the bag.'

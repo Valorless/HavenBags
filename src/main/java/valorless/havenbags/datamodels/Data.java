@@ -221,14 +221,14 @@ public class Data {
 	}
 	
 	/**
-	 * Check if player UUID is trusted.
-	 * @param uuid player UUID
+	 * Check if player name is trusted.
+	 * @param name player name
 	 * @return true if trusted
 	 */
-	public boolean isPlayerTrusted(String uuid) {
+	public boolean isPlayerTrusted(String name) {
 		if(trusted.isEmpty()) return false;
 		for(int i = 0; i < trusted.size(); i++) {
-			if(trusted.get(i).equalsIgnoreCase(uuid)) {
+			if(trusted.get(i).equalsIgnoreCase(name)) {
 				return true;
 			}
 		}

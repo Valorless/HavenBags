@@ -26,6 +26,7 @@ import valorless.havenbags.features.Quiver;
 import valorless.havenbags.features.Refill;
 import valorless.havenbags.features.Soulbound;
 import valorless.havenbags.features.BackBag;
+import valorless.havenbags.gui.FeaturesGUI;
 import valorless.havenbags.gui.UpgradeGUI;
 import valorless.havenbags.hooks.*;
 import valorless.havenbags.prevention.*;
@@ -250,6 +251,7 @@ public final class Main extends JavaPlugin implements Listener {
     	SkinCache.shutdown(); // Save skin cache.
     	EtherealBags.shutdown(); // Close and save ethereal bags.
     	Insurance.shutdown(); // Save insurance data.
+		FeaturesGUI.OpenGUIs.CloseAll(); // Close all open features GUIs.
     }
 	
 	public void onCrashDisable() {
