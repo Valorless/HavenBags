@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.BagData.Bag;
 import valorless.havenbags.api.HavenBagsAPI;
 import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.enums.BagState;
 import valorless.havenbags.gui.FeaturesGUI;
 import valorless.havenbags.gui.UpgradeGUI;
 import valorless.havenbags.utils.NoteBlockUtils;
@@ -97,7 +98,7 @@ public class EventListener implements Listener {
 		if(event.getClick() == reqClick) {
 			Player player = (Player) event.getWhoClicked();
 			ItemStack clickedItem = event.getCurrentItem();
-			if (HavenBags.IsBag(clickedItem)) {
+			if (HavenBags.IsBag(clickedItem) && BagState.getState(clickedItem) == BagState.USED) {
 				event.setCancelled(true);
 				if(!player.hasPermission("havenbags.use")) {
 					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-cannot-use"), null));
