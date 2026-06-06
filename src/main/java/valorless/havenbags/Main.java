@@ -145,7 +145,8 @@ public final class Main extends JavaPlugin implements Listener {
 		registerSoftCrash();
 		
 		//ConfigValidation.Validate();
-		
+
+		VaultHook.Hook();
 		if(PlaceholderAPIHook.Hook()) {
 			papi = new PlaceholderAPI();
 			papi.register();
