@@ -4,11 +4,42 @@
 # Whether specific items can be chosen as a custom filter.
 allow-specific: false
 
+gui:
+ # Item shown in the filter selection GUI for the "no filter" option.
+ reset-filter:
+  # Supports Nexo items with "nexo:item-id" format.
+  icon: BARRIER
+  displayname: '&cReset Filter'
+  lore:
+   - '&7Remove the current filter from the bag.'
+
 filters:
  # Filter name, as shown when typing the command.
  plants:
   # Display name, shown in the bag's lore.
   displayname: '&aPlants'
+  # GUI settings for this filter.
+  # Will be shown when applying the filter to a bag, and in the filter selection GUI.
+  gui:
+   # Whether to show this filter in the filter selection GUI.
+   # This does not affect whether the filter can be applied using commands.
+   show: false
+   # Item shown in the filter selection GUI.
+   # Supports Nexo items with "nexo:item-id" format.
+   # If not specified, the first item in the "items" list will be used as the icon.
+   icon: WHEAT_SEEDS
+   # Lore shown in the filter selection GUI.
+   # List of items will always appear underneath this.
+   lore:
+    - '&fItems:'
+   # Formatting for the items shown in the filter selection GUI.
+   # %s will be replaced with the item's localized name.
+   line-format: "&7 ⏵ %s"
+   # Max amount of items shown in the lore. If there are more, it will show "and x more..."
+   lore-limit: 10
+   # Format for the "and x more" line.
+   # %s will be replaced with the amount of items not shown due to the lore limit.
+   and-more: '&7... and %s more'
   # Permission required to use/apply this filter.
   permission: 
    node: havenbags.plants
