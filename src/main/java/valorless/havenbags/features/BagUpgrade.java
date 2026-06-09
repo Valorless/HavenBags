@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -78,10 +77,6 @@ public class BagUpgrade implements Listener{
 		if(BagState.getState(bag) == BagState.NEW) return;
 		Log.Debug(Main.plugin, "[DI-242] [BagUpgrade] Is player allowed to upgrade this size?");
 		if(!event.getView().getPlayer().hasPermission(String.format("havenbags.upgrade.%s", size))) return;
-		valorless.valorlessutils.logging.Log.info(Main.plugin, "[DI-274] [UpgradeGUI] Is player allowed to open the new size?");
-		if(!event.getView().getPlayer().hasPermission(String.format("havenbags.open.%s", size+9))) return;
-		valorless.valorlessutils.logging.Log.info(Main.plugin, "[DI-274] [UpgradeGUI] Is player the owner of the bag, or has bypass?");
-		if(!HavenBags.IsOwner(bag, (Player)event.getView().getPlayer())) return;
 
 		String[] split = Main.config.GetString(String.format("upgrades.from-%s-to-%s", size, size+9)).split(":");
 		int cmd = 0;

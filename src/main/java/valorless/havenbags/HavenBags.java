@@ -790,8 +790,9 @@ public class HavenBags {
 		for(ItemStack item : player.getInventory().getContents()) {
 			if(IsBag(item)) return true;
 		}
-        return EtherealBags.hasBags(player.getUniqueId());
-    }
+		if(EtherealBags.hasBags(player.getUniqueId())) return true;
+		return false;
+	}
 
 	public static ItemStack GetDisplayBagItem() {
 		ItemStack bagItem;
