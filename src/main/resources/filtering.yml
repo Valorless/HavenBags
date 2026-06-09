@@ -19,7 +19,8 @@ filters:
   # Display name, shown in the bag's lore.
   displayname: '&aPlants'
   # GUI settings for this filter.
-  # Will be shown when applying the filter to a bag, and in the filter selection GUI.
+  # Note that all entries to "gui" are optional, and can be used standalone.
+  # Any missing values are defaulted.
   gui:
    # Whether to show this filter in the filter selection GUI.
    # This does not affect whether the filter can be applied using commands.
