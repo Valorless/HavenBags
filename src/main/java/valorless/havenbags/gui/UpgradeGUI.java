@@ -475,19 +475,19 @@ public class UpgradeGUI implements Listener {
 			return null;
 		}else {
 			int size = PDC.GetInteger(bag, "size");
-			Log.info(Main.plugin, "[DI-272] [UpgradeGUI] Is bag max size?");
+			Log.debug(Main.plugin, "[DI-272] [UpgradeGUI] Is bag max size?");
 			if(size == 54) return null;
-			Log.info(Main.plugin, "[DI-273] [UpgradeGUI] Is bag used?");
+			Log.debug(Main.plugin, "[DI-273] [UpgradeGUI] Is bag used?");
 			if(BagState.getState(bag) == BagState.NEW) return null;
-			Log.info(Main.plugin, "[DI-274] [UpgradeGUI] Is player allowed to upgrade this size?");
+			Log.debug(Main.plugin, "[DI-274] [UpgradeGUI] Is player allowed to upgrade this size?");
 			if(!player.hasPermission(String.format("havenbags.upgrade.%s", size))) return null;
-			Log.info(Main.plugin, "[DI-274] [UpgradeGUI] Is player allowed to open the new size?");
+			Log.debug(Main.plugin, "[DI-274] [UpgradeGUI] Is player allowed to open the new size?");
 			if(!player.hasPermission(String.format("havenbags.open.%s", size+9))) return null;
-			Log.info(Main.plugin, "[DI-274] [UpgradeGUI] Is player the owner of the bag, or has bypass?");
+			Log.debug(Main.plugin, "[DI-274] [UpgradeGUI] Is player the owner of the bag, or has bypass?");
 			if(!HavenBags.IsOwner(bag, player)) return null;
 
 
-			Log.info(Main.plugin, "[DI-274] [UpgradeGUI] Do materials match?");
+			Log.debug(Main.plugin, "[DI-274] [UpgradeGUI] Do materials match?");
 			String[] split = Main.config.getString(String.format("upgrades.from-%s-to-%s", size, size+9)).split(":");
 			int cmd = 0;
 			String model = null;
