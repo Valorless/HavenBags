@@ -255,6 +255,7 @@ public class FeaturesGUI implements Listener {
 					event.getRawSlot() != autoSortSlot &&
 					event.getRawSlot() != refillingSlot &&
 					event.getRawSlot() < invSize) {
+				event.setCancelled(true);
 				return;
 			}
 
