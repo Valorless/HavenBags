@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Reflex {
+public class Reflect {
     public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
         try {
             Method method = clazz.getDeclaredMethod(name, parameterTypes);

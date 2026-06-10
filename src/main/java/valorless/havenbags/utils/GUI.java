@@ -18,7 +18,7 @@ import valorless.valorlessutils.utils.Utils;
 
 public class GUI {
 	
-	public static Inventory CreatePage(Player player, String title, int page, List<ItemStack> items, int rows) {
+	public static Inventory createPage(Player player, String title, int page, List<ItemStack> items, int rows) {
 	    int totalPages;
 	    
 	    rows = Utils.Clamp(rows, 2, 6);
@@ -47,36 +47,36 @@ public class GUI {
         
         // Add "Previous" button
         if (page > 1) {
-            inventory.setItem(prevPageSlot, CreateButton(GUIAction.PREV_PAGE, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWM1YThhYThhNGMwMzYwMGEyYjVhNGViNmJlYjUxZDU5MDI2MGIwOTVlZTFjZGFhOTc2YjA5YmRmZTU2NjFjNiJ9fX0="));
+            inventory.setItem(prevPageSlot, createButton(GUIAction.PREV_PAGE, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWM1YThhYThhNGMwMzYwMGEyYjVhNGViNmJlYjUxZDU5MDI2MGIwOTVlZTFjZGFhOTc2YjA5YmRmZTU2NjFjNiJ9fX0="));
         }
         
         // Add "Go Back" button
-        inventory.setItem(goBackSlot, CreateButton(GUIAction.RETURN, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTY5NjFhZDFmNWM3NmU5NzM1OGM0NDRmZTBlODNhMzk1NjRlNmI0ODEwOTE3MDk4NGE4NGVjYTVkY2NkNDI0In19fQ=="));
+        inventory.setItem(goBackSlot, createButton(GUIAction.RETURN, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTY5NjFhZDFmNWM3NmU5NzM1OGM0NDRmZTBlODNhMzk1NjRlNmI0ODEwOTE3MDk4NGE4NGVjYTVkY2NkNDI0In19fQ=="));
         
         // Add "Next" button
         if (page < totalPages) {
-            inventory.setItem(nextPageSlot, CreateButton(GUIAction.NEXT_PAGE, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWFiOTVhODc1MWFlYWEzYzY3MWE4ZTkwYjgzZGU3NmEwMjA0ZjFiZTY1NzUyYWMzMWJlMmY5OGZlYjY0YmY3ZiJ9fX0="));
+            inventory.setItem(nextPageSlot, createButton(GUIAction.NEXT_PAGE, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWFiOTVhODc1MWFlYWEzYzY3MWE4ZTkwYjgzZGU3NmEwMjA0ZjFiZTY1NzUyYWMzMWJlMmY5OGZlYjY0YmY3ZiJ9fX0="));
         }
         
-        inventory.setItem(indicatorSlot, CreatePageButton(page));
+        inventory.setItem(indicatorSlot, createPageButton(page));
 
 
         return inventory;
     }
 	
-    private static ItemStack CreateButton(GUIAction action, String buttonTexture) {
+    private static ItemStack createButton(GUIAction action, String buttonTexture) {
 		ItemStack button = HeadCreator.itemFromBase64(buttonTexture);
     	//ItemStack button = new ItemStack(Material.DIRT);
         ItemMeta meta = button.getItemMeta();
         if(action.equals(GUIAction.NEXT_PAGE)) {
-        	meta.setDisplayName(Lang.Get("next-page"));
+        	meta.setDisplayName(Lang.get("next-page"));
         }else if(action.equals(GUIAction.PREV_PAGE)) {
-        	meta.setDisplayName(Lang.Get("prev-page"));
+        	meta.setDisplayName(Lang.get("prev-page"));
         }else if(action.equals(GUIAction.RETURN)) {
-        	meta.setDisplayName(Lang.Get("return"));
+        	meta.setDisplayName(Lang.get("return"));
         	List<String> r_lore = new ArrayList<String>();
-    		for(String line : Lang.lang.GetStringList("return-lore")) {
-    			r_lore.add(Lang.Parse(line, null));
+    		for(String line : Lang.lang.getStringList("return-lore")) {
+    			r_lore.add(Lang.parse(line, null));
     		}
     		//r_lore.add("§7Go back.");
     		meta.setLore(r_lore);
@@ -85,12 +85,12 @@ public class GUI {
         button.setItemMeta(meta);
         
         // Store GUI action in NBT
-        PDC.SetString(button, "bag-action", action.toString());
+        PDC.setString(button, "bag-action", action.toString());
         
         return button;
     }
     
-    private static ItemStack CreatePageButton(int page) {
+    private static ItemStack createPageButton(int page) {
     	List<Placeholder> placeholders = new ArrayList<Placeholder>();
 		placeholders.add(new Placeholder("%page%", page));
 		ItemStack button = new ItemStack(Material.AIR);
@@ -102,11 +102,11 @@ public class GUI {
 			button = HeadCreator.itemFromBase64(PageNumberTextures.get(page));
 		}
         ItemMeta meta = button.getItemMeta();
-        meta.setDisplayName(Lang.Parse(Lang.Get("page"), placeholders));
+        meta.setDisplayName(Lang.parse(Lang.get("page"), placeholders));
         button.setItemMeta(meta);
         
         // Store GUI action in NBT
-        PDC.SetString(button, "bag-action", GUIAction.NONE.toString());
+        PDC.setString(button, "bag-action", GUIAction.NONE.toString());
         
         return button;
     }

@@ -23,7 +23,7 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 
 public class BagEffects implements Listener {
 	
@@ -38,10 +38,10 @@ public class BagEffects implements Listener {
 	}
 	
 	public static HashMap<String, BagEffect> effects = new HashMap<>();
-	private static HashMap<UUID, BukkitTask> tasks = new HashMap<>();
+	private static final HashMap<UUID, BukkitTask> tasks = new HashMap<>();
 	
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-256] Registering BagEffects");
+		Log.debug(Main.plugin, "[DI-256] Registering BagEffects");
 		Bukkit.getServer().getPluginManager().registerEvents(new BagEffects(), Main.plugin);
 		loadEffects();
 		reload();
@@ -61,29 +61,29 @@ public class BagEffects implements Listener {
 	}
 	
 	public static void loadEffects() {
-		Object[] f = Main.effects.GetConfigurationSection("effects").getKeys(false).toArray();
-		Log.Debug(Main.plugin, "[DI-258] " + "Effects: " + f.length);
+		Object[] f = Main.effects.getConfigurationSection("effects").getKeys(false).toArray();
+		Log.debug(Main.plugin, "[DI-258] " + "Effects: " + f.length);
 		for(int i = 0; i < f.length; i++) {
 			String id = String.valueOf(f[i]);
-			String name = Lang.Parse(Main.effects.GetString(String.format("effects.%s.displayname", id)), null);
+			String name = Lang.parse(Main.effects.getString(String.format("effects.%s.displayname", id)), null);
 			HashMap<PotionEffectType, Integer> potions = new HashMap<>();
-			for(Object e : Main.effects.GetConfigurationSection(String.format("effects.%s.potions", id)).getKeys(false).toArray()) {
+			for(Object e : Main.effects.getConfigurationSection(String.format("effects.%s.potions", id)).getKeys(false).toArray()) {
 				PotionEffectType type = null;
 				try {
 					type = getPotionType(e.toString());
 				} catch (Exception e1) {
-					Log.Error(Main.plugin, e1.getMessage());
+					Log.error(Main.plugin, e1.getMessage());
 					//e1.printStackTrace();
 					continue;
 				}
-				Integer level = Main.effects.GetInt(String.format("effects.%s.potions.%s", id, e.toString()));
+				Integer level = Main.effects.getInt(String.format("effects.%s.potions.%s", id, e.toString()));
 				potions.put(type, level);
 			}
 			
 			BagEffect effect = new BagEffect(name, potions);
 			effects.put(id, effect);
 
-			Log.Debug(Main.plugin, "[DI-259] " + "Effect: " + id);
+			Log.debug(Main.plugin, "[DI-259] " + "Effect: " + id);
 		}
 	}
 	
@@ -126,25 +126,30 @@ public class BagEffects implements Listener {
 		// Just as a backup for new effect names, as HavenBags is 1.20 native,
 		// and new names were set in 1.21.
 		// Mainly for if you use 1.21 names while on 1.20.
-		switch(key) {
-			case "RESISTANCE" : 
-				Log.Debug(Main.plugin, "Legacy Effect: RESISTANCE - PotionEffectType.DAMAGE_RESISTANCE");
-				return PotionEffectType.RESISTANCE;
-			case "STRENGTH" : 
-				Log.Debug(Main.plugin, "Legacy Effect: STRENGTH - PotionEffectType.INCREASE_DAMAGE");
-				return PotionEffectType.STRENGTH;
-			case "HASTE" : 
-				Log.Debug(Main.plugin, "Legacy Effect: HASTE - PotionEffectType.FAST_DIGGING");
-				return PotionEffectType.HASTE;
-			case "MINING_FATIGUE" : 
-				Log.Debug(Main.plugin, "Legacy Effect: MINING_FATIGUE - PotionEffectType.SLOW_DIGGING");
-				return PotionEffectType.MINING_FATIGUE;
-			case "JUMP_BOOST" : 
-				Log.Debug(Main.plugin, "Legacy Effect: JUMP_BOOST - PotionEffectType.JUMP");
-				return PotionEffectType.JUMP_BOOST;
-		}
-		return null;
-	}
+        return switch (key) {
+            case "RESISTANCE" -> {
+                Log.debug(Main.plugin, "Legacy Effect: RESISTANCE - PotionEffectType.DAMAGE_RESISTANCE");
+                yield PotionEffectType.RESISTANCE;
+            }
+            case "STRENGTH" -> {
+                Log.debug(Main.plugin, "Legacy Effect: STRENGTH - PotionEffectType.INCREASE_DAMAGE");
+                yield PotionEffectType.STRENGTH;
+            }
+            case "HASTE" -> {
+                Log.debug(Main.plugin, "Legacy Effect: HASTE - PotionEffectType.FAST_DIGGING");
+                yield PotionEffectType.HASTE;
+            }
+            case "MINING_FATIGUE" -> {
+                Log.debug(Main.plugin, "Legacy Effect: MINING_FATIGUE - PotionEffectType.SLOW_DIGGING");
+                yield PotionEffectType.MINING_FATIGUE;
+            }
+            case "JUMP_BOOST" -> {
+                Log.debug(Main.plugin, "Legacy Effect: JUMP_BOOST - PotionEffectType.JUMP");
+                yield PotionEffectType.JUMP_BOOST;
+            }
+            default -> null;
+        };
+    }
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
@@ -166,11 +171,11 @@ public class BagEffects implements Listener {
 	    if (tasks.containsKey(uuid)) return;
 
         //int duration = 105;
-        int duration = Main.config.GetInt("effects.refresh-rate") + 5;
+        int duration = Main.config.getInt("effects.refresh-rate") + 5;
 	    BukkitTask task = Bukkit.getScheduler().runTaskTimer(Main.plugin, () -> {
 	        
-	        for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
-	        	Data data = BagData.GetBag(HavenBags.GetBagUUID(bag.item), null);
+	        for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
+	        	Data data = BagData.getBag(HavenBags.getBagUUID(bag.item), null);
 	        	if(data.getEffect() == null) continue;
 	        	if(data.getEffect().equalsIgnoreCase("null")) continue;
 	        	

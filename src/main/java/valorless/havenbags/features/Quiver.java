@@ -18,24 +18,24 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.havenbags.BagData.Bag;
 
 public class Quiver implements Listener {
 	
-	List<Bag> bags = new ArrayList<Bag>();
+	List<Bag> bags = new ArrayList<>();
 	
 	public static final List<Material> Projectiles = List.of(Material.ARROW, Material.SPECTRAL_ARROW, Material.TIPPED_ARROW);
 	
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-221] Registering Quiver");
+		Log.debug(Main.plugin, "[DI-221] Registering Quiver");
 		Bukkit.getServer().getPluginManager().registerEvents(new Quiver(), Main.plugin);
 	}
 	
 	@EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-		if(Main.config.GetBool("quiver-bags") == false) return;
-		if(BagData.isReady() == false) {
+		if(Main.config.getBool("quiver-bags") == false) return;
+		if(!BagData.isReady()) {
 			return;
 		}
 		if(event.getAction() != Action.RIGHT_CLICK_AIR  && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
@@ -49,12 +49,12 @@ public class Quiver implements Listener {
     		if(cross.hasChargedProjectiles()) return;
     	}
     	
-		Log.Debug(Main.plugin, "[DI-235] Fetching bags.");
-		Log.Debug(Main.plugin, "[DI-236] " + player.getName());
-    	bags = HavenBags.GetBagsDataInInventory(player);
-    	if(bags.size() == 0) return;
+		Log.debug(Main.plugin, "[DI-235] Fetching bags.");
+		Log.debug(Main.plugin, "[DI-236] " + player.getName());
+    	bags = HavenBags.getBagsDataInInventory(player);
+    	if(bags.isEmpty()) return;
 
-    	if(Main.config.GetInt("quiver-shield-fix") == 1){ // Semi-fix
+    	if(Main.config.getInt("quiver-shield-fix") == 1){ // Semi-fix
     		if(offhand != null && offhand.getType() != Material.AIR && !hasProjectile(player)) {
     			if (offhand.getType() == Material.SHIELD && hand.getType() == Material.BOW ||
     					offhand.getType() == Material.SHIELD && hand.getType() == Material.CROSSBOW) {
@@ -62,7 +62,7 @@ public class Quiver implements Listener {
     			}
     		}
     	}
-    	else if(Main.config.GetInt("quiver-shield-fix") == 2){ // Disable quiver
+    	else if(Main.config.getInt("quiver-shield-fix") == 2){ // Disable quiver
     		if(offhand != null && offhand.getType() != Material.AIR) {
     			if (offhand.getType() == Material.SHIELD) {
     				return;
@@ -71,8 +71,8 @@ public class Quiver implements Listener {
     	}
     	
     	if(offhand != null && offhand.getType() != Material.AIR) {
-    		if(HavenBags.IsBag(offhand) && !hasProjectile(player)) {
-				Bag quiver = new Bag(offhand, BagData.GetBag(HavenBags.GetBagUUID(offhand), offhand).getContent());
+    		if(HavenBags.isBag(offhand) && !hasProjectile(player)) {
+				Bag quiver = new Bag(offhand, BagData.getBag(HavenBags.getBagUUID(offhand), offhand).getContent());
 				if(quiver != null) {
 					if(hasFreeSpace(player)) {
 						//Log.Info(Main.plugin, "Free space");
@@ -82,7 +82,7 @@ public class Quiver implements Listener {
 						player.getInventory().addItem(arrow);
 						return;
 					}else {
-						player.sendMessage(Lang.Get("prefix") + Lang.Get("quiver-no-space"));
+						player.sendMessage(Lang.get("prefix") + Lang.get("quiver-no-space"));
 						return;
 					}
 				}
@@ -99,7 +99,7 @@ public class Quiver implements Listener {
 					return;
 				}
 			}else {
-				player.sendMessage(Lang.Get("prefix") + Lang.Get("quiver-no-space"));
+				player.sendMessage(Lang.get("prefix") + Lang.get("quiver-no-space"));
 				return;
 			}
 		}
@@ -112,8 +112,8 @@ public class Quiver implements Listener {
     		if(item.getType() == Material.ARROW) {
     			int amount = item.getAmount() -1;
     			item.setAmount(amount);
-    			BagData.UpdateBag(bag.item, bag.content);
-    			HavenBags.UpdateBagLore(bag.item, player);
+    			BagData.updateBag(bag.item, bag.content);
+    			HavenBags.updateBagLore(bag.item, player);
     			return true;
     		}
     	}
@@ -137,8 +137,8 @@ public class Quiver implements Listener {
     			if(item.getType() == Material.ARROW) {
     				int amount = item.getAmount() -1;
     				item.setAmount(amount);
-        			BagData.UpdateBag(bag.item, bag.content);
-        			HavenBags.UpdateBagLore(bag.item, player);
+        			BagData.updateBag(bag.item, bag.content);
+        			HavenBags.updateBagLore(bag.item, player);
     				return true;
     			}
     		}
@@ -184,8 +184,8 @@ public class Quiver implements Listener {
     				ItemStack clone = item.clone();
     				int amount = item.getAmount() -1;
     				item.setAmount(amount);
-    				BagData.UpdateBag(bag.item, bag.content);
-    				HavenBags.UpdateBagLore(bag.item, player);
+    				BagData.updateBag(bag.item, bag.content);
+    				HavenBags.updateBagLore(bag.item, player);
     				//Log.Info(Main.plugin, item.toString());
 
     				clone.setAmount(1);

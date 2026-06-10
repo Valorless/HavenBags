@@ -39,8 +39,7 @@ import valorless.havenbags.events.BagCreateEvent;
 import valorless.havenbags.events.BagDeleteEvent;
 import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
-import valorless.havenbags.utils.ErrorLog;
-import valorless.havenbags.utils.Reflex;
+import valorless.havenbags.utils.Reflect;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.Server;
@@ -49,7 +48,6 @@ import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.nbtapi.iface.ReadWriteNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBTList;
-import valorless.valorlessutils.utils.Utils;
 
 public class BagData {
 	
@@ -73,13 +71,13 @@ public class BagData {
 		return ready;
 	}
 	
-	public static void Initiate() {
+	public static void init() {
 		data.clear(); // Just in case
-		DatabaseType type = DatabaseType.get(Main.config.GetString("save-type").toUpperCase());
+		DatabaseType type = DatabaseType.get(Main.config.getString("save-type").toUpperCase());
 		if(type != null) setDatabase(type);
 		else {
 			Log.error(Main.plugin, String.format("Invalid database type \"%s\"\n"
-					+ "Please choose either FILES, MYSQL, or SQLITE.", Main.config.GetString("save-type")));
+					+ "Please choose either FILES, MYSQL, or SQLITE.", Main.config.getString("save-type")));
 			Bukkit.getPluginManager().disablePlugin(Main.plugin);
 		}
 		
@@ -90,8 +88,8 @@ public class BagData {
 			sqlite = new SQLite();
 		}
 		
-		interval = Main.config.GetInt("auto-save.interval")*20;
-		LoadData();
+		interval = Main.config.getInt("auto-save.interval")*20;
+		loadData();
 		/*
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
             @Override
@@ -105,7 +103,7 @@ public class BagData {
 		autosave = new BukkitRunnable() {
 		    @Override
 		    public void run() {
-            	SaveData(false, null);
+            	saveData(false);
 		    }
 		};
 
@@ -113,7 +111,7 @@ public class BagData {
 		//Log.info(Main.plugin, "Loaded bags: " + data.size());
 	}
 	
-	public static void Shutdown() {
+	public static void shutdown() {
 		if(getDatabase() == DatabaseType.MYSQL) {
 			try {
 				if(getMysql() != null) {
@@ -143,7 +141,7 @@ public class BagData {
 		}
 	}
 	
-	public static void ChangeDatabase(DatabaseType type) {
+	public static void changeDatabase(DatabaseType type) {
 		if(getDatabase() == DatabaseType.MYSQL || getDatabase() == DatabaseType.MYSQLPLUS) {
 			try {
 				getMysql().disconnect();
@@ -163,7 +161,7 @@ public class BagData {
 		autosave = new BukkitRunnable() {
 		    @Override
 		    public void run() {
-            	SaveData(false, null);
+            	saveData(false);
 		    }
 		};
 
@@ -183,14 +181,14 @@ public class BagData {
 		
 	}
 	
-	public static void Reload() {
-		interval = Main.config.GetInt("auto-save.interval");
+	public static void reload() {
+		interval = Main.config.getInt("auto-save.interval");
 		Log.info(Main.plugin, "Bag data was not reloaded. You can force bag data reload with /havenbags reload force");
 		Log.warning(Main.plugin, "Any unsaved bag data will be lost!");
 	}
 	
-	public static void ForceReload() {
-		LoadData();
+	public static void forceReload() {
+		loadData();
 	}
 	
 	public static class Bag {
@@ -203,14 +201,11 @@ public class BagData {
 		}
 	}
 	
-	public static boolean Contains(@NotNull String uuid) {
-		if(GetBag(uuid, null) != null) {
-			return true;
-		}
-		else return false;
+	public static boolean contains(@NotNull String uuid) {
+        return getBag(uuid, null) != null;
 	}
 
-	public static Boolean BagExists(@NotNull String uuid) {
+	public static Boolean bagExists(@NotNull String uuid) {
 		if("null".equalsIgnoreCase(uuid)) {
 			return false;
 		}
@@ -223,7 +218,7 @@ public class BagData {
 		return data.containsKey(UUID.fromString(uuid));
 	}
 	
-	public static Data GetBag(@NotNull String uuid, @Nullable ItemStack bagItem, @Nullable UpdateSource... source) {
+	public static Data getBag(@NotNull String uuid, @Nullable ItemStack bagItem, @Nullable UpdateSource... source) {
 		UpdateSource m_source = UpdateSource.NULL;
 		if(source != null) {
 			if(source.length != 0) {
@@ -261,7 +256,7 @@ public class BagData {
 		return data.get(UUID.fromString(uuid));
 	}
 	
-	public static void UpdateBag(@NotNull String uuid, @NotNull List<ItemStack> content, @Nullable UpdateSource... source) {
+	public static void updateBag(@NotNull String uuid, @NotNull List<ItemStack> content, @Nullable UpdateSource... source) {
 		UpdateSource m_source = UpdateSource.NULL;
 		if(source != null) {
 			if(source.length != 0) {
@@ -269,7 +264,7 @@ public class BagData {
 			}
 		}
 		
-		Data bag = GetBag(uuid, null);
+		Data bag = getBag(uuid, null);
 		
 		if(bag == null) Log.error(Main.plugin, String.format("Failed to update bag '%s', this bag was not found.", uuid));
 		
@@ -287,17 +282,18 @@ public class BagData {
 			e.printStackTrace();
 		}
 	}
-	
-	public static void UpdateBag(@NotNull ItemStack bagItem, @NotNull List<ItemStack> content, UpdateSource... source) {
+
+	@SuppressWarnings("deprecation")
+	public static void updateBag(@NotNull ItemStack bagItem, @NotNull List<ItemStack> content, UpdateSource... source) {
 		UpdateSource m_source = UpdateSource.NULL;
 		if(source != null) {
 			if(source.length != 0) {
 				m_source = source[0];
 			}
 		}
-		String uuid = PDC.GetString(bagItem, "uuid");
+		String uuid = PDC.getString(bagItem, "uuid");
 		
-		Data bag = GetBag(uuid, null);
+		Data bag = getBag(uuid, null);
 		
 		if(bag == null) Log.error(Main.plugin, String.format("Failed to update bag '%s', this bag was not found.", uuid));
 		
@@ -341,13 +337,13 @@ public class BagData {
 			}
 			
 
-			if(Main.config.GetBool("capacity-based-textures.enabled")) {
-				bag.setTexture(HavenBags.CapacityTexture(bagItem, content));
+			if(Main.config.getBool("capacity-based-textures.enabled")) {
+				bag.setTexture(HavenBags.capacityTexture(bagItem, content));
 				//bag.setTexture(HavenBags.CapacityTexture(bagItem, content));
 				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable(){
 		            @Override
 		            public void run(){
-		            	HavenBags.UpdateBagItem(bagItem, bag.getViewer());
+		            	HavenBags.updateBagItem(bagItem, bag.getViewer());
 		            }
 		        }, 1L);
 				
@@ -359,14 +355,15 @@ public class BagData {
 			}
 		}
 	}
-	
-	public static Data CreateBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content, Player creator, ItemStack bag) {
+
+	@SuppressWarnings("deprecation")
+	public static Data createBag(@NotNull String uuid, @NotNull String owner, @NotNull List<ItemStack> content, Player creator, ItemStack bag) {
 		Data dat = new Data(uuid, owner, bag.getType());
 		dat.setContent(content);
 		if(creator != null)	dat.setCreator(creator.getUniqueId().toString());
 		int size = 0;
 		for(ItemStack item : content) {
-			if(!PDC.Has(item, "locked")) size++;
+			if(!PDC.has(item, "locked")) size++;
 		}
 		//dat.setSize(PDC.GetInteger(bag, "size"));
 		dat.setSize(size);
@@ -394,20 +391,20 @@ public class BagData {
 		}
 		dat.setTrusted(new ArrayList<String>());
 		
-		if(PDC.Has(bag, "filter")) {
-			dat.setAutopickup(PDC.GetString(bag, "filter"));
+		if(PDC.has(bag, "filter")) {
+			dat.setAutopickup(PDC.getString(bag, "filter"));
 		}else {
 			dat.setAutopickup("null");
 		}
 		
-		if(PDC.Has(bag, "blacklist")) {
-			dat.setBlacklist(PDC.GetStringList(bag, "blacklist"));
-			dat.setWhitelist(PDC.GetBoolean(bag, "whitelist"));
-			dat.setIgnoreGlobalBlacklist(PDC.GetBoolean(bag, "igb"));
+		if(PDC.has(bag, "blacklist")) {
+			dat.setBlacklist(PDC.getStringList(bag, "blacklist"));
+			dat.setWhitelist(PDC.getBoolean(bag, "whitelist"));
+			dat.setIgnoreGlobalBlacklist(PDC.getBoolean(bag, "igb"));
 		}
 		
-		if(PDC.Has(bag, "tooltip")) {
-			dat.setTooltipStyle(PDC.GetString(bag, "tooltip"));
+		if(PDC.has(bag, "tooltip")) {
+			dat.setTooltipStyle(PDC.getString(bag, "tooltip"));
 		}else {
 			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {
 				if(bag.getItemMeta().hasTooltipStyle()) {
@@ -428,7 +425,7 @@ public class BagData {
 		return dat;
 	}
 	
-	public static Data CreateBag(@NotNull Data dat) {
+	public static Data createBag(@NotNull Data dat) {
 		if(dat == null) throw new IllegalArgumentException("Data cannot be null");
 		dat.setChanged(true);
 		data.put(UUID.fromString(dat.getUuid()), dat);
@@ -443,15 +440,15 @@ public class BagData {
 		return dat;
 	}
 	
-	public static void LoadData(){
+	public static void loadData(){
 		ready = false;
 		Log.info(Main.plugin, "Loading bags..");
 		long startTime = System.currentTimeMillis();
 		int i = 0;
 		if(getDatabase() == DatabaseType.FILES) {
-			List<String> owners	= GetBagOwners();
+			List<String> owners	= getBagOwners();
 			for(String owner : owners) {
-				List<String> bags = Files.GetBags(owner);
+				List<String> bags = Files.getBags(owner);
 				for(String bag : bags) {
 					String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, bag);
 
@@ -500,7 +497,7 @@ public class BagData {
 		ready = true;
 	}
 	
-	public static void SaveData(boolean shutdown, boolean... conversion) {
+	public static void saveData(boolean shutdown, boolean... conversion) {
 		long startTime = System.currentTimeMillis();
 		List<Data> toSave = new ArrayList<>();
 		
@@ -547,7 +544,7 @@ public class BagData {
 		if(toSave.isEmpty()) {
 			return;
 		}
-		if(Main.config.GetBool("auto-save.message") || shutdown) Log.info(Main.plugin, "Saving bags..");
+		if(Main.config.getBool("auto-save.message") || shutdown) Log.info(Main.plugin, "Saving bags..");
 		for(Data bag : toSave) {
 			String uuid = bag.getUuid();
 	    	String owner = bag.getOwner();
@@ -574,7 +571,7 @@ public class BagData {
 		    		}
 		    	}
 		}
-		
+
 		if(!toSave.isEmpty()) {
 	    	if(getDatabase() == DatabaseType.MYSQL) {
 	    		Log.debug(Main.plugin, "[DI-232] [MYSQL] " + "Attempting to write bags onto database");
@@ -609,27 +606,25 @@ public class BagData {
 	    		}
 	    	}
 		}
-		
+
 		long endTime = System.currentTimeMillis();
 		long duration = endTime - startTime;
-		if(Main.config.GetBool("auto-save.message") || shutdown) Log.info(Main.plugin, String.format("Saved %s bags. %sms", toSave.size(), duration));
+		if(Main.config.getBool("auto-save.message") || shutdown) Log.info(Main.plugin, String.format("Saved %s bags. %sms", toSave.size(), duration));
 	}
 	
-	public static void RemoveBag(@NotNull String uuid) {
+	public static void removeBag(@NotNull String uuid) {
 		UUID uid = UUID.fromString(uuid);
 		Data bag = data.get(uid);
 		if(bag != null) {
 			data.remove(uid);
-			if(changedBags.containsKey(uid)) {
-				changedBags.remove(uid);
-			}
+            changedBags.remove(uid);
 			Log.info(Main.plugin, String.format("Removed cached data for %s.", uuid));
 			return;
 		}
 		Log.error(Main.plugin, String.format("Failed to remove cached data for %s.", uuid));
 	}
 	
-	public static Boolean DeleteBag(@NotNull String uuid,  @Nullable Player... player) {
+	public static Boolean deleteBag(@NotNull String uuid, @Nullable Player... player) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			if(getDatabase() == DatabaseType.FILES) {
@@ -652,10 +647,8 @@ public class BagData {
 			}else {
 				Bukkit.getPluginManager().callEvent(new BagDeleteEvent(null, bag.clone()));
 			}
-			RemoveBag(uuid);
-			if(changedBags.containsKey(UUID.fromString(uuid))) {
-				changedBags.remove(UUID.fromString(uuid));
-			}
+			removeBag(uuid);
+            changedBags.remove(UUID.fromString(uuid));
 			Log.info(Main.plugin, String.format("Deleted data for %s.", uuid));
 			return true;
 		}
@@ -663,7 +656,7 @@ public class BagData {
 		return false;
 	}
 	
-	public static List<String> GetBags(@NotNull String playerUUID) {
+	public static List<String> getBags(@NotNull String playerUUID) {
 	    Log.debug(Main.plugin, "[DI-32] " + playerUUID);
 	    return data.values().stream()
 	        .filter(dat -> dat.getOwner().equals(playerUUID))
@@ -671,21 +664,20 @@ public class BagData {
 	        .toList();
 	}
 	
-	public static List<Data> GetBagsData(@NotNull String playerUUID) {
+	public static List<Data> getBagsData(@NotNull String playerUUID) {
 	    Log.debug(Main.plugin, "[DI-260] " + playerUUID);
 	    return data.values().stream()
 	        .filter(dat -> dat.getOwner().equals(playerUUID))
 	        .toList();
 	}
 	
-	public static List<String> GetBagOwners(){
+	public static List<String> getBagOwners(){
 		if(getDatabase() == DatabaseType.FILES) {
 			try {
-				List<String> bagOwners = Stream.of(new File(String.format("%s/bags/", Main.plugin.getDataFolder())).listFiles())
-						.filter(file -> file.isDirectory())
+				return Stream.of(new File(String.format("%s/bags/", Main.plugin.getDataFolder())).listFiles())
+						.filter(File::isDirectory)
 						.map(File::getName)
 						.toList();
-				return bagOwners;
 			} catch (Exception e) {
 				return new ArrayList<String>();
 			}
@@ -699,7 +691,7 @@ public class BagData {
 		return new ArrayList<String>();
 	}
 	
-	public static boolean IsBagOpen(@NotNull String uuid,  ItemStack bagItem) {
+	public static boolean isBagOpen(@NotNull String uuid, ItemStack bagItem) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			return bag.isOpen();
@@ -709,9 +701,9 @@ public class BagData {
 		return false;
 	}
 	
-	public static boolean IsBagOpen(ItemStack bagItem) {
+	public static boolean isBagOpen(ItemStack bagItem) {
 		if(BagState.getState(bagItem) != BagState.USED) return false;
-		String uuid = HavenBags.GetBagUUID(bagItem);
+		String uuid = HavenBags.getBagUUID(bagItem);
 		if("null".equalsIgnoreCase(uuid)) {
 			return false;
 		}
@@ -728,10 +720,10 @@ public class BagData {
 		return false;
 	}
 	
-	public static Player BagOpenBy(@NotNull String uuid,  ItemStack bagItem) {
+	public static Player bagOpenBy(@NotNull String uuid, ItemStack bagItem) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
-			if(IsBagOpen(uuid, bagItem)) {
+			if(isBagOpen(uuid, bagItem)) {
 				return bag.getViewer();
 			}else return null;
 		}
@@ -740,7 +732,7 @@ public class BagData {
 		return null;
 	}
 	
-	public static void MarkBagOpen(@NotNull String uuid, ItemStack bagItem, Player player) {
+	public static void markBagOpen(@NotNull String uuid, ItemStack bagItem, Player player) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setOpen(true);
@@ -756,7 +748,7 @@ public class BagData {
 		if(bagItem != null) bagItem.setAmount(0);
 	}
 	
-	public static void MarkBagOpen(@NotNull String uuid, ItemStack bagItem, Player player, BagGUI gui) {
+	public static void markBagOpen(@NotNull String uuid, ItemStack bagItem, Player player, BagGUI gui) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setOpen(true);
@@ -773,8 +765,8 @@ public class BagData {
 		if(bagItem != null) bagItem.setAmount(0);
 	}
 	
-	public static void MarkBagClosed(@NotNull String uuid) {
-		Data bag = GetBag(uuid, null); // This will throw an error if the bag does not exist, which is fine.
+	public static void markBagClosed(@NotNull String uuid) {
+		Data bag = getBag(uuid, null); // This will throw an error if the bag does not exist, which is fine.
 		if(bag == null) {
 			Log.error(Main.plugin, String.format("Failed to mark bag '%s' as closed, this bag was not found.", uuid));
 			return;
@@ -789,22 +781,22 @@ public class BagData {
 		}
 	}
 	
-	public List<String> GetTrusted(@NotNull String uuid) {
+	public List<String> getTrusted(@NotNull String uuid) {
 		Data bag = getbag(uuid);
 		return bag != null ? bag.getTrusted() : null;
 	}
 	
-	public static String GetOwner(@NotNull String uuid) {
+	public static String getOwner(@NotNull String uuid) {
 		Data bag = getbag(uuid);
 		return bag != null ? bag.getOwner() : null;
 	}
 	
-	public static String GetCreator(@NotNull String uuid) {
+	public static String getCreator(@NotNull String uuid) {
 		Data bag = getbag(uuid);
 		return bag != null ? bag.getCreator() : null;
 	}
 	
-	public static void AddTrusted(@NotNull String uuid, @NotNull String player) {
+	public static void addTrusted(@NotNull String uuid, @NotNull String player) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			List<String> trusted = bag.getTrusted();
@@ -818,11 +810,11 @@ public class BagData {
 		}
 	}
 	
-	public static void RemoveTrusted(@NotNull String uuid, @NotNull String player) {
+	public static void removeTrusted(@NotNull String uuid, @NotNull String player) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			List<String> trusted = bag.getTrusted();
-			if(trusted.size() == 0) return;
+			if(trusted.isEmpty()) return;
 			for(int i = 0; i < trusted.size(); i++) {
 				if(trusted.get(i).equalsIgnoreCase(player)) {
 					trusted.remove(i);
@@ -835,7 +827,7 @@ public class BagData {
 		}
 	}
 	
-	public static void SetAutoPickup(@NotNull String uuid, @NotNull String filter) {
+	public static void setAutoPickup(@NotNull String uuid, @NotNull String filter) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setAutopickup(filter);
@@ -845,12 +837,12 @@ public class BagData {
 		}
 	}
 	
-	public static String GetAutoPickup(@NotNull String uuid) {
+	public static String getAutoPickup(@NotNull String uuid) {
 		Data bag = getbag(uuid);
 		return bag != null ? bag.getAutopickup() : null;
 	}
 	
-	public static void RemoveAutoPickup(@NotNull String uuid) {
+	public static void removeAutoPickup(@NotNull String uuid) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setAutopickup("null");
@@ -860,7 +852,7 @@ public class BagData {
 		}	
 	}
 	
-	public static void SetWeight(@NotNull String uuid, @NotNull double weight) {
+	public static void setWeight(@NotNull String uuid, @NotNull double weight) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setWeight(weight);
@@ -870,7 +862,7 @@ public class BagData {
 		}
 	}
 	
-	public static void SetWeightMax(@NotNull String uuid, @NotNull double weightmax) {
+	public static void setWeightMax(@NotNull String uuid, @NotNull double weightmax) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setWeightMax(weightmax);
@@ -881,7 +873,7 @@ public class BagData {
 	}
 	
 	@SuppressWarnings("unused")
-	private void MarkBagChanged(@NotNull String uuid) {
+	private void markBagChanged(@NotNull String uuid) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			bag.setChanged(true);
@@ -908,7 +900,7 @@ public class BagData {
         }else {
 
         	// Use NBTAPI to access the NBT data
-        	if (valorless.valorlessutils.nbtapi.NBT.readNbt(head).hasTag("SkullOwner") == false) {
+        	if (!valorless.valorlessutils.nbtapi.NBT.readNbt(head).hasTag("SkullOwner")) {
             	return null;
         	}
 
@@ -927,7 +919,7 @@ public class BagData {
 
         	// Access the textures NBT list
         	ReadableNBTList<ReadWriteNBT> textures = properties.getCompoundList("textures");
-        	if (textures == null || textures.size() == 0) {
+        	if (textures == null || textures.isEmpty()) {
         		return null;
         	}
 
@@ -970,11 +962,11 @@ public class BagData {
         		GameProfile profile = new GameProfile(uuid, "null");
         		profile.getProperties().put("textures", new Property("textures", value));
 
-        		Method method = Reflex.getMethod(meta.getClass(), "setProfile", GameProfile.class);
+        		Method method = Reflect.getMethod(meta.getClass(), "setProfile", GameProfile.class);
         		if (method != null) {
-        			Reflex.invokeMethod(method, meta, profile);
+        			Reflect.invokeMethod(method, meta, profile);
         		} else {
-            		Reflex.setFieldValue(meta, "profile", profile);
+            		Reflect.setFieldValue(meta, "profile", profile);
         		}
         	}catch(Exception e) {}
         }
@@ -982,7 +974,7 @@ public class BagData {
         item.setItemMeta(meta);
     }
 	
-	public static List<Data> GetOpenBags() {
+	public static List<Data> getOpenBags() {
 	    return data.values().stream()
 	               .filter(Data::isOpen)
 	               .toList();
@@ -1003,10 +995,10 @@ public class BagData {
         return itemList;
     }
 	
-	public static Boolean ClearAllBagContents() {
+	public static Boolean clearAllBagContents() {
 		try {
 			for(Data dat : data.values()) {
-				ClearBagContent(dat.getUuid());
+				clearBagContent(dat.getUuid());
 			}
 			return true;
 		}catch(Exception e) {
@@ -1015,10 +1007,10 @@ public class BagData {
 		}
 	}
 	
-	public static Boolean ClearBagContentPlayer(@NotNull String playeruuid) {
+	public static Boolean clearBagContentPlayer(@NotNull String playeruuid) {
 		try {
-			for(String bag : GetBags(playeruuid)) {
-				ClearBagContent(bag);
+			for(String bag : getBags(playeruuid)) {
+				clearBagContent(bag);
 			}
 			return true;
 		}catch(Exception e) {
@@ -1027,11 +1019,11 @@ public class BagData {
 		}
 	}
 	
-	public static Boolean ClearBagContent(@NotNull String uuid) {
+	public static Boolean clearBagContent(@NotNull String uuid) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
 			if(bag.getGui() != null) {
-				bag.getGui().Close(true);
+				bag.getGui().close(true);
 			}
 			
 			bag.setContent(new ArrayList<>(Collections.nCopies(bag.getContent().size(), null)));
@@ -1068,12 +1060,12 @@ public class BagData {
 	public static void resetTooltipStyles() {
 		for (Data data : data.values()) {
 			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {
-				data.setTooltipStyle(Main.config.GetString("bag.tooltip-style"));
+				data.setTooltipStyle(Main.config.getString("bag.tooltip-style"));
 			}else {
 				data.setTooltipStyle(null);
 			}
 		}
 		// Forcefully save all changes
-		SaveData(true);
+		saveData(true);
 	}
 }

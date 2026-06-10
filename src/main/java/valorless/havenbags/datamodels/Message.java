@@ -15,37 +15,37 @@ public class Message {
 	public ChatMessageType type = null;
 	
 	public Message(String message) {
-		this.message = new TextComponent(Lang.Parse(message, null));
+		this.message = new TextComponent(Lang.parse(message, null));
 	}
 	
 	public Message(String message, ChatColor color) {
-		this.message = new TextComponent(Lang.Parse(message, null));
-		SetColor(color);
+		this.message = new TextComponent(Lang.parse(message, null));
+		setColor(color);
 	}
 	
 	public Message(String message, String hover) {
-		this.message = new TextComponent(Lang.Parse(message, null));
-		SetHoverText(this.message, hover);
+		this.message = new TextComponent(Lang.parse(message, null));
+		sethovertext(this.message, hover);
 	}
 	
 	public Message(ChatMessageType type, String message) {
-		this.message = new TextComponent(Lang.Parse(message, null));
+		this.message = new TextComponent(Lang.parse(message, null));
 		this.type = type;
 	}
 	
 	public Message(ChatMessageType type, String message, ChatColor color) {
-		this.message = new TextComponent(Lang.Parse(message, null));
-		SetColor(color);
+		this.message = new TextComponent(Lang.parse(message, null));
+		setColor(color);
 		this.type = type;
 	}
 	
 	public Message(ChatMessageType type, String message, String hover) {
-		this.message = new TextComponent(Lang.Parse(message, null));
-		SetHoverText(this.message, hover);
+		this.message = new TextComponent(Lang.parse(message, null));
+		sethovertext(this.message, hover);
 		this.type = type;
 	}
 	
-	public void Send(Player player) {
+	public void send(Player player) {
 		if(type == null) {
 			player.spigot().sendMessage(message);
 		}
@@ -54,38 +54,38 @@ public class Message {
 		}
 	}
 	
-	public void SetColor(ChatColor color) {
+	public void setColor(ChatColor color) {
 		message.setColor(color);
 	}
 	
 	@SuppressWarnings("deprecation")
-	TextComponent SetHoverText(TextComponent comp, String message) {
-		comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Lang.Parse(message, null)).create()));
+	TextComponent sethovertext(TextComponent comp, String message) {
+		comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Lang.parse(message, null)).create()));
 		return comp;
 	}
 
 	@SuppressWarnings("deprecation")
-	public void SetHoverText(String message) {
-		this.message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Lang.Parse(message, null)).create()));
+	public void sethovertext(String message) {
+		this.message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Lang.parse(message, null)).create()));
 	}
 	
-	public void AddTextPart(String message) {
-		this.message.addExtra(new TextComponent(Lang.Parse(message, null)));
+	public void addTextPart(String message) {
+		this.message.addExtra(new TextComponent(Lang.parse(message, null)));
 	}
 	
-	public void AddTextPart(String message, String hover) {
+	public void addTextPart(String message, String hover) {
 		this.message.addExtra(
-				SetHoverText(new TextComponent(Lang.Parse(message, null)), hover)
+				sethovertext(new TextComponent(Lang.parse(message, null)), hover)
 				);
 	}
 	
-	public void AddNewLine(String message) {
-		this.message.addExtra(new TextComponent("\n" + Lang.Parse(message, null)));
+	public void addNewLine(String message) {
+		this.message.addExtra(new TextComponent("\n" + Lang.parse(message, null)));
 	}
 	
-	public void AddNewLine(String message, String hover) {
+	public void addNewLine(String message, String hover) {
 		this.message.addExtra(
-				SetHoverText(new TextComponent("\n" + Lang.Parse(message, null)), hover)
+				sethovertext(new TextComponent("\n" + Lang.parse(message, null)), hover)
 				);
 	}
 	

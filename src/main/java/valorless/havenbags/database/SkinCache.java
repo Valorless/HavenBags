@@ -17,7 +17,7 @@ import org.bukkit.profile.PlayerProfile;
 
 import valorless.havenbags.BagData;
 import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 
@@ -54,7 +54,7 @@ public class SkinCache implements Listener {
 	 * This method should be called when the plugin is enabled.
 	 */
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-291] Registering SkinCache");
+		Log.debug(Main.plugin, "[DI-291] Registering SkinCache");
 		Bukkit.getServer().getPluginManager().registerEvents(new SkinCache(), Main.plugin);
 		loadCache();
 		for(Player player : Bukkit.getOnlinePlayers()) {
@@ -69,7 +69,7 @@ public class SkinCache implements Listener {
 	public static void shutdown() {
 		try {
 			long startTime = System.currentTimeMillis();
-			Log.Info(Main.plugin, "Saving skin cache..");
+			Log.info(Main.plugin, "Saving skin cache..");
 			cleanup(); // Quick cleanup before saving..
 
 			if(config == null) {
@@ -89,16 +89,16 @@ public class SkinCache implements Listener {
 					config = new Config(Main.plugin, "/cache/skins.yml");
 				}
 
-				config.Set("skins", JsonUtils.toJson(cache));
-				config.SaveConfig();
+				config.set("skins", JsonUtils.toJson(cache));
+				config.saveConfig();
 			} else {
-				config.Set("skins", JsonUtils.toJson(cache));
-				config.SaveConfig();
+				config.set("skins", JsonUtils.toJson(cache));
+				config.saveConfig();
 			}
 
 			long endTime = System.currentTimeMillis();
 			long duration = endTime - startTime;
-			Log.Info(Main.plugin, String.format("Saved %s skins. %sms", cache.size(), duration));
+			Log.info(Main.plugin, String.format("Saved %s skins. %sms", cache.size(), duration));
 		}catch(Exception e) { 
 			e.printStackTrace();
 		}
@@ -110,7 +110,7 @@ public class SkinCache implements Listener {
 	 * The cache is stored in a HashMap with player names as keys and PlayerProfile as values.
 	 */
 	static void loadCache() {
-		Log.Info(Main.plugin, "Loading skin cache..");
+		Log.info(Main.plugin, "Loading skin cache..");
 		long startTime = System.currentTimeMillis();
 		cache.clear();
 		File root = new File(Main.plugin.getDataFolder() + "/cache");
@@ -132,7 +132,7 @@ public class SkinCache implements Listener {
 		}
 		long endTime = System.currentTimeMillis();
 		long duration = endTime - startTime;
-		Log.Info(Main.plugin, String.format("Loaded %s skins. %sms", cache.size(), duration));
+		Log.info(Main.plugin, String.format("Loaded %s skins. %sms", cache.size(), duration));
 	}
 	
 	/**
@@ -144,8 +144,8 @@ public class SkinCache implements Listener {
 	    while (iterator.hasNext()) {
 	        Entry<String, PlayerProfile> player = iterator.next();
 	        UUID uuid = player.getValue().getUniqueId();
-	        if (BagData.GetBags(uuid.toString()).isEmpty()) {
-	        	Log.Debug(Main.plugin, "[DI-292] Removing player " + player.getKey() + " from skin cache, no bags found.");
+	        if (BagData.getBags(uuid.toString()).isEmpty()) {
+	        	Log.debug(Main.plugin, "[DI-292] Removing player " + player.getKey() + " from skin cache, no bags found.");
 	            iterator.remove();
 	        }
 	    }

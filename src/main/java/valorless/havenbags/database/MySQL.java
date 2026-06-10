@@ -23,7 +23,7 @@ import valorless.havenbags.BagData;
 import valorless.havenbags.Main;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.json.JsonUtils;
 
 public class MySQL {
@@ -46,21 +46,21 @@ public class MySQL {
 
 	void init() {
 		mysql = this;
-		host = Main.config.GetString("mysql.host");
-		port = Main.config.GetInt("mysql.port");
-		database = Main.config.GetString("mysql.name");
-		username = Main.config.GetString("mysql.user");
-		password = Main.config.GetString("mysql.password");
-		connectTimeout = Main.config.GetInt("mysql.connect_timeout") * 1000;
-		socketTimeout = Main.config.GetInt("mysql.socket_timeout") * 1000;
-		maxChunkSize = Main.config.GetInt("mysql.max_chunk_size");
+		host = Main.config.getString("mysql.host");
+		port = Main.config.getInt("mysql.port");
+		database = Main.config.getString("mysql.name");
+		username = Main.config.getString("mysql.user");
+		password = Main.config.getString("mysql.password");
+		connectTimeout = Main.config.getInt("mysql.connect_timeout") * 1000;
+		socketTimeout = Main.config.getInt("mysql.socket_timeout") * 1000;
+		maxChunkSize = Main.config.getInt("mysql.max_chunk_size");
 
 		try {
 			connect();
-			Log.Info(Main.plugin,"Connected to MySQL!");
+			Log.info(Main.plugin,"Connected to MySQL!");
 			createTables();
 		} catch (SQLException e) {
-			Log.Error(Main.plugin,"Could not connect to MySQL!");
+			Log.error(Main.plugin,"Could not connect to MySQL!");
 			e.printStackTrace();
 			Bukkit.getPluginManager().disablePlugin(Main.plugin);
 		}
@@ -78,7 +78,7 @@ public class MySQL {
 	public void disconnect() throws SQLException {
 		if (connection != null && !connection.isClosed()) {
 			connection.close();
-			Log.Info(Main.plugin,"Disconnected from MySQL!");
+			Log.info(Main.plugin,"Disconnected from MySQL!");
 		}
 	}
 
@@ -205,7 +205,7 @@ public class MySQL {
     }
 
 	public void saveBag(Data data) {
-		Log.Debug(Main.plugin, "[DI-233] [MYSQL] " + "Attempting to write bag " + data.getOwner() + "/" + data.getUuid() + " onto database");
+		Log.debug(Main.plugin, "[DI-233] [MYSQL] " + "Attempting to write bag " + data.getOwner() + "/" + data.getUuid() + " onto database");
 		String sql = "INSERT INTO bags (uuid, owner, creator, size, texture, custommodeldata, " +
 				"itemmodel, trusted, auto_pickup, weight, weight_max, content, open, extra) " +
 				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
@@ -251,7 +251,7 @@ public class MySQL {
     		stmt.setDouble(24, data.getWeightMax());
     		stmt.setString(25, JsonUtils.toJson(data.getContent()));
     		stmt.setBoolean(26, data.isOpen());
-    		stmt.setString(27, DatabaseUtils.Extra(data));
+    		stmt.setString(27, DatabaseUtils.extra(data));
 
 			stmt.executeUpdate();
 		} catch (SQLException e) {
@@ -296,7 +296,7 @@ public class MySQL {
 	    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
 	        int index = 1;
 	        for (Data bag : bags) {
-	            stmt.setString(index++, bag.getUuid().toString());
+	            stmt.setString(index++, bag.getUuid());
 	            stmt.setString(index++, bag.getOwner());
 	            stmt.setString(index++, bag.getCreator());
 	            stmt.setInt(index++, bag.getSize());
@@ -309,11 +309,11 @@ public class MySQL {
 	            stmt.setDouble(index++, bag.getWeightMax());
 	            stmt.setString(index++, JsonUtils.toJson(bag.getContent()));
 	            stmt.setBoolean(index++, false); //isOpen()
-	            stmt.setString(index++, DatabaseUtils.Extra(bag));
+	            stmt.setString(index++, DatabaseUtils.extra(bag));
 	        }
 	        stmt.executeUpdate();
 	    } catch (PacketTooBigException e) {
-	    	Log.Error(Main.plugin, "Failed to save bags: PacketTooBigException. Too much data is being sent at once, consider lowering the 'mysql.max_chunk_size' in config.yml.");
+	    	Log.error(Main.plugin, "Failed to save bags: PacketTooBigException. Too much data is being sent at once, consider lowering the 'mysql.max_chunk_size' in config.yml.");
 	    	e.printStackTrace();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -321,7 +321,7 @@ public class MySQL {
 	}
 
 	public Data loadBag(String uuid) {
-		Log.Debug(Main.plugin, "[DI-234] " + "Attempting to load bag "  + uuid + ".");
+		Log.debug(Main.plugin, "[DI-234] " + "Attempting to load bag "  + uuid + ".");
 		String sql = "SELECT * FROM bags WHERE uuid = ?";
 
 		try {
@@ -334,7 +334,7 @@ public class MySQL {
 		
 		try (PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-			stmt.setString(1, uuid.toString());
+			stmt.setString(1, uuid);
 			ResultSet rs = stmt.executeQuery();
 
 			if (rs.next()) {
@@ -354,7 +354,7 @@ public class MySQL {
 	                data.setContent(loadContent(rs.getString("content"), data.getUuid()));
 	                data.setOpen(rs.getBoolean("open"));
 	                
-	                DatabaseUtils.ApplyExtra(data, rs.getString("extra"));
+	                DatabaseUtils.applyExtra(data, rs.getString("extra"));
 	                
 	                return data;
 			}
@@ -397,7 +397,7 @@ public class MySQL {
 	                data.setContent(loadContent(rs.getString("content"), data.getUuid()));
 	                data.setOpen(rs.getBoolean("open"));
 	                
-	                DatabaseUtils.ApplyExtra(data, rs.getString("extra"));
+	                DatabaseUtils.applyExtra(data, rs.getString("extra"));
 	                
 	                bags.put(UUID.fromString(uuid), data);
 	        }
@@ -450,9 +450,9 @@ public class MySQL {
 							FoodComponentFixer.fixFoodJson(entry)
 							);
 				}catch(Exception E) {
-					Log.Error(Main.plugin, uuid);
-					Log.Error(Main.plugin, entry);
-					Log.Info(Main.plugin, FoodComponentFixer.fixFoodJson(entry));
+					Log.error(Main.plugin, uuid);
+					Log.error(Main.plugin, entry);
+					Log.info(Main.plugin, FoodComponentFixer.fixFoodJson(entry));
 					E.printStackTrace();
 				}
 			}else {

@@ -10,8 +10,8 @@ public enum BagState {
 
 	public static BagState getState(ItemStack item) {
 		if(item == null) return NULL;
-		if(HavenBags.IsBag(item)) {
-			if(!BagData.BagExists(HavenBags.GetBagUUID(item))) {
+		if(HavenBags.isBag(item)) {
+			if(!BagData.bagExists(HavenBags.getBagUUID(item))) {
 				return NEW;
 			}else {
 				return USED;

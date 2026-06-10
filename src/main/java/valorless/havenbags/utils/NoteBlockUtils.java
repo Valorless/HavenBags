@@ -6,7 +6,7 @@ import org.bukkit.block.data.type.NoteBlock;
 import org.bukkit.Note;
 import org.bukkit.Note.Tone;
 import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 
 public class NoteBlockUtils implements Listener {
 
@@ -16,19 +16,19 @@ public class NoteBlockUtils implements Listener {
 	@SuppressWarnings("deprecation")
 	public static Boolean compateNoteBlock(NoteBlock noteBlock, String instrument, int note) {
 		if (noteBlock == null || instrument == null) {
-			Log.Debug(Main.plugin, "NoteBlock or instrument is null.");
+			Log.debug(Main.plugin, "NoteBlock or instrument is null.");
 			return false;
 		}
 
 		// Check if the NoteBlock's instrument matches
-		Log.Debug(Main.plugin, "Comparing NoteBlock instrument: " + noteBlock.getInstrument().toString() + " with instrument: " + instrument);
+		Log.debug(Main.plugin, "Comparing NoteBlock instrument: " + noteBlock.getInstrument().toString() + " with instrument: " + instrument);
 		if (!noteBlock.getInstrument().toString().equalsIgnoreCase(instrument)) {
 			return false;
 		}
 
 		// Check if the NoteBlock's note matches
 		try {
-			Log.Debug(Main.plugin, "Comparing NoteBlock note: " + noteBlock.getNote().getId() + " with note: " + note);
+			Log.debug(Main.plugin, "Comparing NoteBlock note: " + noteBlock.getNote().getId() + " with note: " + note);
 			return noteBlock.getNote().getId() == note;
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();

@@ -17,30 +17,29 @@ import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class CommandAutopickup {
-	
-	final static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 		Player player = (Player)command.sender;
 		
-		if(!Main.config.GetBool("auto-pickup.enabled")) {
-			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("feature-disabled"), player));
+		if(!Main.config.getBool("auto-pickup.enabled")) {
+			player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("feature-disabled"), player));
 			return true;
 		}
 		if(command.args.length >= 2) {
 			ItemStack item = player.getInventory().getItemInMainHand();
-			if(HavenBags.IsBag(item)) {
-				if(HavenBags.IsOwner(item, player)) {
+			if(HavenBags.isBag(item)) {
+				if(HavenBags.isOwner(item, player)) {
 					if(command.args[1].equalsIgnoreCase("none")) {
 						//PDC.SetString(item, "bag-filter", null);
-						BagData.SetAutoPickup(HavenBags.GetBagUUID(item), "null");
-						player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
+						BagData.setAutoPickup(HavenBags.getBagUUID(item), "null");
+						player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
 								"none"), player));
-						HavenBags.UpdateBagItem(item, player);
+						HavenBags.updateBagItem(item, player);
 						return true;
 					}
 					boolean c = false;
-					for(String filter : AutoPickup.GetFilterNames(null)) {
+					for(String filter : AutoPickup.getFilterNames(null)) {
 						if(filter.equalsIgnoreCase(command.args[1])) {
 							if(AutoPickup.filter.HasKey("filters." + filter + ".permission.node")) {
 								if(!player.hasPermission("havenbags.bypass")) {
@@ -61,61 +60,61 @@ public class CommandAutopickup {
 									}
 								}
 							}
-							if(PDC.GetString(item, "uuid").equalsIgnoreCase("null")) {
-								PDC.SetString(item, "filter", filter);
+							if(PDC.getString(item, "uuid").equalsIgnoreCase("null")) {
+								PDC.setString(item, "filter", filter);
 								List<Placeholder> ph = new ArrayList<>();
-								ph.add(new Placeholder("%filter%", AutoPickup.GetFilterDisplayname(filter)));
+								ph.add(new Placeholder("%filter%", AutoPickup.getFilterDisplayname(filter)));
 								ItemMeta meta = item.getItemMeta();
 								List<String> lore = meta.getLore();
-								lore.add(Lang.Parse(Lang.Get("bag-auto-pickup"), ph));
+								lore.add(Lang.parse(Lang.get("bag-auto-pickup"), ph));
 								meta.setLore(lore);
 								item.setItemMeta(meta);
-								player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
-										AutoPickup.GetFilterDisplayname(filter)), player));
+								player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
+										AutoPickup.getFilterDisplayname(filter)), player));
 								return true;
 							}
-							BagData.SetAutoPickup(HavenBags.GetBagUUID(item), filter);
-							player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
-									AutoPickup.GetFilterDisplayname(filter)), player));
+							BagData.setAutoPickup(HavenBags.getBagUUID(item), filter);
+							player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
+									AutoPickup.getFilterDisplayname(filter)), player));
 							//PDC.SetString(item, "bag-filter", args[1]);
-							HavenBags.UpdateBagItem(item, player);
+							HavenBags.updateBagItem(item, player);
 							c = true; // Future Valor: why this? // Future Future Valor: I still have no clue.
 							return true;
 						}
 					}
 					if(c == false) {
-						player.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
+						player.sendMessage(Lang.get("prefix") + Lang.get("malformed-command"));
 					}
 					
 				}else {
-					player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+					player.sendMessage(Lang.get("prefix") + Lang.get("bag-cannot-use"));
 				}
 			}
 			return true;
 		} else {
 			ItemStack item = player.getInventory().getItemInMainHand();
-			if(HavenBags.IsBag(item)) {
-				if(HavenBags.IsOwner(item, player)) {
+			if(HavenBags.isBag(item)) {
+				if(HavenBags.isOwner(item, player)) {
 					//PDC.SetString(item, "bag-filter", null);
-					if(PDC.GetString(item, "uuid") == "null") {
-						PDC.SetString(item, "filter", "null");
+					if(PDC.getString(item, "uuid") == "null") {
+						PDC.setString(item, "filter", "null");
 						List<Placeholder> ph = new ArrayList<>();
 						ph.add(new Placeholder("%filter%", "null"));
 						ItemMeta meta = item.getItemMeta();
 						List<String> lore = meta.getLore();
-						lore.add(Lang.Parse(Lang.Get("bag-auto-pickup"), ph));
+						lore.add(Lang.parse(Lang.get("bag-auto-pickup"), ph));
 						meta.setLore(lore);
 						item.setItemMeta(meta);
 						return true;
 					}
-					BagData.SetAutoPickup(HavenBags.GetBagUUID(item), "null");
-					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
+					BagData.setAutoPickup(HavenBags.getBagUUID(item), "null");
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
 							"none"), player));
-					HavenBags.UpdateBagItem(item, player);
+					HavenBags.updateBagItem(item, player);
 					//HavenBags.UpdateBagLore(item, player);
 					return true;
 				}else {
-					player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+					player.sendMessage(Lang.get("prefix") + Lang.get("bag-cannot-use"));
 				}
 			}
 		}

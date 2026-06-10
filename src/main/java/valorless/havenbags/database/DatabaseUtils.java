@@ -12,12 +12,12 @@ import valorless.valorlessutils.utils.Utils;
 
 public class DatabaseUtils {
 
-	public class Extra {
+	public static class Extra {
 		public boolean autoSort;
 		// Wtf was this even for?
 	}
 	
-	public static String Extra(Data data) {
+	public static String extra(Data data) {
 		String text = "extra{";
 		
 		text += String.format("autosort:%s", data.hasAutoSort());
@@ -44,7 +44,7 @@ public class DatabaseUtils {
 		return text;
 	}
 	
-	public static void ApplyExtra(Data data, String datastring) {
+	public static void applyExtra(Data data, String datastring) {
 		Map<String, Object> extra = DatabaseUtils.ParseExtra(datastring);
         if(extra.containsKey("autosort")) data.setAutoSort((Boolean) extra.get("autosort"));
         if(extra.containsKey("material")) data.setMaterial((String) extra.get("material"));

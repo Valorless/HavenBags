@@ -13,33 +13,34 @@ public class CommandTexture {
 	
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 		
 		Player player = (Player)command.sender;
 		if(command.args.length >= 2) {
 			ItemStack item = player.getInventory().getItemInMainHand();
-			if(HavenBags.IsBag(item)) {
-				if(HavenBags.IsOwner(item, player) || player.hasPermission("havenbags.bypass")) {
+			if(HavenBags.isBag(item)) {
+				if(HavenBags.isOwner(item, player) || player.hasPermission("havenbags.bypass")) {
 					if(command.args[1].chars().count() > 30) {
 						
 						try {
-							BagData.GetBag(HavenBags.GetBagUUID(item), item).setTexture(command.args[1]);
+							BagData.getBag(HavenBags.getBagUUID(item), item).setTexture(command.args[1]);
 						}catch(Exception e) {} // No data found, just change the texture of the item only.
 						BagData.setTextureValue(item, command.args[1]);
 					}else {
 						String texture = Main.textures.GetString(String.format("textures.%s", command.args[1]));
 				        if(Utils.IsStringNullOrEmpty(texture)) {
-				        	player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-texture-not-found").replace("%texture%", command.args[1]));
+				        	player.sendMessage(Lang.get("prefix") + Lang.get("bag-texture-not-found").replace("%texture%", command.args[1]));
 				        	return true;
 				        }
 						try {
-							BagData.GetBag(HavenBags.GetBagUUID(item), item).setTexture(texture);
+							BagData.getBag(HavenBags.getBagUUID(item), item).setTexture(texture);
 						}catch(Exception e) {} // No data found, just change the texture of the item only.
 						BagData.setTextureValue(item, texture);
 					}
 					
 				}else {
-					player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+					player.sendMessage(Lang.get("prefix") + Lang.get("bag-cannot-use"));
 				}
 			}
 			return true;

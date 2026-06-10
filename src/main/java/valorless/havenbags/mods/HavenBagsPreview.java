@@ -40,6 +40,7 @@ public class HavenBagsPreview {
      * @param itemStack The item to convert.
      * @param i The slot index of the item in the original list.
      */
+    @SuppressWarnings("deprecation")
     private void addItem(ItemStack itemStack, int i) {
         // Ignore empty or null items
         if (itemStack == null || itemStack.getType() == Material.AIR) {

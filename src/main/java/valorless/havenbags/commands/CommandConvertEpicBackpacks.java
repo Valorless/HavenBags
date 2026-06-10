@@ -44,7 +44,7 @@ public class CommandConvertEpicBackpacks {
 	 * @return true if the command execution completed (either successfully or after handling an error)
 	 * @since 1.27.0
 	 */
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command) {
 		Config config = new Config(Main.plugin, "epicbackpacks/players.yml");
 		try {
 			Log.Info(Main.plugin, "Attempting to convert EpicBackpacks data to HavenBags.");
@@ -77,7 +77,7 @@ public class CommandConvertEpicBackpacks {
 					}
 				}	
 				String uuid = UUID.randomUUID().toString();
-				BagData.CreateBag(uuid, 
+				BagData.createBag(uuid,
 					player.getUniqueId().toString(), 
 					cont, 
 					null, 
@@ -135,7 +135,7 @@ public class CommandConvertEpicBackpacks {
 		}
 		ItemMeta bagMeta = bagItem.getItemMeta();
 		if (bagMeta == null) {
-			PDC.SetString(bagItem, "uuid", uuid);
+			PDC.setString(bagItem, "uuid", uuid);
 			bagMeta = bagItem.getItemMeta();
         }
 		if(Main.config.GetInt("bag.modeldata") != 0) {
@@ -148,23 +148,23 @@ public class CommandConvertEpicBackpacks {
 				}
 			}
 		}
-		bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
+		bagMeta.setDisplayName(Lang.get("bag-unbound-name"));
 		List<String> lore = new ArrayList<String>();
 		for (String l : Lang.lang.GetStringList("bag-lore")) {
-			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, null));
+			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.parse(l, null));
 		}
 		placeholders.add(new Placeholder("%size%", size*9));
-        lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders));
+        lore.add(Lang.parse(Lang.get("bag-size"), placeholders));
 		//for (String l : Lang.lang.GetStringList("bag-size")) {
 		//	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, size*9), (Player)sender));
 		//}
 		bagMeta.setLore(lore);
 		bagItem.setItemMeta(bagMeta);
 		//PDC.SetString(bagItem, "bag-uuid", UUID.randomUUID().toString());
-		PDC.SetString(bagItem, "uuid", uuid);
-		PDC.SetString(bagItem, "owner", owner.getUniqueId().toString());
-		PDC.SetInteger(bagItem, "size", size*9);
-		PDC.SetBoolean(bagItem, "binding", true);
+		PDC.setString(bagItem, "uuid", uuid);
+		PDC.setString(bagItem, "owner", owner.getUniqueId().toString());
+		PDC.setinteger(bagItem, "size", size*9);
+		PDC.setBoolean(bagItem, "binding", true);
 		//Bukkit.getPlayer(command.sender.getName()).getInventory().addItem(bagItem);
 		//Log.Debug(Main.plugin, "[DI-139] " + String.format("Bag created: %s %s %s %s", "null", "null", size*9, "true"));
 		

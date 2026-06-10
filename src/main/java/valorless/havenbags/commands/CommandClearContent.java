@@ -13,20 +13,20 @@ public class CommandClearContent {
 	
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command) {
 
 		if (command.args.length == 2){
 			String target = command.args[1];
-			Data bag = BagData.GetBag(target, null);
+			Data bag = BagData.getBag(target, null);
 			if(bag != null) {
-				return BagData.ClearBagContent(target);
+				return BagData.clearBagContent(target);
 			}
 			else if(target.equalsIgnoreCase("all")) {
-				return BagData.ClearAllBagContents();
+				return BagData.clearAllBagContents();
 			}
 			else if(Bukkit.getPlayer(target) != null) {
 				Player player = Bukkit.getPlayer(target);
-				return BagData.ClearBagContentPlayer(player.getUniqueId().toString());
+				return BagData.clearBagContentPlayer(player.getUniqueId().toString());
 			}
 			else {
 				Log.Error(Main.plugin, "Unable to find the targetted bag(s) to clear.");

@@ -9,7 +9,7 @@ public class CommandCustomContent {
 
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command) {
 
 		Player player = (Player)command.sender;
 
@@ -30,7 +30,7 @@ public class CommandCustomContent {
 				if(command.args[1].equalsIgnoreCase("save")) {
 					String name = command.args[2];
 					CustomContent.save(name);
-					command.sender.sendMessage(Lang.Parse(
+					command.sender.sendMessage(Lang.parse(
 							String.format("'%s' saved to '../plugins/HavenBags/customcontent/%s.yml'", name, name)
 							, null));
 					return true;

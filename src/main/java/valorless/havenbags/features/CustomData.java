@@ -13,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.havenbags.Main;
 import valorless.havenbags.persistentdatacontainer.PDC;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.nbt.NBT;
 
@@ -160,67 +160,67 @@ public class CustomData {
 	 * </pre>
 	 */
 	public static void init() {
-		Log.Debug(Main.plugin, "Initializing custom data models from config...");
+		Log.debug(Main.plugin, "Initializing custom data models from config...");
 		Config config = Main.config;
-		if(Main.config.GetFile().getSection("custom-data") == null) {
+		if(Main.config.getFile().getSection("custom-data") == null) {
 			// No custom data configured.
-			Log.Debug(Main.plugin, "No custom data configured, skipping initialization.");
+			Log.debug(Main.plugin, "No custom data configured, skipping initialization.");
 			return;
 		}
-		enabled = Main.config.GetBool("custom-data.enabled");
+		enabled = Main.config.getBool("custom-data.enabled");
 		if(!enabled) {
 			// Custom data explicitly disabled.
-			Log.Debug(Main.plugin, "Custom data explicitly disabled in config, skipping initialization.");
+			Log.debug(Main.plugin, "Custom data explicitly disabled in config, skipping initialization.");
 			return;
 		}
-		for (String slot : config.GetFile().getSection("custom-data").getKeys(false)) {
+		for (String slot : config.getFile().getSection("custom-data").getKeys(false)) {
 			if("enabled".equalsIgnoreCase(slot)) {
 				// Skip the "enabled" key if present, it's not a bag size.
 				continue;
 			}
-			Log.Debug(Main.plugin, "Loading custom data models for bag size: " + slot);
-			for (String key : config.GetFile().getSection("custom-data." + slot).getKeys(false)) {
-				Log.Debug(Main.plugin, "Loading custom data model: " + key);
+			Log.debug(Main.plugin, "Loading custom data models for bag size: " + slot);
+			for (String key : config.getFile().getSection("custom-data." + slot).getKeys(false)) {
+				Log.debug(Main.plugin, "Loading custom data model: " + key);
 				DataModel dataModel = new DataModel(Integer.parseInt(slot));
 				String path = String.format("custom-data.%s.%s", slot, key);
-				dataModel.pluginName = config.GetString(path + ".plugin");
-				dataModel.key = config.GetString(path + ".key");
-				dataModel.dataType = DataType.valueOf(config.GetString(path + ".type").toUpperCase());
+				dataModel.pluginName = config.getString(path + ".plugin");
+				dataModel.key = config.getString(path + ".key");
+				dataModel.dataType = DataType.valueOf(config.getString(path + ".type").toUpperCase());
 				switch (dataModel.dataType) {
 				case NBT:
-					dataModel.value = config.Get(path + ".value");
+					dataModel.value = config.get(path + ".value");
 					break;
 				case PDC:
-					String pdcType = config.GetString(path + ".pdc-type").toUpperCase();
+					String pdcType = config.getString(path + ".pdc-type").toUpperCase();
 					switch (pdcType) {
 					case "STRING":
 						dataModel.type = PersistentDataType.STRING;
-						dataModel.value = config.GetString(path + ".value");
+						dataModel.value = config.getString(path + ".value");
 						break;
 					case "INTEGER":
 						dataModel.type = PersistentDataType.INTEGER;
-						dataModel.value = config.GetInt(path + ".value");
+						dataModel.value = config.getInt(path + ".value");
 						break;
 					case "DOUBLE":
 						dataModel.type = PersistentDataType.DOUBLE;
-						dataModel.value = config.GetDouble(path + ".value");
+						dataModel.value = config.getDouble(path + ".value");
 						break;
 					case "BOOLEAN":
 						dataModel.type = PersistentDataType.BOOLEAN;
-						dataModel.value = config.GetBool(path + ".value");
+						dataModel.value = config.getBool(path + ".value");
 						break;
 					case "FLOAT":
 						dataModel.type = PersistentDataType.FLOAT;
-						dataModel.value = (float) config.GetDouble(path + ".value").floatValue();
+						dataModel.value = config.getDouble(path + ".value").floatValue();
 						break;
 					case "UUID":
 						dataModel.type = PersistentDataType.STRING;
-						dataModel.value = UUID.fromString(config.GetString(path + ".value"));
+						dataModel.value = UUID.fromString(config.getString(path + ".value"));
 						break;
 					}
 				}
 				dataModels.add(dataModel);
-				Log.Debug(Main.plugin, "Loaded custom data model: " + dataModel);
+				Log.debug(Main.plugin, "Loaded custom data model: " + dataModel);
 			}
 		}
 	}
@@ -246,7 +246,7 @@ public class CustomData {
 			// Custom data globally disabled, skip processing.
 			return;
 		}
-		int size = PDC.GetInteger(bag, "size");
+		int size = PDC.getInteger(bag, "size");
 		for (DataModel dataModel : dataModels) {
 			if (dataModel.slots == size) {
 				switch (dataModel.dataType) {

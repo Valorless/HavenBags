@@ -60,33 +60,33 @@ public class UpgradeGUI implements Listener {
 	    // Static map of Players -> their open UpgradeGUI
 	    private static final HashMap<Player, UpgradeGUI> guis = new HashMap<>();
 
-	    public static void Add(Player player, UpgradeGUI gui) {
+	    public static void add(Player player, UpgradeGUI gui) {
 	        guis.put(player, gui); // replaces existing if already present
 	    }
 
-	    public static boolean Contains(Player player) {
+	    public static boolean contains(Player player) {
 	        return guis.containsKey(player);
 	    }
 
-	    public static boolean Contains(UpgradeGUI gui) {
+	    public static boolean contains(UpgradeGUI gui) {
 	        return guis.containsValue(gui);
 	    }
 
-	    public static UpgradeGUI Get(Player player) {
+	    public static UpgradeGUI get(Player player) {
 	        return guis.get(player); // returns null if not present
 	    }
 
-	    public static void Remove(Player player) {
+	    public static void remove(Player player) {
 	        guis.remove(player);
 	    }
 
-	    public static void Remove(UpgradeGUI gui) {
+	    public static void remove(UpgradeGUI gui) {
 	        guis.entrySet().removeIf(entry -> entry.getValue().equals(gui));
 	    }
 
-	    public static void CloseAll() {
+	    public static void closeAll() {
 	        for (UpgradeGUI gui : guis.values()) {
-	            gui.Close(new ArrayList<ItemStack>());
+	            gui.close(new ArrayList<ItemStack>());
 	        }
 	    }
 	}
@@ -115,7 +115,7 @@ public class UpgradeGUI implements Listener {
 		this.itemSlot2 = Main.config.getInt("upgrade-gui.slots.token");
 		this.resultSlot = Main.config.getInt("upgrade-gui.slots.result");
 		
-		this.inv = Bukkit.createInventory(player, invSize, Lang.Parse(Main.config.getString("upgrade-gui.title"), player));
+		this.inv = Bukkit.createInventory(player, invSize, Lang.parse(Main.config.getString("upgrade-gui.title"), player));
 		
 		try {
 			filler = Material.getMaterial(Main.config.getString("upgrade-gui.filler"));
@@ -178,13 +178,13 @@ public class UpgradeGUI implements Listener {
 
 		task.runTaskLater(Main.plugin, 1); // Delay to ensure the inventory is ready before opening
 		
-		OpenGUIs.Add(player, this);
+		OpenGUIs.add(player, this);
 		
 		Bukkit.getServer().getPluginManager().registerEvents(this, Main.plugin);
 		Log.debug(Main.plugin, "[DI-284] [UpgradeGUI] Opening UpgradeGUI for " + player.getName());
 	}
 	
-	public Inventory GetInv() {
+	public Inventory GetIn() {
 		return inv;
 	}
     
@@ -286,43 +286,43 @@ public class UpgradeGUI implements Listener {
 		ItemStack upgrade = null;
 		
 		if(resultType == ResultType.Upgrade) {
-			String owner = PDC.GetString(clicked, "owner");
-			BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setSize(PDC.GetInteger(clicked, "size"));
-			Log.debug(Main.plugin, "[DI-83] " + "[BagUpgrade] Size set to " + PDC.GetInteger(clicked, "size"));
+			String owner = PDC.getString(clicked, "owner");
+			BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setSize(PDC.getInteger(clicked, "size"));
+			Log.debug(Main.plugin, "[DI-83] " + "[BagUpgrade] Size set to " + PDC.getInteger(clicked, "size"));
 			
 			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(itemSlot1), event.getInventory().getItem(itemSlot2)))) {
-				if(!HavenBags.IsBag(item)) {
+				if(!HavenBags.isBag(item)) {
 					upgrade = item;
 				}
 			}
 
-			if(Main.weight.GetBool("weight-per-size")) {
-				BagData.SetWeightMax(HavenBags.GetBagUUID(clicked), Main.weight.GetDouble(String.format("weight-size-%s", PDC.GetInteger(clicked, "size"))));
-				Log.debug(Main.plugin, "[DI-84] " + "[BagUpgrade] Weight Limit set to " + Main.weight.GetDouble(String.format("weight-size-%s", PDC.GetInteger(clicked, "size"))));
+			if(Main.weight.getBool("weight-per-size")) {
+				BagData.setWeightMax(HavenBags.getBagUUID(clicked), Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
+				Log.debug(Main.plugin, "[DI-84] " + "[BagUpgrade] Weight Limit set to " + Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
 			}
 			if(clicked.getType() == Material.PLAYER_HEAD) {
 				if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
 					if(!owner.equalsIgnoreCase("ownerless")) {
-						BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(Main.config.getString(String.format("bag-textures.size-%s", PDC.GetInteger(clicked, "size"))));
+						BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(Main.config.getString(String.format("bag-textures.size-%s", PDC.getInteger(clicked, "size"))));
 					}else {
-						BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(Main.config.getString(String.format("bag-textures.size-ownerless-%s", PDC.GetInteger(clicked, "size"))));
+						BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(Main.config.getString(String.format("bag-textures.size-ownerless-%s", PDC.getInteger(clicked, "size"))));
 					}
 				}
 			}
-			HavenBags.UpdateBagLore(clicked, null);
+			HavenBags.updateBagLore(clicked, null);
 		}
 		else if(resultType == ResultType.Skin) {
 			
 			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(itemSlot1), event.getInventory().getItem(itemSlot2)))) {
-				if(!HavenBags.IsBag(item)) {
+				if(!HavenBags.isBag(item)) {
 					token = item;
 				}
 			}
 		
 			ItemMeta meta = clicked.getItemMeta();
-			String value = PDC.GetString(token, "token-skin");
+			String value = PDC.getString(token, "token-skin");
 			try {
-				int cmd = Integer.valueOf(value);
+				int cmd = Integer.parseInt(value);
 				if(value != null && meta.hasCustomModelData()) {
 					Log.debug(Main.plugin, "[DI-287] " + "[BagSkin] CustomModelData Skin.");
 					meta.setCustomModelData(cmd);
@@ -335,7 +335,7 @@ public class UpgradeGUI implements Listener {
 					if(BagState.getState(clicked) == BagState.NEW) {
 						BagData.setTextureValue(clicked, texture);
 					}else {
-						BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(texture);
+						BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(texture);
 					}
 				}else {
 					Log.debug(Main.plugin, "[DI-278] [UpgradeGUI] Texture Skin.");
@@ -343,7 +343,7 @@ public class UpgradeGUI implements Listener {
 						if(BagState.getState(clicked) == BagState.NEW) {
 							BagData.setTextureValue(clicked, value);
 						}else {
-							BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(value);
+							BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(value);
 						}
 					}else {
 						Log.debug(Main.plugin, "[DI-278] [UpgradeGUI] Invalid Skin.");
@@ -355,14 +355,14 @@ public class UpgradeGUI implements Listener {
 		}
 		else if(resultType == ResultType.Effect) {			
 			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(itemSlot1), event.getInventory().getItem(itemSlot2)))) {
-				if(!HavenBags.IsBag(item)) {
+				if(!HavenBags.isBag(item)) {
 					token = item;
 				}
 			}
 		
-			String value = PDC.GetString(token, "token-effect");
-			BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setEffect(value);
-			HavenBags.UpdateBagLore(clicked, null);
+			String value = PDC.getString(token, "token-effect");
+			BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setEffect(value);
+			HavenBags.updateBagLore(clicked, null);
 		}
 
 		// Reset slots
@@ -440,7 +440,7 @@ public class UpgradeGUI implements Listener {
 			Log.debug(Main.plugin, "[DI-267] [UpgradeGUI] Checking items.");
 			int i = 0;
 			for (ItemStack item : new ArrayList<>(List.of(slot1, slot2))) {
-				if(HavenBags.IsBag(item)) {
+				if(HavenBags.isBag(item)) {
 					Log.debug(Main.plugin, "[DI-268] [UpgradeGUI] Bag in slot " + i + ".");
 					bag = item;
 				}
@@ -453,28 +453,28 @@ public class UpgradeGUI implements Listener {
 		}
 		if(bag == null || token == null) return null;
 		
-		if(PDC.Has(bag, "skin") && PDC.GetBoolean(bag, "skin") == false) {
+		if(PDC.has(bag, "skin") && PDC.getBoolean(bag, "skin") == false) {
 			Log.debug(Main.plugin, "[DI-269] [UpgradeGUI] Bag cannot be skinned.");
 			return null;
 		}
-		if(PDC.Has(token, "token-skin")) {
+		if(PDC.has(token, "token-skin")) {
 			Log.debug(Main.plugin, "[DI-270] [UpgradeGUI] Bag is skinnable.");
-			TokenType type = PDC.Has(token, "token-type") ? TokenType.get(PDC.GetString(token, "token-type")) : null;
+			TokenType type = PDC.has(token, "token-type") ? TokenType.get(PDC.getString(token, "token-type")) : null;
 			resultType = ResultType.Skin;
 			return getSkinResult(bag, token, type);
 		}
 		
-		if(PDC.Has(token, "token-effect")) {
+		if(PDC.has(token, "token-effect")) {
 			resultType = ResultType.Effect;
 			return getEffectResult(bag, token);
 		}
 
 
-		if(PDC.Has(bag, "upgrade") && PDC.GetBoolean(bag, "upgrade") == false) {
+		if(PDC.has(bag, "upgrade") && PDC.getBoolean(bag, "upgrade") == false) {
 			Log.debug(Main.plugin, "[DI-271] [UpgradeGUI] Bag cannot upgrade.");
 			return null;
 		}else {
-			int size = PDC.GetInteger(bag, "size");
+			int size = PDC.getInteger(bag, "size");
 			Log.debug(Main.plugin, "[DI-272] [UpgradeGUI] Is bag max size?");
 			if(size == 54) return null;
 			Log.debug(Main.plugin, "[DI-273] [UpgradeGUI] Is bag used?");
@@ -484,7 +484,7 @@ public class UpgradeGUI implements Listener {
 			Log.debug(Main.plugin, "[DI-274] [UpgradeGUI] Is player allowed to open the new size?");
 			if(!player.hasPermission(String.format("havenbags.open.%s", size+9))) return null;
 			Log.debug(Main.plugin, "[DI-274] [UpgradeGUI] Is player the owner of the bag, or has bypass?");
-			if(!HavenBags.IsOwner(bag, player)) return null;
+			if(!HavenBags.isOwner(bag, player)) return null;
 
 
 			Log.debug(Main.plugin, "[DI-274] [UpgradeGUI] Do materials match?");
@@ -538,21 +538,21 @@ public class UpgradeGUI implements Listener {
 			returnItems.add(event.getInventory().getItem(itemSlot2));
 		}
 		
-		Close(returnItems);
+		close(returnItems);
 	}
 	
 	/**
 	 * Closes the UpgradeGUI and returns the items to the player's inventory.
 	 * @param items The items to return to the player.
 	 */
-	public void Close(List<ItemStack> items) {
+	public void close(List<ItemStack> items) {
 		for(ItemStack item : items) {
 			returnItem(player, item);
 		}
 		
 		Log.debug(Main.plugin, "[DI-283] [UpgradeGUI] Unregistering listener for " + player.getName());
 		HandlerList.unregisterAll(this);
-		OpenGUIs.Remove(this);
+		OpenGUIs.remove(this);
 	}
 	
 	void returnItem(Player player, ItemStack item) {
@@ -571,7 +571,7 @@ public class UpgradeGUI implements Listener {
 	ItemStack getUpgradeResult(ItemStack item, int from, int to, ItemStack bag, ItemStack upgrade) {
 		ItemMeta meta = item.getItemMeta();
 		List<String> newLore = new ArrayList<String>();
-		String owner = PDC.GetString(bag, "owner");
+		String owner = PDC.getString(bag, "owner");
 
 		String[] split = Main.config.getString(String.format("upgrades.from-%s-to-%s", from, to)).split(":");
 		Material requirement = Material.getMaterial(split[0]);
@@ -579,11 +579,11 @@ public class UpgradeGUI implements Listener {
 		if(upgrade.getType() == requirement && upgrade.getAmount() >= amount) {
 			meta.setLore(newLore);
 			item.setItemMeta(meta);
-			PDC.SetInteger(item, "size", to);
+			PDC.setinteger(item, "size", to);
 			if(Main.weight.getBool("weight-per-size")) {
-				PDC.SetDouble(item, "weight-limit", Main.weight.getDouble(String.format("weight-size-%s", to)));
+				PDC.setDouble(item, "weight-limit", Main.weight.getDouble(String.format("weight-size-%s", to)));
 			}
-			HavenBags.UpdateBagLore(item, null, true);
+			HavenBags.updateBagLore(item, null, true);
 			if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
 				if(owner.equalsIgnoreCase("ownerless")) {
 					BagData.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-ownerless-%s", to)));
@@ -598,7 +598,7 @@ public class UpgradeGUI implements Listener {
 	ItemStack getSkinResult(ItemStack item, ItemStack skin, TokenType type) {
 		Log.debug(Main.plugin, "[DI-275] [UpgradeGUI] Preparing Result.");
 		ItemMeta meta = item.getItemMeta();
-		String value = PDC.GetString(skin, "token-skin");
+		String value = PDC.getString(skin, "token-skin");
 		//TokenType type = PDC.Has(skin, "token-type") ? TokenType.get(PDC.GetString(skin, "token-type")) : null;
 		
 		if(type != null) {
@@ -664,13 +664,13 @@ public class UpgradeGUI implements Listener {
 	
 	ItemStack getEffectResult(ItemStack item, ItemStack skin) {
 		Log.debug(Main.plugin, "[DI-293] [UpgradeGUI] Preparing Result.");
-		String value = PDC.GetString(skin, "token-effect");
-		String uuid = HavenBags.GetBagUUID(item);
+		String value = PDC.getString(skin, "token-effect");
+		String uuid = HavenBags.getBagUUID(item);
 				
 		if(BagEffects.hasEffect(value)) {
-			Data data = BagData.GetBag(uuid, null).clone();
+			Data data = BagData.getBag(uuid, null).clone();
 			data.setEffect(value);
-			HavenBags.UpdateUsed(item, data, player);
+			HavenBags.updateUsed(item, data, player);
 			return item;
 		}
 		else return new ItemStack(Material.AIR);

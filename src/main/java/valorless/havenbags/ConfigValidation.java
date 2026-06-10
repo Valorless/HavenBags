@@ -1,6 +1,5 @@
 package valorless.havenbags;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import valorless.havenbags.features.AutoPickup;
@@ -11,12 +10,12 @@ public class ConfigValidation {
 	/**
 	 * validates and initializes various components of the application.<br>
 	 * This method sequentially calls:<br>
-	 * - {@link #Filters()} to process or validate the filters.<br>
+	 * - {@link #filters()} to process or validate the filters.<br>
 	 */
 	public static void validate() {
-		Filters();
+		filters();
 	}
-	private static void Filters() {
+	private static void filters() {
 		AutoPickup.filter.addValidationEntry("allow-specific", false);
 
 		AutoPickup.filter.addValidationEntry("gui.reset-filter.icon", "BARRIER",

@@ -19,7 +19,7 @@ import java.lang.reflect.Type;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.EtherealBagSettings;
 import valorless.havenbags.gui.EtherealGUI;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 
@@ -122,7 +122,7 @@ public class EtherealBags {
 		for(EtherealGUI gui : openGUIs) {
 			if(gui.player.getUniqueId().toString().equalsIgnoreCase(player.getUniqueId().toString())
 					&& gui.bagId.equalsIgnoreCase(bagId)) {
-				gui.Close(true);
+				gui.close(true);
 				return true;
 			}
 		}
@@ -140,7 +140,7 @@ public class EtherealBags {
 		for(EtherealGUI gui : openGUIs) {
 			String compare = formatBagId(gui.player.getUniqueId(), gui.bagId);
 			if(compare.equalsIgnoreCase(bagId)) {
-				gui.Close(true);
+				gui.close(true);
 				return true;
 			}
 		}
@@ -154,7 +154,7 @@ public class EtherealBags {
 	 * the YAML config into in-memory maps, clears any tracked open GUIs, and logs load duration.
 	 */
 	public static void init() {
-		Log.Info(Main.plugin, "Loading skin cache..");
+		Log.info(Main.plugin, "Loading skin cache..");
 		long startTime = System.currentTimeMillis();
 		bags.clear();
 		bagData.clear();
@@ -174,17 +174,17 @@ public class EtherealBags {
 			config = new Config(Main.plugin, "/bags/etherealbags.yml");
 		} else {
 			config = new Config(Main.plugin, "/bags/etherealbags.yml");
-			bags = JsonUtils.fromJson(config.GetString("bags"));
-			if(bags == null) bags = new HashMap<String, List<String>>();
-			bagData = JsonUtils.fromJson(config.GetString("data"));
-			if(bagData == null) bagData = new HashMap<String, List<ItemStack>>();
+			bags = JsonUtils.fromJson(config.getString("bags"));
+			if(bags == null) bags = new HashMap<>();
+			bagData = JsonUtils.fromJson(config.getString("data"));
+			if(bagData == null) bagData = new HashMap<>();
 			Type bagSettingsType = new TypeToken<HashMap<String, EtherealBagSettings>>(){}.getType();
-			bagSettings = fromJson(config.GetString("settings"), bagSettingsType);
-			if(bagSettings == null) bagSettings = new HashMap<String, EtherealBagSettings>();
+			bagSettings = fromJson(config.getString("settings"), bagSettingsType);
+			if(bagSettings == null) bagSettings = new HashMap<>();
 		}
 		long endTime = System.currentTimeMillis();
 		long duration = endTime - startTime;
-		Log.Info(Main.plugin, String.format("Loaded %s ethereal bags. %sms", bagData.size(), duration));
+		Log.info(Main.plugin, String.format("Loaded %s ethereal bags. %sms", bagData.size(), duration));
 		
 	}
 	
@@ -197,11 +197,11 @@ public class EtherealBags {
 	public static void shutdown() {
 		try {
 			long startTime = System.currentTimeMillis();
-			Log.Info(Main.plugin, "Saving ethereal bags..");
+			Log.info(Main.plugin, "Saving ethereal bags..");
 			
 			// close any open Ethereal GUIs to prevent issues on reload
 			for (EtherealGUI gui : new ArrayList<>(openGUIs)) {
-			    gui.Close(true);
+			    gui.close(true);
 			}
 
 			if(config == null) {
@@ -221,20 +221,20 @@ public class EtherealBags {
 					config = new Config(Main.plugin, "/bags/etherealbags.yml");
 				}
 
-				config.Set("bags", JsonUtils.toJson(bags));
-				config.Set("data", JsonUtils.toJson(bagData));
-				config.Set("settings", JsonUtils.toJson(bagSettings));
-				config.SaveConfig();
+				config.set("bags", JsonUtils.toJson(bags));
+				config.set("data", JsonUtils.toJson(bagData));
+				config.set("settings", JsonUtils.toJson(bagSettings));
+				config.saveConfig();
 			} else {
-				config.Set("bags", JsonUtils.toJson(bags));
-				config.Set("data", JsonUtils.toJson(bagData));
-				config.Set("settings", JsonUtils.toJson(bagSettings));
-				config.SaveConfig();
+				config.set("bags", JsonUtils.toJson(bags));
+				config.set("data", JsonUtils.toJson(bagData));
+				config.set("settings", JsonUtils.toJson(bagSettings));
+				config.saveConfig();
 			}
 
 			long endTime = System.currentTimeMillis();
 			long duration = endTime - startTime;
-			Log.Info(Main.plugin, String.format("Saved %s ethereal bags. %sms", bagData.size(), duration));
+			Log.info(Main.plugin, String.format("Saved %s ethereal bags. %sms", bagData.size(), duration));
 		}catch(Exception e) { 
 			e.printStackTrace();
 		}
@@ -261,11 +261,8 @@ public class EtherealBags {
 	 */
 	public static Boolean hasBag(UUID uuid, String bagId) {
 		String id = uuid.toString() + "-" + bagId;
-		if(bagData.containsKey(id)) {
-			return true;
-		}
-		return false;
-	}
+        return bagData.containsKey(id);
+    }
 	
 	/**
 	 * Add a bag to a player and store initial contents.
@@ -287,7 +284,7 @@ public class EtherealBags {
 		
 		// If the bag data already exists, don't overwrite — treat as "already added".
 	    if (bagData.containsKey(id)) {
-	    	Log.Debug(Main.plugin, "[EtherealBags][DI-303] Bag data for id " + bagId + " for player " + Bukkit.getOfflinePlayer(uuid).getName() + " already exists.");
+	    	Log.debug(Main.plugin, "[EtherealBags][DI-303] Bag data for id " + bagId + " for player " + Bukkit.getOfflinePlayer(uuid).getName() + " already exists.");
 	        return false;
 	    }
 		
@@ -334,7 +331,7 @@ public class EtherealBags {
 
 	    // If the bag data already exists, don't overwrite — treat as "already added".
 	    if (bagData.containsKey(id)) {
-	    	Log.Debug(Main.plugin, "[EtherealBags][DI-303] Bag data for id " + bagId + " for player " + Bukkit.getOfflinePlayer(uuid).getName() + " already exists.");
+	    	Log.debug(Main.plugin, "[EtherealBags][DI-303] Bag data for id " + bagId + " for player " + Bukkit.getOfflinePlayer(uuid).getName() + " already exists.");
 	        return false;
 	    }
 
@@ -473,11 +470,10 @@ public class EtherealBags {
 
 	    String prefix = uuid.toString() + "-";
 	    //Log.Info(Main.plugin, "[EtherealBags][DI-297] Using prefix: " + prefix);
-	    List<String> formattedBags = playerBags.stream()
+	    return playerBags.stream()
                 .map(bagId -> bagId.replace(prefix, ""))
                 .collect(Collectors.toList());
 	    //Log.Info(Main.plugin, "[EtherealBags][DI-298] Formatted bag list: " + formattedBags.toString());
-	    return formattedBags;
 	}
 	
 	/**
@@ -493,7 +489,7 @@ public class EtherealBags {
 	public static EtherealBagSettings getBagSettings(UUID uuid, String bagId) {
 		String id = uuid.toString() + "-" + bagId;
 		if(!bagSettings.containsKey(id)) {
-			Log.Debug(Main.plugin, "[EtherealBags][DI-304] Bag settings for id " + bagId + " for player " 
+			Log.debug(Main.plugin, "[EtherealBags][DI-304] Bag settings for id " + bagId + " for player "
 					+ Bukkit.getOfflinePlayer(uuid).getName() + " do not exist. Creating default settings.");
 			bagSettings.put(id, new EtherealBagSettings());
 		}
@@ -508,10 +504,7 @@ public class EtherealBags {
 	 */
 	public static String getBagAutoPickup(UUID uuid, String bagId) {
 		EtherealBagSettings bag = getBagSettings(uuid, bagId);
-		if(bag != null) {
-			return bag.autoPickup;
-		}
-		return "null";
+		return bag != null ? bag.autoPickup : "null";
 	}
 	
 	/**
@@ -522,10 +515,7 @@ public class EtherealBags {
 	 */
 	public static Boolean getBagMagnet(UUID uuid, String bagId) {
 		EtherealBagSettings bag = getBagSettings(uuid, bagId);
-		if(bag != null) {
-			return bag.magnet;
-		}
-		return false;
+		return bag != null ? bag.magnet : false;
 	}
 	
 	/**
@@ -536,10 +526,7 @@ public class EtherealBags {
 	 */
 	public static Boolean getBagAutoSort(UUID uuid, String bagId) {
 		EtherealBagSettings bag = getBagSettings(uuid, bagId);
-		if(bag != null) {
-			return bag.autoSort;
-		}
-		return false;
+		return bag != null ? bag.autoSort : false;
 	}
 	
 	/**
@@ -560,8 +547,7 @@ public class EtherealBags {
 	 * @return The composite bag key "&lt;uuid&gt;-&lt;bagId&gt;"
 	 */
 	public static String formatBagId(UUID uuid, String bagId) {
-		String prefix = uuid.toString() + "-" + bagId;
-		return prefix;
+		return uuid.toString() + "-" + bagId;
 	}
 	
 	/**

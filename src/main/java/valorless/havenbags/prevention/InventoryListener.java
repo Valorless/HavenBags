@@ -15,43 +15,43 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 
 public class InventoryListener implements Listener {
 	
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-11] Registering InventoryListener");
+		Log.debug(Main.plugin, "[DI-11] Registering InventoryListener");
 		Bukkit.getServer().getPluginManager().registerEvents(new InventoryListener(), Main.plugin);
 	}
 		
-	final private List<InventoryType> allowedContainers = PrepareAllowedContainers();
+	final private List<InventoryType> allowedContainers = prepareAllowedContainers();
 		
-	List<InventoryType> PrepareAllowedContainers() {
-		Log.Debug(Main.plugin, "[DI-198] " + "[InventoryListener] Preparing Allowed Containers");
+	List<InventoryType> prepareAllowedContainers() {
+		Log.debug(Main.plugin, "[DI-198] " + "[InventoryListener] Preparing Allowed Containers");
 		List<InventoryType> cont = new ArrayList<InventoryType>();
 		cont.add(InventoryType.CRAFTING);
 		cont.add(InventoryType.HOPPER);
 		cont.add(InventoryType.PLAYER);
 		cont.add(InventoryType.CREATIVE);
 		cont.add(InventoryType.WORKBENCH);
-		for(String container : Main.config.GetStringList("allowed-containers")) {
-			cont.add(GetInventoryType(container));
+		for(String container : Main.config.getStringList("allowed-containers")) {
+			cont.add(getInventoryType(container));
 		}
-		Log.Debug(Main.plugin, "[DI-199] " + "[InventoryListener] Allowed Containers:");
+		Log.debug(Main.plugin, "[DI-199] " + "[InventoryListener] Allowed Containers:");
 		for(InventoryType type : cont) {
-			Log.Debug(Main.plugin, "- " + type.toString());
+			Log.debug(Main.plugin, "- " + type.toString());
 		}
-		Log.Debug(Main.plugin, "[DI-200] " + "[InventoryListener] To update this list, you have to restart or reload the server, not /bags reload.");
+		Log.debug(Main.plugin, "[DI-200] " + "[InventoryListener] To update this list, you have to restart or reload the server, not /bags reload.");
 		return cont;
 	}
 
 	@EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
 		if(e.getRawSlot() == -1 || e.getRawSlot() == 999) return;
-		Log.Debug(Main.plugin, "[DI-223] " + "[InventoryListener] Inventory Click");
+		Log.debug(Main.plugin, "[DI-223] " + "[InventoryListener] Inventory Click");
 		if (e.getHotbarButton() != -1) {
             ItemStack swapItem = e.getWhoClicked().getInventory().getItem(e.getHotbarButton());
-            if (swapItem != null && HavenBags.IsBag(swapItem)) e.setCancelled(true);
+            if (swapItem != null && HavenBags.isBag(swapItem)) e.setCancelled(true);
         }
         /*if(e.getHotbarButton() != -1) {
         	//Log.Debug(plugin, "" + e.getHotbarButton());
@@ -59,14 +59,14 @@ public class InventoryListener implements Listener {
         	return;
         }*/
 		
-		Shulkers(e);
-		Containers(e);
+		skulkers(e);
+		containers(e);
     }
 	
-	void Containers(final InventoryClickEvent e) {
+	void containers(final InventoryClickEvent e) {
         if(e.getInventory().getType() == InventoryType.SHULKER_BOX) return;
-		Log.Debug(Main.plugin, "[DI-224] " + "[InventoryListener] Container");
-		boolean holdingBag = HavenBags.IsBag(e.getCursor());
+		Log.debug(Main.plugin, "[DI-224] " + "[InventoryListener] Container");
+		boolean holdingBag = HavenBags.isBag(e.getCursor());
 		if(e.getClickedInventory() == null) return;
         
         if(e.getClickedInventory().getType() != InventoryType.PLAYER && holdingBag){
@@ -79,7 +79,7 @@ public class InventoryListener implements Listener {
         ItemStack clickedItem = e.getCurrentItem();
         if(clickedItem == null) return;
         
-        if(HavenBags.IsBag(clickedItem) && e.isShiftClick()) {
+        if(HavenBags.isBag(clickedItem) && e.isShiftClick()) {
         	if(!allowedContainers.contains(e.getInventory().getType())) {
         		e.setCancelled(true);
         		return;
@@ -97,16 +97,16 @@ public class InventoryListener implements Listener {
         }*/
 	}
 	
-	void Shulkers(final InventoryClickEvent e) {
+	void skulkers(final InventoryClickEvent e) {
         if(e.getInventory().getType() != InventoryType.SHULKER_BOX) return;
-		Log.Debug(Main.plugin, "[DI-225] " + "[InventoryListener] Shulker");
-        if (Main.config.GetBool("bags-in-shulkers") == true) return;
+		Log.debug(Main.plugin, "[DI-225] " + "[InventoryListener] Shulker");
+        if (Main.config.getBool("bags-in-shulkers") == true) return;
 
-        boolean holdingBag = HavenBags.IsBag(e.getCursor());
+        boolean holdingBag = HavenBags.isBag(e.getCursor());
 		if(e.getClickedInventory() == null) return;
         
         if(e.getClickedInventory().getType() != InventoryType.PLAYER && holdingBag){
-        	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-shulker-error"));
+        	e.getWhoClicked().sendMessage(Lang.get("prefix") + Lang.get("bag-in-shulker-error"));
         	e.setCancelled(true);
         	return;
         }
@@ -114,9 +114,9 @@ public class InventoryListener implements Listener {
         ItemStack clickedItem = e.getCurrentItem();
         if(clickedItem == null) return;
         
-        if(HavenBags.IsBag(clickedItem) && e.isShiftClick()) {
+        if(HavenBags.isBag(clickedItem) && e.isShiftClick()) {
         	e.setCancelled(true);
-        	e.getWhoClicked().sendMessage(Lang.Get("prefix") + Lang.Get("bag-in-shulker-error"));
+        	e.getWhoClicked().sendMessage(Lang.get("prefix") + Lang.get("bag-in-shulker-error"));
         }
         /*
         ItemStack clickedItem = e.getCurrentItem();
@@ -133,14 +133,14 @@ public class InventoryListener implements Listener {
 		//Log.Warning(Main.plugin, event.getInventory().getType().toString());
 		
         if (event.getInventory().getType() == InventoryType.SHULKER_BOX) {
-    		if (Main.config.GetBool("bags-in-shulkers") == true) return;
+    		if (Main.config.getBool("bags-in-shulkers") == true) return;
     		
     		if(event.getInventory().getContents().length == 0) return;
         	for (ItemStack item : event.getInventory().getContents()) {
-        		if(HavenBags.IsBag(item)) {
+        		if(HavenBags.isBag(item)) {
         			ItemStack Return = item.clone();
         			//event.getInventory().remove(item);
-        			HavenBags.ReturnBag(Return, (Player)event.getPlayer());
+        			HavenBags.returnBag(Return, (Player)event.getPlayer());
         			item.setAmount(0);
             	}
         	}
@@ -164,13 +164,13 @@ public class InventoryListener implements Listener {
         }*/
     }
 	
-	public InventoryType GetInventoryType(String string) {
+	public InventoryType getInventoryType(String string) {
 		for(InventoryType type : InventoryType.values()) {
 			if(string.equalsIgnoreCase(type.toString())) {
 				return type;
 			}
 		}
-		Log.Error(Main.plugin, String.format("InventoryType does not contain '%s'.", string));
+		Log.error(Main.plugin, String.format("InventoryType does not contain '%s'.", string));
 		return null;
 	}
 	

@@ -34,7 +34,7 @@ import valorless.havenbags.utils.NoteBlockUtils;
 import valorless.havenbags.utils.UpdateChecker;
 import valorless.valorlessutils.Metrics;
 import valorless.valorlessutils.Server;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.translate.Translator;
 import valorless.valorlessutils.utils.Utils;
@@ -49,8 +49,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-@SuppressWarnings("deprecation")
-public final class Main extends JavaPlugin implements Listener {	
+@SuppressWarnings({"deprecated", "unused"})
+public final class Main extends JavaPlugin implements Listener {
 	public static JavaPlugin plugin;
 	public static Config config;
 	//public static Config timeTable;
@@ -60,7 +60,7 @@ public final class Main extends JavaPlugin implements Listener {
 	public static Config textures;
 	public static Config effects;
 	public static Config insurance;
-	protected static PlaceholderAPI papi;
+	static PlaceholderAPI papi;
 	//public static List<ActiveBag> activeBags = new ArrayList<ActiveBag>();
 	Boolean uptodate = true;
 	int newupdate = 9999999;
@@ -73,8 +73,8 @@ public final class Main extends JavaPlugin implements Listener {
 	
 	public void onLoad() {
 		plugin = this;
-		Log.Debug(plugin, Bukkit.getVersion());
-		Log.Debug(plugin, Bukkit.getBukkitVersion());
+		Log.debug(plugin, Bukkit.getVersion());
+		Log.debug(plugin, Bukkit.getBukkitVersion());
 		Server.ResolveVersion();
 
 		validateConfigs();
@@ -108,8 +108,8 @@ public final class Main extends JavaPlugin implements Listener {
 	}
 	
 	@SuppressWarnings("unused")
-	boolean ValorlessUtils() {
-		Log.Debug(plugin, "[DI-0] Checking ValorlessUtils");
+	boolean valorlessUtils() {
+		Log.debug(plugin, "[DI-0] Checking ValorlessUtils");
 		
 		int requiresBuild = 374; // The build number of ValorlessUtils that is required for HavenBags to run.
 		
@@ -124,8 +124,8 @@ public final class Main extends JavaPlugin implements Listener {
 		if(build < requiresBuild) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
         		public void run() {
-        			Log.Error(plugin, String.format("HavenBags requires ValorlessUtils build %s or newer, found %s. (%s)", requiresBuild, build, ver));
-        			Log.Error(plugin, "https://www.spigotmc.org/resources/valorlessutils.109586/");
+        			Log.error(plugin, String.format("HavenBags requires ValorlessUtils build %s or newer, found %s. (%s)", requiresBuild, build, ver));
+        			Log.error(plugin, "https://www.spigotmc.org/resources/valorlessutils.109586/");
         			Bukkit.getPluginManager().disablePlugin(plugin);
         		}
     		}, 10);
@@ -137,41 +137,41 @@ public final class Main extends JavaPlugin implements Listener {
 	@SuppressWarnings("removal")
 	@Override
     public void onEnable() {
-		Log.Debug(plugin, "HavenBags Debugging Enabled!");
+		Log.debug(plugin, "HavenBags Debugging Enabled!");
 		
 		// Check if a correct version of ValorlessUtils is in use, otherwise don't run the rest of the code.
-		if(!ValorlessUtils()) return;
+		if(!valorlessUtils()) return;
 		
 		registerSoftCrash();
 		
 		//ConfigValidation.Validate();
 
-		VaultHook.Hook();
-		if(PlaceholderAPIHook.Hook()) {
+		VaultHook.hook();
+		if(PlaceholderAPIHook.hook()) {
 			papi = new PlaceholderAPI();
 			papi.register();
 		}
 		new NexoHook();
-		ChestSortHook.Hook();
-		PvPManagerHook.Hook();
-		if(ProtocolLibHook.Hook()) {
+		ChestSortHook.hook();
+		PvPManagerHook.hook();
+		if(ProtocolLibHook.hook()) {
 			//WeightTooltipProtocollib.registerTooltipListener(this);
 		}
 
-		EssentialsHook.Hook();
+		EssentialsHook.hook();
 		try {
 			new Insurance(); // Initialize insurance system if enabled in config. Requires Essentials to be hooked.
 		} catch (Exception e) {
-			Log.Error(plugin, "Failed to initialize insurance system: " + e.getMessage());
+			Log.error(plugin, "Failed to initialize insurance system: " + e.getMessage());
 		}
 		
 		//OraxenHook.Hook();
 		
-		Log.Debug(plugin, "[DI-1] " +Long.toString(System.currentTimeMillis() / 1000L));
+		Log.debug(plugin, "[DI-1] " + System.currentTimeMillis() / 1000L);
 		
-		translator = new Translator(config.GetString("language"));
+		translator = new Translator(config.getString("language"));
 		
-		ValidateSizeTextures();
+		validateSizeTextures();
 		
 		// Config-Version checks
 		CV2_BagConversion.check(config); // Config 1 -> 2
@@ -187,20 +187,20 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		BagHealth.init();
 		
-		BagData.Initiate();
+		BagData.init();
 		
-		AutoPickup.Initiate();
+		AutoPickup.initiate();
 		
-		CustomBags.initiate();
+		CustomBags.init();
 		
 		EtherealBags.init();
 
-		RegisterListeners();
+		registerListeners();
 				
-		RegisterCommands();
+		registerCommands();
 
-		if(config.GetBool("check-updates") == true) {
-			Log.Info(plugin, "Checking for updates..");
+		if(config.getBool("check-updates") == true) {
+			Log.info(plugin, "Checking for updates..");
 			new UpdateChecker(this, 110420).getVersion(version -> {
 
 				newVersion = version;
@@ -212,13 +212,13 @@ public final class Main extends JavaPlugin implements Listener {
 
 				//if (!getDescription().getVersion().equals(version)) {
 				if (v < newupdate) {
-						Log.Warning(plugin, String.format("An update has been found! (v%s, you are on v%s) \n", version, getDescription().getVersion()) + 
+						Log.warning(plugin, String.format("An update has been found! (v%s, you are on v%s) \n", version, getDescription().getVersion()) +
 							"This could be bug fixes or additional features.\n" + 
 							"Please update HavenBags at https://www.spigotmc.org/resources/110420/");
 					
 					uptodate = false;
 				}else {
-					Log.Info(plugin, "Up to date.");
+					Log.info(plugin, "Up to date.");
 				}
 			});
 		}
@@ -229,56 +229,56 @@ public final class Main extends JavaPlugin implements Listener {
         Metrics metrics = new Metrics(this, pluginId);
 
         // Optional: Add custom charts
-        metrics.addCustomChart(new Metrics.SimplePie("language", () -> config.GetString("language")));
+        metrics.addCustomChart(new Metrics.SimplePie("language", () -> config.getString("language")));
         
         
     	//activeBags.clear();
     }
 
 	@Override
-    public void onDisable() {		
-    	CloseBags(); // Close all open bags to prevent duping and other issues.
+    public void onDisable() {
+    	closeBags(); // Close all open bags to prevent duping and other issues.
     	if(!BackBag.tracking.isEmpty()) {
     		for(Player player : BackBag.tracking.keySet()) {
     			BackBag.tracking.get(player).despawn();
     		}
     	}
     	if(BackBag.cleantask != null) BackBag.cleantask.cancel();
-    	BagData.SaveData(true); // Save all bag data on shutdown. The "true" parameter marks this as a shutdown save.
-    	BagData.Shutdown(); // Close all database connections.
-    	Crafting.RemoveRecipes();
+    	BagData.saveData(true); // Save all bag data on shutdown. The "true" parameter marks this as a shutdown save.
+    	BagData.shutdown(); // Close all database connections.
+    	Crafting.removeRecipes();
     	BagEffects.shutdown(); // Stop the bag effects tasks.
-    	UpgradeGUI.OpenGUIs.CloseAll(); // Close all open upgrade GUIs.
+    	UpgradeGUI.OpenGUIs.closeAll(); // Close all open upgrade GUIs.
     	SkinCache.shutdown(); // Save skin cache.
     	EtherealBags.shutdown(); // Close and save ethereal bags.
     	Insurance.shutdown(); // Save insurance data.
-		FeaturesGUI.OpenGUIs.CloseAll(); // Close all open features GUIs.
+		FeaturesGUI.OpenGUIs.closeAll(); // Close all open features GUIs.
     }
 	
 	public void onCrashDisable() {
-    	CloseBags();
+    	closeBags();
     	if(!BackBag.tracking.isEmpty()) {
     		for(Player player : BackBag.tracking.keySet()) {
     			BackBag.tracking.get(player).despawn();
     		}
     	}
     	if(BackBag.cleantask != null) BackBag.cleantask.cancel();
-    	BagData.SaveData(true);
-    	Crafting.RemoveRecipes();
+    	BagData.saveData(true);
+    	Crafting.removeRecipes();
     	BagEffects.shutdown();
-    	UpgradeGUI.OpenGUIs.CloseAll();
+    	UpgradeGUI.OpenGUIs.closeAll();
     	SkinCache.shutdown();
     	EtherealBags.shutdown();
     	Insurance.shutdown();
 		
 	}
     
-    public static void CloseBags() {
-    	if(!BagData.GetOpenBags().isEmpty()) {
-    		Log.Info(plugin, "Closing all open bags.");
+    public static void closeBags() {
+    	if(!BagData.getOpenBags().isEmpty()) {
+    		Log.info(plugin, "Closing all open bags.");
     		try {
-    			for(Data bag : BagData.GetOpenBags()) {
-    				bag.getGui().Close(true);
+    			for(Data bag : BagData.getOpenBags()) {
+    				bag.getGui().close(true);
     			}
     		} catch (Exception e) {
     		
@@ -287,15 +287,15 @@ public final class Main extends JavaPlugin implements Listener {
     	//activeBags.clear();
     }
     
-    protected void RegisterCommands() {
+    void registerCommands() {
         for (String command : commands) {
-			Log.Debug(plugin, "[DI-20] Registering Command: " + command);
+			Log.debug(plugin, "[DI-20] Registering Command: " + command);
 			getCommand(command).setExecutor(new CommandListener());
 			getCommand(command).setTabCompleter(new TabCompletion());
 		}
     }
     
-	protected void RegisterListeners() {
+	void registerListeners() {
 		EventListener.init();
     	PlacementBlocker.init();
 		BagDamagePrevention.init();
@@ -331,10 +331,10 @@ public final class Main extends JavaPlugin implements Listener {
 
 
 	@EventHandler
-	public void UpdateNotification(PlayerJoinEvent e) {
+	public void updateNotification(PlayerJoinEvent e) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 		    public void run() {
-		    	if (config.GetBool("check-updates") && e.getPlayer().isOp() && uptodate == false) {
+		    	if (config.getBool("check-updates") && e.getPlayer().isOp() && uptodate == false) {
 					e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',
 						"&7[&aHaven&bBags&7] " + "&fAn update has been found.\nPlease download version&a " + newVersion
 						+ ", &fyou are on version&a " + getDescription().getVersion() + "!"
@@ -380,39 +380,39 @@ public final class Main extends JavaPlugin implements Listener {
     	}
     }*/
     
-    void ValidateSizeTextures() {
-    	if(config.GetBool("bag-textures.enabled")) {
+    void validateSizeTextures() {
+    	if(config.getBool("bag-textures.enabled")) {
     		boolean c = false;
     		for(int s = 9; s <= 54; s += 9) {
-    			if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag-textures.size-" + s))){
-    				config.Set("bag-textures.size-" + s, config.GetString("bag.texture"));
+    			if(Utils.IsStringNullOrEmpty(Main.config.getString("bag-textures.size-" + s))){
+    				config.set("bag-textures.size-" + s, config.getString("bag.texture"));
     				c = true;
     			}
 			}
     		for(int s = 9; s <= 54; s += 9) {
-    			if(Utils.IsStringNullOrEmpty(Main.config.GetString("bag-textures.size-ownerless-" + s))){
-    				config.Set("bag-textures.size-ownerless-" + s, config.GetString("bag.texture"));
+    			if(Utils.IsStringNullOrEmpty(Main.config.getString("bag-textures.size-ownerless-" + s))){
+    				config.set("bag-textures.size-ownerless-" + s, config.getString("bag.texture"));
     				c = true;
     			}
 			}
     		
-    		if(c) config.SaveConfig();
+    		if(c) config.saveConfig();
     	}
     }
     
     void registerSoftCrash() {
-    	Log.Debug(plugin, "Registering shutdown hook for crash detection.");
+    	Log.debug(plugin, "Registering shutdown hook for crash detection.");
     	try {
     		Runtime.getRuntime().addShutdownHook(
     				new Thread(() -> {
-    					Log.Error(plugin, "Detected possible crash. Attempting to save data, close bags properly and shutting down.");
+    					Log.error(plugin, "Detected possible crash. Attempting to save data, close bags properly and shutting down.");
     					onCrashDisable(); // Attempt to run the onDisable method to save data and close bags properly. This won't work on hard crashes, but should work on soft crashes.
     					Bukkit.getServer().getPluginManager().disablePlugin(this); // Disable the plugin to prevent further issues. Again, this won't work on hard crashes.
     				}, "HavenBags-Shutdown-Hook")
     		);
-    		Log.Debug(plugin, "Registered shutdown hook for crash detection.");
+    		Log.debug(plugin, "Registered shutdown hook for crash detection.");
         } catch (Exception e) {
-        	Log.Error(plugin, "Failed to register shutdown hook for crash detection. Data may not be saved properly on crashes.");
+        	Log.error(plugin, "Failed to register shutdown hook for crash detection. Data may not be saved properly on crashes.");
         }
     }
 }

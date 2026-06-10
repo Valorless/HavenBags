@@ -19,28 +19,29 @@ public class CommandReload {
 	
 	static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 		try {
-			Main.CloseBags();
+			Main.closeBags();
 			Main.config.Reload();
 			Lang.lang.Reload();
 			Main.blacklist.Reload();
 			Main.plugins.Reload();
-			BagData.Reload();
+			BagData.reload();
 			if (command.args.length >= 2){
 				if(command.args[1].equalsIgnoreCase("force")) {
-					BagData.ForceReload();
+					BagData.forceReload();
 				}
 			}
 			Crafting.config.Reload();
-			Crafting.RemoveRecipes();
+			Crafting.removeRecipes();
 			Crafting.PrepareRecipes();
 			AutoPickup.filter.Reload();
-			AutoPickup.Initiate();
+			AutoPickup.initiate();
 			Main.weight.Reload();
-			Encumbering.Reload();
+			Encumbering.reload();
 			CustomBags.file.Reload();
-			CustomBags.initiate();
+			CustomBags.init();
 			Main.textures.Reload();
 			CustomData.reload();
 			BagHealth.reload();

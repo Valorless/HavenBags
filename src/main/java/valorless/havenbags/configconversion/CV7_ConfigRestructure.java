@@ -3,7 +3,7 @@ package valorless.havenbags.configconversion;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.DoNotCall;
 import valorless.havenbags.annotations.NotNull;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
 
 import java.io.File;
@@ -62,8 +62,8 @@ public class CV7_ConfigRestructure {
 	 */
 	@DoNotCall("Internal Use Only")
 	public static void check(@NotNull Config config) {
-		if(config.GetInt("config-version") < 7) {
-    		Log.Warning(Main.plugin, "Old configuration found, updating configs!");
+		if(config.getInt("config-version") < 7) {
+    		Log.warning(Main.plugin, "Old configuration found, updating configs!");
     		
     		String ver = Main.plugin.getDescription().getVersion();
     		//Log.Debug(plugin, ver);
@@ -71,11 +71,11 @@ public class CV7_ConfigRestructure {
     		//int major = Integer.valueOf(split[0]);
     		//int minor = Integer.valueOf(split[1]);
     		//int hotfix = Integer.valueOf(split[2]);
-    		int build = Integer.valueOf(split[3]);
+    		int build = Integer.parseInt(split[3]);
     		
     		// Create a backup of the current config before making changes
             try {
-                File original = config.GetFile().getFile();
+                File original = config.getFile().getFile();
                 File parent = original.getParentFile();
                 String name = original.getName();
                 String base = name;
@@ -88,32 +88,32 @@ public class CV7_ConfigRestructure {
                 String backupName = base + ".backup-" + build + ext;
                 File backup = new File(parent, backupName);
                 Files.copy(original.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                Log.Info(Main.plugin, "Backed up config to: " + backup.getName());
+                Log.info(Main.plugin, "Backed up config to: " + backup.getName());
             } catch (IOException ex) {
-                Log.Error(Main.plugin, "Failed to backup config before restructure: " + ex.getMessage());
+                Log.error(Main.plugin, "Failed to backup config before restructure: " + ex.getMessage());
                 return; // Abort restructure if backup fails
             }
     		
             // Start restructuring
-    		config.Set("config-version", 7);
-    		config.SaveConfig();
+    		config.set("config-version", 7);
+    		config.saveConfig();
 
-			config.Set("hardcore-bags", null);
-			config.Set("hardcore-bags.enabled", false);
-			config.Set("hardcore-bags.unbound", true);
-			config.Set("hardcore-bags.bound", true);
-			config.Set("hardcore-bags.unused", true);
-			config.Set("hardcore-bags.used", true);
+			config.set("hardcore-bags", null);
+			config.set("hardcore-bags.enabled", false);
+			config.set("hardcore-bags.unbound", true);
+			config.set("hardcore-bags.bound", true);
+			config.set("hardcore-bags.unused", true);
+			config.set("hardcore-bags.used", true);
 			
-			config.Set("protect-bags", null);
-			config.Set("protect-bags.enabled", true);
-			config.Set("protect-bags.unbound", true);
-			config.Set("protect-bags.bound", true);
-			config.Set("protect-bags.unused", true);
-			config.Set("protect-bags.used", true);
+			config.set("protect-bags", null);
+			config.set("protect-bags.enabled", true);
+			config.set("protect-bags.unbound", true);
+			config.set("protect-bags.bound", true);
+			config.set("protect-bags.unused", true);
+			config.set("protect-bags.used", true);
     		
-			config.SaveConfig();
-			Log.Info(Main.plugin, "Configuration update complete!");
+			config.saveConfig();
+			Log.info(Main.plugin, "Configuration update complete!");
     	}
 	}
 }

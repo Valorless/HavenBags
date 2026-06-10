@@ -60,7 +60,7 @@ public class HavenBagsAPI {
 	 * Forces the closure of all open bags for all players.
 	 */
 	public static void forceCloseAllBags() {
-		Main.CloseBags();
+		Main.closeBags();
 	}
 	
 	/**
@@ -77,7 +77,7 @@ public class HavenBagsAPI {
 	 * @return true if the item represents a bag
 	 */
 	public static boolean isBag(ItemStack item) {
-		return HavenBags.IsBag(item);
+		return HavenBags.isBag(item);
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class HavenBagsAPI {
 	 * @return bag UUID string, or null if not a bag
 	 */
 	public static String getBagUUID(ItemStack item) {
-		return HavenBags.GetBagUUID(item);
+		return HavenBags.getBagUUID(item);
 	}
 	
 	/**
@@ -96,7 +96,7 @@ public class HavenBagsAPI {
 	 */
 	public static Data getBagData(ItemStack item) {
 		if(!isBag(item)) return null;
-		return BagData.GetBag(getBagUUID(item), null);
+		return BagData.getBag(getBagUUID(item), null);
 	}
 	
 	/**
@@ -114,7 +114,7 @@ public class HavenBagsAPI {
 	 * @return true if the bag exists
 	 */
 	public static boolean bagExists(String uuid) {
-		return BagData.BagExists(uuid);
+		return BagData.bagExists(uuid);
 	}
 	
 	/**
@@ -123,7 +123,7 @@ public class HavenBagsAPI {
 	 * @return Data for the bag or null if not found
 	 */
 	public static Data getBag(String uuid) {
-		return BagData.GetBag(uuid, null);
+		return BagData.getBag(uuid, null);
 	}
 	
 	/**
@@ -132,7 +132,7 @@ public class HavenBagsAPI {
 	 * @return owner UUID string
 	 */
 	public static String getBagOwner(String uuid) {
-		return BagData.GetOwner(uuid);
+		return BagData.getOwner(uuid);
 	}
 	
 	/**
@@ -141,7 +141,7 @@ public class HavenBagsAPI {
 	 * @return list of Data for the player's bags
 	 */
 	public static List<Data> getPlayerBags(String playerUUID) {
-		return BagData.GetBagsData(playerUUID);
+		return BagData.getBagsData(playerUUID);
 	}
 	
 	/**
@@ -151,8 +151,8 @@ public class HavenBagsAPI {
 	 */
 	public static List<Data> getBagsOnPlayer(Player player){
 		List<Data> bags = new ArrayList<>();
-		for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
-			bags.add(BagData.GetBag(getBagUUID(bag.item), null));
+		for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
+			bags.add(BagData.getBag(getBagUUID(bag.item), null));
 		}
 		return bags;
 	}
@@ -163,7 +163,7 @@ public class HavenBagsAPI {
 	 * @return true if open
 	 */
 	public static boolean isBagOpen(String uuid) {
-		return BagData.IsBagOpen(uuid, null);
+		return BagData.isBagOpen(uuid, null);
 	}
 	
 	/**
@@ -173,7 +173,7 @@ public class HavenBagsAPI {
 	 */
 	public static boolean closeBag(String uuid) {
 		if(isBagOpen(uuid)) {
-			 return BagData.GetBag(uuid, null).getGui().Close(true);
+			 return BagData.getBag(uuid, null).getGui().close(true);
 		}
 		else return false;
 	}
@@ -184,7 +184,7 @@ public class HavenBagsAPI {
 	 * @return Player who opened the bag, or null if not open
 	 */
 	public static Player bagOpenBy(String uuid) {
-		return BagData.BagOpenBy(uuid, null);
+		return BagData.bagOpenBy(uuid, null);
 	}
 	
 	/**
@@ -192,7 +192,7 @@ public class HavenBagsAPI {
 	 * @return list of open bag Data
 	 */
 	public static List<Data> getOpenBagsUUIDs() {
-		return BagData.GetOpenBags();
+		return BagData.getOpenBags();
 	}
 	
 	/**
@@ -209,7 +209,7 @@ public class HavenBagsAPI {
 	 * @return Data for the created bag
 	 */
 	public static Data createBag(BagCreationObject creationObject) {
-		return BagData.CreateBag(creationObject.uuid, creationObject.owner, creationObject.contents, 
+		return BagData.createBag(creationObject.uuid, creationObject.owner, creationObject.contents,
 				creationObject.creator.equalsIgnoreCase("null") ? null : Bukkit.getOfflinePlayer(UUID.fromString(creationObject.creator)).getPlayer(), 
 				createUnusedBagItem(creationObject.contents.size(), !creationObject.owner.equalsIgnoreCase("ownerless")));
 	}
@@ -220,7 +220,7 @@ public class HavenBagsAPI {
 	 * @return Data for the created bag
 	 */
 	public static Data createBag(Data bagData) {
-		return BagData.CreateBag(bagData);
+		return BagData.createBag(bagData);
 	}
 
 	/**
@@ -285,7 +285,7 @@ public class HavenBagsAPI {
 	 * @return true if deletion succeeded
 	 */
 	public static boolean deleteBag(String uuid) {
-		return BagData.DeleteBag(uuid);
+		return BagData.deleteBag(uuid);
 	}
 	
 	/**
@@ -295,7 +295,7 @@ public class HavenBagsAPI {
 	 * @return token item
 	 */
 	public static ItemStack createToken(String value, TokenType type) {
-		return HavenBags.CreateSkinToken(value, type);
+		return HavenBags.createSkinToken(value, type);
 	}
 	
 	/**
@@ -304,7 +304,7 @@ public class HavenBagsAPI {
 	 * @return token item
 	 */
 	public static ItemStack createEffectToken(String value) {
-		return HavenBags.CreateEffectToken(value);
+		return HavenBags.createEffectToken(value);
 	}
 	
 	/**
@@ -313,7 +313,7 @@ public class HavenBagsAPI {
 	 * @return true if the item is a skin token
 	 */
 	public static boolean isToken(ItemStack item) {
-		return HavenBags.IsSkinToken(item);
+		return HavenBags.isSkinToken(item);
 	}
 	
 	/**
@@ -407,25 +407,25 @@ public class HavenBagsAPI {
 	 * @return A new ItemStack representing the upgraded bag, or the original bag if already at max size.
 	 */
 	public static ItemStack upgradeBag(ItemStack bag) {
-		if(PDC.Has(bag, "upgrade") && PDC.GetBoolean(bag, "upgrade") == false) {
+		if(PDC.has(bag, "upgrade") && PDC.getBoolean(bag, "upgrade") == false) {
 			return bag;
 		}
-		int size = PDC.GetInteger(bag, "size");
+		int size = PDC.getInteger(bag, "size");
 		if(size == 54) return bag;
 		int newSize = size+9;
 		ItemStack clonedBag = bag.clone();
-		String owner = PDC.GetString(bag, "owner");
+		String owner = PDC.getString(bag, "owner");
 		
-		PDC.SetInteger(clonedBag, "size", newSize);
-		if(Main.weight.GetBool("weight-per-size")) {
-			PDC.SetDouble(clonedBag, "weight-limit", Main.weight.GetDouble(String.format("weight-size-%s", newSize)));
+		PDC.setinteger(clonedBag, "size", newSize);
+		if(Main.weight.getBool("weight-per-size")) {
+			PDC.setDouble(clonedBag, "weight-limit", Main.weight.getDouble(String.format("weight-size-%s", newSize)));
 		}
-		HavenBags.UpdateBagLore(clonedBag, null, true);
-		if(Main.config.GetBool("bag-textures.enabled") && !Main.config.GetBool("upgrades.keep-texture")) {
+		HavenBags.updateBagLore(clonedBag, null, true);
+		if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
 			if(owner.equalsIgnoreCase("ownerless")) {
-				BagData.setTextureValue(clonedBag, Main.config.GetString(String.format("bag-textures.size-ownerless-%s", newSize)));
+				BagData.setTextureValue(clonedBag, Main.config.getString(String.format("bag-textures.size-ownerless-%s", newSize)));
 			}else {
-				BagData.setTextureValue(clonedBag, Main.config.GetString(String.format("bag-textures.size-%s", newSize)));
+				BagData.setTextureValue(clonedBag, Main.config.getString(String.format("bag-textures.size-%s", newSize)));
 			}
 		}
 		
@@ -462,7 +462,7 @@ public class HavenBagsAPI {
 	 * @param bag The ItemStack representing the bag to refresh.
 	 */
 	public static void refreshBagLore(ItemStack bag) {
-		HavenBags.UpdateBagLore(bag, null, false);
+		HavenBags.updateBagLore(bag, null, false);
 	}
 	
 	/**
@@ -472,7 +472,7 @@ public class HavenBagsAPI {
 	 * @param player The player used in placeholder parsing.
 	 */
 	public static void refreshBagLore(ItemStack bag, Player player) {
-		HavenBags.UpdateBagLore(bag, player);
+		HavenBags.updateBagLore(bag, player);
 	}
 	
 	/**
@@ -482,7 +482,7 @@ public class HavenBagsAPI {
 	 * @return The total weight of the bag's contents.
 	 */
 	public static double getBagWeight(ItemStack bag) {
-		return HavenBags.GetWeight(bag);
+		return HavenBags.getWeight(bag);
 	}
 	
 	/**
@@ -492,7 +492,7 @@ public class HavenBagsAPI {
 	 * @return The total weight of the provided items.
 	 */
 	public static double getBagWeight(List<ItemStack> bagContents) {
-		return HavenBags.GetWeight(bagContents);
+		return HavenBags.getWeight(bagContents);
 	}
 	
 	/**
@@ -502,7 +502,7 @@ public class HavenBagsAPI {
 	 * @return The weight of the specified item.
 	 */
 	public static double getItemWeight(ItemStack item) {
-		return HavenBags.ItemWeight(item);
+		return HavenBags.itemWeight(item);
 	}
 	
 	/**
@@ -513,7 +513,7 @@ public class HavenBagsAPI {
 	 * @return true if bag cannot hold more weight, false otherwise.
 	 */
 	public static boolean canCarry(ItemStack item, ItemStack bag) {
-		return HavenBags.CanCarry(item, bag);
+		return HavenBags.canCarry(item, bag);
 	}
 	
 	/**
@@ -528,7 +528,7 @@ public class HavenBagsAPI {
 	 * @return true if the item is blacklisted, false otherwise.
 	 */
 	public static boolean isItemBlacklisted(ItemStack item, @Nullable Data bagData) {
-		return HavenBags.IsItemBlacklisted(item, bagData);
+		return HavenBags.isItemBlacklisted(item, bagData);
 	}
 	
 	/**
@@ -537,7 +537,7 @@ public class HavenBagsAPI {
 	 * @return true if blacklist is used as whitelist, false otherwise.
 	 */
 	public static boolean blacklistAsWhitelist() {
-		return Main.config.GetBool("blacklist-as-whitelist");
+		return Main.config.getBool("blacklist-as-whitelist");
 	}
 	
 	/**
@@ -557,7 +557,7 @@ public class HavenBagsAPI {
 	 * @return true if the player can carry more bags, false otherwise.
 	 */
 	public static boolean canCarryMoreBags(Player player) {
-		return HavenBags.CanCarryMoreBags(player);
+		return HavenBags.canCarryMoreBags(player);
 	}
 	
 	/**
@@ -567,7 +567,7 @@ public class HavenBagsAPI {
 	 * @return true if the bag is full, false otherwise.
 	 */
 	public static boolean isBagFull(ItemStack bag) {
-		return HavenBags.IsBagFull(bag);
+		return HavenBags.isBagFull(bag);
 	}
 	
 	/**
@@ -577,7 +577,7 @@ public class HavenBagsAPI {
 	 * @return true if the bag is full, false otherwise.
 	 */
 	public static boolean isBagFull(UUID uuid) {
-		return HavenBags.IsBagFull(uuid);
+		return HavenBags.isBagFull(uuid);
 	}
 	
 	/**
@@ -587,7 +587,7 @@ public class HavenBagsAPI {
 	 * @return true if the bag is full, false otherwise.
 	 */
 	public static boolean isBagFull(String uuid) {
-		return HavenBags.IsBagFull(uuid);
+		return HavenBags.isBagFull(uuid);
 	}
 	
 	/**
@@ -597,7 +597,7 @@ public class HavenBagsAPI {
 	 * @return The number of empty slots in the bag.
 	 */
 	public static int bagSlotsEmpty(ItemStack bag) {
-		return HavenBags.SlotsEmpty(bag);
+		return HavenBags.slotsEmpty(bag);
 	}
 	
 	/**
@@ -607,7 +607,7 @@ public class HavenBagsAPI {
 	 * @return The percentage of used capacity in the bag (0.0 to 100.0).
 	 */
 	public static double usedCapacity(ItemStack bag) {
-		return HavenBags.UsedCapacity(bag, getBagData(bag).getContent());
+		return HavenBags.usedCapacity(bag, getBagData(bag).getContent());
 	}
     
 	/** Calculates the total number of bag slots in a player's inventory.
@@ -616,7 +616,7 @@ public class HavenBagsAPI {
 	 * @return The total number of bag slots.
 	 */
     public static int getBagSlotsInInventory(Player player) {
-		return HavenBags.GetBagSlotsInInventory(player);
+		return HavenBags.getBagSlotsInInventory(player);
     }
     
     /** Checks if the player has any bags belonging to other players.
@@ -625,7 +625,7 @@ public class HavenBagsAPI {
 	 * @return true if the player has bags owned by others, false otherwise.
 	 */
     public static boolean hasOthersBag(Player player) {
-    	return HavenBags.HasOthersBag(player);
+    	return HavenBags.hasOthersBag(player);
     }
     
     /** Determines the appropriate texture for a bag based on its used capacity.
@@ -636,7 +636,7 @@ public class HavenBagsAPI {
      * If no special texture is defined in the configuration, returns the bag's current texture.
      */
     public static String capacityTexture(ItemStack bag) {
-		return HavenBags.CapacityTexture(bag, getBagData(bag).getContent());
+		return HavenBags.capacityTexture(bag, getBagData(bag).getContent());
 	}
     
     /** Retrieves the current state of the bag.
@@ -685,44 +685,44 @@ public class HavenBagsAPI {
     @SuppressWarnings("deprecation")
 	public static ItemStack createUnusedBagItem(int size, boolean binding) {
 		Config config = valorless.havenbags.Main.config;
-		String bagTexture = config.GetString("bag.texture");
+		String bagTexture = config.getString("bag.texture");
 		ItemStack bagItem = new ItemStack(Material.AIR);
 
-		if(config.GetString("bag.type").equalsIgnoreCase("HEAD")){
-			if(config.GetBool("bag-textures.enabled")) {
+		if(config.getString("bag.type").equalsIgnoreCase("HEAD")){
+			if(config.getBool("bag-textures.enabled")) {
 				for(int s = 9; s <= 54; s += 9) {
 					if(size == s) {
-						bagItem = HeadCreator.itemFromBase64(config.GetString("bag-textures.size-" + size));
+						bagItem = HeadCreator.itemFromBase64(config.getString("bag-textures.size-" + size));
 					}
 				}
 			}else {
 				bagItem = HeadCreator.itemFromBase64(bagTexture);
 			}
-		} else if(config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
-			bagItem = new ItemStack(config.GetMaterial("bag.material"));
+		} else if(config.getString("bag.type").equalsIgnoreCase("ITEM")) {
+			bagItem = new ItemStack(config.getMaterial("bag.material"));
 		}
 		
 		ItemMeta bagMeta = bagItem.getItemMeta();
-		if(config.GetInt("bag.modeldata") != 0 && config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
-			bagMeta.setCustomModelData(config.GetInt("bag.modeldata"));
-			if(config.GetBool("bag-custom-model-datas.enabled")) {
+		if(config.getInt("bag.modeldata") != 0 && config.getString("bag.type").equalsIgnoreCase("ITEM")) {
+			bagMeta.setCustomModelData(config.getInt("bag.modeldata"));
+			if(config.getBool("bag-custom-model-datas.enabled")) {
 				for(int s = 9; s <= 54; s += 9) {
 					if(size == s) {
-						bagMeta.setCustomModelData(config.GetInt("bag-custom-model-datas.size-" + size));
+						bagMeta.setCustomModelData(config.getInt("bag-custom-model-datas.size-" + size));
 					}
 				}
 			}
 		}
 
-		bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
+		bagMeta.setDisplayName(Lang.get("bag-unbound-name"));
 		List<String> lore = new ArrayList<String>();
-		for (String l : Lang.lang.GetStringList("bag-lore")) {
-			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, null));
+		for (String l : Lang.lang.getStringList("bag-lore")) {
+			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.parse(l, null));
 		}
 		
 		List<Placeholder> placeholders = new ArrayList<Placeholder>();
 		placeholders.add(new Placeholder("%size%", size));
-		lore.add(Lang.Get("bag-size").replace("%size", "" + size));
+		lore.add(Lang.get("bag-size").replace("%size", "" + size));
 		
 		bagMeta.setLore(lore);
 		bagItem.setItemMeta(bagMeta);
@@ -731,25 +731,25 @@ public class HavenBagsAPI {
 			ItemUtils.SetMaxStackSize(bagItem, 1);
 		}
 
-		if(config.GetBool("bag-custom-model-datas.enabled")) {
+		if(config.getBool("bag-custom-model-datas.enabled")) {
 			for(int s = 9; s <= 54; s += 9) {
 				if(size == s) {
-					if(!Utils.IsStringNullOrEmpty(config.GetString("bag-custom-model-datas.size-" + size)) && 
-							!config.GetString("bag-custom-model-datas.size-" + size).matches("-?\\d+(\\.\\d+)?")) {
-						ItemUtils.SetItemModel(bagItem, config.GetString("bag-custom-model-datas.size-" + size));
+					if(!Utils.IsStringNullOrEmpty(config.getString("bag-custom-model-datas.size-" + size)) &&
+							!config.getString("bag-custom-model-datas.size-" + size).matches("-?\\d+(\\.\\d+)?")) {
+						ItemUtils.SetItemModel(bagItem, config.getString("bag-custom-model-datas.size-" + size));
 					}
 				}
 			}
 		}
 
-		if(!Utils.IsStringNullOrEmpty(config.GetString("bag.itemmodel"))) {
-			ItemUtils.SetItemModel(bagItem, config.GetString("bag.itemmodel"));
+		if(!Utils.IsStringNullOrEmpty(config.getString("bag.itemmodel"))) {
+			ItemUtils.SetItemModel(bagItem, config.getString("bag.itemmodel"));
 		}
 
-		PDC.SetString(bagItem, "uuid", "null");
-		PDC.SetString(bagItem, "owner", "null");
-		PDC.SetInteger(bagItem, "size", size);
-		PDC.SetBoolean(bagItem, "binding", binding);
+		PDC.setString(bagItem, "uuid", "null");
+		PDC.setString(bagItem, "owner", "null");
+		PDC.setinteger(bagItem, "size", size);
+		PDC.setBoolean(bagItem, "binding", binding);
 		
 		return bagItem;
 	}
@@ -915,7 +915,7 @@ public class HavenBagsAPI {
 		 * @return The created Inventory object representing the paginated GUI.
 		 */
     	public static Inventory createPage(Player player, String title, int page, List<ItemStack> items, int rows) {
-    		return valorless.havenbags.utils.GUI.CreatePage(player, title, page, items, rows);
+    		return valorless.havenbags.utils.GUI.createPage(player, title, page, items, rows);
     	}
     	
     	/**
@@ -926,7 +926,7 @@ public class HavenBagsAPI {
 		 */
     	public static String getPageActionKey(ItemStack button) {
     		try {
-    			return PDC.GetString(button, "bag-action");
+    			return PDC.getString(button, "bag-action");
     		}catch(Exception e) {
 				return null;
 			}
@@ -950,7 +950,7 @@ public class HavenBagsAPI {
     	 * @return A String representation of the progress bar
     	 */
     	public static String createBar(double progress, double total, int barLength) {
-			return TextFeatures.CreateBar(progress, total, barLength);
+			return TextFeatures.createBar(progress, total, barLength);
 		}
     	
     	/**
@@ -966,7 +966,7 @@ public class HavenBagsAPI {
 		 * @return A String representation of the customized progress bar
 		 */
     	public static String createBar(double progress, double total, int barLength, String barColor, String fillColor, char barStyle, char fillStyle) {
-    		return TextFeatures.CreateBar(progress, total, barLength, barColor, fillColor, barStyle, fillStyle);
+    		return TextFeatures.createBar(progress, total, barLength, barColor, fillColor, barStyle, fillStyle);
     	}
     }
 }

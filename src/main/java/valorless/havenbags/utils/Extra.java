@@ -41,7 +41,7 @@ public interface Extra {
 	 * @param string the input string to format
 	 * @return the formatted string with each word capitalized
 	 */
-	public static String UppercaseFirstLetter(String string) {
+	public static String uppercaseFirstLetter(String string) {
     	string = string.replace('_', ' ');
         char[] charArray = string.toCharArray();
         boolean foundSpace = true;
@@ -79,12 +79,11 @@ public interface Extra {
 	 * @param percent the probability percentage (0.0 to 100.0)
 	 * @return true if the random roll is less than or equal to the percentage; false otherwise
 	 */
-	public static Boolean Chance(double percent) {
+	public static Boolean chance(double percent) {
         int low = 0;
         int high = 100;
         int result = rand.nextInt(high-low) + low;
-        if (result <= percent) return true;
-        else return false;
+        return result <= percent;
     }
 
 	/**

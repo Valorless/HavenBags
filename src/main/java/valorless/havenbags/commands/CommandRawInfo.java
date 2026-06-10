@@ -7,15 +7,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import valorless.havenbags.HavenBags;
 
 public class CommandRawInfo {
-	
-	final static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 		
 		ItemStack hand = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand();
 		ItemMeta meta = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand().getItemMeta();
 			
-		if(HavenBags.IsBag(hand)) {
+		if(HavenBags.isBag(hand)) {
 			String info = "§6## HavenBag Bag Raw Information ##";
 			info = info + "\n  §f" + meta.toString();
 			command.sender.sendMessage(info);

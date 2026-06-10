@@ -10,24 +10,25 @@ public class CommandWeight {
 	
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 		
 		Player player = (Player)command.sender;
 		ItemStack item = player.getInventory().getItemInMainHand();
-		if(HavenBags.IsBag(item)) {
-			if(HavenBags.IsOwner(item, player)) {
+		if(HavenBags.isBag(item)) {
+			if(HavenBags.isOwner(item, player)) {
 				try {
 					//Integer value = Integer.valueOf(args[1]);
 					Double value = Double.valueOf(command.args[1]);
-					BagData.SetWeightMax(HavenBags.GetBagUUID(item), value);
-					HavenBags.UpdateBagItem(item, player);
+					BagData.setWeightMax(HavenBags.getBagUUID(item), value);
+					HavenBags.updateBagItem(item, player);
 					//PDC.SetDouble(item, "bag-weight-limit", value);
 				} catch (Exception e) {
 					//e.printStackTrace();
 					player.sendMessage("§cValue must be a number.");
 					return true;
 				}
-				HavenBags.UpdateBagLore(item, player);
+				HavenBags.updateBagLore(item, player);
 			}
 		}
 		return true;

@@ -6,7 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import net.ess3.api.IEssentials;
 import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 
 public class EssentialsHook {
 	
@@ -19,9 +19,9 @@ public class EssentialsHook {
 				instance = (IEssentials) ess;
 			}
 			Eco.init();
-			Log.Info(Main.plugin, "Essentials integrated!");
+			Log.info(Main.plugin, "Essentials integrated!");
 		}catch(Exception e) {
-			Log.Debug(Main.plugin, "Essentials not detected.");
+			Log.debug(Main.plugin, "Essentials not detected.");
 		}
 		
 	}
@@ -30,27 +30,23 @@ public class EssentialsHook {
 		return instance;
 	}
 	
-	public static void Hook() {
+	public static void hook() {
 		JavaPlugin plugin = Main.plugin;
 		
-		Log.Debug(plugin, "Attempting to hook Essentials.");
+		Log.debug(plugin, "Attempting to hook Essentials.");
 		
 		if (Bukkit.getPluginManager().getPlugin("Essentials") != null) {
 			Plugin ess = Bukkit.getPluginManager().getPlugin("Essentials");
 			if (ess instanceof IEssentials) {
 				instance = (IEssentials) ess;
 			}
-			Log.Info(Main.plugin, "Essentials integrated!");
+			Log.info(Main.plugin, "Essentials integrated!");
 		}else {
-			Log.Debug(Main.plugin, "Essentials not detected.");
+			Log.debug(Main.plugin, "Essentials not detected.");
 		}
 	}
 	
 	public static boolean isHooked() {
-		if (instance != null) {
-    		return true;
-		}else {
-			return false;
-		}
+        return instance != null;
 	}
 }

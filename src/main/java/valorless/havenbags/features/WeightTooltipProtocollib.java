@@ -23,11 +23,11 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 
 public class WeightTooltipProtocollib {
     public static void registerTooltipListener(Plugin plugin) {
-    	Log.Debug(Main.plugin, "[DI-251] Registering WeightTooltip");
+    	Log.debug(Main.plugin, "[DI-251] Registering WeightTooltip");
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
         protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, 
@@ -63,7 +63,7 @@ public class WeightTooltipProtocollib {
         PacketContainer packet = event.getPacket();
         List<ItemStack> items = packet.getItemListModifier().read(0);
         int size = items.size();
-        for(Data bag : BagData.GetOpenBags()) {
+        for(Data bag : BagData.getOpenBags()) {
     		if(bag.getViewer() == event.getPlayer() && bag.getGui() != null) size = bag.getGui().size;
     	}
         for (int i = 0; i < size; i++) {
@@ -76,20 +76,23 @@ public class WeightTooltipProtocollib {
     }
 
     private static ItemStack addWeightTooltip(ItemStack item, Player player) {
-    	if(!Main.weight.GetBool("enabled")) return item;
+    	if(!Main.weight.getBool("enabled")) return item;
     	boolean show = false;
-    	for(Data bag : BagData.GetOpenBags()) {
-    		if(bag.getViewer() == player) show = true;
+    	for(Data bag : BagData.getOpenBags()) {
+            if (bag.getViewer() == player) {
+                show = true;
+                break;
+            }
     	}
     	if(!show) return item;
-    	if(HavenBags.IsBag(item)) return item;
+    	if(HavenBags.isBag(item)) return item;
         //double weight = HavenBags.ItemWeight(item);
         DecimalFormat df = new DecimalFormat("#.00");
-        double weight = Double.parseDouble(df.format(HavenBags.ItemWeight(item)));
+        double weight = Double.parseDouble(df.format(HavenBags.itemWeight(item)));
         if(weight == 0.0) return item;
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<String>();
-        String line = Lang.Parse(Main.weight.GetString("weight-tooltip"), player);
+        String line = Lang.parse(Main.weight.getString("weight-tooltip"), player);
         lore.add(line.replace("%weight%", String.valueOf(weight)));
         meta.setLore(lore);
         item.setItemMeta(meta);

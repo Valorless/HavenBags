@@ -22,14 +22,14 @@ import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.utils.Utils;
 
 public class MinepacksBagRestore implements Listener{
 	
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-211] Registering MinepacksBagRestore");
+		Log.debug(Main.plugin, "[DI-211] Registering MinepacksBagRestore");
 		Bukkit.getServer().getPluginManager().registerEvents(new MinepacksBagRestore(), Main.plugin);
 	}
 	
@@ -37,40 +37,40 @@ public class MinepacksBagRestore implements Listener{
 
 	@EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-		playersRemain = PlayersRemaining();
+		playersRemain = playersRemaining();
 		if(!playersRemain) return;
         Player player = event.getPlayer();
-        Log.Debug(Main.plugin, "[DI-212] [MinepacksBagRestore] " + player.getName());
+        Log.debug(Main.plugin, "[DI-212] [MinepacksBagRestore] " + player.getName());
         Config config = new Config(Main.plugin, "minepacks/players.yml");
-        ConfigurationSection playersSection = config.GetConfigurationSection("players");
+        ConfigurationSection playersSection = config.getConfigurationSection("players");
         
         if(playersSection == null) {
-        	RemoveDirectory();
+        	removeDirectory();
         	return;
         }
         
-        if(playersSection.getKeys(false) == null || playersSection.getKeys(false).size() == 0) {
-        	RemoveDirectory();
+        if(playersSection.getKeys(false) == null || playersSection.getKeys(false).isEmpty()) {
+        	removeDirectory();
         	return;
         }else {
         	for (String playerKey : playersSection.getKeys(false)) {
-        		Log.Debug(Main.plugin, "[DI-213] [MinepacksBagRestore] " + playerKey);
+        		Log.debug(Main.plugin, "[DI-213] [MinepacksBagRestore] " + playerKey);
         		if(playerKey.equalsIgnoreCase(player.getUniqueId().toString())) {
-        			String baguuid = config.GetString(String.format("players.%s", playerKey));
-            		Log.Debug(Main.plugin, "[DI-214] [MinepacksBagRestore] " + baguuid);
-        			ItemStack bag = GetBag(baguuid, playerKey, player);
+        			String baguuid = config.getString(String.format("players.%s", playerKey));
+            		Log.debug(Main.plugin, "[DI-214] [MinepacksBagRestore] " + baguuid);
+        			ItemStack bag = getBag(baguuid, playerKey, player);
         			if(bag != null) {
-                		Log.Debug(Main.plugin, "[DI-215] [MinepacksBagRestore] " + "BagData found, giving bag.");
-        				GiveItem(player, bag);
-        				config.Set(String.format("players.%s", playerKey), null);
-        				config.SaveConfig();
+                		Log.debug(Main.plugin, "[DI-215] [MinepacksBagRestore] " + "BagData found, giving bag.");
+        				giveItem(player, bag);
+        				config.set(String.format("players.%s", playerKey), null);
+        				config.saveConfig();
         			}
         		}
             }
         }
     }
 	
-	void GiveItem(Player player, ItemStack item) {
+	void giveItem(Player player, ItemStack item) {
         PlayerInventory inventory = player.getInventory();
         
         // Check if the player's inventory has space for the item
@@ -85,21 +85,17 @@ public class MinepacksBagRestore implements Listener{
         }
     }
 	
-    boolean PlayersRemaining() {
+    boolean playersRemaining() {
         // Get the data folder of the plugin
         File dataFolder = Main.plugin.getDataFolder();
 
         // Now, check for a specific folder inside the data folder
         File myFolder = new File(dataFolder, "minepacks");
 
-        if (myFolder.exists() && myFolder.isDirectory()) {
-            return true;
-        } else {
-            return false;
-        }
+        return myFolder.exists() && myFolder.isDirectory();
     }
     
-    void RemoveDirectory() {
+    void removeDirectory() {
     	//Log.Info(Main.plugin, "All converted Minepacks have been given out.");
     	// Get the data folder of the plugin
         File dataFolder = Main.plugin.getDataFolder();
@@ -119,62 +115,62 @@ public class MinepacksBagRestore implements Listener{
         }
     }
     
-    ItemStack GetBag(String baguuid, String playeruuid, Player target) {
-    	List<ItemStack> Content  = LoadContent(playeruuid, baguuid);
+    ItemStack getBag(String baguuid, String playeruuid, Player target) {
+    	List<ItemStack> Content  = loadContent(playeruuid, baguuid);
 		if (Content == null) return null;
 		List<Placeholder> placeholders = new ArrayList<Placeholder>();
 		
-		String bagTexture = Main.config.GetString("bag.texture");
+		String bagTexture = Main.config.getString("bag.texture");
 		ItemStack bagItem = new ItemStack(Material.AIR);
 		int size = Content.size();
 		
-		if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")){
+		if(Main.config.getString("bag.type").equalsIgnoreCase("HEAD")){
 			bagItem = HeadCreator.itemFromBase64(bagTexture);
-		} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
-			bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
+		} else if(Main.config.getString("bag.type").equalsIgnoreCase("ITEM")) {
+			bagItem = new ItemStack(Main.config.getMaterial("bag.material"));
 		}
 		
-		PDC.SetString(bagItem, "uuid", baguuid);
-		PDC.SetString(bagItem, "owner", playeruuid);
-		PDC.SetInteger(bagItem, "size", size);
+		PDC.setString(bagItem, "uuid", baguuid);
+		PDC.setString(bagItem, "owner", playeruuid);
+		PDC.setinteger(bagItem, "size", size);
 		if(playeruuid.equalsIgnoreCase("ownerless")) {
-			PDC.SetBoolean(bagItem, "binding", false);
+			PDC.setBoolean(bagItem, "binding", false);
 		}else {
-			PDC.SetBoolean(bagItem, "binding", true);
+			PDC.setBoolean(bagItem, "binding", true);
 		}
 		
 		ItemMeta bagMeta = bagItem.getItemMeta();
-		if(Main.config.GetInt("bag.modeldata") != 0) {
-			bagMeta.setCustomModelData(Main.config.GetInt("bag.modeldata"));
+		if(Main.config.getInt("bag.modeldata") != 0) {
+			bagMeta.setCustomModelData(Main.config.getInt("bag.modeldata"));
 		}
-		if(Main.config.GetBool("bag-custom-model-datas.enabled")) {
+		if(Main.config.getBool("bag-custom-model-datas.enabled")) {
 			for(int s = 9; s <= 54; s += 9) {
 				if(size == s) {
-					if(PDC.GetBoolean(bagItem, "binding")) {
-						bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
+					if(PDC.getBoolean(bagItem, "binding")) {
+						bagMeta.setCustomModelData(Main.config.getInt("bag-custom-model-datas.size-" + size));
 					}else {
-						bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-ownerless-" + size));
+						bagMeta.setCustomModelData(Main.config.getInt("bag-custom-model-datas.size-ownerless-" + size));
 					}
 				}
 			}
 		}
 		
-		if(PDC.GetBoolean(bagItem, "binding")) {
-			bagMeta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), target));
+		if(PDC.getBoolean(bagItem, "binding")) {
+			bagMeta.setDisplayName(Lang.parse(Lang.lang.getString("bag-bound-name"), target));
 		}else {
-			bagMeta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-ownerless-used"), target));
+			bagMeta.setDisplayName(Lang.parse(Lang.lang.getString("bag-ownerless-used"), target));
 		}
 		List<String> lore = new ArrayList<String>();
-		for (String l : Lang.lang.GetStringList("bag-lore")) {
-			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, target));
+		for (String l : Lang.lang.getStringList("bag-lore")) {
+			if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.parse(l, target));
 		}
-		if(PDC.GetBoolean(bagItem, "binding")) {
+		if(PDC.getBoolean(bagItem, "binding")) {
 			placeholders.add(new Placeholder("%owner%", target.getName()));
-            lore.add(Lang.Parse(Lang.Get("bound-to"), placeholders, target));
+            lore.add(Lang.parse(Lang.get("bound-to"), placeholders, target));
         }
 		
         placeholders.add(new Placeholder("%size%", size));
-        lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, target));
+        lore.add(Lang.parse(Lang.get("bag-size"), placeholders, target));
 		
 		List<ItemStack> cont = new ArrayList<ItemStack>();
         int a = 0;
@@ -187,49 +183,49 @@ public class MinepacksBagRestore implements Listener{
 					itemph.add(new Placeholder("%item%", Content.get(i).getItemMeta().getDisplayName()));
 					itemph.add(new Placeholder("%amount%", Content.get(i).getAmount()));
 					if(Content.get(i).getAmount() != 1) {
-						items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, target));
+						items.add(Lang.parse(Lang.get("bag-content-item-amount"), itemph, target));
 					} else {
-						items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, target));
+						items.add(Lang.parse(Lang.get("bag-content-item"), itemph, target));
 					}
     			}else {
 	    			itemph.add(new Placeholder("%item%", Main.translator.Translate(Content.get(i).getType().getTranslationKey())));
 	    			itemph.add(new Placeholder("%amount%", Content.get(i).getAmount()));
 	    			if(Content.get(i).getAmount() != 1) {
-    					items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, target));
+    					items.add(Lang.parse(Lang.get("bag-content-item-amount"), itemph, target));
     				} else {
-    					items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, target));
+    					items.add(Lang.parse(Lang.get("bag-content-item"), itemph, target));
     				}
     			}
     			a++;
     		}
     	}
-        if(a > 0 && Lang.lang.GetBool("show-bag-content")) {
-        	lore.add(Lang.Get("bag-content-title"));
+        if(a > 0 && Lang.lang.getBool("show-bag-content")) {
+        	lore.add(Lang.get("bag-content-title"));
         	for(int k = 0; k < items.size(); k++) {
-        		if(k < Lang.lang.GetInt("bag-content-preview-size")) {
+        		if(k < Lang.lang.getInt("bag-content-preview-size")) {
         			lore.add("  " + items.get(k));
         		}
         	}
-        	if(a > Lang.lang.GetInt("bag-content-preview-size")) {
-        		lore.add(Lang.Get("bag-content-and-more"));
+        	if(a > Lang.lang.getInt("bag-content-preview-size")) {
+        		lore.add(Lang.get("bag-content-and-more"));
         	}
         }
 		bagMeta.setLore(lore);
 		bagItem.setItemMeta(bagMeta);
 		
 		try {
-			HavenBags.UpdateBagItem(bagItem, Bukkit.getOfflinePlayer(UUID.fromString(playeruuid)));
+			HavenBags.updateBagItem(bagItem, Bukkit.getOfflinePlayer(UUID.fromString(playeruuid)));
 		}catch(Exception e) {
-			HavenBags.UpdateBagItem(bagItem, null);
+			HavenBags.updateBagItem(bagItem, null);
 		}
 		
 		return bagItem;
     }
     
-    List<ItemStack> LoadContent(String owner, String uuid) {
+    List<ItemStack> loadContent(String owner, String uuid) {
 		String id = uuid.replace(".json", "");
 		id = id.replace(".yml", "");
-		return BagData.GetBag(id, null).getContent();
+		return BagData.getBag(id, null).getContent();
 	}
     
     

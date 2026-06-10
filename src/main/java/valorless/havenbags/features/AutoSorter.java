@@ -20,32 +20,32 @@ import valorless.valorlessutils.items.ItemUtils;
 public class AutoSorter {
 	
 	// Not used, just added.
-	public static void SortBag(ItemStack bag) {
-		if(!HavenBags.IsBag(bag)) return;
-		String uuid = HavenBags.GetBagUUID(bag);
-		Data data = BagData.GetBag(uuid, null);
+	public static void sortBag(ItemStack bag) {
+		if(!HavenBags.isBag(bag)) return;
+		String uuid = HavenBags.getBagUUID(bag);
+		Data data = BagData.getBag(uuid, null);
 		
 		if(!data.hasAutoSort()) return;
 		
 		@SuppressWarnings("unused")
-		List<ItemStack> sorted = SortInventory(data.getContent());
+		List<ItemStack> sorted = sortInventory(data.getContent());
 		OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(data.getOwner()));
 		
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable(){
             @Override
             public void run(){
-            	HavenBags.UpdateBagItem(bag, owner);
+            	HavenBags.updateBagItem(bag, owner);
             }
         }, 1L);
 	}
 
-	public static List<ItemStack> SortInventory(List<ItemStack> content) {
+	public static List<ItemStack> sortInventory(List<ItemStack> content) {
 		try {
 			content.sort((item1, item2) -> {
 				if (item1 == null || item1.getType() == null) return 1; // Push nulls to the end
 				if (item2 == null || item2.getType() == null) return -1;
-				if(PDC.Has(item1, "locked")) return 1;
-				if(PDC.Has(item2, "locked")) return -1;
+				if(PDC.has(item1, "locked")) return 1;
+				if(PDC.has(item2, "locked")) return -1;
 
 				// Get best available name: DisplayName > Custom ItemName > Material Name
 				String name1 = getBestItemName(item1);

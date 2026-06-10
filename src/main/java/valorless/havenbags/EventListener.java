@@ -24,8 +24,6 @@ import valorless.havenbags.gui.UpgradeGUI;
 import valorless.havenbags.utils.NoteBlockUtils;
 import valorless.valorlessutils.logging.Log;
 
-import java.util.UUID;
-
 public class EventListener implements Listener {
 
 	public static Material upgradeBlock = Material.FLETCHING_TABLE; // The block that opens the upgrade GUI
@@ -35,7 +33,7 @@ public class EventListener implements Listener {
 		Bukkit.getServer().getPluginManager().registerEvents(new EventListener(), Main.plugin);
 
 		try {
-			upgradeBlock = Main.config.GetMaterial("upgrade-gui.block");
+			upgradeBlock = Main.config.getMaterial("upgrade-gui.block");
 		} catch (Exception e) {
 			Log.error(Main.plugin, "[DI-286] Failed to get upgrade block from config, using default: " + upgradeBlock);
 		}
@@ -44,9 +42,9 @@ public class EventListener implements Listener {
 	//@EventHandler Unused, but kept for future reference
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		if(HavenBags.InventoryContainsBag(player)) {
-			for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
-				HavenBags.UpdateBagLore(bag.item, player);
+		if(HavenBags.inventoryContainsBag(player)) {
+			for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
+				HavenBags.updateBagLore(bag.item, player);
 			}
 		}
 
@@ -54,7 +52,7 @@ public class EventListener implements Listener {
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if(!Main.config.GetBool("upgrade-gui.enabled")) return;
+		if(!Main.config.getBool("upgrade-gui.enabled")) return;
 		Player player = event.getPlayer();
 
 		if(event.getHand() != EquipmentSlot.HAND) return;
@@ -98,17 +96,17 @@ public class EventListener implements Listener {
 		if(event.getClick() == reqClick) {
 			Player player = (Player) event.getWhoClicked();
 			ItemStack clickedItem = event.getCurrentItem();
-			if (HavenBags.IsBag(clickedItem) && BagState.getState(clickedItem) == BagState.USED) {
+			if (HavenBags.isBag(clickedItem) && BagState.getState(clickedItem) == BagState.USED) {
 				event.setCancelled(true);
 				if(!player.hasPermission("havenbags.use")) {
-					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-cannot-use"), null));
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("bag-cannot-use"), null));
 					return;
 				}
 
-				Data data = HavenBagsAPI.getBag(HavenBags.GetBagUUID(clickedItem));
+				Data data = HavenBagsAPI.getBag(HavenBags.getBagUUID(clickedItem));
 
-				if(!HavenBags.IsOwner(clickedItem, player) && !data.isPlayerTrusted(player.getName())) {
-					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-cannot-use"), player));
+				if(!HavenBags.isOwner(clickedItem, player) && !data.isPlayerTrusted(player.getName())) {
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("bag-cannot-use"), player));
 					return;
 				}
 

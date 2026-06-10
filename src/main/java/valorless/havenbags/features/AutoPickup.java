@@ -109,14 +109,14 @@ public class AutoPickup implements Listener {
 		                if (dropped.getOwner() != null && dropped.getOwner() != player.getUniqueId()) continue;
 		                if (dropped.getPickupDelay() > 0) continue;
 		                
-		        		if(!HavenBags.InventoryContainsBag(player)) continue;
+		        		if(!HavenBags.inventoryContainsBag(player)) continue;
 		        		ItemStack item = dropped.getItemStack();
 		        		
 		        		Log.debug(Main.plugin, "[DI-153] " + item.getType().toString());
-		        		boolean cancel = PutItemInBag(item, player);
+		        		boolean cancel = putItemInBag(item, player);
 		        		Log.debug(Main.plugin, "[DI-154] " + "Cancelled: " + cancel);
 		        		if(cancel) {
-		        			PickupParticles(player, dropped.getLocation(), item);
+		        			pickupParticles(player, dropped.getLocation(), item);
 		        			dropped.remove();
 		        		}
 		            }	
@@ -125,7 +125,7 @@ public class AutoPickup implements Listener {
 		}.runTaskTimer(Main.plugin, ticks, ticks);
 	}
 	
-	public static void Initiate() {
+	public static void initiate() {
 		if(!Main.config.getBool("auto-pickup.enabled")) return;
 		filters.clear();
 		noGenFilters.clear();
@@ -193,17 +193,17 @@ public class AutoPickup implements Listener {
 		}
 	}
 	
-	public static List<Filter> GetFilters(){
+	public static List<Filter> getFilters(){
 		return filters;
 	}
 
 	/** Returns the filters without generated filters for specific items, used for the GUI,
 	 * to prevent lag when opening and bloating the GUI. */
-	public static List<Filter> GetNoGenFilters(){
+	public static List<Filter> getNoGenFilters(){
 		return noGenFilters;
 	}
 	
-	public static List<String> GetFilterNames(Player player){
+	public static List<String> getFilterNames(Player player){
 		List<String> filternames = new ArrayList<String>();
 		for(Filter filter : filters) {
 			if(AutoPickup.filter.hasKey("filters." + filter.key + ".permission.node") && player != null) {
@@ -228,7 +228,7 @@ public class AutoPickup implements Listener {
 			if(Main.config.getBool("auto-pickup.inventory.events.onBlockBreak")) {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 				    public void run() {
-				    	FromInventory(event.getPlayer());
+				    	fromInventory(event.getPlayer());
 				    }
 				}, 5L);
 			}
@@ -253,10 +253,10 @@ public class AutoPickup implements Listener {
 				}
 			}
 		}
-		if(!HavenBags.InventoryContainsBag(player)) return;
-		if(HavenBags.IsBag(item)) return;
+		if(!HavenBags.inventoryContainsBag(player)) return;
+		if(HavenBags.isBag(item)) return;
 		Log.debug(Main.plugin, "[DI-153] " + item.getType().toString());
-		boolean cancel = PutItemInBag(item, player);
+		boolean cancel = putItemInBag(item, player);
 		Log.debug(Main.plugin, "[DI-154] " + "Cancelled: " + cancel);
 		if(cancel) {
 			event.setCancelled(true);
@@ -276,7 +276,7 @@ public class AutoPickup implements Listener {
 			if(Main.config.getBool("auto-pickup.inventory.events.onItemPickup")) {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 				    public void run() {
-				    	FromInventory(player);
+				    	fromInventory(player);
 				    }
 				}, 5L);
 			}
@@ -292,15 +292,15 @@ public class AutoPickup implements Listener {
 			if(event.getItem().getOwner() != player.getUniqueId()) return;
 		}
 		
-		if(!HavenBags.InventoryContainsBag(player)) return;
+		if(!HavenBags.inventoryContainsBag(player)) return;
 		ItemStack item = event.getItem().getItemStack();
 		
 		Log.debug(Main.plugin, "[DI-153] " + item.getType().toString());
-		boolean cancel = PutItemInBag(item, player);
+		boolean cancel = putItemInBag(item, player);
 		Log.debug(Main.plugin, "[DI-154] " + "Cancelled: " + cancel);
 		if(cancel) {
 			event.setCancelled(true);
-			PickupParticles(player, event.getItem().getLocation(), item);
+			pickupParticles(player, event.getItem().getLocation(), item);
 			event.getItem().remove();
 		}
 
@@ -308,7 +308,7 @@ public class AutoPickup implements Listener {
 			if(Main.config.getBool("auto-pickup.inventory.events.onItemPickup")) {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 				    public void run() {
-				    	FromInventory(player);
+				    	fromInventory(player);
 				    }
 				}, 5L);
 			}
@@ -481,7 +481,7 @@ public class AutoPickup implements Listener {
 	}
 	*/
 	
-	static boolean PutItemInBag(ItemStack item, Player player){
+	static boolean putItemInBag(ItemStack item, Player player){
 		if(!BagData.isReady()) {
 			return false;
 		}
@@ -506,11 +506,11 @@ public class AutoPickup implements Listener {
 			}
 		}
 		
-		if(HavenBags.IsBag(item)) return false;
+		if(HavenBags.isBag(item)) return false;
 		
 		Log.debug(Main.plugin, "[DI-154] " + "PutItemInBag?");
 		
-		if(ItemFilter(item) == null) {
+		if(itemFilter(item) == null) {
 			Log.debug(Main.plugin, "[DI-155] " + "false");
 			//return false;
 		}
@@ -521,26 +521,26 @@ public class AutoPickup implements Listener {
 		Log.debug(Main.plugin, "[DI-156] " + "Checking for bags.");
 		for(ItemStack i : player.getInventory().getContents()) {
 			//Log.debug(Main.plugin, HavenBags.BagState(i).toString());
-			if(HavenBags.IsBag(i) && BagState.getState(i) == BagState.USED) { 
-				if(PDC.Has(i, "filter")) {
-					bags.add(new Bag(i, HavenBags.LoadBagContentFromServer(i)));
+			if(HavenBags.isBag(i) && BagState.getState(i) == BagState.USED) {
+				if(PDC.has(i, "filter")) {
+					bags.add(new Bag(i, HavenBags.loadBagContentFromServer(i)));
 				}
 			}
 		}
 		Log.debug(Main.plugin, "[DI-157] " + "bags:" + bags.size());
 		Log.debug(Main.plugin, "[DI-158] " + "Checking bag filters.");
 		//if(HavenBags.IsItemBlacklisted(item)) return false;
-		for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
-			Data data = BagData.GetBag(HavenBags.GetBagUUID(bag.item), null);
-			if(HavenBags.IsItemBlacklisted(item, data)) continue;
-			Log.debug(Main.plugin, "[DI-159] " + "bag: " + PDC.GetString(bag.item, "uuid"));
-			if(BagData.IsBagOpen(PDC.GetString(bag.item, "uuid"), bag.item)) continue;
-			if(HavenBags.IsBagFull(bag.item)) continue;
+		for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
+			Data data = BagData.getBag(HavenBags.getBagUUID(bag.item), null);
+			if(HavenBags.isItemBlacklisted(item, data)) continue;
+			Log.debug(Main.plugin, "[DI-159] " + "bag: " + PDC.getString(bag.item, "uuid"));
+			if(BagData.isBagOpen(PDC.getString(bag.item, "uuid"), bag.item)) continue;
+			if(HavenBags.isBagFull(bag.item)) continue;
 			boolean c = false;
 			for(Filter f : filters) {
 				//Log.debug(Main.plugin, "Filter: " + f.name);
 				//Log.debug(Main.plugin, "Bag Filter: " + PDC.GetString(bag.item, "bag-filter"));
-				if(f.key.equalsIgnoreCase(PDC.GetString(bag.item, "filter"))) {
+				if(f.key.equalsIgnoreCase(PDC.getString(bag.item, "filter"))) {
 					if(AutoPickup.filter.hasKey("filters." + f.key + ".permission.node")) {
 						Log.debug(Main.plugin, "[DI-160] " + "[AutoPickup] Permission");
 						if(!AutoPickup.filter.getString("filters." + f.key + ".permission.node").equalsIgnoreCase("none")) {
@@ -569,23 +569,23 @@ public class AutoPickup implements Listener {
 				continue;
 			}
 			
-			if(!IsItemInFilter(PDC.GetString(bag.item, "filter"), item)) {
+			if(!isItemInFilter(PDC.getString(bag.item, "filter"), item)) {
 				Log.debug(Main.plugin, "[DI-167] " + "Item " + item.getType().toString() + " is not in the filter. Skipping.");
 				continue;
 			}
 			
 
 	    	List<Placeholder> placeholders = new ArrayList<Placeholder>();
-	        if(PDC.Has(bag.item, "weight") && PDC.Has(bag.item, "weight-limit") && Main.weight.getBool("enabled")) {
-	        	placeholders.add(new Placeholder("%bar%", TextFeatures.CreateBarWeight(HavenBags.GetWeight(bag.item), PDC.GetDouble(bag.item, "weight-limit"), Main.weight.getInt("bar-length"))));
-	        	placeholders.add(new Placeholder("%weight%", TextFeatures.LimitDecimal(String.valueOf(HavenBags.GetWeight(bag.item)),2)));
-	        	placeholders.add(new Placeholder("%limit%", String.valueOf(PDC.GetDouble(bag.item, "weight-limit").intValue())));
-	        	placeholders.add(new Placeholder("%percent%", TextFeatures.LimitDecimal(String.valueOf(Utils.Percent(HavenBags.GetWeight(bag.item), PDC.GetDouble(bag.item, "weight-limit"))), 2) + "%"));
-	        	placeholders.add(new Placeholder("%bag-weight%", Lang.Parse(Main.weight.getString("weight-lore"), placeholders, player)));
+	        if(PDC.has(bag.item, "weight") && PDC.has(bag.item, "weight-limit") && Main.weight.getBool("enabled")) {
+	        	placeholders.add(new Placeholder("%bar%", TextFeatures.createBarWeight(HavenBags.getWeight(bag.item), PDC.getDouble(bag.item, "weight-limit"), Main.weight.getInt("bar-length"))));
+	        	placeholders.add(new Placeholder("%weight%", TextFeatures.limitDecimal(String.valueOf(HavenBags.getWeight(bag.item)),2)));
+	        	placeholders.add(new Placeholder("%limit%", String.valueOf(PDC.getDouble(bag.item, "weight-limit").intValue())));
+	        	placeholders.add(new Placeholder("%percent%", TextFeatures.limitDecimal(String.valueOf(Utils.Percent(HavenBags.getWeight(bag.item), PDC.getDouble(bag.item, "weight-limit"))), 2) + "%"));
+	        	placeholders.add(new Placeholder("%bag-weight%", Lang.parse(Main.weight.getString("weight-lore"), placeholders, player)));
 	        }
 			
 			
-			int maxContent = PDC.GetInteger(bag.item, "size");
+			int maxContent = PDC.getInteger(bag.item, "size");
 			Log.debug(Main.plugin, "[DI-168] " + "cont:" + bag.content.size());
 			int contSize = 0;
 //			for(int i = 0; i < bag.content.size(); i++) {
@@ -608,7 +608,7 @@ public class AutoPickup implements Listener {
 				}
 			}
 			
-			if(!HavenBags.CanCarry(item, bag.item)) return false;
+			if(!HavenBags.canCarry(item, bag.item)) return false;
 			
 			Log.debug(Main.plugin, "[DI-170] " + "maxContent:" + maxContent);
 			//if(contSize >= maxContent) return false;
@@ -618,36 +618,36 @@ public class AutoPickup implements Listener {
 					bag.content.set(0, item);
 				}else bag.content.add(item);
 				if(Main.weight.getBool("enabled")) {
-		        	PDC.SetDouble(bag.item, "weight", HavenBags.GetWeight(bag.content));
+		        	PDC.setDouble(bag.item, "weight", HavenBags.getWeight(bag.content));
 					if(Main.weight.getBool("weight-text-pickup")) {
 						Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
-								Lang.Parse(Main.weight.getString("weight-lore"), placeholders, player)
+								Lang.parse(Main.weight.getString("weight-lore"), placeholders, player)
 							);
-						weightMessage.Send(player);
+						weightMessage.send(player);
 					}
 		        }
-				HavenBags.UpdateBagItem(bag.item, player);
+				HavenBags.updateBagItem(bag.item, player);
 				//HavenBags.WriteBagToServer(bag.item, bag.content, player);
-				BagData.UpdateBag(bag.item, bag.content);
-				PickupSound(player);
+				BagData.updateBag(bag.item, bag.content);
+				pickupSound(player);
 				return true;
 			}
 			
 			// Can't deal with empty bags.
-			if(HavenBags.AddItemToInventory(bag.content, PDC.GetInteger(bag.item, "size"), item, player)) {
+			if(HavenBags.addItemToInventory(bag.content, PDC.getInteger(bag.item, "size"), item, player)) {
 				if(Main.weight.getBool("enabled")) {
-		        	PDC.SetDouble(bag.item, "weight", HavenBags.GetWeight(bag.content));
+		        	PDC.setDouble(bag.item, "weight", HavenBags.getWeight(bag.content));
 					if(Main.weight.getBool("weight-text-pickup")) {
 						Message weightMessage = new Message(ChatMessageType.ACTION_BAR, 
-								Lang.Parse(Main.weight.getString("weight-lore"), placeholders, player)
+								Lang.parse(Main.weight.getString("weight-lore"), placeholders, player)
 							);
-						weightMessage.Send(player);
+						weightMessage.send(player);
 					}
 		        }
-				HavenBags.UpdateBagItem(bag.item, player);
+				HavenBags.updateBagItem(bag.item, player);
 				//HavenBags.WriteBagToServer(bag.item, bag.content, player);
-				BagData.UpdateBag(bag.item, bag.content);
-				PickupSound(player);
+				BagData.updateBag(bag.item, bag.content);
+				pickupSound(player);
 				Log.debug(Main.plugin, "[DI-172] " + "Item put in bag.");
 				return true;
 			}else {
@@ -658,7 +658,7 @@ public class AutoPickup implements Listener {
 		
 		for(String ebag : EtherealBags.getPlayerBags(player.getUniqueId())) {
 			String key = EtherealBags.formatBagId(player.getUniqueId(), ebag);
-			if(HavenBags.IsItemBlacklisted(item)) continue;
+			if(HavenBags.isItemBlacklisted(item)) continue;
 			Log.debug(Main.plugin, "[DI-159] " + "ethereal bag: " + key);
 			if(EtherealBags.isOpen(key)) continue;
 			if(EtherealBags.isBagFull(player.getUniqueId(), ebag)) continue;
@@ -696,7 +696,7 @@ public class AutoPickup implements Listener {
 				continue;
 			}
 			
-			if(!IsItemInFilter(filter, item)) {
+			if(!isItemInFilter(filter, item)) {
 				Log.debug(Main.plugin, "[DI-167] " + "Item " + item.getType().toString() + " is not in the filter. Skipping.");
 				continue;
 			}
@@ -723,14 +723,14 @@ public class AutoPickup implements Listener {
 					content.set(0, item);
 				}else content.add(item);
 				EtherealBags.updateBagContents(player.getUniqueId(), ebag, content);
-				PickupSound(player);
+				pickupSound(player);
 				return true;
 			}
 			
 			// Can't deal with empty bags.
-			HashMap<Boolean, List<ItemStack>> modified = HavenBags.AddItemToEtherealInventory(player, ebag, item);
+			HashMap<Boolean, List<ItemStack>> modified = HavenBags.addItemToEtherealInventory(player, ebag, item);
 			if(modified.containsKey(true)) {
-				PickupSound(player);
+				pickupSound(player);
 				Log.debug(Main.plugin, "[DI-172] " + "Item put in bag.");
 				EtherealBags.updateBagContents(player.getUniqueId(), ebag, modified.get(true));
 				return true;
@@ -744,7 +744,7 @@ public class AutoPickup implements Listener {
 		return false;
 	}
 	
-	static String ItemFilter(ItemStack item) {
+	static String itemFilter(ItemStack item) {
 		for(Filter f : filters) {
 			if(f.entries.contains(item.getType().toString())){
 				return f.key;
@@ -754,7 +754,7 @@ public class AutoPickup implements Listener {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static boolean IsItemInFilter(String filter, ItemStack item) {
+	public static boolean isItemInFilter(String filter, ItemStack item) {
 		//Log.debug(Main.plugin, "[DI-175] " + "IsItemInFilter?");
 		int cmd = 0;
 		if(item.hasItemMeta() && item.getItemMeta().hasCustomModelData()) {
@@ -844,7 +844,7 @@ public class AutoPickup implements Listener {
 		return false;
 	}
 	
-	boolean StackHasSpace(ItemStack stack, ItemStack pickup) {
+	boolean stackHasSpace(ItemStack stack, ItemStack pickup) {
 		Log.debug(Main.plugin, "[DI-178] " + "StackHasSpace?");
 		int comb = stack.getAmount() + pickup.getAmount();
 		Log.debug(Main.plugin, "[DI-179] " + "comb: " + comb);
@@ -857,7 +857,7 @@ public class AutoPickup implements Listener {
 		}
 	}
 	
-	boolean Contains(List<ItemStack> content, ItemStack item) {
+	boolean contains(List<ItemStack> content, ItemStack item) {
 		for(ItemStack i : content) {
 			if (i == null) continue;
 			if (i.getType() == item.getType()) return true;
@@ -865,7 +865,7 @@ public class AutoPickup implements Listener {
 		return false;
 	}
 	
-	static void PickupSound(Player player) {
+	static void pickupSound(Player player) {
 		double pitch = 1.0;
 		if(!Server.VersionEqualTo(Version.v1_17) && !Server.VersionEqualTo(Version.v1_17_1)) {
 			pitch = Utils.RandomRange(Main.config.getDouble("auto-pickup.sound.pitch.min"), Main.config.getDouble("auto-pickup.sound.pitch.max"));
@@ -879,7 +879,7 @@ public class AutoPickup implements Listener {
 		
 	}
 	
-	public static String GetFilterDisplayname(String filter) {
+	public static String getFilterDisplayname(String filter) {
 		for(Filter f : filters) {
 			if(f.key.equalsIgnoreCase(filter)) {
 				return f.displayname;
@@ -888,7 +888,7 @@ public class AutoPickup implements Listener {
 		return null;
 	}
 	
-	void FromInventory(Player player) {
+	void fromInventory(Player player) {
 		Log.debug(Main.plugin, "[DI-182] " + "Checking for items in inventory, to put into bag.");
 		PlayerInventory inv = player.getInventory();
 		for(int i = 0; i < inv.getContents().length; i++) {
@@ -927,13 +927,13 @@ public class AutoPickup implements Listener {
 				continue;
 			}
 			
-			if(PutItemInBag(item, player)) {
+			if(putItemInBag(item, player)) {
 				inv.setItem(i, new ItemStack(Material.AIR));
 			}
 		}
 	}
 	
-	public static void PickupParticles(Player player, Location loc, ItemStack item) {
+	public static void pickupParticles(Player player, Location loc, ItemStack item) {
 		int count = 10;
 		double force = 0.1;
 		try {

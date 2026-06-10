@@ -3,7 +3,7 @@ package valorless.havenbags.configconversion;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.DoNotCall;
 import valorless.havenbags.annotations.NotNull;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
 
 import java.io.File;
@@ -46,8 +46,8 @@ public class CV6_ConfigRestructure {
 	 */
 	@DoNotCall("Internal Use Only")
 	public static void check(@NotNull Config config) {
-		if(config.GetInt("config-version") < 6) {
-    		Log.Warning(Main.plugin, "Old configuration found, updating configs!");
+		if(config.getInt("config-version") < 6) {
+    		Log.warning(Main.plugin, "Old configuration found, updating configs!");
     		
     		String ver = Main.plugin.getDescription().getVersion();
     		//Log.Debug(plugin, ver);
@@ -55,11 +55,11 @@ public class CV6_ConfigRestructure {
     		//int major = Integer.valueOf(split[0]);
     		//int minor = Integer.valueOf(split[1]);
     		//int hotfix = Integer.valueOf(split[2]);
-    		int build = Integer.valueOf(split[3]);
+    		int build = Integer.parseInt(split[3]);
     		
     		// Create a backup of the current config before making changes
             try {
-                File original = config.GetFile().getFile();
+                File original = config.getFile().getFile();
                 File parent = original.getParentFile();
                 String name = original.getName();
                 String base = name;
@@ -72,111 +72,111 @@ public class CV6_ConfigRestructure {
                 String backupName = base + ".backup-" + build + ext;
                 File backup = new File(parent, backupName);
                 Files.copy(original.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                Log.Info(Main.plugin, "Backed up config to: " + backup.getName());
+                Log.info(Main.plugin, "Backed up config to: " + backup.getName());
             } catch (IOException ex) {
-                Log.Error(Main.plugin, "Failed to backup config before restructure: " + ex.getMessage());
+                Log.error(Main.plugin, "Failed to backup config before restructure: " + ex.getMessage());
                 return; // Abort restructure if backup fails
             }
     		
             // Start restructuring
-    		config.Set("config-version", 6);
-    		config.SaveConfig();
+    		config.set("config-version", 6);
+    		config.saveConfig();
     		
-    		if(config.HasKey("auto-save-interval")) {
-				config.Set("auto-save.interval", config.Get("auto-save-interval"));
-				config.Set("auto-save-interval", null);
+    		if(config.hasKey("auto-save-interval")) {
+				config.set("auto-save.interval", config.get("auto-save-interval"));
+				config.set("auto-save-interval", null);
 			}
     		
-    		if(config.HasKey("auto-save-message")) {
-				config.Set("auto-save.message", config.Get("auto-save-message"));
-				config.Set("auto-save-message", null);
+    		if(config.hasKey("auto-save-message")) {
+				config.set("auto-save.message", config.get("auto-save-message"));
+				config.set("auto-save-message", null);
 			}
     		
-    		if(config.HasKey("bag-type")) {
-				config.Set("bag.type", config.Get("bag-type"));
-				config.Set("bag.texture", config.Get("bag-texture"));
-				config.Set("bag.material", config.Get("bag-material"));
-				config.Set("bag.modeldata", config.Get("bag-custom-model-data"));
-				config.Set("bag.itemmodel", config.Get("bag-item-model"));
-				config.Set("bag-type", null);
-				config.Set("bag-texture", null);
-				config.Set("bag-material", null);
-				config.Set("bag-custom-model-data", null);
-				config.Set("bag-item-model", null);
+    		if(config.hasKey("bag-type")) {
+				config.set("bag.type", config.get("bag-type"));
+				config.set("bag.texture", config.get("bag-texture"));
+				config.set("bag.material", config.get("bag-material"));
+				config.set("bag.modeldata", config.get("bag-custom-model-data"));
+				config.set("bag.itemmodel", config.get("bag-item-model"));
+				config.set("bag-type", null);
+				config.set("bag-texture", null);
+				config.set("bag-material", null);
+				config.set("bag-custom-model-data", null);
+				config.set("bag-item-model", null);
 			}
     		
-    		if(config.HasKey("open-sound")) {
-				config.Set("sound.open.key", config.Get("open-sound"));
-				config.Set("sound.open.volume", config.Get("open-volume"));
-				config.Set("sound.open.pitch", config.Get("open-pitch"));
-				config.Set("open-sound", null);
-				config.Set("open-volume", null);
-				config.Set("open-pitch", null);
+    		if(config.hasKey("open-sound")) {
+				config.set("sound.open.key", config.get("open-sound"));
+				config.set("sound.open.volume", config.get("open-volume"));
+				config.set("sound.open.pitch", config.get("open-pitch"));
+				config.set("open-sound", null);
+				config.set("open-volume", null);
+				config.set("open-pitch", null);
 			}
     		
-    		if(config.HasKey("close-sound")) {
-				config.Set("sound.close.key", config.Get("close-sound"));
-				config.Set("sound.close.volume", config.Get("close-volume"));
-				config.Set("sound.close.pitch", config.Get("close-pitch"));
-				config.Set("close-sound", null);
-				config.Set("close-volume", null);
-				config.Set("close-pitch", null);
+    		if(config.hasKey("close-sound")) {
+				config.set("sound.close.key", config.get("close-sound"));
+				config.set("sound.close.volume", config.get("close-volume"));
+				config.set("sound.close.pitch", config.get("close-pitch"));
+				config.set("close-sound", null);
+				config.set("close-volume", null);
+				config.set("close-pitch", null);
 			}
     		
-    		if(config.HasKey("inventory-full-sound")) {
-				config.Set("sound.inventory-full.key", config.Get("inventory-full-sound"));
-				config.Set("sound.inventory-full.volume", config.Get("inventory-full-volume"));
-				config.Set("sound.inventory-full.pitch", config.Get("inventory-full-pitch"));
-				config.Set("inventory-full-sound", null);
-				config.Set("inventory-full-volume", null);
-				config.Set("inventory-full-pitch", null);
+    		if(config.hasKey("inventory-full-sound")) {
+				config.set("sound.inventory-full.key", config.get("inventory-full-sound"));
+				config.set("sound.inventory-full.volume", config.get("inventory-full-volume"));
+				config.set("sound.inventory-full.pitch", config.get("inventory-full-pitch"));
+				config.set("inventory-full-sound", null);
+				config.set("inventory-full-volume", null);
+				config.set("inventory-full-pitch", null);
 			}
     		
-    		if(config.HasKey("auto-pickup")) {
-    			boolean autoPickup = config.GetBool("auto-pickup"); //<-- not working, sets false
+    		if(config.hasKey("auto-pickup")) {
+    			boolean autoPickup = config.getBool("auto-pickup"); //<-- not working, sets false
     			new org.bukkit.scheduler.BukkitRunnable() {
     			    @Override
     			    public void run() {
-    					config.Set("auto-pickup", null);
-    					config.Set("auto-pickup.enabled", autoPickup);
-    					config.Set("auto-pickup.sound.key", config.Get("auto-pickup-sound"));
-    					config.Set("auto-pickup.sound.volume", config.Get("auto-pickup-volume"));
-    					config.Set("auto-pickup.sound.pitch.min", config.Get("auto-pickup-pitch-min"));
-    					config.Set("auto-pickup.sound.pitch.max", config.Get("auto-pickup-pitch-max"));
-    					config.Set("auto-pickup.inventory.enabled", config.Get("auto-pickup-inventory.enabled"));
-    					config.Set("auto-pickup.inventory.events.onBlockBreak", config.Get("auto-pickup-inventory.events.onBlockBreak"));
-    					config.Set("auto-pickup.inventory.events.onItemPickup", config.Get("auto-pickup-inventory.events.onItemPickup"));
+    					config.set("auto-pickup", null);
+    					config.set("auto-pickup.enabled", autoPickup);
+    					config.set("auto-pickup.sound.key", config.get("auto-pickup-sound"));
+    					config.set("auto-pickup.sound.volume", config.get("auto-pickup-volume"));
+    					config.set("auto-pickup.sound.pitch.min", config.get("auto-pickup-pitch-min"));
+    					config.set("auto-pickup.sound.pitch.max", config.get("auto-pickup-pitch-max"));
+    					config.set("auto-pickup.inventory.enabled", config.get("auto-pickup-inventory.enabled"));
+    					config.set("auto-pickup.inventory.events.onBlockBreak", config.get("auto-pickup-inventory.events.onBlockBreak"));
+    					config.set("auto-pickup.inventory.events.onItemPickup", config.get("auto-pickup-inventory.events.onItemPickup"));
     					
-    					config.Set("auto-pickup-sound", null);
-    					config.Set("auto-pickup-volume", null);
-    					config.Set("auto-pickup-pitch-min", null);
-    					config.Set("auto-pickup-pitch-max", null);
-    					config.Set("auto-pickup-inventory.enabled", null);
-    					config.Set("auto-pickup-inventory.events.onBlockBreak", null);
-    					config.Set("auto-pickup-inventory.events.onItemPickup", null);
-    					config.Set("auto-pickup-inventory.events", null);
-    					config.Set("auto-pickup-inventory", null);
+    					config.set("auto-pickup-sound", null);
+    					config.set("auto-pickup-volume", null);
+    					config.set("auto-pickup-pitch-min", null);
+    					config.set("auto-pickup-pitch-max", null);
+    					config.set("auto-pickup-inventory.enabled", null);
+    					config.set("auto-pickup-inventory.events.onBlockBreak", null);
+    					config.set("auto-pickup-inventory.events.onItemPickup", null);
+    					config.set("auto-pickup-inventory.events", null);
+    					config.set("auto-pickup-inventory", null);
     			    }
     			}.runTaskLater(Main.plugin, 1L);
 			}
     		
-    		if(config.HasKey("inventory-lock")) {
-    			boolean locked = config.GetBool("inventory-lock"); //<-- not working, sets false
+    		if(config.hasKey("inventory-lock")) {
+    			boolean locked = config.getBool("inventory-lock"); //<-- not working, sets false
     			new org.bukkit.scheduler.BukkitRunnable() {
     			    @Override
     			    public void run() {
-    					config.Set("inventory-lock", null);
-    					config.Set("inventory-lock.enabled", locked);
-    					config.Set("inventory-lock.unbound", false);
-    					config.Set("inventory-lock.bound", true);
-    					config.Set("inventory-lock.unused", false);
-    					config.Set("inventory-lock.used", true);
+    					config.set("inventory-lock", null);
+    					config.set("inventory-lock.enabled", locked);
+    					config.set("inventory-lock.unbound", false);
+    					config.set("inventory-lock.bound", true);
+    					config.set("inventory-lock.unused", false);
+    					config.set("inventory-lock.used", true);
     			    }
     			}.runTaskLater(Main.plugin, 1L);
 			}
     		
-			config.SaveConfig();
-			Log.Info(Main.plugin, "Configuration update complete!");
+			config.saveConfig();
+			Log.info(Main.plugin, "Configuration update complete!");
     	}
 	}
 }

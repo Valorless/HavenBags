@@ -10,10 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import valorless.havenbags.BagData;
-import valorless.havenbags.Main;
 import valorless.havenbags.annotations.DoNotCall;
 import valorless.havenbags.gui.BagGUI;
-import valorless.valorlessutils.ValorlessUtils;
 
 /**
  * Data model representing a HavenBag's persistent and runtime state.
@@ -227,11 +225,11 @@ public class Data {
 	 */
 	public boolean isPlayerTrusted(String name) {
 		if(trusted.isEmpty()) return false;
-		for(int i = 0; i < trusted.size(); i++) {
-			if(trusted.get(i).equalsIgnoreCase(name)) {
-				return true;
-			}
-		}
+        for (String s : trusted) {
+            if (s.equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
 		return false;
 	}
 
@@ -261,7 +259,7 @@ public class Data {
 	 * @param player player UUID
 	 */
 	public void removeTrusted(String player) {
-		if(trusted.size() == 0) return;
+		if(trusted.isEmpty()) return;
 		for(int i = 0; i < trusted.size(); i++) {
 			if(trusted.get(i).equalsIgnoreCase(player)) {
 				trusted.remove(i);

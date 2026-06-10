@@ -15,12 +15,13 @@ import valorless.havenbags.gui.EtherealGUI;
 
 public class CommandOpen {
 	
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 
 		if(command.sender instanceof Player player) {
 			
-			for(Data dat : BagData.GetOpenBags()) {
-				if(dat.getViewer().getUniqueId().equals(((Player)command.sender).getUniqueId())) {
+			for(Data dat : BagData.getOpenBags()) {
+				if(dat.getViewer().getUniqueId().equals(player.getUniqueId())) {
 					return true;
 				}
 			}
@@ -28,15 +29,15 @@ public class CommandOpen {
 			if (command.args.length == 2){
 				String id = command.args[1];
 				if(EtherealBags.isOpen(EtherealBags.formatBagId(player.getUniqueId(), id))) {
-					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("ethereal-open-admin"), player));
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("ethereal-open-admin"), player));
 					return true;
 				}
 				if(!EtherealBags.hasBag(player.getUniqueId(), id)) {
-					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-does-not-exist"), player));
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("bag-does-not-exist"), player));
 					return true;
 				}
 				EtherealGUI gui = new EtherealGUI(player, id, player);
-				gui.OpenInventory(player);
+				gui.openInventory(player);
 				return true;
 			}
 			else if (command.args.length >= 3) {
@@ -49,12 +50,12 @@ public class CommandOpen {
 						.orElse(null);
 				String id = command.args[2];
 				if(EtherealBags.isOpen(EtherealBags.formatBagId(target.getUniqueId(), id))) {
-					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("ethereal-open-admin"), player));
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("ethereal-open-admin"), player));
 					return true;
 				}
 
 				EtherealGUI gui = new EtherealGUI(target.getPlayer(), id, player);
-				gui.OpenInventory(player);
+				gui.openInventory(player);
 				return true;
 			}
 		}

@@ -31,7 +31,7 @@ public class CustomBags {
 	public static Config file;
 	public static HashMap<String, ItemStack> bags = new HashMap<String, ItemStack>();
 	
-	public static void initiate() {
+	public static void init() {
 		file = new Config(Main.plugin, "custom-bags.yml");
 		bags.clear();
 
@@ -65,7 +65,7 @@ public class CustomBags {
 			}
 			ItemMeta meta = item.getItemMeta();
 			if(file.hasKey(String.format("bags.%s.displayname", key)))
-				meta.setDisplayName(Lang.Parse(file.getString(String.format("bags.%s.displayname", key)), null));
+				meta.setDisplayName(Lang.parse(file.getString(String.format("bags.%s.displayname", key)), null));
 			if(file.hasKey(String.format("bags.%s.modeldata", key)))
 				meta.setCustomModelData(file.getInt(String.format("bags.%s.modeldata", key)));
 			if(file.hasKey(String.format("bags.%s.tooltip", key))) {
@@ -78,23 +78,23 @@ public class CustomBags {
 			if(file.hasKey(String.format("bags.%s.itemmodel", key)))
 				ItemUtils.SetItemModel(item, file.getString(String.format("bags.%s.itemmodel", key)));
 			
-			PDC.SetString(item, "uuid", "null");
-			PDC.SetString(item, "owner", "null");
-			PDC.SetStringList(item, "lore", file.getStringList(String.format("bags.%s.lore", key)));
-			PDC.SetString(item, "name", file.getString(String.format("bags.%s.displayname", key)));
-			PDC.SetInteger(item, "size", file.getInt(String.format("bags.%s.properties.size", key)));
-			PDC.SetBoolean(item, "binding", !file.getBool(String.format("bags.%s.properties.ownerless", key)));
-			PDC.SetBoolean(item, "upgrade", file.getBool(String.format("bags.%s.properties.upgradeable", key)));
-			PDC.SetBoolean(item, "skin", file.getBool(String.format("bags.%s.properties.allow-skin-token", key)));
+			PDC.setString(item, "uuid", "null");
+			PDC.setString(item, "owner", "null");
+			PDC.setStringList(item, "lore", file.getStringList(String.format("bags.%s.lore", key)));
+			PDC.setString(item, "name", file.getString(String.format("bags.%s.displayname", key)));
+			PDC.setinteger(item, "size", file.getInt(String.format("bags.%s.properties.size", key)));
+			PDC.setBoolean(item, "binding", !file.getBool(String.format("bags.%s.properties.ownerless", key)));
+			PDC.setBoolean(item, "upgrade", file.getBool(String.format("bags.%s.properties.upgradeable", key)));
+			PDC.setBoolean(item, "skin", file.getBool(String.format("bags.%s.properties.allow-skin-token", key)));
 			if(file.hasKey(String.format("bags.%s.custom-content", key))) {
-				PDC.SetString(item, "predefined", file.getString(String.format("bags.%s.custom-content", key)));
+				PDC.setString(item, "predefined", file.getString(String.format("bags.%s.custom-content", key)));
 			}
-			PDC.SetStringList(item, "blacklist", file.getStringList(String.format("bags.%s.properties.blacklist", key)));
-			PDC.SetBoolean(item, "whitelist", file.getBool(String.format("bags.%s.properties.whitelist", key)));
-			PDC.SetBoolean(item, "igb", file.getBool(String.format("bags.%s.properties.ignoreglobalblacklist", key)));
-			PDC.SetString(item, "filter", file.getString(String.format("bags.%s.properties.autopickup", key)));
-			PDC.SetBoolean(item, "climit", file.getBool(String.format("bags.%s.properties.carry-limit", key)));
-			PDC.SetString(item, "tooltip", file.getString(String.format("bags.%s.tooltip", key)));
+			PDC.setStringList(item, "blacklist", file.getStringList(String.format("bags.%s.properties.blacklist", key)));
+			PDC.setBoolean(item, "whitelist", file.getBool(String.format("bags.%s.properties.whitelist", key)));
+			PDC.setBoolean(item, "igb", file.getBool(String.format("bags.%s.properties.ignoreglobalblacklist", key)));
+			PDC.setString(item, "filter", file.getString(String.format("bags.%s.properties.autopickup", key)));
+			PDC.setBoolean(item, "climit", file.getBool(String.format("bags.%s.properties.carry-limit", key)));
+			PDC.setString(item, "tooltip", file.getString(String.format("bags.%s.tooltip", key)));
 			
 			bags.put(key, item);
 		}
@@ -102,25 +102,25 @@ public class CustomBags {
 	}
 	
 	public static List<String> list(){
-		return new ArrayList<String>(file.getConfigurationSection("bags").getKeys(false));
+		return new ArrayList<>(file.getConfigurationSection("bags").getKeys(false));
 	}
 
 	public static void give(Player player, String value) {
 		ItemStack bagItem = CustomBags.bags.get(value);
-		String owner = PDC.GetBoolean(bagItem, "binding") ? player.getUniqueId().toString() : "ownerless";
+		String owner = PDC.getBoolean(bagItem, "binding") ? player.getUniqueId().toString() : "ownerless";
 		List<ItemStack> content = new ArrayList<>();
 		
-		if(PDC.Has(bagItem, "predefined")) {
+		if(PDC.has(bagItem, "predefined")) {
 			String uuid = UUID.randomUUID().toString();
-			PDC.SetString(bagItem, "uuid", uuid);
-			for(int i = 0; i < PDC.GetInteger(bagItem, "size"); i++) {
-				content.add(CustomContent.load(PDC.GetString(bagItem, "predefined")).get(i));
+			PDC.setString(bagItem, "uuid", uuid);
+			for(int i = 0; i < PDC.getInteger(bagItem, "size"); i++) {
+				content.add(CustomContent.load(PDC.getString(bagItem, "predefined")).get(i));
 			}
-			Data data = BagData.CreateBag(uuid, owner, content, player, bagItem);
-			data.setName(PDC.GetString(bagItem, "name"));
+			Data data = BagData.createBag(uuid, owner, content, player, bagItem);
+			data.setName(PDC.getString(bagItem, "name"));
 		}
 		
-		HavenBags.UpdateBagLore(bagItem, player);
+		HavenBags.updateBagLore(bagItem, player);
 		
 		player.getInventory().addItem(bagItem);
 		
@@ -138,7 +138,7 @@ public class CustomBags {
 	 */
 	public static boolean requiresPlayer(String key){
 		ItemStack bagItem = CustomBags.bags.get(key);
-		return PDC.Has(bagItem, "predefined");
+		return PDC.has(bagItem, "predefined");
 	}
 
 	/**
@@ -160,21 +160,21 @@ public class CustomBags {
 			throw new IllegalArgumentException("No custom bag found for key: " + key);
 		}
 		ItemStack bagItem = CustomBags.bags.get(key);
-		String owner = PDC.GetBoolean(bagItem, "binding") ? player.getUniqueId().toString() : "ownerless";
+		String owner = PDC.getBoolean(bagItem, "binding") ? player.getUniqueId().toString() : "ownerless";
 		List<ItemStack> content = new ArrayList<>();
 
-		if(PDC.Has(bagItem, "predefined")) {
+		if(PDC.has(bagItem, "predefined")) {
 			if(player == null) throw new NullPointerException("player cannot be null");
 			String uuid = UUID.randomUUID().toString();
-			PDC.SetString(bagItem, "uuid", uuid);
-			for(int i = 0; i < PDC.GetInteger(bagItem, "size"); i++) {
-				content.add(CustomContent.load(PDC.GetString(bagItem, "predefined")).get(i));
+			PDC.setString(bagItem, "uuid", uuid);
+			for(int i = 0; i < PDC.getInteger(bagItem, "size"); i++) {
+				content.add(CustomContent.load(PDC.getString(bagItem, "predefined")).get(i));
 			}
-			Data data = BagData.CreateBag(uuid, owner, content, player, bagItem);
-			data.setName(PDC.GetString(bagItem, "name"));
+			Data data = BagData.createBag(uuid, owner, content, player, bagItem);
+			data.setName(PDC.getString(bagItem, "name"));
 		}
 
-		HavenBags.UpdateBagLore(bagItem, player);
+		HavenBags.updateBagLore(bagItem, player);
 
 		return bagItem;
 	}

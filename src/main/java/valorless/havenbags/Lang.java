@@ -11,7 +11,7 @@ import org.bukkit.OfflinePlayer;
 import me.clip.placeholderapi.PlaceholderAPI;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.hooks.PlaceholderAPIHook;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.utils.Utils;
 
 public class Lang {
@@ -19,9 +19,9 @@ public class Lang {
 	public static Config lang;
 	//public static String plugin = "§7[§aHaven§bBags§7]§r";
 	
-	public static String Parse(String text, OfflinePlayer player) {
+	public static String parse(String text, OfflinePlayer player) {
 		if(!Utils.IsStringNullOrEmpty(text)) {
-			text = ParsePlaceholderAPI(text, player);
+			text = parsePlaceholderAPI(text, player);
 			text = hex(text);
 			text = text.replace("&", "§");
 			text = text.replace("\\n", "\n");
@@ -32,15 +32,15 @@ public class Lang {
 		return text;
 	}
 	
-	public static String Parse(String text, List<Placeholder> placeholders, OfflinePlayer... player) {
+	public static String parse(String text, List<Placeholder> placeholders, OfflinePlayer... player) {
 		for(Placeholder ph : placeholders) {
 			text = text.replace(ph.getKey(), ph.getValue());
 		}
 		// Parse once after applying placeholders
 		if(player.length != 0) {
-			text = Parse(text, player[0]);
+			text = parse(text, player[0]);
 		}else {
-			text = Parse(text, null);
+			text = parse(text, null);
 		}
 		return text;
 	}
@@ -60,17 +60,17 @@ public class Lang {
 	}
 	*/
 	
-	public static String Get(String key, OfflinePlayer... player) {
-		if(lang.Get(key) == null) {
-			Log.Error(Main.plugin, String.format("Lang.yml is missing the key '%s'!", key));
+	public static String get(String key, OfflinePlayer... player) {
+		if(lang.get(key) == null) {
+			Log.error(Main.plugin, String.format("Lang.yml is missing the key '%s'!", key));
 			return "§4error";
 		}
 		
 		if(player != null && player.length > 0) {
-			return Parse(lang.GetString(key), player[0]);
+			return parse(lang.getString(key), player[0]);
 		}
 		else {
-			return Parse(lang.GetString(key), null);
+			return parse(lang.getString(key), null);
 		}
 		
 		//return player == null ? Parse(lang.GetString(key), null) : Parse(lang.GetString(key), player[0]);
@@ -135,7 +135,7 @@ public class Lang {
 	 * @param player
 	 * @return
 	 */
-	public static String ParsePlaceholderAPI(String text, OfflinePlayer player) {
+	public static String parsePlaceholderAPI(String text, OfflinePlayer player) {
 		if(PlaceholderAPIHook.isHooked()) {
 			String t = "";
 			text = text.replace("{", "%");
@@ -143,7 +143,7 @@ public class Lang {
 			try {
 				t =  PlaceholderAPI.setPlaceholders(player, text);  
         	}catch (Exception e) {
-        		Log.Error(Main.plugin, "Failed to get PlaceholderAPI. Is it up to date?");
+        		Log.error(Main.plugin, "Failed to get PlaceholderAPI. Is it up to date?");
         		t = text;
         	}
 			return t;
@@ -152,10 +152,10 @@ public class Lang {
 		}
 	}
 	
-	public static String RemoveColorFormatting(String text) {
+	public static String removeColorFormatting(String text) {
 		if(!Utils.IsStringNullOrEmpty(text)) {
 			text = text.replace("§§", "§");
-			text = RemoveHex(text);
+			text = removeHex(text);
 			text = text.replace("§0", "");
 			text = text.replace("§1", "");
 			text = text.replace("§2", "");
@@ -191,15 +191,15 @@ public class Lang {
 		return text;
 	}
 	
-	public static String RemoveHex(String text) {
+	public static String removeHex(String text) {
         // Regex to match the pattern of hex color codes
     	//Log.Info(Main.plugin, text);
         String hexColorRegex = "§x(§[0-9A-Fa-f]){6}";
         return text.replaceAll(hexColorRegex, "");
     }
 	
-	public static char ParsePlaceholderChar(String text) {
-		String parsed = ParsePlaceholderAPI(text, null);
+	public static char parsePlaceholderChar(String text) {
+		String parsed = parsePlaceholderAPI(text, null);
 		return parsed.length() == 1 ? parsed.charAt(0) : '?';
 	}
 }

@@ -20,7 +20,7 @@ import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.utils.FoodComponentFixer;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.json.JsonUtils;
 
 public class SQLite {
@@ -37,10 +37,10 @@ public class SQLite {
         database = this;
         try {
             connect();
-			Log.Info(Main.plugin,"Connected to SQLite!");
+			Log.info(Main.plugin,"Connected to SQLite!");
             setupTables();
         } catch (SQLException e) {
-			Log.Error(Main.plugin,"Could not connect to SQLite!");
+			Log.error(Main.plugin,"Could not connect to SQLite!");
             e.printStackTrace();
         }
     }
@@ -62,7 +62,7 @@ public class SQLite {
     public void close() throws SQLException {
         if (connection != null && !connection.isClosed()) {
             connection.close();
-            Log.Info(Main.plugin, "Disconnected from SQLite!");
+            Log.info(Main.plugin, "Disconnected from SQLite!");
         }
     }
 
@@ -170,7 +170,7 @@ public class SQLite {
             stmt.setDouble(10, data.getWeight());
             stmt.setDouble(11, data.getWeightMax());
             stmt.setString(12, JsonUtils.toJson(data.getContent()));
-            stmt.setString(13, DatabaseUtils.Extra(data));
+            stmt.setString(13, DatabaseUtils.extra(data));
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -290,7 +290,7 @@ public class SQLite {
                 data.setWeightMax(rs.getDouble("weight_max"));
                 data.setContent(loadContent(rs.getString("content"), data.getUuid()));
                 
-                DatabaseUtils.ApplyExtra(data, rs.getString("extra"));
+                DatabaseUtils.applyExtra(data, rs.getString("extra"));
                 
                 return data;
             }
@@ -342,9 +342,9 @@ public class SQLite {
 							FoodComponentFixer.fixFoodJson(entry)
 							);
 				}catch(Exception E) {
-					Log.Error(Main.plugin, uuid);
-					Log.Error(Main.plugin, entry);
-					Log.Info(Main.plugin, FoodComponentFixer.fixFoodJson(entry));
+					Log.error(Main.plugin, uuid);
+					Log.error(Main.plugin, entry);
+					Log.info(Main.plugin, FoodComponentFixer.fixFoodJson(entry));
 					E.printStackTrace();
 				}
 			}else {

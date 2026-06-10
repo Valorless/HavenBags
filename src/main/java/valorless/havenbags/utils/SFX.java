@@ -12,7 +12,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 
 import valorless.valorlessutils.ValorlessUtils;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.utils.Utils;
 
 /**
@@ -52,18 +52,18 @@ public class SFX {
 	 * @param player  The player for whom the sound will be played.
 	 */
 	@SuppressWarnings("deprecation")
-	public static void Play(String sound, float volume, float pitch, Player player) {
+	public static void play(String sound, float volume, float pitch, Player player) {
 	    if (!Utils.IsStringNullOrEmpty(sound)) {
 	    	try {
 	    		
 	    		if(sound.contains(".")) {
-	    			PlayNamespace(sound, volume, pitch, player);
+	    			playNamespace(sound, volume, pitch, player);
 	    			return;
 	    		}
 	    		
 	    		player.playSound(player, Sound.valueOf(sound), SoundCategory.MASTER, volume, pitch);
 	    	} catch (Exception e) {
-	    		Log.Error(ValorlessUtils.GetInstance(), e.getMessage());
+	    		Log.error(ValorlessUtils.GetInstance(), e.getMessage());
 	    	}
 	    }
 	}
@@ -81,12 +81,12 @@ public class SFX {
 	 * @param pitch  the pitch (1.0 is normal pitch)
 	 * @param player the player who should hear the sound
 	 */
-	public static void PlayNamespace(String sound, float volume, float pitch, Player player) {
+	public static void playNamespace(String sound, float volume, float pitch, Player player) {
 	    if (!Utils.IsStringNullOrEmpty(sound)) {
 	    	try {
 	    		player.playSound(player, sound, SoundCategory.MASTER, volume, pitch);
 	    	} catch (Exception e) {
-	    		Log.Error(ValorlessUtils.GetInstance(), e.getMessage());
+	    		Log.error(ValorlessUtils.GetInstance(), e.getMessage());
 	    	}
 	    }
 	}
@@ -104,18 +104,18 @@ public class SFX {
 	 * @param pitch    the pitch (1.0 is normal pitch)
 	 * @param location the location where the sound should be played
 	 */
-	public static void Play(String sound, float volume, float pitch, Location location) {
+	public static void play(String sound, float volume, float pitch, Location location) {
 	    if (!Utils.IsStringNullOrEmpty(sound)) {
 	    	try {
 	    		
 	    		if(sound.contains(".")) {
-	    			PlayNamespace(sound, volume, pitch, location);
+	    			playNamespace(sound, volume, pitch, location);
 	    			return;
 	    		}
 	    		
     			valorless.valorlessutils.sound.SFX.Play(sound, volume, pitch, location);
 	    	} catch (Exception e) {
-	    		Log.Error(ValorlessUtils.GetInstance(), e.getMessage());
+	    		Log.error(ValorlessUtils.GetInstance(), e.getMessage());
 	    	}
 	    }
 	}
@@ -133,12 +133,12 @@ public class SFX {
 	 * @param pitch    the pitch (1.0 is normal pitch)
 	 * @param location the location where the sound should be played
 	 */
-	public static void PlayNamespace(String sound, float volume, float pitch, Location location) {
+	public static void playNamespace(String sound, float volume, float pitch, Location location) {
 	    if (!Utils.IsStringNullOrEmpty(sound)) {
 	    	try {
 	    		location.getWorld().playSound(location, sound, SoundCategory.MASTER, volume, pitch);
 	    	} catch (Exception e) {
-	    		Log.Error(ValorlessUtils.GetInstance(), e.getMessage());
+	    		Log.error(ValorlessUtils.GetInstance(), e.getMessage());
 	    	}
 	    }
 	}
@@ -153,7 +153,7 @@ public class SFX {
 	 * @param sound the sound identifier to search for
 	 * @return the matching Sound enum constant, or null if not found
 	 */
-	public static Sound GetSound(String sound) {
+	public static Sound getSound(String sound) {
 		for (Sound key : Registry.SOUNDS) {
 			if(key.toString().equalsIgnoreCase(sound)) return key;
 		}
@@ -170,8 +170,8 @@ public class SFX {
 	 * @param sound  the sound model containing playback parameters
 	 * @param player the player who should hear the sound
 	 */
-	public static void Play(valorless.havenbags.datamodels.Sound sound, Player player) {
-	    Play(sound.key, sound.volume, sound.pitch, player);
+	public static void play(valorless.havenbags.datamodels.Sound sound, Player player) {
+	    play(sound.key, sound.volume, sound.pitch, player);
 	}
 	
 	/**
@@ -184,8 +184,8 @@ public class SFX {
 	 * @param sound    the sound model containing playback parameters
 	 * @param location the location where the sound should be played
 	 */
-	public static void Play(valorless.havenbags.datamodels.Sound sound, Location location) {
-	    Play(sound.key, sound.volume, sound.pitch, location);
+	public static void play(valorless.havenbags.datamodels.Sound sound, Location location) {
+	    play(sound.key, sound.volume, sound.pitch, location);
 	}
 	
 	/** Default sound identifier when block place sound cannot be determined. */

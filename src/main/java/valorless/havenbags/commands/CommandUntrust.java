@@ -13,20 +13,19 @@ import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
 
 public class CommandUntrust {
-	
-	final static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 		
 		Player player = (Player)command.sender;
-		if(!Main.config.GetBool("trusting")) {
-			player.sendMessage(Lang.Get("prefix") + Lang.Get("feature-disabled"));
+		if(!Main.config.getBool("trusting")) {
+			player.sendMessage(Lang.get("prefix") + Lang.get("feature-disabled"));
 			return true;
 		}
 		if(command.args.length >= 2) {
 			ItemStack item = player.getInventory().getItemInMainHand();
-			if(HavenBags.IsBag(item)) {
-				if(HavenBags.IsOwner(item, player)) {
+			if(HavenBags.isBag(item)) {
+				if(HavenBags.isOwner(item, player)) {
 					try {
 						//List<String> list = PDC.GetStringList(item, "bag-trust");
 						//for(int i = 0; i < list.size(); i++) {
@@ -34,19 +33,19 @@ public class CommandUntrust {
 								//list.remove(i);
 							//}
 						//}
-						BagData.RemoveTrusted(HavenBags.GetBagUUID(item), command.args[1]);						
-						HavenBags.UpdateBagItem(item, player);
+						BagData.removeTrusted(HavenBags.getBagUUID(item), command.args[1]);
+						HavenBags.updateBagItem(item, player);
 						
 						List<Placeholder> ph = new ArrayList<Placeholder>();
 						ph.add(new Placeholder("%trusted%", command.args[1]));
-						player.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("player-untrusted"), ph));
+						player.sendMessage(Lang.get("prefix") + Lang.parse(Lang.get("player-untrusted"), ph));
 						return true;
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
 					
 				}else {
-					player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+					player.sendMessage(Lang.get("prefix") + Lang.get("bag-cannot-use"));
 				}
 			}
 			return true;

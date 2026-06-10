@@ -8,7 +8,9 @@ import valorless.havenbags.features.AutoPickup;
 
 public class CommandEthereal {
 	
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
+
 		// -1  0         1    2      3
 		// bag ethereal <id> <what> <value>
 		Player player;
@@ -43,14 +45,14 @@ public class CommandEthereal {
 				return true;
 			}
 			EtherealBags.getBagSettings(player.getUniqueId(), bagId).autoSort = autoSort;
-			player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-sort-command").replace("%value%", value), player));
+			player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-sort-command").replace("%value%", value), player));
 			return true;
 		}
 		else if(type.equalsIgnoreCase("autopickup") && player.hasPermission("havenbags.autopickup")) {
 			if(command.args.length < 4) {
 				//command.sender.sendMessage("§cUsage: /bag ethereal <id> autopickup <filter|none>");
 				EtherealBags.getBagSettings(player.getUniqueId(), bagId).autoPickup = "null";
-				player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
+				player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
 						"None"), player));
 				return true;
 			}
@@ -58,12 +60,12 @@ public class CommandEthereal {
 
 			EtherealBags.getBagSettings(player.getUniqueId(), bagId).autoPickup = filter;
 			if(filter.equals("null")) {
-				player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
+				player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
 						"None"), player));
 				
 			}else {
-				player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("auto-pickup-command").replace("%value%", 
-						AutoPickup.GetFilterDisplayname(filter)), player));
+				player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
+						AutoPickup.getFilterDisplayname(filter)), player));
 			}
 			return true;
 		}
@@ -84,7 +86,7 @@ public class CommandEthereal {
 				return true;
 			}
 			EtherealBags.getBagSettings(player.getUniqueId(), bagId).magnet = magnet;
-			player.sendMessage(Lang.Get("prefix") + Lang.Get("magnet-command").replace("%value%", value));
+			player.sendMessage(Lang.get("prefix") + Lang.get("magnet-command").replace("%value%", value));
 		}
 		else {
 			command.sender.sendMessage("§cUsage: /bag ethereal <id> <autosort|autopickup|magnet> <value>");

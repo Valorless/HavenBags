@@ -5,12 +5,11 @@ import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 
 public class CommandMod {
-	
-	final static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command) {
+		if(!Main.plugins.getBool("mods.HavenBagsPreview.enable-command")) return false;
 		
-		command.sender.sendMessage(Lang.Parse(Main.plugins.GetString("mods.HavenBagsPreview.command-message"), (Player)command.sender));
+		command.sender.sendMessage(Lang.parse(Main.plugins.getString("mods.HavenBagsPreview.command-message"), (Player)command.sender));
 			
 		return true;
 	}

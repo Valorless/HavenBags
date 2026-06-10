@@ -10,7 +10,7 @@ import valorless.valorlessutils.logging.Log;
 public class VaultHook {
 	private static Economy economy;
 	
-	public static void Hook() {
+	public static void hook() {
 		JavaPlugin plugin = Main.plugin;
 		
 		Log.debug(plugin, "Attempting to hook Vault.");

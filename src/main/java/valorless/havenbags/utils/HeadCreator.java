@@ -73,12 +73,10 @@ public class HeadCreator {
         String json = new String(decodedBytes);
         // Parse the JSON string to extract the texture URL
         JSONObject jsonObj = new JSONObject(json);
-        String textureUrl = jsonObj
+        return jsonObj
                 .getJSONObject("textures")
                 .getJSONObject("SKIN")
                 .getString("url");
-
-        return textureUrl;
     }
 
 
@@ -87,7 +85,6 @@ public class HeadCreator {
         String json = "{\"textures\":{\"SKIN\":{\"url\":\"" + textureUrl + "\"}}}";
 
         // Encode the JSON structure to Base64
-        String base64 = Base64.getEncoder().encodeToString(json.getBytes());
-        return base64;
+        return Base64.getEncoder().encodeToString(json.getBytes());
     }
 }

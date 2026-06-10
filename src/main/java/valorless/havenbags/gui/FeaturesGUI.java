@@ -12,7 +12,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -52,31 +51,31 @@ public class FeaturesGUI implements Listener {
 		// Static map of Players -> their open UpgradeGUI
 		private static final HashMap<Player, FeaturesGUI> guis = new HashMap<>();
 
-		public static void Add(Player player, FeaturesGUI gui) {
+		public static void add(Player player, FeaturesGUI gui) {
 			guis.put(player, gui); // replaces existing if already present
 		}
 
-		public static boolean Contains(Player player) {
+		public static boolean contains(Player player) {
 			return guis.containsKey(player);
 		}
 
-		public static boolean Contains(FeaturesGUI gui) {
+		public static boolean contains(FeaturesGUI gui) {
 			return guis.containsValue(gui);
 		}
 
-		public static FeaturesGUI Get(Player player) {
+		public static FeaturesGUI get(Player player) {
 			return guis.get(player); // returns null if not present
 		}
 
-		public static void Remove(Player player) {
+		public static void remove(Player player) {
 			guis.remove(player);
 		}
 
-		public static void Remove(FeaturesGUI gui) {
+		public static void remove(FeaturesGUI gui) {
 			guis.entrySet().removeIf(entry -> entry.getValue().equals(gui));
 		}
 
-		public static void CloseAll() {
+		public static void closeAll() {
 			for (FeaturesGUI gui : guis.values()) {
 				gui.close();
 			}
@@ -146,14 +145,14 @@ public class FeaturesGUI implements Listener {
 //
 		//task.runTaskLater(Main.plugin, 1); // Delay to ensure the inventory is ready before opening
 //
-		OpenGUIs.Add(player, this);
+		OpenGUIs.add(player, this);
 
 		Bukkit.getServer().getPluginManager().registerEvents(this, Main.plugin);
 		Log.debug(Main.plugin, "[FeaturesGUI] Opening FeaturesGUI for " + player.getName());
 	}
 
 	void mainPage(){
-		inv = Bukkit.createInventory(player, invSize, Lang.Parse(Main.config.getString("features-gui.title"), player));
+		inv = Bukkit.createInventory(player, invSize, Lang.parse(Main.config.getString("features-gui.title"), player));
 		ItemStack fillerItem;
 		if(filler.startsWith("nexo:")){
 			fillerItem = NexoItems.itemFromId(filler.replace("nexo:", "")).build();
@@ -213,7 +212,7 @@ public class FeaturesGUI implements Listener {
 		}
 	}
 
-	public Inventory GetInv() {
+	public Inventory getInv() {
 		return inv;
 	}
 
@@ -228,9 +227,9 @@ public class FeaturesGUI implements Listener {
 			mainPage();
 			player.openInventory(inv);
 		} else if (viewing == ViewingType.AUTO_PICKUP_FILTERS) {
-			inv = GUI.CreatePage(
+			inv = GUI.createPage(
 					player,
-					Lang.Parse(Main.config.getString("features-gui.title"),player),
+					Lang.parse(Main.config.getString("features-gui.title"),player),
 					page,
 					autoPickupFilters(),
 					(invSize/9)
@@ -268,21 +267,21 @@ public class FeaturesGUI implements Listener {
 				if (player.hasPermission("havenbags.features.magnet")) {
 					data.setMagnet(!data.hasMagnet());
 				} else {
-					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("no-permission"), player));
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("no-permission"), player));
 					return;
 				}
 			} else if (event.getRawSlot() == autoSortSlot) {
 				if (player.hasPermission("havenbags.features.autosort")) {
 					data.setAutoSort(!data.hasAutoSort());
 				} else {
-					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("no-permission"), player));
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("no-permission"), player));
 					return;
 				}
 			} else if (event.getRawSlot() == refillingSlot) {
 				if (player.hasPermission("havenbags.features.refill")) {
 					data.setRefill(!data.hasRefill());
 				} else {
-					player.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("no-permission"), player));
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("no-permission"), player));
 					return;
 				}
 			}
@@ -291,7 +290,7 @@ public class FeaturesGUI implements Listener {
 			ItemStack item = event.getCurrentItem();
 			GUIAction action = null;
 			try {
-				action = GUIAction.valueOf(PDC.GetString(item, "bag-action"));
+				action = GUIAction.valueOf(PDC.getString(item, "bag-action"));
 			} catch(Exception E) {}
 
 			if(action != null) {
@@ -307,8 +306,8 @@ public class FeaturesGUI implements Listener {
 					page++;
 				}
 			}else{
-				if(PDC.Has(item, "filter")) {
-					String filterKey = PDC.GetString(item, "filter");
+				if(PDC.has(item, "filter")) {
+					String filterKey = PDC.getString(item, "filter");
 					data.setAutopickup(filterKey);
 					viewing = ViewingType.MAIN;
 				}
@@ -317,7 +316,7 @@ public class FeaturesGUI implements Listener {
 		}
 		updateGUI();
 
-		HavenBags.UpdateBagLore(bagItem, player);
+		HavenBags.updateBagLore(bagItem, player);
 	}
 
 	@EventHandler
@@ -329,7 +328,7 @@ public class FeaturesGUI implements Listener {
 	public void close(){
 		Log.debug(Main.plugin, "[FeaturesGUI] Unregistering listener for " + player.getName());
 		HandlerList.unregisterAll(this);
-		OpenGUIs.Remove(this);
+		OpenGUIs.remove(this);
 	}
 
 	public ToggleButton createButton(String key){
@@ -346,10 +345,10 @@ public class FeaturesGUI implements Listener {
 
 		if(!enabled.startsWith("nexo:")){
 			ItemMeta meta = enabledItem.getItemMeta();
-			meta.setDisplayName(Lang.Parse(Main.config.getString(String.format("features-gui.slots.%s.name", key)), player));
+			meta.setDisplayName(Lang.parse(Main.config.getString(String.format("features-gui.slots.%s.name", key)), player));
 			List<String> lore = new ArrayList<>();
 			for(String line : Main.config.getStringList(String.format("features-gui.slots.%s.lore", key))){
-				lore.add(Lang.Parse(line, player));
+				lore.add(Lang.parse(line, player));
 			}
 			meta.setLore(lore);
 			enabledItem.setItemMeta(meta);
@@ -357,10 +356,10 @@ public class FeaturesGUI implements Listener {
 
 		if(!disabled.startsWith("nexo:")){
 			ItemMeta meta = disabledItem.getItemMeta();
-			meta.setDisplayName(Lang.Parse(Main.config.getString(String.format("features-gui.slots.%s.name", key)), player));
+			meta.setDisplayName(Lang.parse(Main.config.getString(String.format("features-gui.slots.%s.name", key)), player));
 			List<String> lore = new ArrayList<>();
 			for(String line : Main.config.getStringList(String.format("features-gui.slots.%s.lore", key))){
-				lore.add(Lang.Parse(line, player));
+				lore.add(Lang.parse(line, player));
 			}
 			meta.setLore(lore);
 			disabledItem.setItemMeta(meta);
@@ -377,30 +376,30 @@ public class FeaturesGUI implements Listener {
 				NexoItems.itemFromId(nullMat.replace("nexo:", "")).build() :
 				new ItemStack(Material.valueOf(nullMat.toUpperCase()));
 		ItemMeta nullMeta = nullEntry.getItemMeta();
-		nullMeta.setDisplayName(Lang.Parse(AutoPickup.filter.getString("gui.reset-filter.displayname"), player));
+		nullMeta.setDisplayName(Lang.parse(AutoPickup.filter.getString("gui.reset-filter.displayname"), player));
 
 		List<String> nlore = new ArrayList<>();
 		for(String line : AutoPickup.filter.getStringList("gui.reset-filter.lore")){
-			nlore.add(Lang.Parse(line, player));
+			nlore.add(Lang.parse(line, player));
 		}
 		nullMeta.setLore(nlore);
 		nullEntry.setItemMeta(nullMeta);
-		PDC.SetString(nullEntry, "filter", "null");
+		PDC.setString(nullEntry, "filter", "null");
 		filters.add(nullEntry);
 
-		for(AutoPickup.Filter filter : AutoPickup.GetNoGenFilters()){
+		for(AutoPickup.Filter filter : AutoPickup.getNoGenFilters()){
 			if(!filter.guiShow) continue;
 			ItemStack guiEntry = filter.guiIcon.startsWith("nexo:") ?
 					NexoItems.itemFromId(filter.guiIcon.replace("nexo:", "")).build() :
 					new ItemStack(Material.valueOf(filter.guiIcon.toUpperCase()));
 			ItemMeta meta = guiEntry.getItemMeta();
-			meta.setDisplayName(Lang.Parse(filter.displayname, player));
+			meta.setDisplayName(Lang.parse(filter.displayname, player));
 
 			String lineFormat = filter.lineFormat;
 
 			List<String> lore = new ArrayList<>();
 			for(String line : filter.guiLore){
-				lore.add(Lang.Parse(line, player));
+				lore.add(Lang.parse(line, player));
 			}
 			int cap = filter.loreLimit; // Cap items to not overflow tooltip ui
 			int i = 0;
@@ -410,19 +409,19 @@ public class FeaturesGUI implements Listener {
                 try {
 					Material mat = Material.valueOf(entry.toUpperCase());
 					lore.add(
-							Lang.Parse(
+							Lang.parse(
 									String.format(lineFormat, Main.translator.Translate(mat.getTranslationKey()))
 									, player)
 					);
 				}catch(Exception e) {
 					Log.error(Main.plugin, String.format("Failed to translate '%s'.", entry));
 					e.printStackTrace();
-					lore.add(Lang.Parse(String.format(lineFormat, entry), player));
+					lore.add(Lang.parse(String.format(lineFormat, entry), player));
 				}
 				i++;
 			}
 			if(filter.entries.size() > cap){
-				lore.add(Lang.Parse(String.format(filter.andMore, filter.entries.size() - cap), player));
+				lore.add(Lang.parse(String.format(filter.andMore, filter.entries.size() - cap), player));
 			}
 			meta.setLore(lore);
 
@@ -430,7 +429,7 @@ public class FeaturesGUI implements Listener {
 
 			guiEntry.setItemMeta(meta);
 
-			PDC.SetString(guiEntry, "filter", filter.key);
+			PDC.setString(guiEntry, "filter", filter.key);
 
 			filters.add(guiEntry);
 		}

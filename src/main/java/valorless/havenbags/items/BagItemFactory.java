@@ -63,9 +63,9 @@ public final class BagItemFactory {
 			displayName = bag.getName();
 		}
         else if(!bag.getUuid().equalsIgnoreCase("null")) {
-        	displayName = bag.getOwner().equalsIgnoreCase("ownerless") ? Lang.Get("bag-ownerless-used") : Lang.Get("bag-bound-name", owner);
+        	displayName = bag.getOwner().equalsIgnoreCase("ownerless") ? Lang.get("bag-ownerless-used") : Lang.get("bag-bound-name", owner);
         }else {
-        	displayName = bag.getOwner().equalsIgnoreCase("ownerless") ? Lang.Get("bag-ownerless-unused") : Lang.Get("bag-unbound-name");
+        	displayName = bag.getOwner().equalsIgnoreCase("ownerless") ? Lang.get("bag-ownerless-unused") : Lang.get("bag-unbound-name");
         }
         meta.setDisplayName(displayName);
 
@@ -73,10 +73,10 @@ public final class BagItemFactory {
         base.setItemMeta(meta);
 
         // Tag with our PDC helper for runtime identification
-        PDC.SetString(base, "uuid", bag.getUuid()); // Only uuid, the rest is automatically resolved.
+        PDC.setString(base, "uuid", bag.getUuid()); // Only uuid, the rest is automatically resolved.
         
-        HavenBags.UpdatePDC(base, bag);
-        HavenBags.UpdateBagItem(base, owner);
+        HavenBags.updatePDC(base, bag);
+        HavenBags.updateBagItem(base, owner);
 
         return base;
     }
@@ -101,6 +101,7 @@ public final class BagItemFactory {
      * @param player Optional player context for placeholder parsing placeholders.
      * @return A new ItemStack representing the bag with the specified properties
      */
+    @SuppressWarnings("deprecation")
     public static ItemStack createBagItem(boolean binding, int size, @Nullable Player player){
         List<Placeholder> placeholders = new ArrayList<Placeholder>(); // Old and stupid
         String bagTexture = Main.config.getString("bag.texture");
@@ -143,13 +144,13 @@ public final class BagItemFactory {
             }
         }
 
-        bagMeta.setDisplayName(binding ? Lang.Get("bag-unbound-name") : Lang.Get("bag-ownerless-unused"));
+        bagMeta.setDisplayName(binding ? Lang.get("bag-unbound-name") : Lang.get("bag-ownerless-unused"));
         List<String> lore = new ArrayList<String>();
         for (String l : Lang.lang.getStringList("bag-lore")) {
-            if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
+            if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.parse(l, player));
         }
         placeholders.add(new Placeholder("%size%", size));
-        lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
+        lore.add(Lang.parse(Lang.get("bag-size"), placeholders, player));
         bagMeta.setLore(lore);
 
         if(Server.VersionHigherOrEqualTo(Server.Version.v1_21_3)) {
@@ -177,13 +178,13 @@ public final class BagItemFactory {
 
         if(!HavenBags.isPowerOfNine(size)) {
             // Cannot upgrade non-9 bags.
-            PDC.SetBoolean(bagItem, "upgrade", false);
+            PDC.setBoolean(bagItem, "upgrade", false);
         }
 
-        PDC.SetString(bagItem, "uuid", "null");
-        PDC.SetString(bagItem, "owner", "null");
-        PDC.SetInteger(bagItem, "size", size);
-        PDC.SetBoolean(bagItem, "binding", binding);
+        PDC.setString(bagItem, "uuid", "null");
+        PDC.setString(bagItem, "owner", "null");
+        PDC.setinteger(bagItem, "size", size);
+        PDC.setBoolean(bagItem, "binding", binding);
         return bagItem;
     }
 }

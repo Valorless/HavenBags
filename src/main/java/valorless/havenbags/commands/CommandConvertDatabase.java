@@ -12,17 +12,18 @@ public class CommandConvertDatabase {
 	
 	static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 		try {
 			DatabaseType type = DatabaseType.get(command.args[1].toUpperCase());
 			if(type == null) {
 				return false;
 			}
 			
-			BagData.ChangeDatabase(type);
+			BagData.changeDatabase(type);
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
         		public void run() {
-        			BagData.SaveData(false, true);
+        			BagData.saveData(false, true);
         		}
     		}, 1);
 			

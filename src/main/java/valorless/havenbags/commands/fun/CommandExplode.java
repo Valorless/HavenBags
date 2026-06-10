@@ -18,22 +18,21 @@ import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class CommandExplode {
-	
-	final static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 		
 		Player player = (Player)command.sender;
 		ItemStack item = player.getInventory().getItemInMainHand();
-		if(HavenBags.IsBag(item)) {
-			if(BagData.IsBagOpen(item)) {
+		if(HavenBags.isBag(item)) {
+			if(BagData.isBagOpen(item)) {
 				Log.Warning(Main.plugin, "Due to a recent bug, this player may be attempting to exploit the empty command while the bag is open: " + player.getName());
 				return true;
 			}
-			if(HavenBags.IsOwner(item, player)) {
+			if(HavenBags.isOwner(item, player)) {
 				Explode(item, player);
 			}else {
-				player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+				player.sendMessage(Lang.get("prefix") + Lang.get("bag-cannot-use"));
 			}
 		}
 		return true;
@@ -41,13 +40,13 @@ public class CommandExplode {
 	
 	public static void Explode(ItemStack bag, Player player) {
 		Random random = new Random();
-		String uuid = PDC.GetString(bag, "uuid");
-		List<ItemStack> content = BagData.GetBag(uuid, bag).getContent();
+		String uuid = PDC.getString(bag, "uuid");
+		List<ItemStack> content = BagData.getBag(uuid, bag).getContent();
 		Sound sound = Sound.parse("ENTITY_GENERIC_EXPLODE:1.0:1.0");
 		sound.play(player);
 		for(int i = 0; i < content.size(); i++) {
 			try {
-				if(PDC.Has(content.get(i), "locked")) continue;
+				if(PDC.has(content.get(i), "locked")) continue;
 				Item dropped = player.getWorld().dropItem(player.getLocation(), content.get(i));
 				dropped.setPickupDelay(100);
 				
@@ -62,7 +61,7 @@ public class CommandExplode {
 				continue;
 			}
 		}
-		BagData.UpdateBag(uuid, content);
-		HavenBags.UpdateBagItem(bag, player);
+		BagData.updateBag(uuid, content);
+		HavenBags.updateBagItem(bag, player);
 	}
 }

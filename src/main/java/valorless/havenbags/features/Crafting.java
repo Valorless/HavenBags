@@ -84,7 +84,7 @@ public class Crafting implements Listener {
 		} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
 			bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
 		} else {
-			Log.Error(Main.plugin, Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
+			Log.Error(Main.plugin, Lang.get("prefix") + "&cbag-type must be either HEAD or ITEM.");
 			return null;
 		}
 		ItemMeta bagMeta = bagItem.getItemMeta();
@@ -92,17 +92,17 @@ public class Crafting implements Listener {
 			bagMeta.setCustomModelData(config.GetInt("recipes." + recipe + ".custom-model-data"));
 		}
 		if(config.GetString("recipes." + recipe + ".type").equalsIgnoreCase("bound")) {
-			bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
+			bagMeta.setDisplayName(Lang.get("bag-unbound-name"));
 		} else if(config.GetString("recipes." + recipe + ".type").equalsIgnoreCase("ownerless")) {
-			bagMeta.setDisplayName(Lang.Get("bag-ownerless-unused"));
+			bagMeta.setDisplayName(Lang.get("bag-ownerless-unused"));
 		}
 		List<String> lore = new ArrayList<String>();
         for (String l : Lang.lang.GetStringList("bag-lore")) {
-        	lore.add(Lang.Parse(l, null));
+        	lore.add(Lang.parse(l, null));
         }
 		//lore.add(Lang.Get("bag-size", size*9));
         placeholders.add(new Placeholder("%size%", size*9));
-        lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders));
+        lore.add(Lang.parse(Lang.get("bag-size"), placeholders));
 		//for (String l : Lang.lang.GetStringList("bag-size")) {
 		//	lore.add(Lang.Parse(String.format(l, size*9)));
 		//}
@@ -110,11 +110,11 @@ public class Crafting implements Listener {
 		bagItem.setItemMeta(bagMeta);
 		//PDC.SetString(bagItem, "bag-uuid", "null");
 		//PDC.SetString(bagItem, "bag-owner", "null");
-		PDC.SetInteger(bagItem, "size", size*9);
+		PDC.setinteger(bagItem, "size", size*9);
 		if(config.GetString("recipes." + recipe + ".type").equalsIgnoreCase("bound")) {
-			PDC.SetBoolean(bagItem, "binding", true);
+			PDC.setBoolean(bagItem, "binding", true);
 		} else if(config.GetString("recipes." + recipe + ".type").equalsIgnoreCase("ownerless")) {
-			PDC.SetBoolean(bagItem, "binding", false);
+			PDC.setBoolean(bagItem, "binding", false);
 		}
 		return bagItem;
 	}
@@ -146,7 +146,7 @@ public class Crafting implements Listener {
 		}
 	}
 	
-	public static void RemoveRecipes() {
+	public static void removeRecipes() {
 		if(Recipes.size() != 0) {
     		for(NamespacedKey recipe : Recipes) {
     			Bukkit.removeRecipe(recipe);
@@ -196,11 +196,11 @@ public class Crafting implements Listener {
 				return;
 			}
 			ItemStack item = event.getInventory().getResult();
-			PDC.SetString(item, "uuid", "null");
-			PDC.SetString(item, "owner", "null");
+			PDC.setString(item, "uuid", "null");
+			PDC.setString(item, "owner", "null");
 			if(item.getItemMeta() != null) {
-				if(PDC.Has(item, "uuid")) {
-					PDC.SetString(event.getInventory().getResult(), "uuid", UUID.randomUUID().toString());
+				if(PDC.has(item, "uuid")) {
+					PDC.setString(event.getInventory().getResult(), "uuid", UUID.randomUUID().toString());
 				}
 			}
 		} catch(Exception e) {}
