@@ -89,7 +89,7 @@ public class EventListener implements Listener {
 	 * @param event The InventoryClickEvent triggered when a player clicks in their inventory
 	 */
 	@EventHandler
-	public void onInventoryClick(InventoryClickEvent event) {
+	public void onFeatureGUI(InventoryClickEvent event) {
 		if(!Main.config.getBool("features-gui.enabled")) return;
 		//if(event.getInventory().getType() != org.bukkit.event.inventory.InventoryType.PLAYER) return; // Only trigger for player inventory
 		ClickType reqClick = ClickType.valueOf(Main.config.getString("features-gui.opens-by").toUpperCase());
@@ -102,6 +102,8 @@ public class EventListener implements Listener {
 					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("bag-cannot-use"), null));
 					return;
 				}
+
+				if(FeaturesGUI.OpenGUIs.get(player) != null) return;
 
 				Data data = HavenBagsAPI.getBag(HavenBags.getBagUUID(clickedItem));
 
