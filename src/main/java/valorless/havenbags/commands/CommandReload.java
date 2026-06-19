@@ -2,7 +2,7 @@ package valorless.havenbags.commands;
 
 import org.bukkit.entity.Player;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.features.AutoPickup;
@@ -27,10 +27,10 @@ public class CommandReload {
 			Lang.lang.Reload();
 			Main.blacklist.Reload();
 			Main.plugins.Reload();
-			BagData.reload();
+			Database.reload();
 			if (command.args.length >= 2){
 				if(command.args[1].equalsIgnoreCase("force")) {
-					BagData.forceReload();
+					Database.forceReload();
 				}
 			}
 			Crafting.config.Reload();

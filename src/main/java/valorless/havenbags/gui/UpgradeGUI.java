@@ -287,7 +287,7 @@ public class UpgradeGUI implements Listener {
 		
 		if(resultType == ResultType.Upgrade) {
 			String owner = PDC.getString(clicked, "owner");
-			BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setSize(PDC.getInteger(clicked, "size"));
+			Database.getBag(HavenBags.getBagUUID(clicked), clicked).setSize(PDC.getInteger(clicked, "size"));
 			Log.debug(Main.plugin, "[DI-83] " + "[BagUpgrade] Size set to " + PDC.getInteger(clicked, "size"));
 			
 			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(itemSlot1), event.getInventory().getItem(itemSlot2)))) {
@@ -297,15 +297,15 @@ public class UpgradeGUI implements Listener {
 			}
 
 			if(Main.weight.getBool("weight-per-size")) {
-				BagData.setWeightMax(HavenBags.getBagUUID(clicked), Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
+				Database.setWeightMax(HavenBags.getBagUUID(clicked), Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
 				Log.debug(Main.plugin, "[DI-84] " + "[BagUpgrade] Weight Limit set to " + Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
 			}
 			if(clicked.getType() == Material.PLAYER_HEAD) {
 				if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
 					if(!owner.equalsIgnoreCase("ownerless")) {
-						BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(Main.config.getString(String.format("bag-textures.size-%s", PDC.getInteger(clicked, "size"))));
+						Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(Main.config.getString(String.format("bag-textures.size-%s", PDC.getInteger(clicked, "size"))));
 					}else {
-						BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(Main.config.getString(String.format("bag-textures.size-ownerless-%s", PDC.getInteger(clicked, "size"))));
+						Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(Main.config.getString(String.format("bag-textures.size-ownerless-%s", PDC.getInteger(clicked, "size"))));
 					}
 				}
 			}
@@ -333,17 +333,17 @@ public class UpgradeGUI implements Listener {
 					Log.debug(Main.plugin, "[DI-278] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.GetString(String.format("textures.%s", value));
 					if(BagState.getState(clicked) == BagState.NEW) {
-						BagData.setTextureValue(clicked, texture);
+						Database.setTextureValue(clicked, texture);
 					}else {
-						BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(texture);
+						Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(texture);
 					}
 				}else {
 					Log.debug(Main.plugin, "[DI-278] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
 						if(BagState.getState(clicked) == BagState.NEW) {
-							BagData.setTextureValue(clicked, value);
+							Database.setTextureValue(clicked, value);
 						}else {
-							BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(value);
+							Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(value);
 						}
 					}else {
 						Log.debug(Main.plugin, "[DI-278] [UpgradeGUI] Invalid Skin.");
@@ -361,7 +361,7 @@ public class UpgradeGUI implements Listener {
 			}
 		
 			String value = PDC.getString(token, "token-effect");
-			BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setEffect(value);
+			Database.getBag(HavenBags.getBagUUID(clicked), clicked).setEffect(value);
 			HavenBags.updateBagLore(clicked, null);
 		}
 
@@ -586,9 +586,9 @@ public class UpgradeGUI implements Listener {
 			HavenBags.updateBagLore(item, null, true);
 			if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
 				if(owner.equalsIgnoreCase("ownerless")) {
-					BagData.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-ownerless-%s", to)));
+					Database.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-ownerless-%s", to)));
 				}else {
-					BagData.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-%s", to)));
+					Database.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-%s", to)));
 				}
 			}
 		}
@@ -606,11 +606,11 @@ public class UpgradeGUI implements Listener {
 				if(value.chars().count() < 30) {
 					Log.debug(Main.plugin, "[DI-276] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.getString(String.format("textures.%s", value));
-					BagData.setTextureValue(item, texture);
+					Database.setTextureValue(item, texture);
 				}else {
 					Log.debug(Main.plugin, "[DI-276] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						BagData.setTextureValue(item, value);
+						Database.setTextureValue(item, value);
 					}else {
 						Log.debug(Main.plugin, "[DI-277] [UpgradeGUI] Invalid Skin.");
 						item = new ItemStack(Material.AIR);
@@ -645,11 +645,11 @@ public class UpgradeGUI implements Listener {
 				if(value.chars().count() < 30) {
 					Log.debug(Main.plugin, "[DI-281] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.getString(String.format("textures.%s", value));
-					BagData.setTextureValue(item, texture);
+					Database.setTextureValue(item, texture);
 				}else {
 					Log.debug(Main.plugin, "[DI-281] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						BagData.setTextureValue(item, value);
+						Database.setTextureValue(item, value);
 					}else {
 						Log.debug(Main.plugin, "[DI-282] [UpgradeGUI] Invalid Skin.");
 						item = new ItemStack(Material.AIR);
@@ -668,7 +668,7 @@ public class UpgradeGUI implements Listener {
 		String uuid = HavenBags.getBagUUID(item);
 				
 		if(BagEffects.hasEffect(value)) {
-			Data data = BagData.getBag(uuid, null).clone();
+			Data data = Database.getBag(uuid, null).clone();
 			data.setEffect(value);
 			HavenBags.updateUsed(item, data, player);
 			return item;

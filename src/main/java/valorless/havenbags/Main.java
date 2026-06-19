@@ -187,7 +187,7 @@ public final class Main extends JavaPlugin implements Listener {
 		
 		BagHealth.init();
 		
-		BagData.init();
+		Database.init();
 		
 		AutoPickup.initiate();
 		
@@ -244,8 +244,8 @@ public final class Main extends JavaPlugin implements Listener {
     		}
     	}
     	if(BackBag.cleantask != null) BackBag.cleantask.cancel();
-    	BagData.saveData(true); // Save all bag data on shutdown. The "true" parameter marks this as a shutdown save.
-    	BagData.shutdown(); // Close all database connections.
+    	Database.saveData(true); // Save all bag data on shutdown. The "true" parameter marks this as a shutdown save.
+    	Database.shutdown(); // Close all database connections.
     	Crafting.removeRecipes();
     	BagEffects.shutdown(); // Stop the bag effects tasks.
     	UpgradeGUI.OpenGUIs.closeAll(); // Close all open upgrade GUIs.
@@ -263,7 +263,7 @@ public final class Main extends JavaPlugin implements Listener {
     		}
     	}
     	if(BackBag.cleantask != null) BackBag.cleantask.cancel();
-    	BagData.saveData(true);
+    	Database.saveData(true);
     	Crafting.removeRecipes();
     	BagEffects.shutdown();
     	UpgradeGUI.OpenGUIs.closeAll();
@@ -274,10 +274,10 @@ public final class Main extends JavaPlugin implements Listener {
 	}
     
     public static void closeBags() {
-    	if(!BagData.getOpenBags().isEmpty()) {
+    	if(!Database.getOpenBags().isEmpty()) {
     		Log.info(plugin, "Closing all open bags.");
     		try {
-    			for(Data bag : BagData.getOpenBags()) {
+    			for(Data bag : Database.getOpenBags()) {
     				bag.getGui().close(true);
     			}
     		} catch (Exception e) {

@@ -3,7 +3,7 @@ package valorless.havenbags.commands;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.datamodels.Data;
@@ -23,14 +23,14 @@ public class CommandAutoSort {
 						Boolean value = false;
 						if(command.args[1].equalsIgnoreCase("on")) value = true;
 						if(command.args[1].equalsIgnoreCase("off")) value = false;
-						Data data = BagData.getBag(uuid, null);
+						Data data = Database.getBag(uuid, null);
 						data.setAutoSort(value);
 						HavenBags.updateBagItem(item, player);
 						player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-sort-command").replace("%value%", command.args[1]), player));
 						return true;
 					}
 				}else {
-					Data data = BagData.getBag(uuid, null);
+					Data data = Database.getBag(uuid, null);
 					data.setAutoSort(false);
 					HavenBags.updateBagItem(item, player);
 					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-sort-command").replace("%value%", "off"), player));

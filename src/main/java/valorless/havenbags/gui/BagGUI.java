@@ -25,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import valorless.havenbags.*;
-import valorless.havenbags.BagData.UpdateSource;
+import valorless.havenbags.Database.UpdateSource;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.datamodels.Sound;
@@ -120,9 +120,9 @@ public class BagGUI implements Listener {
         //this.content = JsonUtils.fromJson(Tags.Get(plugin, this.bagMeta.getPersistentDataContainer(), "content", PersistentDataType.STRING).toString());
 		//player.sendMessage(content.toString());
 		
-		BagData.markBagOpen(uuid, bagItem, player, this);
+		Database.markBagOpen(uuid, bagItem, player, this);
 
-		if(BagData.getDatabase() == DatabaseType.MYSQLPLUS) {
+		if(Database.getDatabaseType() == DatabaseType.MYSQLPLUS) {
 			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
 				try {
 		        	this.content = loadContent();
@@ -161,7 +161,7 @@ public class BagGUI implements Listener {
 		    		initializeItems();
 		    	
 					openInventory(player);
-					Bukkit.getPluginManager().callEvent(new BagOpenEvent(inv, player, bagItem, BagData.getBag(uuid, null)));
+					Bukkit.getPluginManager().callEvent(new BagOpenEvent(inv, player, bagItem, Database.getBag(uuid, null)));
 					this.cancel();
 		    	}
 		    }
@@ -179,7 +179,7 @@ public class BagGUI implements Listener {
     
     void checkInstances() {
     	List<BagGUI> thisUUID = new ArrayList<BagGUI>();
-    	for (Data openBag : BagData.getOpenBags()) {
+    	for (Data openBag : Database.getOpenBags()) {
     		Log.debug(plugin, "[DI-34] " + "Open Bag: " + openBag.getUuid() + " - " + PDC.getString(bagItem, "uuid"));
     		if(openBag.getUuid().equalsIgnoreCase(PDC.getString(bagItem, "uuid"))) {
     			thisUUID.add(openBag.getGui());
@@ -222,7 +222,7 @@ public class BagGUI implements Listener {
 						"\n" +
 						"################################\n";
 				console.sendMessage(String.format(errorMessage, bag));
-				for (Data openBag : BagData.getOpenBags()) {
+				for (Data openBag : Database.getOpenBags()) {
 		    		Log.debug(plugin, "[DI-36] " + "Open Bag: " + openBag.getUuid() + " - " + PDC.getString(bagItem, "uuid"));
 		    		if(openBag.getUuid() == PDC.getString(bagItem, "uuid")) {
 		    			close(true);
@@ -246,14 +246,14 @@ public class BagGUI implements Listener {
 				
 		//return HavenBags.LoadBagContentFromServer(uuid, owner, player);
 		
-		if(BagData.getDatabase() == DatabaseType.MYSQLPLUS) {
-			Data data = BagData.getMysql().loadBag(uuid);
+		if(Database.getDatabaseType() == DatabaseType.MYSQLPLUS) {
+			Data data = Database.getMysql().loadBag(uuid);
 			if(data.isOpen()) return null;
 			List<ItemStack> content = data.getContent();
 			data.setViewer(player); //Extra just to be sure
 	    	return content;
 		}else {
-			return BagData.getBag(uuid, this.bagItem, UpdateSource.PLAYER).getContent();
+			return Database.getBag(uuid, this.bagItem, UpdateSource.PLAYER).getContent();
 		}
 	}
 
@@ -345,7 +345,7 @@ public class BagGUI implements Listener {
             e.setCancelled(true);
         }
         
-		Data data = BagData.getBag(uuid, null);
+		Data data = Database.getBag(uuid, null);
         
         //if (Main.config.GetBool("bags-in-bags") == true) return;
     	if(e.getRawSlot() < inv.getSize() && HavenBags.isItemBlacklisted(cursorItem, data)) {
@@ -412,7 +412,7 @@ public class BagGUI implements Listener {
 		}
     	
     	//if(!HavenBags.IsBagOpen(bagItem)) return;
-    	if(!BagData.isBagOpen(uuid, bagItem)) return false;
+    	if(!Database.isBagOpen(uuid, bagItem)) return false;
 
     	Sound sound = new Sound(Main.config.getString("sound.close.key"),
     			Main.config.getDouble("sound.close.volume"),
@@ -449,9 +449,9 @@ public class BagGUI implements Listener {
         }, 1L);
 		//GivePlayerBagBack();
 		try {
-			BagData.updateBag(bagItem, cont);
+			Database.updateBag(bagItem, cont);
 		}catch(Exception e) {
-			BagData.updateBag(uuid, cont);
+			Database.updateBag(uuid, cont);
 			Log.error(Main.plugin, String.format("Failed to update bag data completely for %s (Viewer: %s)", uuid, player.getName()));
 		}
         
@@ -466,14 +466,14 @@ public class BagGUI implements Listener {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}*/
-		BagData.markBagClosed(uuid);
+		Database.markBagClosed(uuid);
 		//player.sendMessage("Bag closed");
-		Log.debug(plugin, "[DI-46] " + "Remaining Open Bags: " + BagData.getOpenBags().size());
+		Log.debug(plugin, "[DI-46] " + "Remaining Open Bags: " + Database.getOpenBags().size());
         //Unregister this GUI from listening to event.
     	Log.debug(Main.plugin, "[BagGUI][DI-263] Unregistering listener for " + player.getName());
 		HandlerList.unregisterAll(this);
 		
-		Bukkit.getPluginManager().callEvent(new BagCloseEvent(inv, player, bagItem, BagData.getBag(uuid, null), forced));
+		Bukkit.getPluginManager().callEvent(new BagCloseEvent(inv, player, bagItem, Database.getBag(uuid, null), forced));
 		
 		//UpdateTimestamp();
 		return true;
@@ -500,7 +500,7 @@ public class BagGUI implements Listener {
         Item droppedItem = event.getItemDrop();
         ItemStack item = droppedItem.getItemStack();
         if(HavenBags.isBag(item)) {
-        	if(BagData.isBagOpen(item)) {
+        	if(Database.isBagOpen(item)) {
         		event.setCancelled(true);
         	}
         }

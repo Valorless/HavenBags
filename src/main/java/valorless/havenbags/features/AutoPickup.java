@@ -26,12 +26,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import dev.lone.itemsadder.api.CustomStack;
 import net.md_5.bungee.api.ChatMessageType;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.database.EtherealBags;
-import valorless.havenbags.BagData.Bag;
+import valorless.havenbags.Database.Bag;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Message;
 import valorless.havenbags.datamodels.Placeholder;
@@ -482,7 +482,7 @@ public class AutoPickup implements Listener {
 	*/
 	
 	static boolean putItemInBag(ItemStack item, Player player){
-		if(!BagData.isReady()) {
+		if(!Database.isReady()) {
 			return false;
 		}
 		
@@ -531,10 +531,10 @@ public class AutoPickup implements Listener {
 		Log.debug(Main.plugin, "[DI-158] " + "Checking bag filters.");
 		//if(HavenBags.IsItemBlacklisted(item)) return false;
 		for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
-			Data data = BagData.getBag(HavenBags.getBagUUID(bag.item), null);
+			Data data = Database.getBag(HavenBags.getBagUUID(bag.item), null);
 			if(HavenBags.isItemBlacklisted(item, data)) continue;
 			Log.debug(Main.plugin, "[DI-159] " + "bag: " + PDC.getString(bag.item, "uuid"));
-			if(BagData.isBagOpen(PDC.getString(bag.item, "uuid"), bag.item)) continue;
+			if(Database.isBagOpen(PDC.getString(bag.item, "uuid"), bag.item)) continue;
 			if(HavenBags.isBagFull(bag.item)) continue;
 			boolean c = false;
 			for(Filter f : filters) {
@@ -628,7 +628,7 @@ public class AutoPickup implements Listener {
 		        }
 				HavenBags.updateBagItem(bag.item, player);
 				//HavenBags.WriteBagToServer(bag.item, bag.content, player);
-				BagData.updateBag(bag.item, bag.content);
+				Database.updateBag(bag.item, bag.content);
 				pickupSound(player);
 				return true;
 			}
@@ -646,7 +646,7 @@ public class AutoPickup implements Listener {
 		        }
 				HavenBags.updateBagItem(bag.item, player);
 				//HavenBags.WriteBagToServer(bag.item, bag.content, player);
-				BagData.updateBag(bag.item, bag.content);
+				Database.updateBag(bag.item, bag.content);
 				pickupSound(player);
 				Log.debug(Main.plugin, "[DI-172] " + "Item put in bag.");
 				return true;

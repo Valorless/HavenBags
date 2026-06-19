@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import valorless.havenbags.BagData;
-import valorless.havenbags.BagData.Bag;
+import valorless.havenbags.Database;
+import valorless.havenbags.Database.Bag;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.BagListener;
 import valorless.havenbags.HavenBags;
@@ -52,7 +52,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 	public String onRequest(OfflinePlayer player, @NotNull String identifier) {
 				
 		if(identifier.contains("bags_current")) {
-			return "" + BagData.getBags(player.getUniqueId().toString()).size();
+			return "" + Database.getBags(player.getUniqueId().toString()).size();
 		}
 		
 		if(identifier.contains("bags_max")) {
@@ -67,8 +67,8 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 					String material = split[2];
 					int count = 0;
 
-					for(String bag : BagData.getBags(pl.getUniqueId().toString())) {
-						Data data = BagData.getBag(bag, null);
+					for(String bag : Database.getBags(pl.getUniqueId().toString())) {
+						Data data = Database.getBag(bag, null);
 						count += HavenBags.countItems(data.getContent(), Material.valueOf(material.toUpperCase()));
 					}
 
@@ -100,7 +100,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 		}
 
 		if(identifier.contains("player_has_bag")) {
-			return (BagData.getBags(player.getUniqueId().toString()).size() != 0) ? "true" : "false";
+			return (Database.getBags(player.getUniqueId().toString()).size() != 0) ? "true" : "false";
 		}
 
 		if(identifier.contains("carry_max")) {
@@ -123,7 +123,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 					int count = 0;
 
 					for(Bag bag : HavenBags.getBagsDataInInventory(pl)) {
-						count += BagData.getBag(HavenBags.getBagUUID(bag.item), null).getSize();
+						count += Database.getBag(HavenBags.getBagUUID(bag.item), null).getSize();
 					}
 
 					return "" + count;

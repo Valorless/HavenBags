@@ -111,7 +111,7 @@ public class BagListener implements Listener{
 
 			    interactCooldowns.put(uuid, now);
 			    
-				if(!BagData.isReady()) {
+				if(!Database.isReady()) {
 					event.setCancelled(true);
 					return;
 				}
@@ -190,7 +190,7 @@ public class BagListener implements Listener{
 					}
 					
 					if(createBag(hand, ownerless, player, placeholders)) {
-						if(BagData.getDatabase() == DatabaseType.MYSQL || BagData.getDatabase() == DatabaseType.MYSQLPLUS) {
+						if(Database.getDatabaseType() == DatabaseType.MYSQL || Database.getDatabaseType() == DatabaseType.MYSQLPLUS) {
 							return;
 						}
 						Bukkit.getScheduler().runTaskLater(Main.plugin, () -> {
@@ -279,11 +279,11 @@ public class BagListener implements Listener{
 		}
 		
 		if(ownerless) {
-			BagData.createBag(uuid, "ownerless", cont, player, bag);
+			Database.createBag(uuid, "ownerless", cont, player, bag);
 			Log.debug(Main.plugin, "[DI-56] " + "Ownerless bag created.");
 			Log.debug(Main.plugin, "[DI-57] " + "Creating timestamp for " + uuid);
 		}else {
-			BagData.createBag(uuid, player.getUniqueId().toString(), cont, player, bag);
+			Database.createBag(uuid, player.getUniqueId().toString(), cont, player, bag);
 			Log.debug(Main.plugin, "[DI-58] " + "Bound new bag to: " + player.getName());
 			Log.debug(Main.plugin, "[DI-59] " + "Creating timestamp for " + uuid);
 		}
@@ -299,7 +299,7 @@ public class BagListener implements Listener{
 		if(bag.getType() == Material.AIR) return;
 		String uuid = HavenBags.getBagUUID(bag);
 		Log.debug(Main.plugin, "[DI-226] " + "Opening " +  uuid);
-		Data data = BagData.getBag(uuid, bag);
+		Data data = Database.getBag(uuid, bag);
 		//String owner = PDC.GetString(bag, "bag-owner");
 		
 		if(data == null) {
@@ -342,7 +342,7 @@ public class BagListener implements Listener{
 				sound.play(player);
 			}catch(Exception e) {
 				e.printStackTrace();
-				BagData.markBagClosed(uuid);
+				Database.markBagClosed(uuid);
 			}
 			return;
 		}
@@ -359,7 +359,7 @@ public class BagListener implements Listener{
 				sound.play(player);
 			}catch(Exception e) {
 				e.printStackTrace();
-				BagData.markBagClosed(uuid);
+				Database.markBagClosed(uuid);
 			}
 			return;
 		}
@@ -377,7 +377,7 @@ public class BagListener implements Listener{
 				Log.debug(Main.plugin, "[DI-65] " + player + "has attempted to open a bag, bypassing the lock");
 			}catch(Exception e) {
 				e.printStackTrace();
-				BagData.markBagClosed(uuid);
+				Database.markBagClosed(uuid);
 			}
 			return;
 		}
@@ -394,7 +394,7 @@ public class BagListener implements Listener{
 				sound.play(player);
 			}catch(Exception e) {
 				e.printStackTrace();
-				BagData.markBagClosed(uuid);
+				Database.markBagClosed(uuid);
 			}
 			return;
 		}
@@ -428,7 +428,7 @@ public class BagListener implements Listener{
 		if(Main.config.getInt("max-bags") > 0) {
 			if(!player.hasPermission("havenbags.bypass")) {
 				int limit = getPlayerBagLimit(player);
-				if(BagData.getBags(player.getUniqueId().toString()).size() >= limit) {
+				if(Database.getBags(player.getUniqueId().toString()).size() >= limit) {
 					return true;
 				}
 			}

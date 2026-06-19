@@ -174,7 +174,7 @@ public class TabCompletion implements TabCompleter {
 				if(item != null) {
 					if(HavenBags.isBag(item)) {
 						if(BagState.getState(item) == BagState.USED) {
-							Data data = BagData.getBag(HavenBags.getBagUUID(item), null);
+							Data data = Database.getBag(HavenBags.getBagUUID(item), null);
 							List<String> list = data.getTrusted();
 							StringUtil.copyPartialMatches(cmd, list, completions);
 						}

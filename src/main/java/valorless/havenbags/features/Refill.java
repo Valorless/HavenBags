@@ -8,12 +8,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
 import valorless.valorlessutils.logging.Log;
-import valorless.havenbags.BagData.Bag;
+import valorless.havenbags.Database.Bag;
 
 public class Refill implements Listener {
 		
@@ -35,7 +35,7 @@ public class Refill implements Listener {
 	    	if(bags.isEmpty()) return;
 	    	Log.debug(Main.plugin, "Bags! " + bags.size());
 	    	for(Bag bag : bags) {
-	    		Data data = BagData.getBag(HavenBags.getBagUUID(bag.item), null);
+	    		Data data = Database.getBag(HavenBags.getBagUUID(bag.item), null);
 	    		if(!data.hasRefill()) continue;
 				ItemStack block = refill(item, bag, player);
 		        Log.debug(Main.plugin, "block?");
@@ -59,7 +59,7 @@ public class Refill implements Listener {
     		if(item.isSimilar(hand)) {
     			ItemStack clone = item.clone();
 				item.setAmount(0);
-				BagData.updateBag(bag.item, bag.content);
+				Database.updateBag(bag.item, bag.content);
 				HavenBags.updateBagLore(bag.item, player);
 
 				return clone;

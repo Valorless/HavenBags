@@ -49,9 +49,9 @@ import valorless.valorlessutils.nbtapi.iface.ReadWriteNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBT;
 import valorless.valorlessutils.nbtapi.iface.ReadableNBTList;
 
-public class BagData {
+public class Database {
 	
-	private static DatabaseType database = DatabaseType.SQLITE;
+	private static DatabaseType databaseType = DatabaseType.SQLITE;
 	private static MySQL mysql;
 	static SQLite sqlite;
 	
@@ -74,17 +74,17 @@ public class BagData {
 	public static void init() {
 		data.clear(); // Just in case
 		DatabaseType type = DatabaseType.get(Main.config.getString("save-type").toUpperCase());
-		if(type != null) setDatabase(type);
+		if(type != null) setDatabaseType(type);
 		else {
 			Log.error(Main.plugin, String.format("Invalid database type \"%s\"\n"
 					+ "Please choose either FILES, MYSQL, or SQLITE.", Main.config.getString("save-type")));
 			Bukkit.getPluginManager().disablePlugin(Main.plugin);
 		}
 		
-		if(getDatabase() == DatabaseType.MYSQL || getDatabase() == DatabaseType.MYSQLPLUS) {
+		if(getDatabaseType() == DatabaseType.MYSQL || getDatabaseType() == DatabaseType.MYSQLPLUS) {
 			setMysql(new MySQL());
 		}
-		else if(getDatabase() == DatabaseType.SQLITE) {
+		else if(getDatabaseType() == DatabaseType.SQLITE) {
 			sqlite = new SQLite();
 		}
 		
@@ -98,7 +98,7 @@ public class BagData {
             }
         }, interval, interval);*/
 		
-		if(getDatabase() == DatabaseType.MYSQLPLUS) return;
+		if(getDatabaseType() == DatabaseType.MYSQLPLUS) return;
 		
 		autosave = new BukkitRunnable() {
 		    @Override
@@ -112,7 +112,7 @@ public class BagData {
 	}
 	
 	public static void shutdown() {
-		if(getDatabase() == DatabaseType.MYSQL) {
+		if(getDatabaseType() == DatabaseType.MYSQL) {
 			try {
 				if(getMysql() != null) {
 					getMysql().disconnect();
@@ -121,7 +121,7 @@ public class BagData {
 				e.printStackTrace();
 			}
 		}
-		else if(getDatabase() == DatabaseType.SQLITE) {
+		else if(getDatabaseType() == DatabaseType.SQLITE) {
 			try {
 				if(sqlite != null) {
 					sqlite.close();
@@ -130,7 +130,7 @@ public class BagData {
 				e.printStackTrace();
 			}
 		}
-		else if(getDatabase() == DatabaseType.MYSQLPLUS) {
+		else if(getDatabaseType() == DatabaseType.MYSQLPLUS) {
 			try {
 				if(getMysql() != null) {
 					getMysql().disconnect();
@@ -142,14 +142,14 @@ public class BagData {
 	}
 	
 	public static void changeDatabase(DatabaseType type) {
-		if(getDatabase() == DatabaseType.MYSQL || getDatabase() == DatabaseType.MYSQLPLUS) {
+		if(getDatabaseType() == DatabaseType.MYSQL || getDatabaseType() == DatabaseType.MYSQLPLUS) {
 			try {
 				getMysql().disconnect();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
-		else if(getDatabase() == DatabaseType.SQLITE) {
+		else if(getDatabaseType() == DatabaseType.SQLITE) {
 			try {
 				sqlite.close();
 			} catch (SQLException e) {
@@ -157,7 +157,8 @@ public class BagData {
 			}
 		}
 		
-		setDatabase(type);
+		setDatabaseType(type);
+		autosave.cancel();
 		autosave = new BukkitRunnable() {
 		    @Override
 		    public void run() {
@@ -415,7 +416,7 @@ public class BagData {
 		
 		dat.setChanged(true);
 		data.put(UUID.fromString(uuid), dat);
-		if(database == DatabaseType.MYSQLPLUS) {
+		if(databaseType == DatabaseType.MYSQLPLUS) {
 			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
 				getMysql().saveBag(dat);
 			});
@@ -429,7 +430,7 @@ public class BagData {
 		if(dat == null) throw new IllegalArgumentException("Data cannot be null");
 		dat.setChanged(true);
 		data.put(UUID.fromString(dat.getUuid()), dat);
-		if(database == DatabaseType.MYSQLPLUS) {
+		if(databaseType == DatabaseType.MYSQLPLUS) {
 			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
 				getMysql().saveBag(dat);
 			});
@@ -445,7 +446,7 @@ public class BagData {
 		Log.info(Main.plugin, "Loading bags..");
 		long startTime = System.currentTimeMillis();
 		int i = 0;
-		if(getDatabase() == DatabaseType.FILES) {
+		if(getDatabaseType() == DatabaseType.FILES) {
 			List<String> owners	= getBagOwners();
 			for(String owner : owners) {
 				List<String> bags = Files.getBags(owner);
@@ -474,19 +475,19 @@ public class BagData {
 				}
 			}
 		}
-		else if(getDatabase() == DatabaseType.MYSQL) {
+		else if(getDatabaseType() == DatabaseType.MYSQL) {
 			HashMap<UUID, Data> bags = getMysql().loadAllBags();
 			data = bags;
 			i = bags.size();
 		}
-		else if(getDatabase() == DatabaseType.SQLITE) {
+		else if(getDatabaseType() == DatabaseType.SQLITE) {
 			for(String uuid : sqlite.getAllBagUUIDs()) {
 				Data bag = sqlite.loadBag(uuid);
 				data.put(UUID.fromString(uuid), bag);
 				i++;
 			}
 		}
-		else if(getDatabase() == DatabaseType.MYSQLPLUS) {
+		else if(getDatabaseType() == DatabaseType.MYSQLPLUS) {
 			HashMap<UUID, Data> bags = getMysql().loadAllBags();
 			data = bags;
 			i = bags.size();
@@ -520,6 +521,7 @@ public class BagData {
 			Data dat = changedBags.get(uuid);
 			toSave.add(dat);
 			dat.setChanged(false);
+			changedBags.remove(uuid); // Double remove to be sure
 		}
 
 		/*
@@ -549,11 +551,11 @@ public class BagData {
 			String uuid = bag.getUuid();
 	    	String owner = bag.getOwner();
 	    	
-	    	if(getDatabase() == DatabaseType.FILES) {
+	    	if(getDatabaseType() == DatabaseType.FILES) {
 	        	Log.debug(Main.plugin, "[DI-31] [FILES] " + "Attempting to write bag " + owner + "/" + uuid + " onto server");
 	    		Files.saveBag(bag);
 	    	}
-	    	else if(getDatabase() == DatabaseType.SQLITE) {
+	    	else if(getDatabaseType() == DatabaseType.SQLITE) {
 	    		Log.debug(Main.plugin, "[DI-231] [SQLITE] " + "Attempting to write bag " + owner + "/" + uuid + " onto database");
 	    		if(shutdown || conversion != null) {
 	    			sqlite.saveBag(bag);
@@ -563,7 +565,7 @@ public class BagData {
 	    			});
 	    		}
 	    	}else 
-		    	if(getDatabase() == DatabaseType.MYSQLPLUS) {
+		    	if(getDatabaseType() == DatabaseType.MYSQLPLUS) {
 		    		if(!shutdown && conversion == null) {
 		    			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
 		    				getMysql().saveBag(bag);
@@ -573,7 +575,7 @@ public class BagData {
 		}
 
 		if(!toSave.isEmpty()) {
-	    	if(getDatabase() == DatabaseType.MYSQL) {
+	    	if(getDatabaseType() == DatabaseType.MYSQL) {
 	    		Log.debug(Main.plugin, "[DI-232] [MYSQL] " + "Attempting to write bags onto database");
 	    		if(shutdown || conversion != null) {
 	    			for(List<Data> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
@@ -589,7 +591,7 @@ public class BagData {
 	    			});
 	    		}
 	    	}
-	    	else if(getDatabase() == DatabaseType.MYSQLPLUS) {
+	    	else if(getDatabaseType() == DatabaseType.MYSQLPLUS) {
 	    		Log.debug(Main.plugin, "[DI-233] [MYSQLPLUS] " + "Attempting to write bags onto database");
 	    		if(shutdown || conversion != null) {
 	    			for(List<Data> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
@@ -627,7 +629,7 @@ public class BagData {
 	public static Boolean deleteBag(@NotNull String uuid, @Nullable Player... player) {
 		Data bag = getbag(uuid);
 		if(bag != null) {
-			if(getDatabase() == DatabaseType.FILES) {
+			if(getDatabaseType() == DatabaseType.FILES) {
 				try {
 					Files.deleteFile(bag.getOwner(), uuid);
 				}catch(Exception e) {
@@ -635,10 +637,10 @@ public class BagData {
 					e.printStackTrace();
 					return false;
 				}
-			}else if(getDatabase() == DatabaseType.MYSQL) {
+			}else if(getDatabaseType() == DatabaseType.MYSQL) {
 	    		getMysql().deleteBag(uuid);
 	    	}
-	    	else if(getDatabase() == DatabaseType.SQLITE) {
+	    	else if(getDatabaseType() == DatabaseType.SQLITE) {
 	    		sqlite.deleteBag(uuid);
 	    	}
 
@@ -672,7 +674,7 @@ public class BagData {
 	}
 	
 	public static List<String> getBagOwners(){
-		if(getDatabase() == DatabaseType.FILES) {
+		if(getDatabaseType() == DatabaseType.FILES) {
 			try {
 				return Stream.of(new File(String.format("%s/bags/", Main.plugin.getDataFolder())).listFiles())
 						.filter(File::isDirectory)
@@ -681,10 +683,10 @@ public class BagData {
 			} catch (Exception e) {
 				return new ArrayList<String>();
 			}
-		}else if(getDatabase() == DatabaseType.MYSQL) {
+		}else if(getDatabaseType() == DatabaseType.MYSQL) {
 			return getMysql().getBagOwners();
     	}
-    	else if(getDatabase() == DatabaseType.SQLITE) {
+    	else if(getDatabaseType() == DatabaseType.SQLITE) {
     		return sqlite.getBagOwners();
     	}
 		
@@ -737,7 +739,7 @@ public class BagData {
 		if(bag != null) {
 			bag.setOpen(true);
 			bag.setViewer(player);
-			if(getDatabase() == DatabaseType.MYSQLPLUS) {
+			if(getDatabaseType() == DatabaseType.MYSQLPLUS) {
 				Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
 					getMysql().saveBag(bag);
 				});
@@ -754,7 +756,7 @@ public class BagData {
 			bag.setOpen(true);
 			bag.setViewer(player);
 			bag.setGui(gui);
-			if(getDatabase() == DatabaseType.MYSQLPLUS) {
+			if(getDatabaseType() == DatabaseType.MYSQLPLUS) {
 				Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
 					getMysql().saveBag(bag);
 				});
@@ -774,7 +776,7 @@ public class BagData {
 		bag.setOpen(false);
 		bag.setViewer(null);
 		bag.setGui(null);
-		if(getDatabase() == DatabaseType.MYSQLPLUS) {
+		if(getDatabaseType() == DatabaseType.MYSQLPLUS) {
 			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
 				getMysql().saveBag(bag);
 			});
@@ -1034,12 +1036,12 @@ public class BagData {
 		return false;
 	}
 
-	public static DatabaseType getDatabase() {
-		return database;
+	public static DatabaseType getDatabaseType() {
+		return databaseType;
 	}
 
-	protected static void setDatabase(DatabaseType database) {
-		BagData.database = database;
+	protected static void setDatabaseType(DatabaseType databaseType) {
+		Database.databaseType = databaseType;
 	}
 
 	public static MySQL getMysql() {
@@ -1047,7 +1049,7 @@ public class BagData {
 	}
 
 	protected static void setMysql(MySQL mysql) {
-		BagData.mysql = mysql;
+		Database.mysql = mysql;
 	}
 
 	/**

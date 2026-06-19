@@ -15,7 +15,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
@@ -122,7 +122,7 @@ public class BagCache implements Listener {
 				try {
 					if(NBT.Has(item, "bag-uuid") && !NBT.GetString(item, "bag-uuid").equalsIgnoreCase("yes")) {
 						Converter.convertBag(item);
-						cache.put(NBT.GetUUID(item, "bag-uuid"), BagData.getBag(NBT.GetString(item, "bag-uuid"), null));
+						cache.put(NBT.GetUUID(item, "bag-uuid"), Database.getBag(NBT.GetString(item, "bag-uuid"), null));
 					}
 					if(NBT.Has(item, "bag-token-skin")) {
 						Converter.convertToken(item);
@@ -130,7 +130,7 @@ public class BagCache implements Listener {
 				}catch(Exception E) { continue; }
 				
 				if(PDC.has(item, "uuid")) {
-					cache.put(PDC.getUUID(item, "uuid"), BagData.getBag(PDC.getString(item, "uuid"), null));
+					cache.put(PDC.getUUID(item, "uuid"), Database.getBag(PDC.getString(item, "uuid"), null));
 				}
 			}
 		}
@@ -140,7 +140,7 @@ public class BagCache implements Listener {
 			try {
 				if(NBT.Has(item, "bag-uuid") && !NBT.GetString(item, "bag-uuid").equalsIgnoreCase("yes")) {
 					Converter.convertBag(item);
-					cache.put(NBT.GetUUID(item, "bag-uuid"), BagData.getBag(NBT.GetString(item, "bag-uuid"), null));
+					cache.put(NBT.GetUUID(item, "bag-uuid"), Database.getBag(NBT.GetString(item, "bag-uuid"), null));
 				}
 				if(NBT.Has(item, "bag-token-skin")) {
 					Converter.convertToken(item);
@@ -148,7 +148,7 @@ public class BagCache implements Listener {
 			}catch(Exception E) { return; }
 
 			if(PDC.has(item, "uuid")) {
-				cache.put(PDC.getUUID(item, "uuid"), BagData.getBag(PDC.getString(item, "uuid"), null));
+				cache.put(PDC.getUUID(item, "uuid"), Database.getBag(PDC.getString(item, "uuid"), null));
 			}
 		}
 	}

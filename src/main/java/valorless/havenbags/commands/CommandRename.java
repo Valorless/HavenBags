@@ -9,7 +9,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.datamodels.Data;
@@ -27,8 +27,8 @@ public class CommandRename {
 		ItemStack hand = Bukkit.getPlayer(command.sender.getName()).getInventory().getItemInMainHand();
 		Data data = null;
     	if(HavenBags.isBag(hand)){
-    		if(BagData.bagExists(HavenBags.getBagUUID(hand))) {
-    			data = BagData.getBag(HavenBags.getBagUUID(hand), null);
+    		if(Database.bagExists(HavenBags.getBagUUID(hand))) {
+    			data = Database.getBag(HavenBags.getBagUUID(hand), null);
     		}
     	}
     		

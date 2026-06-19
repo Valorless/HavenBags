@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.annotations.DoNotCall;
 import valorless.havenbags.gui.BagGUI;
 
@@ -472,9 +472,9 @@ public class Data {
 		}
 		UUID bagId = UUID.fromString(this.uuid);
 		if (changed) {
-			BagData.changedBags.put(bagId, this);
+			Database.changedBags.put(bagId, this);
 		} else {
-			BagData.changedBags.remove(bagId);
+			Database.changedBags.remove(bagId);
 		}
 	}
 

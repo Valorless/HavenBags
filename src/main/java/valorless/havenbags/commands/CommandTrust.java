@@ -6,7 +6,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -26,7 +26,7 @@ public class CommandTrust {
 		if(command.args.length >= 2) {
 			ItemStack item = player.getInventory().getItemInMainHand();
 			if(HavenBags.isBag(item)) {
-				Data data = BagData.getBag(HavenBags.getBagUUID(item), item);
+				Data data = Database.getBag(HavenBags.getBagUUID(item), item);
 				if(HavenBags.isOwner(item, player)) {
 					if(data.isPlayerTrusted(command.args[1])) {
 						return true;
@@ -38,7 +38,7 @@ public class CommandTrust {
 						//}
 						//list.add(args[1]);
 						//PDC.SetStringList(item, "bag-trust", list);
-						BagData.addTrusted(HavenBags.getBagUUID(item), command.args[1]);
+						Database.addTrusted(HavenBags.getBagUUID(item), command.args[1]);
 						HavenBags.updateBagItem(item, player);
 						
 						List<Placeholder> ph = new ArrayList<Placeholder>();

@@ -12,7 +12,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.CommandListener;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -61,7 +61,7 @@ public class CommandPreview {
 				String uuid = command.args[2];
 				String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
 				File bagData;
-				Data bag = BagData.getBag(uuid, null);
+				Data bag = Database.getBag(uuid, null);
 				try {
 					bagData = new File(path);
 				} catch(Exception e) {

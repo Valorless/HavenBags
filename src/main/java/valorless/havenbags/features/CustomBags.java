@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -116,7 +116,7 @@ public class CustomBags {
 			for(int i = 0; i < PDC.getInteger(bagItem, "size"); i++) {
 				content.add(CustomContent.load(PDC.getString(bagItem, "predefined")).get(i));
 			}
-			Data data = BagData.createBag(uuid, owner, content, player, bagItem);
+			Data data = Database.createBag(uuid, owner, content, player, bagItem);
 			data.setName(PDC.getString(bagItem, "name"));
 		}
 		
@@ -170,7 +170,7 @@ public class CustomBags {
 			for(int i = 0; i < PDC.getInteger(bagItem, "size"); i++) {
 				content.add(CustomContent.load(PDC.getString(bagItem, "predefined")).get(i));
 			}
-			Data data = BagData.createBag(uuid, owner, content, player, bagItem);
+			Data data = Database.createBag(uuid, owner, content, player, bagItem);
 			data.setName(PDC.getString(bagItem, "name"));
 		}
 

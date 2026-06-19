@@ -19,7 +19,7 @@ import com.mysql.cj.jdbc.exceptions.PacketTooBigException;
 
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.utils.FoodComponentFixer;
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Main;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
@@ -428,7 +428,7 @@ public class MySQL {
 	}
 	
 	public List<ItemStack> loadContent(String jsonString, String uuid) {
-    	List<JsonObject> json = BagData.deserializeItemStackList(jsonString);
+    	List<JsonObject> json = Database.deserializeItemStackList(jsonString);
 		
 		List<ItemStack> items = new ArrayList<>();
 		for(JsonObject e : json) {

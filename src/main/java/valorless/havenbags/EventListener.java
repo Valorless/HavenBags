@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import org.bukkit.inventory.ItemStack;
-import valorless.havenbags.BagData.Bag;
+import valorless.havenbags.Database.Bag;
 import valorless.havenbags.api.HavenBagsAPI;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.enums.BagState;
@@ -51,7 +51,7 @@ public class EventListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event) {
+	public void onUpgradeGUI(PlayerInteractEvent event) {
 		if(!Main.config.getBool("upgrade-gui.enabled")) return;
 		Player player = event.getPlayer();
 

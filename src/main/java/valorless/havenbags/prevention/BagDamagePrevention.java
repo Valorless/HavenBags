@@ -9,7 +9,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.enums.BagState;
@@ -79,28 +79,28 @@ public class BagDamagePrevention implements Listener{
 						if(Main.config.getBool("hardcore-bags.unbound") && BagState.getState(item) == BagState.NEW &&
 								PDC.getBoolean(item, "binding") == true) {
 							if(PDC.getString(item, "owner").equalsIgnoreCase("null")) {
-								BagData.deleteBag(bagID);
+								Database.deleteBag(bagID);
 								return;
 							}
 						}
 						if(Main.config.getBool("hardcore-bags.bound") && BagState.getState(item) == BagState.USED &&
 								PDC.getBoolean(item, "binding") == true) {
 							if(!PDC.getString(item, "owner").equalsIgnoreCase("null")) {
-								BagData.deleteBag(bagID);
+								Database.deleteBag(bagID);
 								return;
 							}
 						}
 						if(Main.config.getBool("hardcore-bags.unused") && BagState.getState(item) == BagState.NEW &&
 								PDC.getBoolean(item, "binding") == false) {
 							if(PDC.getString(item, "owner").equalsIgnoreCase("null")) {
-								BagData.deleteBag(bagID);
+								Database.deleteBag(bagID);
 								return;
 							}
 						}
 						if(Main.config.getBool("hardcore-bags.used") && BagState.getState(item) == BagState.USED &&
 								PDC.getBoolean(item, "binding") == false) {
 							if(PDC.getString(item, "owner").equalsIgnoreCase("ownerless")) {
-								BagData.deleteBag(bagID);
+								Database.deleteBag(bagID);
 								return;
 							}
 						}
@@ -167,28 +167,28 @@ public class BagDamagePrevention implements Listener{
 						if(Main.config.getBool("hardcore-bags.unbound") && BagState.getState(item) == BagState.NEW &&
 								PDC.getBoolean(item, "binding") == true) {
 							if(PDC.getString(item, "owner").equalsIgnoreCase("null")) {
-								BagData.deleteBag(bagID);
+								Database.deleteBag(bagID);
 								return;
 							}
 						}
 						if(Main.config.getBool("hardcore-bags.bound") && BagState.getState(item) == BagState.USED &&
 								PDC.getBoolean(item, "binding") == true) {
 							if(!PDC.getString(item, "owner").equalsIgnoreCase("null")) {
-								BagData.deleteBag(bagID);
+								Database.deleteBag(bagID);
 								return;
 							}
 						}
 						if(Main.config.getBool("hardcore-bags.unused") && BagState.getState(item) == BagState.NEW &&
 								PDC.getBoolean(item, "binding") == false) {
 							if(PDC.getString(item, "owner").equalsIgnoreCase("null")) {
-								BagData.deleteBag(bagID);
+								Database.deleteBag(bagID);
 								return;
 							}
 						}
 						if(Main.config.getBool("hardcore-bags.used") && BagState.getState(item) == BagState.USED &&
 								PDC.getBoolean(item, "binding") == false) {
 							if(PDC.getString(item, "owner").equalsIgnoreCase("ownerless")) {
-								BagData.deleteBag(bagID);
+								Database.deleteBag(bagID);
 								return;
 							}
 						}

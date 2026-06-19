@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.gson.JsonObject;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.utils.FoodComponentFixer;
@@ -320,7 +320,7 @@ public class SQLite {
 	}
     
     public List<ItemStack> loadContent(String jsonString, String uuid) {
-    	List<JsonObject> json = BagData.deserializeItemStackList(jsonString);
+    	List<JsonObject> json = Database.deserializeItemStackList(jsonString);
 		
 		List<ItemStack> items = new ArrayList<>();
 		for(JsonObject e : json) {

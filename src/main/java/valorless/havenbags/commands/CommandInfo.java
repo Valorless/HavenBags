@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatMessageType;
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Message;
 import valorless.havenbags.enums.BagState;
@@ -31,7 +31,7 @@ public class CommandInfo {
 			ItemMeta meta = sender.getInventory().getItemInMainHand().getItemMeta();
 
 			if(HavenBags.isBag(hand) && BagState.getState(hand) == BagState.USED) {
-				Data data = BagData.getBag(HavenBags.getBagUUID(hand), hand);
+				Data data = Database.getBag(HavenBags.getBagUUID(hand), hand);
 
 				String uuid = data.getUuid();
 				String owner = data.getOwner();

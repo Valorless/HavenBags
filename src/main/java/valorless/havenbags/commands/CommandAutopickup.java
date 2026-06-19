@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -32,7 +32,7 @@ public class CommandAutopickup {
 				if(HavenBags.isOwner(item, player)) {
 					if(command.args[1].equalsIgnoreCase("none")) {
 						//PDC.SetString(item, "bag-filter", null);
-						BagData.setAutoPickup(HavenBags.getBagUUID(item), "null");
+						Database.setAutoPickup(HavenBags.getBagUUID(item), "null");
 						player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
 								"none"), player));
 						HavenBags.updateBagItem(item, player);
@@ -73,7 +73,7 @@ public class CommandAutopickup {
 										AutoPickup.getFilterDisplayname(filter)), player));
 								return true;
 							}
-							BagData.setAutoPickup(HavenBags.getBagUUID(item), filter);
+							Database.setAutoPickup(HavenBags.getBagUUID(item), filter);
 							player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
 									AutoPickup.getFilterDisplayname(filter)), player));
 							//PDC.SetString(item, "bag-filter", args[1]);
@@ -107,7 +107,7 @@ public class CommandAutopickup {
 						item.setItemMeta(meta);
 						return true;
 					}
-					BagData.setAutoPickup(HavenBags.getBagUUID(item), "null");
+					Database.setAutoPickup(HavenBags.getBagUUID(item), "null");
 					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
 							"none"), player));
 					HavenBags.updateBagItem(item, player);

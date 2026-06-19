@@ -3,7 +3,7 @@ package valorless.havenbags.commands;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -24,9 +24,9 @@ public class CommandTexture {
 					if(command.args[1].chars().count() > 30) {
 						
 						try {
-							BagData.getBag(HavenBags.getBagUUID(item), item).setTexture(command.args[1]);
+							Database.getBag(HavenBags.getBagUUID(item), item).setTexture(command.args[1]);
 						}catch(Exception e) {} // No data found, just change the texture of the item only.
-						BagData.setTextureValue(item, command.args[1]);
+						Database.setTextureValue(item, command.args[1]);
 					}else {
 						String texture = Main.textures.GetString(String.format("textures.%s", command.args[1]));
 				        if(Utils.IsStringNullOrEmpty(texture)) {
@@ -34,9 +34,9 @@ public class CommandTexture {
 				        	return true;
 				        }
 						try {
-							BagData.getBag(HavenBags.getBagUUID(item), item).setTexture(texture);
+							Database.getBag(HavenBags.getBagUUID(item), item).setTexture(texture);
 						}catch(Exception e) {} // No data found, just change the texture of the item only.
-						BagData.setTextureValue(item, texture);
+						Database.setTextureValue(item, texture);
 					}
 					
 				}else {

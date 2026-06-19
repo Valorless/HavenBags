@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
@@ -77,7 +77,7 @@ public class CommandConvertEpicBackpacks {
 					}
 				}	
 				String uuid = UUID.randomUUID().toString();
-				BagData.createBag(uuid,
+				Database.createBag(uuid,
 					player.getUniqueId().toString(), 
 					cont, 
 					null, 

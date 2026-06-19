@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import at.pcgamingfreaks.Minepacks.Bukkit.API.MinepacksPlugin;
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
@@ -66,7 +66,7 @@ public class CommandConvertMinepacks {
 				}
 				
 				String uuid = UUID.randomUUID().toString();
-				BagData.createBag(uuid,
+				Database.createBag(uuid,
 						player.getUniqueId().toString(), 
 						cont, 
 						null, 

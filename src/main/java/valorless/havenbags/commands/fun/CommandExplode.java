@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -25,7 +25,7 @@ public class CommandExplode {
 		Player player = (Player)command.sender;
 		ItemStack item = player.getInventory().getItemInMainHand();
 		if(HavenBags.isBag(item)) {
-			if(BagData.isBagOpen(item)) {
+			if(Database.isBagOpen(item)) {
 				Log.Warning(Main.plugin, "Due to a recent bug, this player may be attempting to exploit the empty command while the bag is open: " + player.getName());
 				return true;
 			}
@@ -41,7 +41,7 @@ public class CommandExplode {
 	public static void Explode(ItemStack bag, Player player) {
 		Random random = new Random();
 		String uuid = PDC.getString(bag, "uuid");
-		List<ItemStack> content = BagData.getBag(uuid, bag).getContent();
+		List<ItemStack> content = Database.getBag(uuid, bag).getContent();
 		Sound sound = Sound.parse("ENTITY_GENERIC_EXPLODE:1.0:1.0");
 		sound.play(player);
 		for(int i = 0; i < content.size(); i++) {
@@ -61,7 +61,7 @@ public class CommandExplode {
 				continue;
 			}
 		}
-		BagData.updateBag(uuid, content);
+		Database.updateBag(uuid, content);
 		HavenBags.updateBagItem(bag, player);
 	}
 }

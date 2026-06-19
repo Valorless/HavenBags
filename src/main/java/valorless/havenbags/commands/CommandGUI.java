@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.gui.AdminGUI;
@@ -26,7 +26,7 @@ public class CommandGUI {
 
 		//Admin GUI
 		
-		for(Data dat : BagData.getOpenBags()) {
+		for(Data dat : Database.getOpenBags()) {
 			if(dat.getViewer().getUniqueId().equals(((Player)command.sender).getUniqueId())) {
 				return true;
 			}

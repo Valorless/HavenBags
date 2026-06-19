@@ -15,7 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.profile.PlayerProfile;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Main;
 import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
@@ -144,7 +144,7 @@ public class SkinCache implements Listener {
 	    while (iterator.hasNext()) {
 	        Entry<String, PlayerProfile> player = iterator.next();
 	        UUID uuid = player.getValue().getUniqueId();
-	        if (BagData.getBags(uuid.toString()).isEmpty()) {
+	        if (Database.getBags(uuid.toString()).isEmpty()) {
 	        	Log.debug(Main.plugin, "[DI-292] Removing player " + player.getKey() + " from skin cache, no bags found.");
 	            iterator.remove();
 	        }

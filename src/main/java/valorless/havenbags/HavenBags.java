@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.Gson;
 
-import valorless.havenbags.BagData.Bag;
+import valorless.havenbags.Database.Bag;
 import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.datamodels.BlacklistNBT;
@@ -202,7 +202,7 @@ public class HavenBags {
 	}*/
 
 	public static List<ItemStack> loadBagContentFromServer(ItemStack bag){
-		return BagData.getBag(getBagUUID(bag), bag).getContent();
+		return Database.getBag(getBagUUID(bag), bag).getContent();
 	}
 
 	/*public static boolean DoesBagExist(String uuid, String owner, @Nullable Player player) {
@@ -228,7 +228,7 @@ public class HavenBags {
 		String uuid = PDC.getString(bag, "uuid");
 		//String display = bag.getItemMeta().getDisplayName();
 		String id = uuid.replace(".json", "");
-		Data data = BagData.getBag(id, null);
+		Data data = Database.getBag(id, null);
 		//Log.Error(Main.plugin, uuid);
 		//Log.Error(Main.plugin, id);
 		//Log.Error(Main.plugin, data + "");
@@ -248,7 +248,7 @@ public class HavenBags {
 			String texture = data.getTexture();
 			if(!Utils.IsStringNullOrEmpty(texture)) {
 				if(!texture.contains("null")) {
-					BagData.setTextureValue(bag, texture);
+					Database.setTextureValue(bag, texture);
 				}
 			}
 		}else {
@@ -291,10 +291,10 @@ public class HavenBags {
 			}else {
 				if(Main.weight.getBool("weight-per-size")) {
 					PDC.setDouble(bag, "weight-limit", Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
-					BagData.setWeightMax(id, Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
+					Database.setWeightMax(id, Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
 				}else {
 					PDC.setDouble(bag, "weight-limit", Main.weight.getDouble("weight-limit"));
-					BagData.setWeightMax(id, Main.weight.getDouble("weight-limit"));
+					Database.setWeightMax(id, Main.weight.getDouble("weight-limit"));
 				}
 			}
 		}
@@ -324,7 +324,7 @@ public class HavenBags {
 			String texture = data.getTexture();
 			if(!Utils.IsStringNullOrEmpty(texture)) {
 				if(!texture.contains("null")) {
-					BagData.setTextureValue(bag, texture);
+					Database.setTextureValue(bag, texture);
 				}
 			}
 		}else {
@@ -367,10 +367,10 @@ public class HavenBags {
 			}else {
 				if(Main.weight.getBool("weight-per-size")) {
 					PDC.setDouble(bag, "weight-limit", Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
-					BagData.setWeightMax(id, Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
+					Database.setWeightMax(id, Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
 				}else {
 					PDC.setDouble(bag, "weight-limit", Main.weight.getDouble("weight-limit"));
-					BagData.setWeightMax(id, Main.weight.getDouble("weight-limit"));
+					Database.setWeightMax(id, Main.weight.getDouble("weight-limit"));
 				}
 			}
 		}
@@ -398,7 +398,7 @@ public class HavenBags {
 			if(preview.length == 0) {
 				updatePDC(bag);
 			}
-			updateUsed(bag, BagData.getBag(uuid, bag), player);
+			updateUsed(bag, Database.getBag(uuid, bag), player);
 		}else if (BagState.getState(bag) == BagState.NEW) {
 			updateNew(bag, player);
 		}
@@ -728,7 +728,7 @@ public class HavenBags {
 				return entry.getValue();
 			}
 		}
-		return BagData.getTextureValue(bag);
+		return Database.getTextureValue(bag);
 	}
 
 	public static void updateBagLore(ItemStack bag, Player player, boolean...preview) {
@@ -744,7 +744,7 @@ public class HavenBags {
 		//String owner = PDC.GetString(bag, "bag-owner");
 		Log.debug(Main.plugin, "[DI-110] " + "Attempting to initialize bag items");
 		//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, player);
-		List<ItemStack> content = BagData.getBag(uuid, bag).getContent();
+		List<ItemStack> content = Database.getBag(uuid, bag).getContent();
 
 		Sound sound = new Sound(Main.config.getString("sound.close.key"),
 				Main.config.getDouble("sound.close.volume"),
@@ -761,7 +761,7 @@ public class HavenBags {
 			}
 		}
 		//WriteBagToServer(bag, content, player);
-		BagData.updateBag(uuid, content);
+		Database.updateBag(uuid, content);
 		updateBagItem(bag, player);
 	}
 
@@ -807,12 +807,12 @@ public class HavenBags {
 				String uuid = PDC.getString(bag, "uuid");
 				//String owner = PDC.GetString(bag, "bag-owner");
 				//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, null);
-				List<ItemStack> content = BagData.getBag(uuid, bag).getContent();
+				List<ItemStack> content = Database.getBag(uuid, bag).getContent();
 				for(ItemStack item : content) {
 					weight += (Main.weight.getDouble(item.getType().toString()) * item.getAmount());
 				}
 				PDC.setDouble(bag, "weight", weight);
-				BagData.getBag(uuid, bag).setWeight(weight);
+				Database.getBag(uuid, bag).setWeight(weight);
 				return weight;
 			} catch(Exception e) {
 				return (double) 0;
@@ -909,10 +909,10 @@ public class HavenBags {
 		}else {
 			if(Main.weight.getBool("weight-per-size")) {
 				PDC.setDouble(bag, "weight-limit", Main.weight.getDouble("weight-size-" + PDC.getInteger(bag, "size")));
-				BagData.getBag(HavenBags.getBagUUID(bag), bag).setWeight(Main.weight.getDouble("weight-size-" + PDC.getInteger(bag, "size")));
+				Database.getBag(HavenBags.getBagUUID(bag), bag).setWeight(Main.weight.getDouble("weight-size-" + PDC.getInteger(bag, "size")));
 			}else {
 				PDC.setDouble(bag, "weight-limit", Main.weight.getDouble("weight-limit"));
-				BagData.getBag(HavenBags.getBagUUID(bag), bag).setWeight(Main.weight.getDouble("weight-limit"));
+				Database.getBag(HavenBags.getBagUUID(bag), bag).setWeight(Main.weight.getDouble("weight-limit"));
 			}
 		}
 		return false;
@@ -1234,7 +1234,7 @@ public class HavenBags {
 		item.setItemMeta(meta);
 
 		if(material == Material.PLAYER_HEAD && (isBase64 || skin != null)) {
-			BagData.setTextureValue(item, skin != null ? skin : value);
+			Database.setTextureValue(item, skin != null ? skin : value);
 		}
 
 		return item;
@@ -1275,7 +1275,7 @@ public class HavenBags {
 
 		if(material == Material.PLAYER_HEAD) {
 			if(Base64Validator.isValidBase64(skin)) {
-				BagData.setTextureValue(item, skin);
+				Database.setTextureValue(item, skin);
 			}else {
 				Log.error(Main.plugin, "token.effect.texture is not a valid base64 skin.");
 			}
@@ -1287,7 +1287,7 @@ public class HavenBags {
 	public static boolean isBagFull(ItemStack bag) {
 		try {
 			int size = PDC.getInteger(bag, "size");
-			List<ItemStack> content = BagData.getBag(HavenBags.getBagUUID(bag), null).getContent();
+			List<ItemStack> content = Database.getBag(HavenBags.getBagUUID(bag), null).getContent();
 			content.removeIf(item -> item.getType() == Material.AIR);
 			content.removeIf(Objects::isNull);
             return content.size() >= size;
@@ -1325,7 +1325,7 @@ public class HavenBags {
 	public static boolean isBagEmpty(ItemStack bag) {
 		try {
 			int size = PDC.getInteger(bag, "size");
-			List<ItemStack> content = BagData.getBag(HavenBags.getBagUUID(bag), null).getContent();
+			List<ItemStack> content = Database.getBag(HavenBags.getBagUUID(bag), null).getContent();
 			content.removeIf(item -> item.getType() == Material.AIR);
 			content.removeIf(Objects::isNull);
             return size == 0 || content.isEmpty();
@@ -1362,7 +1362,7 @@ public class HavenBags {
 
 	public static int slotsEmpty(ItemStack bag) {
 		int size = PDC.getInteger(bag, "size");
-		List<ItemStack> content = BagData.getBag(HavenBags.getBagUUID(bag), null).getContent();
+		List<ItemStack> content = Database.getBag(HavenBags.getBagUUID(bag), null).getContent();
 		content.removeIf(Objects::isNull);
 		content.removeIf(item -> item.getType() == Material.AIR);
 		return size - content.size();
@@ -1372,7 +1372,7 @@ public class HavenBags {
 		//Log.Error(Main.plugin, "content " + PDC.GetInt(bag, "bag-size"));
 		double size = Double.parseDouble(PDC.getInteger(bag, "size") + ".0");
 		//Log.Error(Main.plugin, "size " + size);
-		List<ItemStack> used = BagData.getBag(HavenBags.getBagUUID(bag), null).getContent();
+		List<ItemStack> used = Database.getBag(HavenBags.getBagUUID(bag), null).getContent();
 		used.removeIf(Objects::isNull);
 		used.removeIf(item -> item.getType() == Material.AIR);
 		//Log.Error(Main.plugin, "empty " + (size - used.size()));
@@ -1429,7 +1429,7 @@ public class HavenBags {
 		int count = 0;
 
 		for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
-			count += BagData.getBag(HavenBags.getBagUUID(bag.item), null).getSize();
+			count += Database.getBag(HavenBags.getBagUUID(bag.item), null).getSize();
 		}
 
 		return count;
@@ -1439,8 +1439,8 @@ public class HavenBags {
 		boolean access = false;
 		String uuid = player.getUniqueId().toString();
 		for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
-			if(BagData.getBag(HavenBags.getBagUUID(bag.item), null).getOwner().equalsIgnoreCase(uuid)) access = true;
-			for(String trusted : BagData.getBag(HavenBags.getBagUUID(bag.item), null).getTrusted()) {
+			if(Database.getBag(HavenBags.getBagUUID(bag.item), null).getOwner().equalsIgnoreCase(uuid)) access = true;
+			for(String trusted : Database.getBag(HavenBags.getBagUUID(bag.item), null).getTrusted()) {
                 if (trusted.equalsIgnoreCase(uuid)) {
                     access = true;
                     break;

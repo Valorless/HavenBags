@@ -183,7 +183,7 @@ public class AdminGUI implements Listener {
 		}else if(type == GUIType.Confirmation) {
 			content = prepareConfirmation();
 		}else if(type == GUIType.Content) {
-			Data data = BagData.getBag(HavenBags.getBagUUID(selectedBag), null);
+			Data data = Database.getBag(HavenBags.getBagUUID(selectedBag), null);
 			content = data.getContent();
 		}
 		open();
@@ -734,8 +734,8 @@ public class AdminGUI implements Listener {
 			if(action != null && action.equalsIgnoreCase("confirm")){
 				String uuid = PDC.getString(selectedBag, "uuid");
 
-				Data data = BagData.getBag(uuid, null).clone();
-				BagData.deleteBag(uuid);
+				Data data = Database.getBag(uuid, null).clone();
+				Database.deleteBag(uuid);
 
 				type = GUIType.DeletionPlayer;
 				reload(e);
@@ -907,7 +907,7 @@ public class AdminGUI implements Listener {
 		//Collection<? extends Player> p = Bukkit.getOnlinePlayers();
 		//List<Player> players = new ArrayList<>(p);
 
-		if(!BagData.getBags("ownerless").isEmpty()) {
+		if(!Database.getBags("ownerless").isEmpty()) {
 			String bagTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
 			ItemStack ownerless = HeadCreator.itemFromBase64(bagTexture);
 			ItemMeta ownerlessmeta = ownerless.getItemMeta();
@@ -923,7 +923,7 @@ public class AdminGUI implements Listener {
 
 		for (Player p : onlinePlayers) {
 			String uuid = p.getUniqueId().toString();
-			if (BagData.getBags(uuid).isEmpty()) continue;
+			if (Database.getBags(uuid).isEmpty()) continue;
 
 			//ItemStack entry = HeadCreator.itemFromUuid(p.getUniqueId()); <-- Causes HTTP 429.
 			ItemStack entry = new ItemStack(Material.PLAYER_HEAD);
@@ -952,7 +952,7 @@ public class AdminGUI implements Listener {
 		// OFFLINE PLAYERS (excluding those who are currently online)
 		List<OfflinePlayer> offlinePlayers = Arrays.stream(Bukkit.getOfflinePlayers())
 				.filter(p -> !p.isOnline())
-				.filter(p -> !BagData.getBags(p.getUniqueId().toString()).isEmpty())
+				.filter(p -> !Database.getBags(p.getUniqueId().toString()).isEmpty())
 				.sorted(Comparator.comparing(OfflinePlayer::getName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
 				.toList();
 
@@ -987,7 +987,7 @@ public class AdminGUI implements Listener {
 
 	List<ItemStack> preparePlayerBags(String playeruuid) {
 		List<ItemStack> bags = new ArrayList<ItemStack>();
-		List<Data> bagdata = BagData.getBagsData(playeruuid);
+		List<Data> bagdata = Database.getBagsData(playeruuid);
 
 		for(Data data : bagdata){
 			List<ItemStack> Content  = data.getContent();
@@ -1000,9 +1000,9 @@ public class AdminGUI implements Listener {
 				bagItem.setType(data.getMaterial());
 				if(data.getMaterial() == Material.PLAYER_HEAD) {
 					if(!Utils.IsStringNullOrEmpty(data.getTexture())) {
-						BagData.setTextureValue(bagItem, data.getTexture());
+						Database.setTextureValue(bagItem, data.getTexture());
 					}else {
-						BagData.setTextureValue(bagItem, bagTexture);
+						Database.setTextureValue(bagItem, bagTexture);
 					}
 				}
 			}

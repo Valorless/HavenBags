@@ -3,7 +3,7 @@ package valorless.havenbags.commands;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -17,7 +17,7 @@ public class CommandEmpty {
 		Player player = (Player)command.sender;
 		ItemStack item = player.getInventory().getItemInMainHand();
 		if(HavenBags.isBag(item)) {
-			if(BagData.isBagOpen(item)) {
+			if(Database.isBagOpen(item)) {
 				Log.Warning(Main.plugin, "Due to a recent bug, this player may be attempting to exploit the empty command while the bag is open: " + player.getName());
 				return true;
 			}

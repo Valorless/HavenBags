@@ -14,12 +14,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CrossbowMeta;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.valorlessutils.logging.Log;
-import valorless.havenbags.BagData.Bag;
+import valorless.havenbags.Database.Bag;
 
 public class Quiver implements Listener {
 	
@@ -35,7 +35,7 @@ public class Quiver implements Listener {
 	@EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
 		if(Main.config.getBool("quiver-bags") == false) return;
-		if(!BagData.isReady()) {
+		if(!Database.isReady()) {
 			return;
 		}
 		if(event.getAction() != Action.RIGHT_CLICK_AIR  && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
@@ -72,7 +72,7 @@ public class Quiver implements Listener {
     	
     	if(offhand != null && offhand.getType() != Material.AIR) {
     		if(HavenBags.isBag(offhand) && !hasProjectile(player)) {
-				Bag quiver = new Bag(offhand, BagData.getBag(HavenBags.getBagUUID(offhand), offhand).getContent());
+				Bag quiver = new Bag(offhand, Database.getBag(HavenBags.getBagUUID(offhand), offhand).getContent());
 				if(quiver != null) {
 					if(hasFreeSpace(player)) {
 						//Log.Info(Main.plugin, "Free space");
@@ -112,7 +112,7 @@ public class Quiver implements Listener {
     		if(item.getType() == Material.ARROW) {
     			int amount = item.getAmount() -1;
     			item.setAmount(amount);
-    			BagData.updateBag(bag.item, bag.content);
+    			Database.updateBag(bag.item, bag.content);
     			HavenBags.updateBagLore(bag.item, player);
     			return true;
     		}
@@ -137,7 +137,7 @@ public class Quiver implements Listener {
     			if(item.getType() == Material.ARROW) {
     				int amount = item.getAmount() -1;
     				item.setAmount(amount);
-        			BagData.updateBag(bag.item, bag.content);
+        			Database.updateBag(bag.item, bag.content);
         			HavenBags.updateBagLore(bag.item, player);
     				return true;
     			}
@@ -184,7 +184,7 @@ public class Quiver implements Listener {
     				ItemStack clone = item.clone();
     				int amount = item.getAmount() -1;
     				item.setAmount(amount);
-    				BagData.updateBag(bag.item, bag.content);
+    				Database.updateBag(bag.item, bag.content);
     				HavenBags.updateBagLore(bag.item, player);
     				//Log.Info(Main.plugin, item.toString());
 

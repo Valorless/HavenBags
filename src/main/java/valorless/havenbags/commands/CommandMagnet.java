@@ -3,7 +3,7 @@ package valorless.havenbags.commands;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.datamodels.Data;
@@ -23,14 +23,14 @@ public class CommandMagnet {
 						Boolean value = false;
 						if(command.args[1].equalsIgnoreCase("on")) value = true;
 						if(command.args[1].equalsIgnoreCase("off")) value = false;
-						Data data = BagData.getBag(uuid, null);
+						Data data = Database.getBag(uuid, null);
 						data.setMagnet(value);
 						HavenBags.updateBagItem(item, player);
 						player.sendMessage(Lang.get("prefix") + Lang.get("magnet-command").replace("%value%", command.args[1]));
 						return true;
 					}
 				}else {
-					Data data = BagData.getBag(uuid, null);
+					Data data = Database.getBag(uuid, null);
 					data.setMagnet(false);
 					HavenBags.updateBagItem(item, player);
 					player.sendMessage(Lang.get("prefix") + Lang.get("magnet-command").replace("%value%", "off"));

@@ -6,7 +6,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -33,7 +33,7 @@ public class CommandUntrust {
 								//list.remove(i);
 							//}
 						//}
-						BagData.removeTrusted(HavenBags.getBagUUID(item), command.args[1]);
+						Database.removeTrusted(HavenBags.getBagUUID(item), command.args[1]);
 						HavenBags.updateBagItem(item, player);
 						
 						List<Placeholder> ph = new ArrayList<Placeholder>();

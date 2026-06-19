@@ -3,7 +3,7 @@ package valorless.havenbags.commands;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 
 public class CommandWeight {
@@ -20,7 +20,7 @@ public class CommandWeight {
 				try {
 					//Integer value = Integer.valueOf(args[1]);
 					Double value = Double.valueOf(command.args[1]);
-					BagData.setWeightMax(HavenBags.getBagUUID(item), value);
+					Database.setWeightMax(HavenBags.getBagUUID(item), value);
 					HavenBags.updateBagItem(item, player);
 					//PDC.SetDouble(item, "bag-weight-limit", value);
 				} catch (Exception e) {

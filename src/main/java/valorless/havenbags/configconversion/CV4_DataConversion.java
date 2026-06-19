@@ -18,7 +18,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.DoNotCall;
 import valorless.valorlessutils.logging.Log;
@@ -83,7 +83,7 @@ public class CV4_DataConversion {
     		int converted = 0;
     		int failed = 0;
     		
-    		List<String> owners	= BagData.getBagOwners();
+    		List<String> owners	= Database.getBagOwners();
     		for(String owner : owners) {
     			List<String> bags = GetBags(owner);
     			for(String bag : bags) {

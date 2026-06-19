@@ -1,6 +1,6 @@
 package valorless.havenbags.database;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.FoodComponentFixer;
@@ -103,7 +103,7 @@ public class Files {
 	
 	private static List<ItemStack> loadContent(Config file) {
 		String uuid = file.getString("uuid");
-		List<JsonObject> json = BagData.deserializeItemStackList(file.getString("content"));
+		List<JsonObject> json = Database.deserializeItemStackList(file.getString("content"));
 		
 		List<ItemStack> items = new ArrayList<>();
 		for(JsonObject e : json) {
@@ -149,7 +149,7 @@ public class Files {
 		}
 		bagData.set("size", content.size());
 		if(bag.getType() == Material.PLAYER_HEAD) {
-			bagData.set("texture", BagData.getTextureValue(bag));
+			bagData.set("texture", Database.getTextureValue(bag));
 			bagData.set("custommodeldata", 0);
 		}else {
 			if(bag.hasItemMeta()) {

@@ -2,7 +2,7 @@ package valorless.havenbags.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -17,16 +17,16 @@ public class CommandClearContent {
 
 		if (command.args.length == 2){
 			String target = command.args[1];
-			Data bag = BagData.getBag(target, null);
+			Data bag = Database.getBag(target, null);
 			if(bag != null) {
-				return BagData.clearBagContent(target);
+				return Database.clearBagContent(target);
 			}
 			else if(target.equalsIgnoreCase("all")) {
-				return BagData.clearAllBagContents();
+				return Database.clearAllBagContents();
 			}
 			else if(Bukkit.getPlayer(target) != null) {
 				Player player = Bukkit.getPlayer(target);
-				return BagData.clearBagContentPlayer(player.getUniqueId().toString());
+				return Database.clearBagContentPlayer(player.getUniqueId().toString());
 			}
 			else {
 				Log.Error(Main.plugin, "Unable to find the targetted bag(s) to clear.");

@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.json.JSONObject;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -50,7 +50,7 @@ public class HeadCreator {
         NBTCompound properties = skullOwner.addCompound("Properties");
         properties.getCompoundList("textures").addCompound().setString("Value", base64);*/
 
-        BagData.setTextureValue(skull, base64);
+        Database.setTextureValue(skull, base64);
 
         //Log.Error(Main.plugin, skull.toString());
         //Log.Error(Main.plugin, nbtItem.getItem().toString());

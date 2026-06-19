@@ -14,7 +14,7 @@ import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.enums.BagState;
@@ -107,17 +107,17 @@ public class BagSkin implements Listener{
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.getString(String.format("textures.%s", value));
 					if(BagState.getState(clicked) == BagState.NEW) {
-						BagData.setTextureValue(clicked, texture);
+						Database.setTextureValue(clicked, texture);
 					}else {
-						BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(texture);
+						Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(texture);
 					}
 				}else {
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
 						if(BagState.getState(clicked) == BagState.NEW) {
-							BagData.setTextureValue(clicked, value);
+							Database.setTextureValue(clicked, value);
 						}else {
-							BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(value);
+							Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(value);
 						}
 					}else {
 						Log.debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
@@ -125,7 +125,7 @@ public class BagSkin implements Listener{
 					}
 				}
 				Log.debug(Main.plugin, "[DI-71] " + "[BagSkin] Texture Skin.");
-				BagData.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(value);
+				Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(value);
 			}
 			Log.debug(Main.plugin, "[DI-72] " + "[BagSkin] Applied skin!");
 		}
@@ -143,11 +143,11 @@ public class BagSkin implements Listener{
 				if((long) value.length() < 30) {
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.getString(String.format("textures.%s", value));
-					BagData.setTextureValue(item, texture);
+					Database.setTextureValue(item, texture);
 				}else {
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						BagData.setTextureValue(item, value);
+						Database.setTextureValue(item, value);
 					}else {
 						Log.debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
 						item = new ItemStack(Material.AIR);
@@ -181,11 +181,11 @@ public class BagSkin implements Listener{
 				if((long) value.length() < 30) {
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.getString(String.format("textures.%s", value));
-					BagData.setTextureValue(item, texture);
+					Database.setTextureValue(item, texture);
 				}else {
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						BagData.setTextureValue(item, value);
+						Database.setTextureValue(item, value);
 					}else {
 						Log.debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
 						item = new ItemStack(Material.AIR);

@@ -12,8 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import valorless.havenbags.BagData;
-import valorless.havenbags.BagData.Bag;
+import valorless.havenbags.Database;
+import valorless.havenbags.Database.Bag;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -96,7 +96,7 @@ public class HavenBagsAPI {
 	 */
 	public static Data getBagData(ItemStack item) {
 		if(!isBag(item)) return null;
-		return BagData.getBag(getBagUUID(item), null);
+		return Database.getBag(getBagUUID(item), null);
 	}
 	
 	/**
@@ -114,7 +114,7 @@ public class HavenBagsAPI {
 	 * @return true if the bag exists
 	 */
 	public static boolean bagExists(String uuid) {
-		return BagData.bagExists(uuid);
+		return Database.bagExists(uuid);
 	}
 	
 	/**
@@ -123,7 +123,7 @@ public class HavenBagsAPI {
 	 * @return Data for the bag or null if not found
 	 */
 	public static Data getBag(String uuid) {
-		return BagData.getBag(uuid, null);
+		return Database.getBag(uuid, null);
 	}
 	
 	/**
@@ -132,7 +132,7 @@ public class HavenBagsAPI {
 	 * @return owner UUID string
 	 */
 	public static String getBagOwner(String uuid) {
-		return BagData.getOwner(uuid);
+		return Database.getOwner(uuid);
 	}
 	
 	/**
@@ -141,7 +141,7 @@ public class HavenBagsAPI {
 	 * @return list of Data for the player's bags
 	 */
 	public static List<Data> getPlayerBags(String playerUUID) {
-		return BagData.getBagsData(playerUUID);
+		return Database.getBagsData(playerUUID);
 	}
 	
 	/**
@@ -152,7 +152,7 @@ public class HavenBagsAPI {
 	public static List<Data> getBagsOnPlayer(Player player){
 		List<Data> bags = new ArrayList<>();
 		for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
-			bags.add(BagData.getBag(getBagUUID(bag.item), null));
+			bags.add(Database.getBag(getBagUUID(bag.item), null));
 		}
 		return bags;
 	}
@@ -163,7 +163,7 @@ public class HavenBagsAPI {
 	 * @return true if open
 	 */
 	public static boolean isBagOpen(String uuid) {
-		return BagData.isBagOpen(uuid, null);
+		return Database.isBagOpen(uuid, null);
 	}
 	
 	/**
@@ -173,7 +173,7 @@ public class HavenBagsAPI {
 	 */
 	public static boolean closeBag(String uuid) {
 		if(isBagOpen(uuid)) {
-			 return BagData.getBag(uuid, null).getGui().close(true);
+			 return Database.getBag(uuid, null).getGui().close(true);
 		}
 		else return false;
 	}
@@ -184,7 +184,7 @@ public class HavenBagsAPI {
 	 * @return Player who opened the bag, or null if not open
 	 */
 	public static Player bagOpenBy(String uuid) {
-		return BagData.bagOpenBy(uuid, null);
+		return Database.bagOpenBy(uuid, null);
 	}
 	
 	/**
@@ -192,7 +192,7 @@ public class HavenBagsAPI {
 	 * @return list of open bag Data
 	 */
 	public static List<Data> getOpenBagsUUIDs() {
-		return BagData.getOpenBags();
+		return Database.getOpenBags();
 	}
 	
 	/**
@@ -200,7 +200,7 @@ public class HavenBagsAPI {
 	 * @return database type as string. i.e, "FILES", "SQLITE", etc.
 	 */
 	public static String getDatabaseType() {
-		return BagData.getDatabase().toString();
+		return Database.getDatabaseType().toString();
 	}
 	
 	/**
@@ -209,7 +209,7 @@ public class HavenBagsAPI {
 	 * @return Data for the created bag
 	 */
 	public static Data createBag(BagCreationObject creationObject) {
-		return BagData.createBag(creationObject.uuid, creationObject.owner, creationObject.contents,
+		return Database.createBag(creationObject.uuid, creationObject.owner, creationObject.contents,
 				creationObject.creator.equalsIgnoreCase("null") ? null : Bukkit.getOfflinePlayer(UUID.fromString(creationObject.creator)).getPlayer(), 
 				createUnusedBagItem(creationObject.contents.size(), !creationObject.owner.equalsIgnoreCase("ownerless")));
 	}
@@ -220,7 +220,7 @@ public class HavenBagsAPI {
 	 * @return Data for the created bag
 	 */
 	public static Data createBag(Data bagData) {
-		return BagData.createBag(bagData);
+		return Database.createBag(bagData);
 	}
 
 	/**
@@ -285,7 +285,7 @@ public class HavenBagsAPI {
 	 * @return true if deletion succeeded
 	 */
 	public static boolean deleteBag(String uuid) {
-		return BagData.deleteBag(uuid);
+		return Database.deleteBag(uuid);
 	}
 	
 	/**
@@ -423,9 +423,9 @@ public class HavenBagsAPI {
 		HavenBags.updateBagLore(clonedBag, null, true);
 		if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
 			if(owner.equalsIgnoreCase("ownerless")) {
-				BagData.setTextureValue(clonedBag, Main.config.getString(String.format("bag-textures.size-ownerless-%s", newSize)));
+				Database.setTextureValue(clonedBag, Main.config.getString(String.format("bag-textures.size-ownerless-%s", newSize)));
 			}else {
-				BagData.setTextureValue(clonedBag, Main.config.getString(String.format("bag-textures.size-%s", newSize)));
+				Database.setTextureValue(clonedBag, Main.config.getString(String.format("bag-textures.size-%s", newSize)));
 			}
 		}
 		
@@ -443,7 +443,7 @@ public class HavenBagsAPI {
 		if(!Base64Validator.isValidBase64(base64Texture)) {
 			throw new IllegalArgumentException("Provided texture is not valid Base64!");
 		}
-		BagData.setTextureValue(bag, base64Texture);
+		Database.setTextureValue(bag, base64Texture);
 	}
 	
 	/**
@@ -453,7 +453,7 @@ public class HavenBagsAPI {
 	 * @return A Base64-encoded string representing the bag's texture.
 	 */
 	public static String getTexture(ItemStack bag) {
-		return BagData.getTextureValue(bag);
+		return Database.getTextureValue(bag);
 	}
 	
 	/**

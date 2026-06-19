@@ -17,8 +17,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-import valorless.havenbags.BagData;
-import valorless.havenbags.BagData.Bag;
+import valorless.havenbags.Database;
+import valorless.havenbags.Database.Bag;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -175,7 +175,7 @@ public class BagEffects implements Listener {
 	    BukkitTask task = Bukkit.getScheduler().runTaskTimer(Main.plugin, () -> {
 	        
 	        for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
-	        	Data data = BagData.getBag(HavenBags.getBagUUID(bag.item), null);
+	        	Data data = Database.getBag(HavenBags.getBagUUID(bag.item), null);
 	        	if(data.getEffect() == null) continue;
 	        	if(data.getEffect().equalsIgnoreCase("null")) continue;
 	        	

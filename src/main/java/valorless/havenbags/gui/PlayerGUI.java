@@ -361,8 +361,8 @@ public class PlayerGUI implements Listener {
 				}
 				String uuid = PDC.getString(selectedBag, "uuid");
 
-				Data data = BagData.getBag(uuid, null).clone();
-				BagData.deleteBag(uuid);
+				Data data = Database.getBag(uuid, null).clone();
+				Database.deleteBag(uuid);
 
 				type = GUIType.Deletion;
 				reload(e);
@@ -446,7 +446,7 @@ public class PlayerGUI implements Listener {
 
 	List<ItemStack> preparePlayerBags(String playeruuid) {
 		List<ItemStack> bags = new ArrayList<ItemStack>();
-		List<Data> bagdata = BagData.getBagsData(playeruuid);
+		List<Data> bagdata = Database.getBagsData(playeruuid);
 
 		for(Data data : bagdata){
 			List<ItemStack> Content  = data.getContent();
@@ -459,9 +459,9 @@ public class PlayerGUI implements Listener {
 				bagItem.setType(data.getMaterial());
 				if(data.getMaterial() == Material.PLAYER_HEAD) {
 					if(!Utils.IsStringNullOrEmpty(data.getTexture())) {
-						BagData.setTextureValue(bagItem, data.getTexture());
+						Database.setTextureValue(bagItem, data.getTexture());
 					}else {
-						BagData.setTextureValue(bagItem, bagTexture);
+						Database.setTextureValue(bagItem, bagTexture);
 					}
 				}
 			}

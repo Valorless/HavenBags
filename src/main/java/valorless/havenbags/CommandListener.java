@@ -36,7 +36,7 @@ public class CommandListener implements CommandExecutor {
 			if (subCommand.equals("reload")) {
 				return CommandReload.run(cmd, "havenbags.reload");
 			}
-			if(!BagData.isReady()) {
+			if(!Database.isReady()) {
 				return true;
 			}
 			switch(subCommand) {

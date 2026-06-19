@@ -8,7 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Data;
@@ -23,7 +23,7 @@ public class AutoSorter {
 	public static void sortBag(ItemStack bag) {
 		if(!HavenBags.isBag(bag)) return;
 		String uuid = HavenBags.getBagUUID(bag);
-		Data data = BagData.getBag(uuid, null);
+		Data data = Database.getBag(uuid, null);
 		
 		if(!data.hasAutoSort()) return;
 		

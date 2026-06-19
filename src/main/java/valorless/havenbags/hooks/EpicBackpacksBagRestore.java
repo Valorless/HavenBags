@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
@@ -226,7 +226,7 @@ public class EpicBackpacksBagRestore implements Listener{
     List<ItemStack> loadContent(String owner, String uuid) {
 		String id = uuid.replace(".json", "");
 		id = id.replace(".yml", "");
-		return BagData.getBag(id, null).getContent();
+		return Database.getBag(id, null).getContent();
 	}
     
     
