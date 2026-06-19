@@ -288,6 +288,11 @@ public class Bag {
 		this.autopickup = autopickup;
 	}
 
+	public void resetAutopickup() {
+		this.changed = true;
+		this.autopickup = "null";
+	}
+
 	/** @return current weight */
 	public double getWeight() {
 		return weight;

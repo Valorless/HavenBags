@@ -20,6 +20,7 @@ import valorless.havenbags.Main;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.items.ItemUtils;
 
@@ -107,7 +108,7 @@ public class BagSkin implements Listener{
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.getString(String.format("textures.%s", value));
 					if(BagState.getState(clicked) == BagState.NEW) {
-						Database.setTextureValue(clicked, texture);
+						HeadCreator.setTextureValue(clicked, texture);
 					}else {
 						Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(texture);
 					}
@@ -115,7 +116,7 @@ public class BagSkin implements Listener{
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
 						if(BagState.getState(clicked) == BagState.NEW) {
-							Database.setTextureValue(clicked, value);
+							HeadCreator.setTextureValue(clicked, value);
 						}else {
 							Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(value);
 						}
@@ -143,11 +144,11 @@ public class BagSkin implements Listener{
 				if((long) value.length() < 30) {
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.getString(String.format("textures.%s", value));
-					Database.setTextureValue(item, texture);
+					HeadCreator.setTextureValue(item, texture);
 				}else {
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						Database.setTextureValue(item, value);
+						HeadCreator.setTextureValue(item, value);
 					}else {
 						Log.debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
 						item = new ItemStack(Material.AIR);
@@ -181,11 +182,11 @@ public class BagSkin implements Listener{
 				if((long) value.length() < 30) {
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.getString(String.format("textures.%s", value));
-					Database.setTextureValue(item, texture);
+					HeadCreator.setTextureValue(item, texture);
 				}else {
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						Database.setTextureValue(item, value);
+						HeadCreator.setTextureValue(item, value);
 					}else {
 						Log.debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
 						item = new ItemStack(Material.AIR);

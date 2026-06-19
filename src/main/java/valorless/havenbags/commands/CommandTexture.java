@@ -7,6 +7,7 @@ import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.utils.Utils;
 
 public class CommandTexture {
@@ -26,7 +27,7 @@ public class CommandTexture {
 						try {
 							Database.getBag(HavenBags.getBagUUID(item), item).setTexture(command.args[1]);
 						}catch(Exception e) {} // No data found, just change the texture of the item only.
-						Database.setTextureValue(item, command.args[1]);
+						HeadCreator.setTextureValue(item, command.args[1]);
 					}else {
 						String texture = Main.textures.GetString(String.format("textures.%s", command.args[1]));
 				        if(Utils.IsStringNullOrEmpty(texture)) {
@@ -36,7 +37,7 @@ public class CommandTexture {
 						try {
 							Database.getBag(HavenBags.getBagUUID(item), item).setTexture(texture);
 						}catch(Exception e) {} // No data found, just change the texture of the item only.
-						Database.setTextureValue(item, texture);
+						HeadCreator.setTextureValue(item, texture);
 					}
 					
 				}else {

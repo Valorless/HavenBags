@@ -33,7 +33,7 @@ public class CommandUntrust {
 								//list.remove(i);
 							//}
 						//}
-						Database.removeTrusted(HavenBags.getBagUUID(item), command.args[1]);
+						Database.getBag(HavenBags.getBagUUID(item), null).removeTrusted(command.args[1]);
 						HavenBags.updateBagItem(item, player);
 						
 						List<Placeholder> ph = new ArrayList<Placeholder>();

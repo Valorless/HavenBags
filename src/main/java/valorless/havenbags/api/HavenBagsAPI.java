@@ -131,7 +131,7 @@ public class HavenBagsAPI {
 	 * @return owner UUID string
 	 */
 	public static String getBagOwner(String uuid) {
-		return Database.getOwner(uuid);
+		return Database.getBag(uuid, null).getOwner();
 	}
 	
 	/**
@@ -422,9 +422,9 @@ public class HavenBagsAPI {
 		HavenBags.updateBagLore(clonedBag, null, true);
 		if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
 			if(owner.equalsIgnoreCase("ownerless")) {
-				Database.setTextureValue(clonedBag, Main.config.getString(String.format("bag-textures.size-ownerless-%s", newSize)));
+				HeadCreator.setTextureValue(clonedBag, Main.config.getString(String.format("bag-textures.size-ownerless-%s", newSize)));
 			}else {
-				Database.setTextureValue(clonedBag, Main.config.getString(String.format("bag-textures.size-%s", newSize)));
+				HeadCreator.setTextureValue(clonedBag, Main.config.getString(String.format("bag-textures.size-%s", newSize)));
 			}
 		}
 		
@@ -442,7 +442,7 @@ public class HavenBagsAPI {
 		if(!Base64Validator.isValidBase64(base64Texture)) {
 			throw new IllegalArgumentException("Provided texture is not valid Base64!");
 		}
-		Database.setTextureValue(bag, base64Texture);
+		HeadCreator.setTextureValue(bag, base64Texture);
 	}
 	
 	/**
@@ -452,7 +452,7 @@ public class HavenBagsAPI {
 	 * @return A Base64-encoded string representing the bag's texture.
 	 */
 	public static String getTexture(ItemStack bag) {
-		return Database.getTextureValue(bag);
+		return HeadCreator.getTextureValue(bag);
 	}
 	
 	/**

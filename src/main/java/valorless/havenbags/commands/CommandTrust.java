@@ -38,7 +38,7 @@ public class CommandTrust {
 						//}
 						//list.add(args[1]);
 						//PDC.SetStringList(item, "bag-trust", list);
-						Database.addTrusted(HavenBags.getBagUUID(item), command.args[1]);
+						Database.getBag(HavenBags.getBagUUID(item), null).addTrusted(command.args[1]);
 						HavenBags.updateBagItem(item, player);
 						
 						List<Placeholder> ph = new ArrayList<Placeholder>();

@@ -32,7 +32,8 @@ public class CommandAutopickup {
 				if(HavenBags.isOwner(item, player)) {
 					if(command.args[1].equalsIgnoreCase("none")) {
 						//PDC.SetString(item, "bag-filter", null);
-						Database.setAutoPickup(HavenBags.getBagUUID(item), "null");
+						Database.getBag(HavenBags.getBagUUID(item), null).resetAutopickup();
+						//Database.setAutoPickup(HavenBags.getBagUUID(item), "null");
 						player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
 								"none"), player));
 						HavenBags.updateBagItem(item, player);
@@ -73,7 +74,8 @@ public class CommandAutopickup {
 										AutoPickup.getFilterDisplayname(filter)), player));
 								return true;
 							}
-							Database.setAutoPickup(HavenBags.getBagUUID(item), filter);
+							//Database.setAutoPickup(HavenBags.getBagUUID(item), filter);
+							Database.getBag(HavenBags.getBagUUID(item), null).setAutopickup(filter);
 							player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
 									AutoPickup.getFilterDisplayname(filter)), player));
 							//PDC.SetString(item, "bag-filter", args[1]);
@@ -107,7 +109,8 @@ public class CommandAutopickup {
 						item.setItemMeta(meta);
 						return true;
 					}
-					Database.setAutoPickup(HavenBags.getBagUUID(item), "null");
+					Database.getBag(HavenBags.getBagUUID(item), null).resetAutopickup();
+					//Database.setAutoPickup(HavenBags.getBagUUID(item), "null");
 					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-pickup-command").replace("%value%",
 							"none"), player));
 					HavenBags.updateBagItem(item, player);

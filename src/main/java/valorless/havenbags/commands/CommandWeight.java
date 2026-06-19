@@ -20,7 +20,8 @@ public class CommandWeight {
 				try {
 					//Integer value = Integer.valueOf(args[1]);
 					Double value = Double.valueOf(command.args[1]);
-					Database.setWeightMax(HavenBags.getBagUUID(item), value);
+					Database.getBag(HavenBags.getBagUUID(item), null).setWeightMax(value);
+					//Database.setWeightMax(HavenBags.getBagUUID(item), value);
 					HavenBags.updateBagItem(item, player);
 					//PDC.SetDouble(item, "bag-weight-limit", value);
 				} catch (Exception e) {

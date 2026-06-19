@@ -29,6 +29,7 @@ import valorless.havenbags.events.gui.PrepareUpgradeEvent;
 import valorless.havenbags.features.BagEffects;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.logging.Log;
@@ -297,7 +298,8 @@ public class UpgradeGUI implements Listener {
 			}
 
 			if(Main.weight.getBool("weight-per-size")) {
-				Database.setWeightMax(HavenBags.getBagUUID(clicked), Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
+				Database.getBag(HavenBags.getBagUUID(clicked), null).setWeightMax(Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
+				//Database.setWeightMax(HavenBags.getBagUUID(clicked), Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
 				Log.debug(Main.plugin, "[DI-84] " + "[BagUpgrade] Weight Limit set to " + Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
 			}
 			if(clicked.getType() == Material.PLAYER_HEAD) {
@@ -333,7 +335,7 @@ public class UpgradeGUI implements Listener {
 					Log.debug(Main.plugin, "[DI-278] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.GetString(String.format("textures.%s", value));
 					if(BagState.getState(clicked) == BagState.NEW) {
-						Database.setTextureValue(clicked, texture);
+						HeadCreator.setTextureValue(clicked, texture);
 					}else {
 						Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(texture);
 					}
@@ -341,7 +343,7 @@ public class UpgradeGUI implements Listener {
 					Log.debug(Main.plugin, "[DI-278] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
 						if(BagState.getState(clicked) == BagState.NEW) {
-							Database.setTextureValue(clicked, value);
+							HeadCreator.setTextureValue(clicked, value);
 						}else {
 							Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(value);
 						}
@@ -586,9 +588,9 @@ public class UpgradeGUI implements Listener {
 			HavenBags.updateBagLore(item, null, true);
 			if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
 				if(owner.equalsIgnoreCase("ownerless")) {
-					Database.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-ownerless-%s", to)));
+					HeadCreator.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-ownerless-%s", to)));
 				}else {
-					Database.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-%s", to)));
+					HeadCreator.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-%s", to)));
 				}
 			}
 		}
@@ -606,11 +608,11 @@ public class UpgradeGUI implements Listener {
 				if(value.chars().count() < 30) {
 					Log.debug(Main.plugin, "[DI-276] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.getString(String.format("textures.%s", value));
-					Database.setTextureValue(item, texture);
+					HeadCreator.setTextureValue(item, texture);
 				}else {
 					Log.debug(Main.plugin, "[DI-276] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						Database.setTextureValue(item, value);
+						HeadCreator.setTextureValue(item, value);
 					}else {
 						Log.debug(Main.plugin, "[DI-277] [UpgradeGUI] Invalid Skin.");
 						item = new ItemStack(Material.AIR);
@@ -645,11 +647,11 @@ public class UpgradeGUI implements Listener {
 				if(value.chars().count() < 30) {
 					Log.debug(Main.plugin, "[DI-281] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.getString(String.format("textures.%s", value));
-					Database.setTextureValue(item, texture);
+					HeadCreator.setTextureValue(item, texture);
 				}else {
 					Log.debug(Main.plugin, "[DI-281] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						Database.setTextureValue(item, value);
+						HeadCreator.setTextureValue(item, value);
 					}else {
 						Log.debug(Main.plugin, "[DI-282] [UpgradeGUI] Invalid Skin.");
 						item = new ItemStack(Material.AIR);

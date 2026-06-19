@@ -20,6 +20,7 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.logging.Log;
@@ -178,7 +179,8 @@ public class BagUpgrade implements Listener{
 			Log.debug(Main.plugin, "[DI-83] " + "[BagUpgrade] Size set to " + PDC.getInteger(clicked, "size"));
 
 			if(Main.weight.getBool("weight-per-size")) {
-				Database.setWeightMax(HavenBags.getBagUUID(clicked), Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
+				Database.getBag(HavenBags.getBagUUID(clicked), null).setWeightMax(Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
+				//Database.setWeightMax(HavenBags.getBagUUID(clicked), Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
 				Log.debug(Main.plugin, "[DI-84] " + "[BagUpgrade] Weight Limit set to " + Main.weight.getDouble(String.format("weight-size-%s", PDC.getInteger(clicked, "size"))));
 			}
 			if(clicked.getType() == Material.PLAYER_HEAD) {
@@ -238,9 +240,9 @@ public class BagUpgrade implements Listener{
 			if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
 				if(owner.equalsIgnoreCase("ownerless")) {
 					//BagData.GetBag(HavenBags.GetBagUUID(bag), bag).setTexture(Main.config.GetString(String.format("bag-textures.size-%s", to)));
-					Database.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-ownerless-%s", to)));
+					HeadCreator.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-ownerless-%s", to)));
 				}else {
-					Database.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-%s", to)));
+					HeadCreator.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-%s", to)));
 				}
 			}
 		}

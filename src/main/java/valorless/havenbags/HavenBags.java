@@ -248,7 +248,7 @@ public class HavenBags {
 			String texture = data.getTexture();
 			if(!Utils.IsStringNullOrEmpty(texture)) {
 				if(!texture.contains("null")) {
-					Database.setTextureValue(bag, texture);
+					HeadCreator.setTextureValue(bag, texture);
 				}
 			}
 		}else {
@@ -291,10 +291,12 @@ public class HavenBags {
 			}else {
 				if(Main.weight.getBool("weight-per-size")) {
 					PDC.setDouble(bag, "weight-limit", Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
-					Database.setWeightMax(id, Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
+					data.setWeightMax(Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
+					//Database.setWeightMax(id, Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
 				}else {
 					PDC.setDouble(bag, "weight-limit", Main.weight.getDouble("weight-limit"));
-					Database.setWeightMax(id, Main.weight.getDouble("weight-limit"));
+					data.setWeightMax(Main.weight.getDouble("weight-limit"));
+					//Database.setWeightMax(id, Main.weight.getDouble("weight-limit"));
 				}
 			}
 		}
@@ -324,7 +326,7 @@ public class HavenBags {
 			String texture = data.getTexture();
 			if(!Utils.IsStringNullOrEmpty(texture)) {
 				if(!texture.contains("null")) {
-					Database.setTextureValue(bag, texture);
+					HeadCreator.setTextureValue(bag, texture);
 				}
 			}
 		}else {
@@ -367,10 +369,12 @@ public class HavenBags {
 			}else {
 				if(Main.weight.getBool("weight-per-size")) {
 					PDC.setDouble(bag, "weight-limit", Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
-					Database.setWeightMax(id, Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
+					data.setWeightMax(Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
+					//Database.setWeightMax(id, Main.weight.getDouble(String.format("weight-size-%s", data.getSize())));
 				}else {
 					PDC.setDouble(bag, "weight-limit", Main.weight.getDouble("weight-limit"));
-					Database.setWeightMax(id, Main.weight.getDouble("weight-limit"));
+					data.setWeightMax(Main.weight.getDouble("weight-limit"));
+					//Database.setWeightMax(id, Main.weight.getDouble("weight-limit"));
 				}
 			}
 		}
@@ -728,7 +732,7 @@ public class HavenBags {
 				return entry.getValue();
 			}
 		}
-		return Database.getTextureValue(bag);
+		return HeadCreator.getTextureValue(bag);
 	}
 
 	public static void updateBagLore(ItemStack bag, Player player, boolean...preview) {
@@ -1234,7 +1238,7 @@ public class HavenBags {
 		item.setItemMeta(meta);
 
 		if(material == Material.PLAYER_HEAD && (isBase64 || skin != null)) {
-			Database.setTextureValue(item, skin != null ? skin : value);
+			HeadCreator.setTextureValue(item, skin != null ? skin : value);
 		}
 
 		return item;
@@ -1275,7 +1279,7 @@ public class HavenBags {
 
 		if(material == Material.PLAYER_HEAD) {
 			if(Base64Validator.isValidBase64(skin)) {
-				Database.setTextureValue(item, skin);
+				HeadCreator.setTextureValue(item, skin);
 			}else {
 				Log.error(Main.plugin, "token.effect.texture is not a valid base64 skin.");
 			}

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import com.google.gson.JsonObject;
 
 import valorless.havenbags.Main;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.logging.Log;
@@ -149,7 +150,7 @@ public class Files {
 		}
 		bagData.set("size", content.size());
 		if(bag.getType() == Material.PLAYER_HEAD) {
-			bagData.set("texture", Database.getTextureValue(bag));
+			bagData.set("texture", HeadCreator.getTextureValue(bag));
 			bagData.set("custommodeldata", 0);
 		}else {
 			if(bag.hasItemMeta()) {

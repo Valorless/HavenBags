@@ -1000,9 +1000,9 @@ public class AdminGUI implements Listener {
 				bagItem.setType(data.getMaterial());
 				if(data.getMaterial() == Material.PLAYER_HEAD) {
 					if(!Utils.IsStringNullOrEmpty(data.getTexture())) {
-						Database.setTextureValue(bagItem, data.getTexture());
+						HeadCreator.setTextureValue(bagItem, data.getTexture());
 					}else {
-						Database.setTextureValue(bagItem, bagTexture);
+						HeadCreator.setTextureValue(bagItem, bagTexture);
 					}
 				}
 			}
