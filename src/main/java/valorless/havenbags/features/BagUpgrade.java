@@ -174,7 +174,7 @@ public class BagUpgrade implements Listener{
 			}
 			
 			String owner = PDC.getString(clicked, "owner");
-			Database.getBag(HavenBags.getBagUUID(clicked), clicked).setSize(PDC.getInteger(clicked, "size"));
+			Database.getBag(HavenBags.getBagUUID(clicked)).setSize(PDC.getInteger(clicked, "size"));
 			//BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).getData().Set("size", PDC.GetInt(clicked, "bag-size"));
 			Log.debug(Main.plugin, "[DI-83] " + "[BagUpgrade] Size set to " + PDC.getInteger(clicked, "size"));
 
@@ -186,9 +186,9 @@ public class BagUpgrade implements Listener{
 			if(clicked.getType() == Material.PLAYER_HEAD) {
 				if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
 					if(!owner.equalsIgnoreCase("ownerless")) {
-						Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(Main.config.getString(String.format("bag-textures.size-%s", PDC.getInteger(clicked, "size"))));
+						Database.getBag(HavenBags.getBagUUID(clicked)).setTexture(Main.config.getString(String.format("bag-textures.size-%s", PDC.getInteger(clicked, "size"))));
 					}else {
-						Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(Main.config.getString(String.format("bag-textures.size-ownerless-%s", PDC.getInteger(clicked, "size"))));
+						Database.getBag(HavenBags.getBagUUID(clicked)).setTexture(Main.config.getString(String.format("bag-textures.size-ownerless-%s", PDC.getInteger(clicked, "size"))));
 					}
 				}
 			}

@@ -110,7 +110,7 @@ public class BagSkin implements Listener{
 					if(BagState.getState(clicked) == BagState.NEW) {
 						HeadCreator.setTextureValue(clicked, texture);
 					}else {
-						Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(texture);
+						Database.getBag(HavenBags.getBagUUID(clicked)).setTexture(texture);
 					}
 				}else {
 					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
@@ -118,7 +118,7 @@ public class BagSkin implements Listener{
 						if(BagState.getState(clicked) == BagState.NEW) {
 							HeadCreator.setTextureValue(clicked, value);
 						}else {
-							Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(value);
+							Database.getBag(HavenBags.getBagUUID(clicked)).setTexture(value);
 						}
 					}else {
 						Log.debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
@@ -126,7 +126,7 @@ public class BagSkin implements Listener{
 					}
 				}
 				Log.debug(Main.plugin, "[DI-71] " + "[BagSkin] Texture Skin.");
-				Database.getBag(HavenBags.getBagUUID(clicked), clicked).setTexture(value);
+				Database.getBag(HavenBags.getBagUUID(clicked)).setTexture(value);
 			}
 			Log.debug(Main.plugin, "[DI-72] " + "[BagSkin] Applied skin!");
 		}

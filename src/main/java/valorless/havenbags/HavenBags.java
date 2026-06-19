@@ -202,7 +202,7 @@ public class HavenBags {
 	}*/
 
 	public static List<ItemStack> loadBagContentFromServer(ItemStack bag){
-		return Database.getBag(getBagUUID(bag), bag).getContent();
+		return Database.getBag(getBagUUID(bag)).getContent();
 	}
 
 	/*public static boolean DoesBagExist(String uuid, String owner, @Nullable Player player) {
@@ -402,7 +402,7 @@ public class HavenBags {
 			if(preview.length == 0) {
 				updatePDC(bag);
 			}
-			updateUsed(bag, Database.getBag(uuid, bag), player);
+			updateUsed(bag, Database.getBag(uuid), player);
 		}else if (BagState.getState(bag) == BagState.NEW) {
 			updateNew(bag, player);
 		}
@@ -748,7 +748,7 @@ public class HavenBags {
 		//String owner = PDC.GetString(bag, "bag-owner");
 		Log.debug(Main.plugin, "[DI-110] " + "Attempting to initialize bag items");
 		//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, player);
-		List<ItemStack> content = Database.getBag(uuid, bag).getContent();
+		List<ItemStack> content = Database.getBag(uuid).getContent();
 
 		Sound sound = new Sound(Main.config.getString("sound.close.key"),
 				Main.config.getDouble("sound.close.volume"),
@@ -811,12 +811,12 @@ public class HavenBags {
 				String uuid = PDC.getString(bag, "uuid");
 				//String owner = PDC.GetString(bag, "bag-owner");
 				//List<ItemStack> content = LoadBagContentFromServer(uuid, owner, null);
-				List<ItemStack> content = Database.getBag(uuid, bag).getContent();
+				List<ItemStack> content = Database.getBag(uuid).getContent();
 				for(ItemStack item : content) {
 					weight += (Main.weight.getDouble(item.getType().toString()) * item.getAmount());
 				}
 				PDC.setDouble(bag, "weight", weight);
-				Database.getBag(uuid, bag).setWeight(weight);
+				Database.getBag(uuid).setWeight(weight);
 				return weight;
 			} catch(Exception e) {
 				return (double) 0;
@@ -913,10 +913,10 @@ public class HavenBags {
 		}else {
 			if(Main.weight.getBool("weight-per-size")) {
 				PDC.setDouble(bag, "weight-limit", Main.weight.getDouble("weight-size-" + PDC.getInteger(bag, "size")));
-				Database.getBag(HavenBags.getBagUUID(bag), bag).setWeight(Main.weight.getDouble("weight-size-" + PDC.getInteger(bag, "size")));
+				Database.getBag(HavenBags.getBagUUID(bag)).setWeight(Main.weight.getDouble("weight-size-" + PDC.getInteger(bag, "size")));
 			}else {
 				PDC.setDouble(bag, "weight-limit", Main.weight.getDouble("weight-limit"));
-				Database.getBag(HavenBags.getBagUUID(bag), bag).setWeight(Main.weight.getDouble("weight-limit"));
+				Database.getBag(HavenBags.getBagUUID(bag)).setWeight(Main.weight.getDouble("weight-limit"));
 			}
 		}
 		return false;

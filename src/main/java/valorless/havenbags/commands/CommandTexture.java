@@ -25,7 +25,7 @@ public class CommandTexture {
 					if(command.args[1].chars().count() > 30) {
 						
 						try {
-							Database.getBag(HavenBags.getBagUUID(item), item).setTexture(command.args[1]);
+							Database.getBag(HavenBags.getBagUUID(item)).setTexture(command.args[1]);
 						}catch(Exception e) {} // No data found, just change the texture of the item only.
 						HeadCreator.setTextureValue(item, command.args[1]);
 					}else {
@@ -35,7 +35,7 @@ public class CommandTexture {
 				        	return true;
 				        }
 						try {
-							Database.getBag(HavenBags.getBagUUID(item), item).setTexture(texture);
+							Database.getBag(HavenBags.getBagUUID(item)).setTexture(texture);
 						}catch(Exception e) {} // No data found, just change the texture of the item only.
 						HeadCreator.setTextureValue(item, texture);
 					}

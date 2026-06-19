@@ -26,7 +26,7 @@ public class CommandTrust {
 		if(command.args.length >= 2) {
 			ItemStack item = player.getInventory().getItemInMainHand();
 			if(HavenBags.isBag(item)) {
-				Bag data = Database.getBag(HavenBags.getBagUUID(item), item);
+				Bag data = Database.getBag(HavenBags.getBagUUID(item));
 				if(HavenBags.isOwner(item, player)) {
 					if(data.isPlayerTrusted(command.args[1])) {
 						return true;

@@ -72,7 +72,7 @@ public class Quiver implements Listener {
     	
     	if(offhand != null && offhand.getType() != Material.AIR) {
     		if(HavenBags.isBag(offhand) && !hasProjectile(player)) {
-				BagSimple quiver = new BagSimple(offhand, Database.getBag(HavenBags.getBagUUID(offhand), offhand).getContent());
+				BagSimple quiver = new BagSimple(offhand, Database.getBag(HavenBags.getBagUUID(offhand)).getContent());
 				if(quiver != null) {
 					if(hasFreeSpace(player)) {
 						//Log.Info(Main.plugin, "Free space");

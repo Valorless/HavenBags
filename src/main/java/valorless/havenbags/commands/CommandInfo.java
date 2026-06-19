@@ -31,7 +31,7 @@ public class CommandInfo {
 			ItemMeta meta = sender.getInventory().getItemInMainHand().getItemMeta();
 
 			if(HavenBags.isBag(hand) && BagState.getState(hand) == BagState.USED) {
-				Bag data = Database.getBag(HavenBags.getBagUUID(hand), hand);
+				Bag data = Database.getBag(HavenBags.getBagUUID(hand));
 
 				String uuid = data.getUuid();
 				String owner = data.getOwner();

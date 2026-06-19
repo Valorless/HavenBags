@@ -299,7 +299,7 @@ public class BagListener implements Listener{
 		if(bag.getType() == Material.AIR) return;
 		String uuid = HavenBags.getBagUUID(bag);
 		Log.debug(Main.plugin, "[DI-226] " + "Opening " +  uuid);
-		Bag data = Database.getBag(uuid, bag);
+		Bag data = Database.getBag(uuid);
 		//String owner = PDC.GetString(bag, "bag-owner");
 		
 		if(data == null) {

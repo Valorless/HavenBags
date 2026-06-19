@@ -161,7 +161,7 @@ public class BagGUI implements Listener {
 		    		initializeItems();
 		    	
 					openInventory(player);
-					Bukkit.getPluginManager().callEvent(new BagOpenEvent(inv, player, bagItem, Database.getBag(uuid, null)));
+					Bukkit.getPluginManager().callEvent(new BagOpenEvent(inv, player, bagItem, Database.getBag(uuid)));
 					this.cancel();
 		    	}
 		    }
@@ -253,7 +253,7 @@ public class BagGUI implements Listener {
 			data.setViewer(player); //Extra just to be sure
 	    	return content;
 		}else {
-			return Database.getBag(uuid, this.bagItem, UpdateSource.PLAYER).getContent();
+			return Database.getBag(uuid, UpdateSource.PLAYER).getContent();
 		}
 	}
 

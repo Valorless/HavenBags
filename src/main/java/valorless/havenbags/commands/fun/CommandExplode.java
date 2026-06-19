@@ -41,7 +41,7 @@ public class CommandExplode {
 	public static void Explode(ItemStack bag, Player player) {
 		Random random = new Random();
 		String uuid = PDC.getString(bag, "uuid");
-		List<ItemStack> content = Database.getBag(uuid, bag).getContent();
+		List<ItemStack> content = Database.getBag(uuid).getContent();
 		Sound sound = Sound.parse("ENTITY_GENERIC_EXPLODE:1.0:1.0");
 		sound.play(player);
 		for(int i = 0; i < content.size(); i++) {
