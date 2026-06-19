@@ -32,7 +32,7 @@ import valorless.havenbags.annotations.Nullable;
 import valorless.havenbags.database.Files;
 import valorless.havenbags.database.MySQL;
 import valorless.havenbags.database.SQLite;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.enums.DatabaseType;
 import valorless.havenbags.events.BagCreateEvent;
@@ -59,10 +59,10 @@ public class Database {
 	
 	public enum UpdateSource { NULL, PLAYER }
 	
-	private static HashMap<UUID, Data> data = new HashMap<UUID, Data>();
+	private static HashMap<UUID, Bag> data = new HashMap<UUID, Bag>();
 
 	@Internal
-	public static HashMap<UUID, Data> changedBags = new HashMap<UUID, Data>();
+	public static HashMap<UUID, Bag> changedBags = new HashMap<UUID, Bag>();
 	public static long interval;
 	
 	private static boolean ready = false;
@@ -192,11 +192,11 @@ public class Database {
 		loadData();
 	}
 	
-	public static class Bag {
+	public static class BagSimple {
 		public ItemStack item;
 		public List<ItemStack> content = new ArrayList<ItemStack>();
 		
-		public Bag (ItemStack item, List<ItemStack> content) {
+		public BagSimple(ItemStack item, List<ItemStack> content) {
 			this.item = item;
 			this.content = content;
 		}
@@ -219,7 +219,7 @@ public class Database {
 		return data.containsKey(UUID.fromString(uuid));
 	}
 	
-	public static Data getBag(@NotNull String uuid, @Nullable ItemStack bagItem, @Nullable UpdateSource... source) {
+	public static Bag getBag(@NotNull String uuid, @Nullable ItemStack bagItem, @Nullable UpdateSource... source) {
 		UpdateSource m_source = UpdateSource.NULL;
 		if(source != null) {
 			if(source.length != 0) {
@@ -227,7 +227,7 @@ public class Database {
 			}
 		}
 		
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			if(m_source == UpdateSource.PLAYER) {
 				bag.setOpen(true);
@@ -240,7 +240,7 @@ public class Database {
 		return null;
 	}
 	
-	private static Data getbag(String uuid) {
+	private static Bag getbag(String uuid) {
 		
 		if("null".equalsIgnoreCase(uuid)) {
 			//Log.error(Main.plugin, "Attempted to get bag with UUID 'null'.");
@@ -265,7 +265,7 @@ public class Database {
 			}
 		}
 		
-		Data bag = getBag(uuid, null);
+		Bag bag = getBag(uuid, null);
 		
 		if(bag == null) Log.error(Main.plugin, String.format("Failed to update bag '%s', this bag was not found.", uuid));
 		
@@ -294,7 +294,7 @@ public class Database {
 		}
 		String uuid = PDC.getString(bagItem, "uuid");
 		
-		Data bag = getBag(uuid, null);
+		Bag bag = getBag(uuid, null);
 		
 		if(bag == null) Log.error(Main.plugin, String.format("Failed to update bag '%s', this bag was not found.", uuid));
 		
@@ -358,8 +358,8 @@ public class Database {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static Data createBag(@NotNull String uuid, @NotNull String owner, @NotNull List<ItemStack> content, Player creator, ItemStack bag) {
-		Data dat = new Data(uuid, owner, bag.getType());
+	public static Bag createBag(@NotNull String uuid, @NotNull String owner, @NotNull List<ItemStack> content, Player creator, ItemStack bag) {
+		Bag dat = new Bag(uuid, owner, bag.getType());
 		dat.setContent(content);
 		if(creator != null)	dat.setCreator(creator.getUniqueId().toString());
 		int size = 0;
@@ -426,7 +426,7 @@ public class Database {
 		return dat;
 	}
 	
-	public static Data createBag(@NotNull Data dat) {
+	public static Bag createBag(@NotNull Bag dat) {
 		if(dat == null) throw new IllegalArgumentException("Data cannot be null");
 		dat.setChanged(true);
 		data.put(UUID.fromString(dat.getUuid()), dat);
@@ -464,7 +464,7 @@ public class Database {
 						continue;
 					}
 					try {
-						Data dat = Files.loadBag(owner, bag);
+						Bag dat = Files.loadBag(owner, bag);
 						data.put(UUID.fromString(dat.getUuid()), dat);
 						i++;
 					} catch (Exception e) {
@@ -476,19 +476,19 @@ public class Database {
 			}
 		}
 		else if(getDatabaseType() == DatabaseType.MYSQL) {
-			HashMap<UUID, Data> bags = getMysql().loadAllBags();
+			HashMap<UUID, Bag> bags = getMysql().loadAllBags();
 			data = bags;
 			i = bags.size();
 		}
 		else if(getDatabaseType() == DatabaseType.SQLITE) {
 			for(String uuid : sqlite.getAllBagUUIDs()) {
-				Data bag = sqlite.loadBag(uuid);
+				Bag bag = sqlite.loadBag(uuid);
 				data.put(UUID.fromString(uuid), bag);
 				i++;
 			}
 		}
 		else if(getDatabaseType() == DatabaseType.MYSQLPLUS) {
-			HashMap<UUID, Data> bags = getMysql().loadAllBags();
+			HashMap<UUID, Bag> bags = getMysql().loadAllBags();
 			data = bags;
 			i = bags.size();
 		}
@@ -500,9 +500,9 @@ public class Database {
 	
 	public static void saveData(boolean shutdown, boolean... conversion) {
 		long startTime = System.currentTimeMillis();
-		List<Data> toSave = new ArrayList<>();
+		List<Bag> toSave = new ArrayList<>();
 		
-		if(shutdown || conversion != null) {
+		if(shutdown || (conversion != null && conversion.length > 0)) {
 			toSave.addAll(data.values());
 		}
 		
@@ -518,7 +518,7 @@ public class Database {
 		List<UUID> keys = new ArrayList<>(changedBags.keySet());
 		for(UUID uuid : keys) {
 			if(uuid == null) continue;
-			Data dat = changedBags.get(uuid);
+			Bag dat = changedBags.get(uuid);
 			toSave.add(dat);
 			dat.setChanged(false);
 			changedBags.remove(uuid); // Double remove to be sure
@@ -547,7 +547,7 @@ public class Database {
 			return;
 		}
 		if(Main.config.getBool("auto-save.message") || shutdown) Log.info(Main.plugin, "Saving bags..");
-		for(Data bag : toSave) {
+		for(Bag bag : toSave) {
 			String uuid = bag.getUuid();
 	    	String owner = bag.getOwner();
 	    	
@@ -578,13 +578,13 @@ public class Database {
 	    	if(getDatabaseType() == DatabaseType.MYSQL) {
 	    		Log.debug(Main.plugin, "[DI-232] [MYSQL] " + "Attempting to write bags onto database");
 	    		if(shutdown || conversion != null) {
-	    			for(List<Data> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
+	    			for(List<Bag> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
 	    				getMysql().saveBags(chunk);
 	    			}
 	    			//getMysql().saveBags(toSave);
 	    		}else {
 	    			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
-		    			for(List<Data> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
+		    			for(List<Bag> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
 		    				getMysql().saveBags(chunk);
 		    			}
 	    				//getMysql().saveBags(toSave);
@@ -594,13 +594,13 @@ public class Database {
 	    	else if(getDatabaseType() == DatabaseType.MYSQLPLUS) {
 	    		Log.debug(Main.plugin, "[DI-233] [MYSQLPLUS] " + "Attempting to write bags onto database");
 	    		if(shutdown || conversion != null) {
-	    			for(List<Data> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
+	    			for(List<Bag> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
 	    				getMysql().saveBags(chunk);
 	    			}
 	    			//getMysql().saveBags(toSave);
 	    		}else {
 	    			Bukkit.getScheduler().runTaskAsynchronously(Main.plugin, () -> {
-		    			for(List<Data> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
+		    			for(List<Bag> chunk : mysql.chunkify(toSave, mysql.getMaxChunkSize())) {
 		    				getMysql().saveBags(chunk);
 		    			}
 	    				//getMysql().saveBags(toSave);
@@ -616,7 +616,7 @@ public class Database {
 	
 	public static void removeBag(@NotNull String uuid) {
 		UUID uid = UUID.fromString(uuid);
-		Data bag = data.get(uid);
+		Bag bag = data.get(uid);
 		if(bag != null) {
 			data.remove(uid);
             changedBags.remove(uid);
@@ -627,7 +627,7 @@ public class Database {
 	}
 	
 	public static Boolean deleteBag(@NotNull String uuid, @Nullable Player... player) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			if(getDatabaseType() == DatabaseType.FILES) {
 				try {
@@ -662,11 +662,11 @@ public class Database {
 	    Log.debug(Main.plugin, "[DI-32] " + playerUUID);
 	    return data.values().stream()
 	        .filter(dat -> dat.getOwner().equals(playerUUID))
-	        .map(Data::getUuid)
+	        .map(Bag::getUuid)
 	        .toList();
 	}
 	
-	public static List<Data> getBagsData(@NotNull String playerUUID) {
+	public static List<Bag> getBagsData(@NotNull String playerUUID) {
 	    Log.debug(Main.plugin, "[DI-260] " + playerUUID);
 	    return data.values().stream()
 	        .filter(dat -> dat.getOwner().equals(playerUUID))
@@ -694,7 +694,7 @@ public class Database {
 	}
 	
 	public static boolean isBagOpen(@NotNull String uuid, ItemStack bagItem) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			return bag.isOpen();
 		}
@@ -715,7 +715,7 @@ public class Database {
 		}catch(IllegalArgumentException e) {
 			return false;
 		}
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			return bag.isOpen();
 		}
@@ -723,7 +723,7 @@ public class Database {
 	}
 	
 	public static Player bagOpenBy(@NotNull String uuid, ItemStack bagItem) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			if(isBagOpen(uuid, bagItem)) {
 				return bag.getViewer();
@@ -735,7 +735,7 @@ public class Database {
 	}
 	
 	public static void markBagOpen(@NotNull String uuid, ItemStack bagItem, Player player) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			bag.setOpen(true);
 			bag.setViewer(player);
@@ -751,7 +751,7 @@ public class Database {
 	}
 	
 	public static void markBagOpen(@NotNull String uuid, ItemStack bagItem, Player player, BagGUI gui) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			bag.setOpen(true);
 			bag.setViewer(player);
@@ -768,7 +768,7 @@ public class Database {
 	}
 	
 	public static void markBagClosed(@NotNull String uuid) {
-		Data bag = getBag(uuid, null); // This will throw an error if the bag does not exist, which is fine.
+		Bag bag = getBag(uuid, null); // This will throw an error if the bag does not exist, which is fine.
 		if(bag == null) {
 			Log.error(Main.plugin, String.format("Failed to mark bag '%s' as closed, this bag was not found.", uuid));
 			return;
@@ -784,22 +784,22 @@ public class Database {
 	}
 	
 	public List<String> getTrusted(@NotNull String uuid) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		return bag != null ? bag.getTrusted() : null;
 	}
 	
 	public static String getOwner(@NotNull String uuid) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		return bag != null ? bag.getOwner() : null;
 	}
 	
 	public static String getCreator(@NotNull String uuid) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		return bag != null ? bag.getCreator() : null;
 	}
 	
 	public static void addTrusted(@NotNull String uuid, @NotNull String player) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			List<String> trusted = bag.getTrusted();
 			if(!trusted.contains(player)) {
@@ -813,7 +813,7 @@ public class Database {
 	}
 	
 	public static void removeTrusted(@NotNull String uuid, @NotNull String player) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			List<String> trusted = bag.getTrusted();
 			if(trusted.isEmpty()) return;
@@ -830,7 +830,7 @@ public class Database {
 	}
 	
 	public static void setAutoPickup(@NotNull String uuid, @NotNull String filter) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			bag.setAutopickup(filter);
 			bag.setChanged(true);
@@ -840,12 +840,12 @@ public class Database {
 	}
 	
 	public static String getAutoPickup(@NotNull String uuid) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		return bag != null ? bag.getAutopickup() : null;
 	}
 	
 	public static void removeAutoPickup(@NotNull String uuid) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			bag.setAutopickup("null");
 			bag.setChanged(true);
@@ -855,7 +855,7 @@ public class Database {
 	}
 	
 	public static void setWeight(@NotNull String uuid, @NotNull double weight) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			bag.setWeight(weight);
 			bag.setChanged(true);
@@ -865,7 +865,7 @@ public class Database {
 	}
 	
 	public static void setWeightMax(@NotNull String uuid, @NotNull double weightmax) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			bag.setWeightMax(weightmax);
 			bag.setChanged(true);
@@ -876,7 +876,7 @@ public class Database {
 	
 	@SuppressWarnings("unused")
 	private void markBagChanged(@NotNull String uuid) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			bag.setChanged(true);
 			if(!changedBags.containsKey(UUID.fromString(uuid))) changedBags.put(UUID.fromString(uuid), bag);
@@ -884,7 +884,7 @@ public class Database {
 		}
 	}
 
-	public static String getTextureValue(Data bag) {
+	public static String getTextureValue(Bag bag) {
 		return bag.getTexture();
 	}
 	
@@ -976,9 +976,9 @@ public class Database {
         item.setItemMeta(meta);
     }
 	
-	public static List<Data> getOpenBags() {
+	public static List<Bag> getOpenBags() {
 	    return data.values().stream()
-	               .filter(Data::isOpen)
+	               .filter(Bag::isOpen)
 	               .toList();
 	}
 	
@@ -999,7 +999,7 @@ public class Database {
 	
 	public static Boolean clearAllBagContents() {
 		try {
-			for(Data dat : data.values()) {
+			for(Bag dat : data.values()) {
 				clearBagContent(dat.getUuid());
 			}
 			return true;
@@ -1022,7 +1022,7 @@ public class Database {
 	}
 	
 	public static Boolean clearBagContent(@NotNull String uuid) {
-		Data bag = getbag(uuid);
+		Bag bag = getbag(uuid);
 		if(bag != null) {
 			if(bag.getGui() != null) {
 				bag.getGui().close(true);
@@ -1060,7 +1060,7 @@ public class Database {
 	 */
 	@DoNotCall("This method is used internally to reset the tooltip-styles of all bags to the value in config.yml. It should not be called outside of HavenBags.")
 	public static void resetTooltipStyles() {
-		for (Data data : data.values()) {
+		for (Bag data : data.values()) {
 			if(Server.VersionHigherOrEqualTo(Version.v1_21_3)) {
 				data.setTooltipStyle(Main.config.getString("bag.tooltip-style"));
 			}else {

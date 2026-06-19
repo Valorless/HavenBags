@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 
 public class CommandAutoSort {
 	
@@ -23,14 +23,14 @@ public class CommandAutoSort {
 						Boolean value = false;
 						if(command.args[1].equalsIgnoreCase("on")) value = true;
 						if(command.args[1].equalsIgnoreCase("off")) value = false;
-						Data data = Database.getBag(uuid, null);
+						Bag data = Database.getBag(uuid, null);
 						data.setAutoSort(value);
 						HavenBags.updateBagItem(item, player);
 						player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-sort-command").replace("%value%", command.args[1]), player));
 						return true;
 					}
 				}else {
-					Data data = Database.getBag(uuid, null);
+					Bag data = Database.getBag(uuid, null);
 					data.setAutoSort(false);
 					HavenBags.updateBagItem(item, player);
 					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("auto-sort-command").replace("%value%", "off"), player));

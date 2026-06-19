@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import valorless.havenbags.Database;
-import valorless.havenbags.Database.Bag;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.Database.BagSimple;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.BagListener;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
@@ -68,7 +68,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 					int count = 0;
 
 					for(String bag : Database.getBags(pl.getUniqueId().toString())) {
-						Data data = Database.getBag(bag, null);
+						Bag data = Database.getBag(bag, null);
 						count += HavenBags.countItems(data.getContent(), Material.valueOf(material.toUpperCase()));
 					}
 
@@ -87,7 +87,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 					String material = split[3];
 					int count = 0;
 
-					for(Bag bag : HavenBags.getBagsDataInInventory(pl)) {
+					for(BagSimple bag : HavenBags.getBagsDataInInventory(pl)) {
 						count += HavenBags.countItems(bag.content, Material.valueOf(material.toUpperCase()));
 					}
 
@@ -122,7 +122,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 				try {
 					int count = 0;
 
-					for(Bag bag : HavenBags.getBagsDataInInventory(pl)) {
+					for(BagSimple bag : HavenBags.getBagsDataInInventory(pl)) {
 						count += Database.getBag(HavenBags.getBagUUID(bag.item), null).getSize();
 					}
 
@@ -139,7 +139,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 				try {
 					int count = 0;
 
-					for(Bag bag : HavenBags.getBagsDataInInventory(pl)) {
+					for(BagSimple bag : HavenBags.getBagsDataInInventory(pl)) {
 						for(ItemStack item : bag.content) {
 							if(item != null && item.getType() != Material.AIR) {
 								count += 1;
@@ -160,7 +160,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 				try {
 					int used = 0;
 
-					for(Bag bag : HavenBags.getBagsDataInInventory(pl)) {
+					for(BagSimple bag : HavenBags.getBagsDataInInventory(pl)) {
 						for(ItemStack item : bag.content) {
 							if(item != null && item.getType() != Material.AIR) {
 								used += 1;

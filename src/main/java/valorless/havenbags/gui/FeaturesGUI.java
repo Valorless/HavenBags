@@ -16,7 +16,7 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.Experimental;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.enums.GUIAction;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.persistentdatacontainer.PDC;
@@ -87,7 +87,7 @@ public class FeaturesGUI implements Listener {
 	int invSize = 27; // 3 rows of 9 slots
 	Player player;
 	ItemStack bagItem;
-	Data data;
+	Bag data;
 
 	int autoPickupSlot;
 	ToggleButton autoPickup;
@@ -112,7 +112,7 @@ public class FeaturesGUI implements Listener {
 
 	ViewingType viewing = ViewingType.MAIN;
 
-	public FeaturesGUI(Player player, ItemStack bagItem, Data bagData) {
+	public FeaturesGUI(Player player, ItemStack bagItem, Bag bagData) {
 		this.data = bagData;
 		this.bagItem = bagItem;
 		this.player = player;

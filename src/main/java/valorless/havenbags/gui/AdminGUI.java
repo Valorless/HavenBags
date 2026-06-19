@@ -26,6 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.scheduler.BukkitTask;
 
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.items.BagItemFactory;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
@@ -34,7 +35,6 @@ import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.utils.Utils;
 import valorless.havenbags.*;
 import valorless.havenbags.database.SkinCache;
-import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.enums.GUIAction;
 import valorless.havenbags.persistentdatacontainer.PDC;
@@ -183,7 +183,7 @@ public class AdminGUI implements Listener {
 		}else if(type == GUIType.Confirmation) {
 			content = prepareConfirmation();
 		}else if(type == GUIType.Content) {
-			Data data = Database.getBag(HavenBags.getBagUUID(selectedBag), null);
+			Bag data = Database.getBag(HavenBags.getBagUUID(selectedBag), null);
 			content = data.getContent();
 		}
 		open();
@@ -734,7 +734,7 @@ public class AdminGUI implements Listener {
 			if(action != null && action.equalsIgnoreCase("confirm")){
 				String uuid = PDC.getString(selectedBag, "uuid");
 
-				Data data = Database.getBag(uuid, null).clone();
+				Bag data = Database.getBag(uuid, null).clone();
 				Database.deleteBag(uuid);
 
 				type = GUIType.DeletionPlayer;
@@ -987,9 +987,9 @@ public class AdminGUI implements Listener {
 
 	List<ItemStack> preparePlayerBags(String playeruuid) {
 		List<ItemStack> bags = new ArrayList<ItemStack>();
-		List<Data> bagdata = Database.getBagsData(playeruuid);
+		List<Bag> bagdata = Database.getBagsData(playeruuid);
 
-		for(Data data : bagdata){
+		for(Bag data : bagdata){
 			List<ItemStack> Content  = data.getContent();
 			if (Content == null) continue;
 

@@ -12,7 +12,7 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.utils.Utils;
 
@@ -28,7 +28,7 @@ public class Magnet {
 		    public void run() {
 		    	if(!Main.config.getBool("magnet.enabled")) return; // Keep the runnable, should it be enabled, and '/bags reload' is run.
 		        for (Player player : Bukkit.getOnlinePlayers()) {
-		        	for(Data data : BagCache.getPlayerBagsFromInventory(player)) {
+		        	for(Bag data : BagCache.getPlayerBagsFromInventory(player)) {
 			            if(HavenBags.isBagFull(data.getUuid())) continue; // Ignore full bags
 			            if(!data.hasMagnet()) continue;
 			            if(Main.config.getBool("magnet.require-autopickup") && data.getAutopickup().equalsIgnoreCase("null")) continue;

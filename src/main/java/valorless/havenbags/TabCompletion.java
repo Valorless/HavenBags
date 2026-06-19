@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.StringUtil;
 
 import valorless.havenbags.database.EtherealBags;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.BagEffects;
@@ -174,7 +174,7 @@ public class TabCompletion implements TabCompleter {
 				if(item != null) {
 					if(HavenBags.isBag(item)) {
 						if(BagState.getState(item) == BagState.USED) {
-							Data data = Database.getBag(HavenBags.getBagUUID(item), null);
+							Bag data = Database.getBag(HavenBags.getBagUUID(item), null);
 							List<String> list = data.getTrusted();
 							StringUtil.copyPartialMatches(cmd, list, completions);
 						}

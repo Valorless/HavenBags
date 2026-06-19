@@ -15,9 +15,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import org.bukkit.inventory.ItemStack;
-import valorless.havenbags.Database.Bag;
 import valorless.havenbags.api.HavenBagsAPI;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.gui.FeaturesGUI;
 import valorless.havenbags.gui.UpgradeGUI;
@@ -43,7 +42,7 @@ public class EventListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		if(HavenBags.inventoryContainsBag(player)) {
-			for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
+			for(Database.BagSimple bag : HavenBags.getBagsDataInInventory(player)) {
 				HavenBags.updateBagLore(bag.item, player);
 			}
 		}
@@ -105,7 +104,7 @@ public class EventListener implements Listener {
 
 				if(FeaturesGUI.OpenGUIs.get(player) != null) return;
 
-				Data data = HavenBagsAPI.getBag(HavenBags.getBagUUID(clickedItem));
+				Bag data = HavenBagsAPI.getBag(HavenBags.getBagUUID(clickedItem));
 
 				if(!HavenBags.isOwner(clickedItem, player) && !data.isPlayerTrusted(player.getName())) {
 					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("bag-cannot-use"), player));

@@ -11,9 +11,9 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.valorlessutils.logging.Log;
-import valorless.havenbags.Database.Bag;
+import valorless.havenbags.Database.BagSimple;
 
 public class Refill implements Listener {
 		
@@ -30,12 +30,12 @@ public class Refill implements Listener {
 	    Log.debug(Main.plugin, "refill cancel? " + event.isCancelled());
 	    
 	    if (item.getAmount() == 1) {
-	        List<Bag> bags = HavenBags.getBagsDataInInventory(player);
+	        List<Database.BagSimple> bags = HavenBags.getBagsDataInInventory(player);
 	        Log.debug(Main.plugin, "Bags?");
 	    	if(bags.isEmpty()) return;
 	    	Log.debug(Main.plugin, "Bags! " + bags.size());
-	    	for(Bag bag : bags) {
-	    		Data data = Database.getBag(HavenBags.getBagUUID(bag.item), null);
+	    	for(BagSimple bag : bags) {
+	    		Bag data = Database.getBag(HavenBags.getBagUUID(bag.item), null);
 	    		if(!data.hasRefill()) continue;
 				ItemStack block = refill(item, bag, player);
 		        Log.debug(Main.plugin, "block?");
@@ -53,7 +53,7 @@ public class Refill implements Listener {
 	    }
 	}
     
-    private ItemStack refill(ItemStack hand, Bag bag, Player player) {
+    private ItemStack refill(ItemStack hand, Database.BagSimple bag, Player player) {
     	for(ItemStack item : bag.content) {
     		if(item == null) continue;
     		if(item.isSimilar(hand)) {

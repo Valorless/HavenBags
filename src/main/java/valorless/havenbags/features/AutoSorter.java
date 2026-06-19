@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
@@ -23,7 +23,7 @@ public class AutoSorter {
 	public static void sortBag(ItemStack bag) {
 		if(!HavenBags.isBag(bag)) return;
 		String uuid = HavenBags.getBagUUID(bag);
-		Data data = Database.getBag(uuid, null);
+		Bag data = Database.getBag(uuid, null);
 		
 		if(!data.hasAutoSort()) return;
 		

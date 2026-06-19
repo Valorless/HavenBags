@@ -8,7 +8,7 @@ import valorless.havenbags.configconversion.CV5_TokenConfigConversion;
 import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.database.SkinCache;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.BagCarryLimit;
 import valorless.havenbags.features.BagEffects;
@@ -277,7 +277,7 @@ public final class Main extends JavaPlugin implements Listener {
     	if(!Database.getOpenBags().isEmpty()) {
     		Log.info(plugin, "Closing all open bags.");
     		try {
-    			for(Data bag : Database.getOpenBags()) {
+    			for(Bag bag : Database.getOpenBags()) {
     				bag.getGui().close(true);
     			}
     		} catch (Exception e) {

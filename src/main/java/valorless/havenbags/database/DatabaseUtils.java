@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.valorlessutils.utils.Utils;
 
 public class DatabaseUtils {
@@ -17,7 +17,7 @@ public class DatabaseUtils {
 		// Wtf was this even for?
 	}
 	
-	public static String extra(Data data) {
+	public static String extra(Bag data) {
 		String text = "extra{";
 		
 		text += String.format("autosort:%s", data.hasAutoSort());
@@ -44,7 +44,7 @@ public class DatabaseUtils {
 		return text;
 	}
 	
-	public static void applyExtra(Data data, String datastring) {
+	public static void applyExtra(Bag data, String datastring) {
 		Map<String, Object> extra = DatabaseUtils.ParseExtra(datastring);
         if(extra.containsKey("autosort")) data.setAutoSort((Boolean) extra.get("autosort"));
         if(extra.containsKey("material")) data.setMaterial((String) extra.get("material"));

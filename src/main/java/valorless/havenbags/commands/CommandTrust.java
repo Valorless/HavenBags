@@ -10,7 +10,7 @@ import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.datamodels.Placeholder;
 
 public class CommandTrust {
@@ -26,7 +26,7 @@ public class CommandTrust {
 		if(command.args.length >= 2) {
 			ItemStack item = player.getInventory().getItemInMainHand();
 			if(HavenBags.isBag(item)) {
-				Data data = Database.getBag(HavenBags.getBagUUID(item), item);
+				Bag data = Database.getBag(HavenBags.getBagUUID(item), item);
 				if(HavenBags.isOwner(item, player)) {
 					if(data.isPlayerTrusted(command.args[1])) {
 						return true;

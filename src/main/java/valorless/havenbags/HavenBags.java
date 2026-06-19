@@ -18,11 +18,11 @@ import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.Gson;
 
-import valorless.havenbags.Database.Bag;
+import valorless.havenbags.Database.BagSimple;
 import valorless.havenbags.database.BagCache;
 import valorless.havenbags.database.EtherealBags;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.datamodels.BlacklistNBT;
-import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.enums.BagState;
@@ -228,7 +228,7 @@ public class HavenBags {
 		String uuid = PDC.getString(bag, "uuid");
 		//String display = bag.getItemMeta().getDisplayName();
 		String id = uuid.replace(".json", "");
-		Data data = Database.getBag(id, null);
+		Bag data = Database.getBag(id, null);
 		//Log.Error(Main.plugin, uuid);
 		//Log.Error(Main.plugin, id);
 		//Log.Error(Main.plugin, data + "");
@@ -301,7 +301,7 @@ public class HavenBags {
 		//PDC.SetString(bag, "bag-creator", data.getCreator());
 	}
 
-	public static void updatePDC(ItemStack bag, Data data) {
+	public static void updatePDC(ItemStack bag, Bag data) {
 		String uuid = PDC.getString(bag, "uuid");
 		//String display = bag.getItemMeta().getDisplayName();
 		String id = uuid.replace(".json", "");
@@ -457,7 +457,7 @@ public class HavenBags {
 		bag.setItemMeta(bagMeta);
 	}
 
-	public static void updateUsed(ItemStack bag, Data data, OfflinePlayer player) {
+	public static void updateUsed(ItemStack bag, Bag data, OfflinePlayer player) {
 		if(Server.VersionHigherOrEqualTo(Version.v1_21)) {
 			ItemUtils.SetMaxStackSize(bag, 1);
 		}
@@ -1056,13 +1056,13 @@ public class HavenBags {
 		location.getWorld().dropItemNaturally(location, itemStack);
 	}
 
-	public static boolean isItemBlacklisted(ItemStack item, Data... bagData) {
+	public static boolean isItemBlacklisted(ItemStack item, Bag... bagData) {
 		if(item == null) return false;
 		if(item.getType() == Material.AIR) return false;
 
 		// Check bag's own blacklist
 		if(bagData != null && bagData.length != 0) {
-			Data data = bagData[0];
+			Bag data = bagData[0];
 			if(data.getBlacklist() != null && !data.getBlacklist().isEmpty()) {
 				Log.debug(Main.plugin, "[DI-243] " + "Checking bag's whitelist.");
 				boolean whitelist = data.isWhitelist();
@@ -1298,7 +1298,7 @@ public class HavenBags {
 
 	public static boolean isBagFull(UUID uuid) {
 		try {
-			Data data = BagCache.get(uuid);
+			Bag data = BagCache.get(uuid);
 			int size = data.getSize();
 			List<ItemStack> content = data.getContent();
 			content.removeIf(item -> item.getType() == Material.AIR);
@@ -1311,7 +1311,7 @@ public class HavenBags {
 
 	public static boolean isBagFull(String uuid) {
 		try {
-			Data data = BagCache.get(UUID.fromString(uuid));
+			Bag data = BagCache.get(UUID.fromString(uuid));
 			int size = data.getSize();
 			List<ItemStack> content = data.getContent();
 			content.removeIf(item -> item.getType() == Material.AIR);
@@ -1336,7 +1336,7 @@ public class HavenBags {
 
 	public static boolean isBagEmpty(UUID uuid) {
 		try {
-			Data data = BagCache.get(uuid);
+			Bag data = BagCache.get(uuid);
 			int size = data.getSize();
 			List<ItemStack> content = data.getContent();
 			content.removeIf(item -> item.getType() == Material.AIR);
@@ -1349,7 +1349,7 @@ public class HavenBags {
 
 	public static boolean isBagEmpty(String uuid) {
 		try {
-			Data data = BagCache.get(UUID.fromString(uuid));
+			Bag data = BagCache.get(UUID.fromString(uuid));
 			int size = data.getSize();
 			List<ItemStack> content = data.getContent();
 			content.removeIf(item -> item.getType() == Material.AIR);
@@ -1381,12 +1381,12 @@ public class HavenBags {
 		return (used.size()/size)*100;
 	}
 
-	public static List<Bag> getBagsDataInInventory(Player player) {
-		List<Bag> bags = new ArrayList<Bag>();
+	public static List<BagSimple> getBagsDataInInventory(Player player) {
+		List<BagSimple> bags = new ArrayList<BagSimple>();
 		//Log.Debug(Main.plugin, "[DI-156-1] " + "Checking for bags.");
 		for(ItemStack i : player.getInventory().getContents()) {
 			if(HavenBags.isBag(i) && BagState.getState(i) == BagState.USED) {
-				bags.add(new Bag(i, HavenBags.loadBagContentFromServer(i)));
+				bags.add(new BagSimple(i, HavenBags.loadBagContentFromServer(i)));
 			}
 		}
 		return bags;
@@ -1428,7 +1428,7 @@ public class HavenBags {
 	public static int getBagSlotsInInventory(Player player) {
 		int count = 0;
 
-		for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
+		for(BagSimple bag : HavenBags.getBagsDataInInventory(player)) {
 			count += Database.getBag(HavenBags.getBagUUID(bag.item), null).getSize();
 		}
 
@@ -1438,7 +1438,7 @@ public class HavenBags {
 	public static boolean hasOthersBag(Player player) {
 		boolean access = false;
 		String uuid = player.getUniqueId().toString();
-		for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
+		for(BagSimple bag : HavenBags.getBagsDataInInventory(player)) {
 			if(Database.getBag(HavenBags.getBagUUID(bag.item), null).getOwner().equalsIgnoreCase(uuid)) access = true;
 			for(String trusted : Database.getBag(HavenBags.getBagUUID(bag.item), null).getTrusted()) {
                 if (trusted.equalsIgnoreCase(uuid)) {

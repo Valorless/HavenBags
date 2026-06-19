@@ -21,7 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import valorless.havenbags.*;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.enums.TokenType;
@@ -668,7 +668,7 @@ public class UpgradeGUI implements Listener {
 		String uuid = HavenBags.getBagUUID(item);
 				
 		if(BagEffects.hasEffect(value)) {
-			Data data = Database.getBag(uuid, null).clone();
+			Bag data = Database.getBag(uuid, null).clone();
 			data.setEffect(value);
 			HavenBags.updateUsed(item, data, player);
 			return item;

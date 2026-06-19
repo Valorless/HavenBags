@@ -15,7 +15,7 @@ import org.bukkit.OfflinePlayer;
 
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.Nullable;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
@@ -43,7 +43,7 @@ public final class BagItemFactory {
      * @param bag Data instance
      * @return ItemStack representing the bag
      */
-    public static ItemStack toItemStack(@NotNull Data bag) {
+    public static ItemStack toItemStack(@NotNull Bag bag) {
         ItemStack base;
         if (bag.getMaterial() != null) {
             base = new ItemStack(bag.getMaterial());

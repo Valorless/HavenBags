@@ -31,12 +31,9 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.database.EtherealBags;
-import valorless.havenbags.Database.Bag;
-import valorless.havenbags.datamodels.Data;
-import valorless.havenbags.datamodels.Message;
-import valorless.havenbags.datamodels.Placeholder;
-import valorless.havenbags.datamodels.PluginTags;
-import valorless.havenbags.datamodels.Sound;
+import valorless.havenbags.Database.BagSimple;
+import valorless.havenbags.datamodels.*;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.TextFeatures;
@@ -517,21 +514,21 @@ public class AutoPickup implements Listener {
 		
         if(item.getType() == Material.AIR) return false;
 	
-		List<Bag> bags = new ArrayList<Bag>();
+		List<BagSimple> bags = new ArrayList<Database.BagSimple>();
 		Log.debug(Main.plugin, "[DI-156] " + "Checking for bags.");
 		for(ItemStack i : player.getInventory().getContents()) {
 			//Log.debug(Main.plugin, HavenBags.BagState(i).toString());
 			if(HavenBags.isBag(i) && BagState.getState(i) == BagState.USED) {
 				if(PDC.has(i, "filter")) {
-					bags.add(new Bag(i, HavenBags.loadBagContentFromServer(i)));
+					bags.add(new Database.BagSimple(i, HavenBags.loadBagContentFromServer(i)));
 				}
 			}
 		}
 		Log.debug(Main.plugin, "[DI-157] " + "bags:" + bags.size());
 		Log.debug(Main.plugin, "[DI-158] " + "Checking bag filters.");
 		//if(HavenBags.IsItemBlacklisted(item)) return false;
-		for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
-			Data data = Database.getBag(HavenBags.getBagUUID(bag.item), null);
+		for(Database.BagSimple bag : HavenBags.getBagsDataInInventory(player)) {
+			Bag data = Database.getBag(HavenBags.getBagUUID(bag.item), null);
 			if(HavenBags.isItemBlacklisted(item, data)) continue;
 			Log.debug(Main.plugin, "[DI-159] " + "bag: " + PDC.getString(bag.item, "uuid"));
 			if(Database.isBagOpen(PDC.getString(bag.item, "uuid"), bag.item)) continue;

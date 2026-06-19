@@ -1,7 +1,7 @@
 package valorless.havenbags.database;
 
 import valorless.havenbags.Database;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.FoodComponentFixer;
 
@@ -28,7 +28,7 @@ import valorless.valorlessutils.json.JsonUtils;
 
 public class Files {
 	
-	public static void saveBag(Data data) {
+	public static void saveBag(Bag data) {
 		String uuid = data.getUuid();
     	String owner = data.getOwner();
     	
@@ -73,8 +73,8 @@ public class Files {
 		file.saveConfig();
 	}
 
-	public static Data loadBag(String owner, String uuid) {
-		Data data = new Data(uuid, owner);
+	public static Bag loadBag(String owner, String uuid) {
+		Bag data = new Bag(uuid, owner);
 		Config file = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
 		
 		data.setCreator(file.getString("creator"));

@@ -18,14 +18,14 @@ import org.bukkit.inventory.ItemStack;
 import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.nbt.NBT;
 
 public class BagCache implements Listener {
 
-	protected static final HashMap<UUID, Data> cache = new HashMap<>();
+	protected static final HashMap<UUID, Bag> cache = new HashMap<>();
 	
 	public static void reload() {
 		cache.clear();
@@ -45,7 +45,7 @@ public class BagCache implements Listener {
 		return true;
 	}
 
-	public static Data get(UUID key) {
+	public static Bag get(UUID key) {
 		return cache.get(key);
 	}
 
@@ -53,18 +53,18 @@ public class BagCache implements Listener {
 		return cache.containsKey(key);
 	}
 
-	public static boolean containsData(Data data) {
+	public static boolean containsData(Bag data) {
 		return cache.containsValue(data);
 	}
 	
-	public static List<Data> getAllBags(Player player) {
+	public static List<Bag> getAllBags(Player player) {
 	    String uuid = player.getUniqueId().toString();
 	    return cache.values().stream()
 	        .filter(data -> uuid.equals(data.getOwner()))
 	        .toList();
 	}
 	
-	public static List<Data> getPlayerBagsFromInventory(Player player) {
+	public static List<Bag> getPlayerBagsFromInventory(Player player) {
 	    ItemStack[] contents = player.getInventory().getContents();
 
 	    return Arrays.stream(contents)
@@ -85,7 +85,7 @@ public class BagCache implements Listener {
 	        .toList();
 	}
 	
-	public static List<Data> getOwnerlessBags() {
+	public static List<Bag> getOwnerlessBags() {
 	    return cache.values().stream()
 	        .filter(data -> "ownerless".equalsIgnoreCase(data.getOwner()))
 	        .toList();

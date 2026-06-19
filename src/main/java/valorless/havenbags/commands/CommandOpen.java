@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import valorless.havenbags.Database;
 import valorless.havenbags.Lang;
 import valorless.havenbags.database.EtherealBags;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.gui.EtherealGUI;
 
 public class CommandOpen {
@@ -20,7 +20,7 @@ public class CommandOpen {
 
 		if(command.sender instanceof Player player) {
 			
-			for(Data dat : Database.getOpenBags()) {
+			for(Bag dat : Database.getOpenBags()) {
 				if(dat.getViewer().getUniqueId().equals(player.getUniqueId())) {
 					return true;
 				}

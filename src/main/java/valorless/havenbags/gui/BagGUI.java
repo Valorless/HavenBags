@@ -26,7 +26,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import valorless.havenbags.*;
 import valorless.havenbags.Database.UpdateSource;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.enums.DatabaseType;
@@ -179,7 +179,7 @@ public class BagGUI implements Listener {
     
     void checkInstances() {
     	List<BagGUI> thisUUID = new ArrayList<BagGUI>();
-    	for (Data openBag : Database.getOpenBags()) {
+    	for (Bag openBag : Database.getOpenBags()) {
     		Log.debug(plugin, "[DI-34] " + "Open Bag: " + openBag.getUuid() + " - " + PDC.getString(bagItem, "uuid"));
     		if(openBag.getUuid().equalsIgnoreCase(PDC.getString(bagItem, "uuid"))) {
     			thisUUID.add(openBag.getGui());
@@ -222,7 +222,7 @@ public class BagGUI implements Listener {
 						"\n" +
 						"################################\n";
 				console.sendMessage(String.format(errorMessage, bag));
-				for (Data openBag : Database.getOpenBags()) {
+				for (Bag openBag : Database.getOpenBags()) {
 		    		Log.debug(plugin, "[DI-36] " + "Open Bag: " + openBag.getUuid() + " - " + PDC.getString(bagItem, "uuid"));
 		    		if(openBag.getUuid() == PDC.getString(bagItem, "uuid")) {
 		    			close(true);
@@ -247,7 +247,7 @@ public class BagGUI implements Listener {
 		//return HavenBags.LoadBagContentFromServer(uuid, owner, player);
 		
 		if(Database.getDatabaseType() == DatabaseType.MYSQLPLUS) {
-			Data data = Database.getMysql().loadBag(uuid);
+			Bag data = Database.getMysql().loadBag(uuid);
 			if(data.isOpen()) return null;
 			List<ItemStack> content = data.getContent();
 			data.setViewer(player); //Extra just to be sure
@@ -345,7 +345,7 @@ public class BagGUI implements Listener {
             e.setCancelled(true);
         }
         
-		Data data = Database.getBag(uuid, null);
+		Bag data = Database.getBag(uuid, null);
         
         //if (Main.config.GetBool("bags-in-bags") == true) return;
     	if(e.getRawSlot() < inv.getSize() && HavenBags.isItemBlacklisted(cursorItem, data)) {

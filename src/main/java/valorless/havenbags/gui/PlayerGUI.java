@@ -20,13 +20,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import valorless.havenbags.datamodels.Bag;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
 import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.utils.Utils;
 import valorless.havenbags.*;
-import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.enums.GUIAction;
 import valorless.havenbags.features.Insurance;
@@ -361,7 +361,7 @@ public class PlayerGUI implements Listener {
 				}
 				String uuid = PDC.getString(selectedBag, "uuid");
 
-				Data data = Database.getBag(uuid, null).clone();
+				Bag data = Database.getBag(uuid, null).clone();
 				Database.deleteBag(uuid);
 
 				type = GUIType.Deletion;
@@ -446,9 +446,9 @@ public class PlayerGUI implements Listener {
 
 	List<ItemStack> preparePlayerBags(String playeruuid) {
 		List<ItemStack> bags = new ArrayList<ItemStack>();
-		List<Data> bagdata = Database.getBagsData(playeruuid);
+		List<Bag> bagdata = Database.getBagsData(playeruuid);
 
-		for(Data data : bagdata){
+		for(Bag data : bagdata){
 			List<ItemStack> Content  = data.getContent();
 			if (Content == null) continue;
 

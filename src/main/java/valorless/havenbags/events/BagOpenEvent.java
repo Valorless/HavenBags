@@ -6,13 +6,13 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 
 /**
  * Called when a player opens a HavenBag inventory.
  * <p>
  * This event provides access to the {@link Player}, the {@link Inventory} that was opened,
- * the bag {@link ItemStack}, and the corresponding {@link Data} object storing bag metadata.
+ * the bag {@link ItemStack}, and the corresponding {@link Bag} object storing bag metadata.
  * </p>
  *
  * <p>Use this event to handle initialization, logging, or custom logic
@@ -52,7 +52,7 @@ public class BagOpenEvent extends Event {
     private final ItemStack bagItem;
 
     /** The bag's associated data model. */
-    private final Data bagData;
+    private final Bag bagData;
 	
     /**
      * Constructs a new BagOpenEvent.
@@ -60,9 +60,9 @@ public class BagOpenEvent extends Event {
      * @param inventory The bag's inventory that was opened
      * @param player The player who opened the bag
      * @param bagItem The ItemStack representing the bag
-     * @param bagData The bag's associated {@link Data}
+     * @param bagData The bag's associated {@link Bag}
      */
-    public BagOpenEvent(Inventory inventory, Player player, ItemStack bagItem, Data bagData) {
+    public BagOpenEvent(Inventory inventory, Player player, ItemStack bagItem, Bag bagData) {
         this.inv = inventory;
         this.player = player;
         this.bagItem = bagItem;
@@ -97,11 +97,11 @@ public class BagOpenEvent extends Event {
     }
 
     /**
-     * Gets the {@link Data} associated with the bag.
+     * Gets the {@link Bag} associated with the bag.
      *
      * @return The bag data
      */
-    public Data getBagData() {
+    public Bag getBagData() {
         return bagData;
     }
 }

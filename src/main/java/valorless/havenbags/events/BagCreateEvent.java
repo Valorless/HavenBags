@@ -5,13 +5,13 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 
 /**
  * Called when a new HavenBag is created.
  * <p>
  * This event provides access to the {@link Player} who created the bag,
- * the bag {@link ItemStack}, and the corresponding {@link Data} object storing bag metadata.
+ * the bag {@link ItemStack}, and the corresponding {@link Bag} object storing bag metadata.
  * </p>
  *
  * <p>Use this event to handle setup, logging, or applying custom modifications
@@ -48,16 +48,16 @@ public class BagCreateEvent extends Event {
     private final ItemStack bagItem;
 
     /** The bag's associated data model. */
-    private final Data bagData;
+    private final Bag bagData;
 	
     /**
      * Constructs a new BagCreateEvent.
      *
      * @param player The player who created the bag
      * @param bagItem The ItemStack representing the bag
-     * @param bagData The bag's associated {@link Data}
+     * @param bagData The bag's associated {@link Bag}
      */
-    public BagCreateEvent(Player player, ItemStack bagItem, Data bagData) {
+    public BagCreateEvent(Player player, ItemStack bagItem, Bag bagData) {
         this.player = player;
         this.bagItem = bagItem;
         this.bagData = bagData;
@@ -82,11 +82,11 @@ public class BagCreateEvent extends Event {
     }
 
     /**
-     * Gets the {@link Data} associated with the bag.
+     * Gets the {@link Bag} associated with the bag.
      *
      * @return The bag data
      */
-    public Data getBagData() {
+    public Bag getBagData() {
         return bagData;
     }
 }

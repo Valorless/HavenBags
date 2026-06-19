@@ -18,11 +18,11 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import valorless.havenbags.Database;
-import valorless.havenbags.Database.Bag;
+import valorless.havenbags.Database.BagSimple;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.valorlessutils.logging.Log;
 
 public class BagEffects implements Listener {
@@ -174,8 +174,8 @@ public class BagEffects implements Listener {
         int duration = Main.config.getInt("effects.refresh-rate") + 5;
 	    BukkitTask task = Bukkit.getScheduler().runTaskTimer(Main.plugin, () -> {
 	        
-	        for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
-	        	Data data = Database.getBag(HavenBags.getBagUUID(bag.item), null);
+	        for(BagSimple bag : HavenBags.getBagsDataInInventory(player)) {
+	        	Bag data = Database.getBag(HavenBags.getBagUUID(bag.item), null);
 	        	if(data.getEffect() == null) continue;
 	        	if(data.getEffect().equalsIgnoreCase("null")) continue;
 	        	

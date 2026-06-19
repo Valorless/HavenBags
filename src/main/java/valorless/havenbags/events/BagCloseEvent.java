@@ -6,13 +6,13 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 
 /**
  * Called when a player closes a HavenBag inventory.
  * <p>
  * This event provides access to the {@link Player}, the {@link Inventory} that was closed,
- * the bag {@link ItemStack}, and the corresponding {@link Data} object storing bag metadata.
+ * the bag {@link ItemStack}, and the corresponding {@link Bag} object storing bag metadata.
  * </p>
  *
  * <p>Use this event to handle cleanup, saving, or triggering custom logic
@@ -52,7 +52,7 @@ public class BagCloseEvent extends Event {
     private final ItemStack bagItem;
 
     /** The bag's associated data model. */
-    private final Data bagData;
+    private final Bag bagData;
     
     private final boolean forced;
 	
@@ -62,10 +62,10 @@ public class BagCloseEvent extends Event {
      * @param inventory The bag's inventory that was closed
      * @param player The player who closed the bag
      * @param bagItem The ItemStack representing the bag
-     * @param bagData The bag's associated {@link Data}
+     * @param bagData The bag's associated {@link Bag}
      * @param forced 
      */
-    public BagCloseEvent(Inventory inventory, Player player, ItemStack bagItem, Data bagData, boolean forced) {
+    public BagCloseEvent(Inventory inventory, Player player, ItemStack bagItem, Bag bagData, boolean forced) {
         this.inv = inventory;
         this.player = player;
         this.bagItem = bagItem;
@@ -101,11 +101,11 @@ public class BagCloseEvent extends Event {
     }
 
     /**
-     * Gets the {@link Data} associated with the bag.
+     * Gets the {@link Bag} associated with the bag.
      *
      * @return The bag data
      */
-    public Data getBagData() {
+    public Bag getBagData() {
         return bagData;
     }
 

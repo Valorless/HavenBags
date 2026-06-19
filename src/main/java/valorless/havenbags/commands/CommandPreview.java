@@ -16,7 +16,7 @@ import valorless.havenbags.Database;
 import valorless.havenbags.CommandListener;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
@@ -61,7 +61,7 @@ public class CommandPreview {
 				String uuid = command.args[2];
 				String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
 				File bagData;
-				Data bag = Database.getBag(uuid, null);
+				Bag bag = Database.getBag(uuid, null);
 				try {
 					bagData = new File(path);
 				} catch(Exception e) {

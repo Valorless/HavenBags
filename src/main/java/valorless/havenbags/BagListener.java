@@ -23,7 +23,7 @@ import org.bukkit.util.BlockIterator;
 
 import me.chancesd.pvpmanager.player.CombatPlayer;
 import valorless.havenbags.database.BagCache.Observer;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.enums.DatabaseType;
@@ -299,7 +299,7 @@ public class BagListener implements Listener{
 		if(bag.getType() == Material.AIR) return;
 		String uuid = HavenBags.getBagUUID(bag);
 		Log.debug(Main.plugin, "[DI-226] " + "Opening " +  uuid);
-		Data data = Database.getBag(uuid, bag);
+		Bag data = Database.getBag(uuid, bag);
 		//String owner = PDC.GetString(bag, "bag-owner");
 		
 		if(data == null) {

@@ -22,7 +22,7 @@ import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.valorlessutils.logging.Log;
 
 public class WeightTooltipProtocollib {
@@ -63,7 +63,7 @@ public class WeightTooltipProtocollib {
         PacketContainer packet = event.getPacket();
         List<ItemStack> items = packet.getItemListModifier().read(0);
         int size = items.size();
-        for(Data bag : Database.getOpenBags()) {
+        for(Bag bag : Database.getOpenBags()) {
     		if(bag.getViewer() == event.getPlayer() && bag.getGui() != null) size = bag.getGui().size;
     	}
         for (int i = 0; i < size; i++) {
@@ -78,7 +78,7 @@ public class WeightTooltipProtocollib {
     private static ItemStack addWeightTooltip(ItemStack item, Player player) {
     	if(!Main.weight.getBool("enabled")) return item;
     	boolean show = false;
-    	for(Data bag : Database.getOpenBags()) {
+    	for(Bag bag : Database.getOpenBags()) {
             if (bag.getViewer() == player) {
                 show = true;
                 break;

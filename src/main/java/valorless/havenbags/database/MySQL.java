@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import com.google.gson.JsonObject;
 import com.mysql.cj.jdbc.exceptions.PacketTooBigException;
 
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.utils.FoodComponentFixer;
 import valorless.havenbags.Database;
 import valorless.havenbags.Main;
@@ -204,7 +204,7 @@ public class MySQL {
         return owners;
     }
 
-	public void saveBag(Data data) {
+	public void saveBag(Bag data) {
 		Log.debug(Main.plugin, "[DI-233] [MYSQL] " + "Attempting to write bag " + data.getOwner() + "/" + data.getUuid() + " onto database");
 		String sql = "INSERT INTO bags (uuid, owner, creator, size, texture, custommodeldata, " +
 				"itemmodel, trusted, auto_pickup, weight, weight_max, content, open, extra) " +
@@ -260,7 +260,7 @@ public class MySQL {
 	}
 	
 	@SuppressWarnings("unused")
-	public void saveBags(List<Data> bags) {
+	public void saveBags(List<Bag> bags) {
 	    String sql = "INSERT INTO bags (uuid, owner, creator, size, texture, custommodeldata, " +
 	                 "itemmodel, trusted, auto_pickup, weight, weight_max, content, open, extra) VALUES ";
 
@@ -273,7 +273,7 @@ public class MySQL {
 		}
 	    
 	    List<String> values = new ArrayList<>();
-	    for (Data bag : bags) {
+	    for (Bag bag : bags) {
 	        values.add("(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    }
 
@@ -295,7 +295,7 @@ public class MySQL {
 
 	    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
 	        int index = 1;
-	        for (Data bag : bags) {
+	        for (Bag bag : bags) {
 	            stmt.setString(index++, bag.getUuid());
 	            stmt.setString(index++, bag.getOwner());
 	            stmt.setString(index++, bag.getCreator());
@@ -320,7 +320,7 @@ public class MySQL {
 	    }
 	}
 
-	public Data loadBag(String uuid) {
+	public Bag loadBag(String uuid) {
 		Log.debug(Main.plugin, "[DI-234] " + "Attempting to load bag "  + uuid + ".");
 		String sql = "SELECT * FROM bags WHERE uuid = ?";
 
@@ -338,7 +338,7 @@ public class MySQL {
 			ResultSet rs = stmt.executeQuery();
 
 			if (rs.next()) {
-				Data data = new Data(
+				Bag data = new Bag(
 	                    rs.getString("uuid"),
 	                    rs.getString("owner")
 	                );
@@ -364,8 +364,8 @@ public class MySQL {
 		return null;
 	}
 	
-	public HashMap<UUID, Data> loadAllBags() {
-		HashMap<UUID, Data> bags = new HashMap<>();
+	public HashMap<UUID, Bag> loadAllBags() {
+		HashMap<UUID, Bag> bags = new HashMap<>();
 	    String sql = "SELECT * FROM bags";
 	    
 	    try {
@@ -381,7 +381,7 @@ public class MySQL {
 
 	        while (rs.next()) {
 	        	String uuid = rs.getString("uuid");
-	        	Data data = new Data(
+	        	Bag data = new Bag(
 	                    uuid,
 	                    rs.getString("owner")
 	                );

@@ -10,7 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.features.BagEffects;
 import valorless.havenbags.persistentdatacontainer.PDC;
@@ -24,7 +24,7 @@ public class CommandEffect {
 		if(command.args.length >= 2) {
 			ItemStack item = player.getInventory().getItemInMainHand();
 			if(HavenBags.isBag(item)) {
-				Data data = Database.getBag(HavenBags.getBagUUID(item), null);
+				Bag data = Database.getBag(HavenBags.getBagUUID(item), null);
 				if(command.args[1].equalsIgnoreCase("none")) {
 					//PDC.SetString(item, "bag-filter", null);
 					data.setEffect("null");
@@ -77,7 +77,7 @@ public class CommandEffect {
 					item.setItemMeta(meta);
 					return true;
 				}
-				Data data = Database.getBag(HavenBags.getBagUUID(item), null);
+				Bag data = Database.getBag(HavenBags.getBagUUID(item), null);
 				data.setEffect("null");
 				player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("effects-command").replace("%value%",
 						"none"), player));

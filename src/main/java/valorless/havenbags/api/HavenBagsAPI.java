@@ -13,13 +13,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.havenbags.Database;
-import valorless.havenbags.Database.Bag;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.Nullable;
 import valorless.havenbags.database.EtherealBags;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.datamodels.EtherealBagSettings;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.enums.BagState;
@@ -94,7 +93,7 @@ public class HavenBagsAPI {
 	 * @param item bag item
 	 * @return Data for the bag, or null if not a bag
 	 */
-	public static Data getBagData(ItemStack item) {
+	public static Bag getBagData(ItemStack item) {
 		if(!isBag(item)) return null;
 		return Database.getBag(getBagUUID(item), null);
 	}
@@ -104,7 +103,7 @@ public class HavenBagsAPI {
 	 * @param bagData Data for the bag
 	 * @return ItemStack representing the bag
 	 */
-	public static ItemStack generateBagItem(Data bagData) {
+	public static ItemStack generateBagItem(Bag bagData) {
 		return BagItemFactory.toItemStack(bagData);
 	}
 	
@@ -122,7 +121,7 @@ public class HavenBagsAPI {
 	 * @param uuid bag UUID
 	 * @return Data for the bag or null if not found
 	 */
-	public static Data getBag(String uuid) {
+	public static Bag getBag(String uuid) {
 		return Database.getBag(uuid, null);
 	}
 	
@@ -140,7 +139,7 @@ public class HavenBagsAPI {
 	 * @param playerUUID player UUID
 	 * @return list of Data for the player's bags
 	 */
-	public static List<Data> getPlayerBags(String playerUUID) {
+	public static List<Bag> getPlayerBags(String playerUUID) {
 		return Database.getBagsData(playerUUID);
 	}
 	
@@ -149,9 +148,9 @@ public class HavenBagsAPI {
 	 * @param player player to inspect
 	 * @return list of Data for bags found
 	 */
-	public static List<Data> getBagsOnPlayer(Player player){
-		List<Data> bags = new ArrayList<>();
-		for(Bag bag : HavenBags.getBagsDataInInventory(player)) {
+	public static List<Bag> getBagsOnPlayer(Player player){
+		List<Bag> bags = new ArrayList<>();
+		for(Database.BagSimple bag : HavenBags.getBagsDataInInventory(player)) {
 			bags.add(Database.getBag(getBagUUID(bag.item), null));
 		}
 		return bags;
@@ -191,7 +190,7 @@ public class HavenBagsAPI {
 	 * Returns Data objects for all currently open bags.
 	 * @return list of open bag Data
 	 */
-	public static List<Data> getOpenBagsUUIDs() {
+	public static List<Bag> getOpenBagsUUIDs() {
 		return Database.getOpenBags();
 	}
 	
@@ -208,7 +207,7 @@ public class HavenBagsAPI {
 	 * @param creationObject bag creation parameters
 	 * @return Data for the created bag
 	 */
-	public static Data createBag(BagCreationObject creationObject) {
+	public static Bag createBag(BagCreationObject creationObject) {
 		return Database.createBag(creationObject.uuid, creationObject.owner, creationObject.contents,
 				creationObject.creator.equalsIgnoreCase("null") ? null : Bukkit.getOfflinePlayer(UUID.fromString(creationObject.creator)).getPlayer(), 
 				createUnusedBagItem(creationObject.contents.size(), !creationObject.owner.equalsIgnoreCase("ownerless")));
@@ -219,7 +218,7 @@ public class HavenBagsAPI {
 	 * @param bagData bag Data
 	 * @return Data for the created bag
 	 */
-	public static Data createBag(Data bagData) {
+	public static Bag createBag(Bag bagData) {
 		return Database.createBag(bagData);
 	}
 
@@ -520,14 +519,14 @@ public class HavenBagsAPI {
 	 * Checks if the specified item is blacklisted from being stored in HavenBags.
 	 * <p>
 	 * Takes into account if using blacklist or whitelist mode.<br>
-	 * Please check the {@link #blacklistAsWhitelist(Data bagData)} before calling this method to ensure correct context.<br>
+	 * Please check the {@link #blacklistAsWhitelist(Bag bagData)} before calling this method to ensure correct context.<br>
 	 * For global context refer to {@link #blacklistAsWhitelist()}.
 	 * 
 	 * @param item The ItemStack to check.
 	 * @param bagData (Optional) The Data object of the bag for context-specific checks; can be null.
 	 * @return true if the item is blacklisted, false otherwise.
 	 */
-	public static boolean isItemBlacklisted(ItemStack item, @Nullable Data bagData) {
+	public static boolean isItemBlacklisted(ItemStack item, @Nullable Bag bagData) {
 		return HavenBags.isItemBlacklisted(item, bagData);
 	}
 	
@@ -546,7 +545,7 @@ public class HavenBagsAPI {
 	 * @param bagData The Data object of the bag to check.
 	 * @return true if blacklist is used as whitelist for this bag, false otherwise.
 	 */
-	public static boolean blacklistAsWhitelist(Data bagData) {
+	public static boolean blacklistAsWhitelist(Bag bagData) {
 		return bagData.isWhitelist();
 	}
 	

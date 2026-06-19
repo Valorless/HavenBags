@@ -16,7 +16,7 @@ import com.google.gson.JsonObject;
 
 import valorless.havenbags.Database;
 import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.utils.FoodComponentFixer;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
@@ -130,7 +130,7 @@ public class SQLite {
         }
     }
 
-    public void saveBag(Data data) {
+    public void saveBag(Bag data) {
         String sql = "INSERT INTO bags (uuid, owner, creator, size, texture, custommodeldata, " +
                      "itemmodel, trusted, auto_pickup, weight, weight_max, content, extra) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
@@ -257,7 +257,7 @@ public class SQLite {
         return owners;
     }
     
-    public Data loadBag(String uuid) {
+    public Bag loadBag(String uuid) {
         String sql = "SELECT * FROM bags WHERE uuid = ?";
         
         try {
@@ -275,7 +275,7 @@ public class SQLite {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                Data data = new Data(
+                Bag data = new Bag(
                     rs.getString("uuid"),
                     rs.getString("owner")
                 );

@@ -4,13 +4,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 
 /**
  * Called when a HavenBag is deleted.
  * <p>
  * This event provides access to the {@link Player} responsible for the deletion
- * (if applicable) and the {@link Data} object associated with the bag.
+ * (if applicable) and the {@link Bag} object associated with the bag.
  * </p>
  *
  * <p>Use this event to handle cleanup, saving, or applying custom logic
@@ -44,15 +44,15 @@ public class BagDeleteEvent extends Event {
     private final Player player;
 
     /** The bag's associated data model that is being deleted. */
-    private final Data bagData;
+    private final Bag bagData;
 	
     /**
      * Constructs a new BagDeleteEvent.
      *
      * @param player The player who deleted the bag
-     * @param bagData The bag's associated {@link Data}
+     * @param bagData The bag's associated {@link Bag}
      */
-    public BagDeleteEvent(Player player, Data bagData) {
+    public BagDeleteEvent(Player player, Bag bagData) {
         this.player = player;
         this.bagData = bagData;
     }
@@ -67,11 +67,11 @@ public class BagDeleteEvent extends Event {
     }
 
     /**
-     * Gets the {@link Data} associated with the deleted bag.
+     * Gets the {@link Bag} associated with the deleted bag.
      *
      * @return The bag data
      */
-    public Data getBagData() {
+    public Bag getBagData() {
         return bagData;
     }
 }

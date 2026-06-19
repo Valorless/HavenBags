@@ -17,7 +17,7 @@ import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.Nullable;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.Server;
@@ -116,7 +116,7 @@ public class CustomBags {
 			for(int i = 0; i < PDC.getInteger(bagItem, "size"); i++) {
 				content.add(CustomContent.load(PDC.getString(bagItem, "predefined")).get(i));
 			}
-			Data data = Database.createBag(uuid, owner, content, player, bagItem);
+			Bag data = Database.createBag(uuid, owner, content, player, bagItem);
 			data.setName(PDC.getString(bagItem, "name"));
 		}
 		
@@ -170,7 +170,7 @@ public class CustomBags {
 			for(int i = 0; i < PDC.getInteger(bagItem, "size"); i++) {
 				content.add(CustomContent.load(PDC.getString(bagItem, "predefined")).get(i));
 			}
-			Data data = Database.createBag(uuid, owner, content, player, bagItem);
+			Bag data = Database.createBag(uuid, owner, content, player, bagItem);
 			data.setName(PDC.getString(bagItem, "name"));
 		}
 
