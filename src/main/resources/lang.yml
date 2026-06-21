@@ -20,6 +20,8 @@ malformed-command: '&cUnknown command, are you missing some parameters?'
 # i.e auto-pickup.
 feature-disabled: '&cSorry, this feature is disabled.'
 
+no-permission: '&cYou do not have permission to use this.'
+
 ### Player ###
 
 # Message sent to player should their bag's content fail to load.

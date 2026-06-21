@@ -102,7 +102,20 @@ public class EventListener implements Listener {
 					return;
 				}
 
-				if(FeaturesGUI.OpenGUIs.get(player) != null) return;
+				if(FeaturesGUI.OpenGUIs.get(player) != null){
+					FeaturesGUI.OpenGUIs.get(player).close();
+					Bukkit.getScheduler().runTaskLater(Main.plugin, () -> {
+						Bag data = HavenBagsAPI.getBag(HavenBags.getBagUUID(clickedItem));
+
+						if(!HavenBags.isOwner(clickedItem, player) && !data.isPlayerTrusted(player.getName())) {
+							player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("bag-cannot-use"), player));
+							return;
+						}
+
+						new FeaturesGUI(player, clickedItem, data);
+					},5L);
+					return;
+				}
 
 				Bag data = HavenBagsAPI.getBag(HavenBags.getBagUUID(clickedItem));
 
