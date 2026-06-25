@@ -333,15 +333,17 @@ public class FeaturesGUI implements Listener {
 
 	public ToggleButton createButton(String key){
 
-		String enabled = String.format("features-gui.slots.%s.material.enabled", key);
-		String disabled = String.format("features-gui.slots.%s.material.disabled", key);
+		String enabledKey = String.format("features-gui.slots.%s.material.enabled", key);
+		String disabledKey = String.format("features-gui.slots.%s.material.disabled", key);
+		String enabled = Main.config.getString(enabledKey);
+		String disabled = Main.config.getString(disabledKey);
 
 		ItemStack enabledItem = enabled.startsWith("nexo:") ?
-				NexoItems.itemFromId(Main.config.getString(enabled).replace("nexo:", "")).build() :
-				new ItemStack(Material.valueOf(Main.config.getString(enabled).toUpperCase()));
+				NexoItems.itemFromId(enabled.replace("nexo:", "")).build() :
+				new ItemStack(Material.valueOf(enabled.toUpperCase()));
 		ItemStack disabledItem = disabled.startsWith("nexo:") ?
-				NexoItems.itemFromId(Main.config.getString(disabled).replace("nexo:", "")).build() :
-				new ItemStack(Material.valueOf(Main.config.getString(disabled).toUpperCase()));
+				NexoItems.itemFromId(disabled.replace("nexo:", "")).build() :
+				new ItemStack(Material.valueOf(disabled.toUpperCase()));
 
 		if(!enabled.startsWith("nexo:")){
 			ItemMeta meta = enabledItem.getItemMeta();

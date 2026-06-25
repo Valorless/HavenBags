@@ -104,6 +104,7 @@ public class EventListener implements Listener {
 
 				if(FeaturesGUI.OpenGUIs.get(player) != null){
 					FeaturesGUI.OpenGUIs.get(player).close();
+					player.closeInventory();
 					Bukkit.getScheduler().runTaskLater(Main.plugin, () -> {
 						Bag data = HavenBagsAPI.getBag(HavenBags.getBagUUID(clickedItem));
 
