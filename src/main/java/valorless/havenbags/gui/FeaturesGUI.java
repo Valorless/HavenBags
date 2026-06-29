@@ -152,24 +152,26 @@ public class FeaturesGUI implements Listener {
 	}
 
 	void mainPage(){
-		inv = Bukkit.createInventory(player, invSize, Lang.parse(Main.config.getString("features-gui.title"), player));
+		inv = Bukkit.createInventory(player, invSize, Lang.parse(Main.config.getString("features-gui.titles.main"), player));
 		ItemStack fillerItem;
 		if(filler.startsWith("nexo:")){
 			fillerItem = NexoItems.itemFromId(filler.replace("nexo:", "")).build();
 		}else{
 			fillerItem = new ItemStack(Material.valueOf(filler.toUpperCase()));
-			ItemMeta fillMeta = fillerItem.getItemMeta();
-			fillMeta.setDisplayName(" ");
-			try {
-				if (Server.VersionHigherOrEqualTo(Version.v1_21)) {
-					Method setHideTooltip = fillMeta.getClass().getMethod("setHideTooltip", boolean.class);
-					setHideTooltip.setAccessible(true);
-					setHideTooltip.invoke(fillMeta, true);
+			if(fillerItem.getType() != Material.AIR) {
+				ItemMeta fillMeta = fillerItem.getItemMeta();
+				fillMeta.setDisplayName(" ");
+				try {
+					if (Server.VersionHigherOrEqualTo(Version.v1_21)) {
+						Method setHideTooltip = fillMeta.getClass().getMethod("setHideTooltip", boolean.class);
+						setHideTooltip.setAccessible(true);
+						setHideTooltip.invoke(fillMeta, true);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
+				fillerItem.setItemMeta(fillMeta);
 			}
-			fillerItem.setItemMeta(fillMeta);
 		}
 
 		for(int i = 0; i < invSize; i++) {
@@ -186,18 +188,20 @@ public class FeaturesGUI implements Listener {
 				customFillerItem = NexoItems.itemFromId(filler.replace("nexo:", "")).build();
 			}else{
 				customFillerItem = new ItemStack(Material.valueOf(customFiller.toUpperCase()));
-				ItemMeta fillMeta = customFillerItem.getItemMeta();
-				fillMeta.setDisplayName(" ");
-				try {
-					if (Server.VersionHigherOrEqualTo(Version.v1_21)) {
-						Method setHideTooltip = fillMeta.getClass().getMethod("setHideTooltip", boolean.class);
-						setHideTooltip.setAccessible(true);
-						setHideTooltip.invoke(fillMeta, true);
+				if(fillerItem.getType() != Material.AIR) {
+					ItemMeta fillMeta = customFillerItem.getItemMeta();
+					fillMeta.setDisplayName(" ");
+					try {
+						if (Server.VersionHigherOrEqualTo(Version.v1_21)) {
+							Method setHideTooltip = fillMeta.getClass().getMethod("setHideTooltip", boolean.class);
+							setHideTooltip.setAccessible(true);
+							setHideTooltip.invoke(fillMeta, true);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
+					customFillerItem.setItemMeta(fillMeta);
 				}
-				customFillerItem.setItemMeta(fillMeta);
 			}
 
 			inv.setItem(Integer.parseInt(slot), customFillerItem);
@@ -229,7 +233,7 @@ public class FeaturesGUI implements Listener {
 		} else if (viewing == ViewingType.AUTO_PICKUP_FILTERS) {
 			inv = GUI.createPage(
 					player,
-					Lang.parse(Main.config.getString("features-gui.title"),player),
+					Lang.parse(Main.config.getString("features-gui.titles.auto-pickup"),player),
 					page,
 					autoPickupFilters(),
 					(invSize/9)

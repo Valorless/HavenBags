@@ -419,7 +419,9 @@ features-gui:
  # Available actions: DOUBLE_CLICK, LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT, MIDDLE
  opens-by: RIGHT
  # GUI title
- title: '&eHavenBags Features'
+ titles:
+  main: '&eHavenBags Features'
+  auto-pickup: '&eAuto-Pickup'
  # Slot size of the GUI. Must be to the power of 9. i.e. Rows*9, 3*9 = 27.
  gui-size: 27
  # Used to fill empty slots in the GUI, so it looks nicer. Set to AIR to have no fillers, useful when using custom gui.
