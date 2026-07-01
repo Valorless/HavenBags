@@ -266,23 +266,28 @@ public class FeaturesGUI implements Listener {
 
 			if (event.getRawSlot() == autoPickupSlot) {
 				//data.setAutopickup(!data.isAutoPickup());
-				viewing = ViewingType.AUTO_PICKUP_FILTERS;
+				if(player.hasPermission("havenbags.autopickup")) {
+					viewing = ViewingType.AUTO_PICKUP_FILTERS;
+				}else {
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("no-permission"), player));
+					return;
+				}
 			} else if (event.getRawSlot() == magnetSlot) {
-				if (player.hasPermission("havenbags.features.magnet")) {
+				if (player.hasPermission("havenbags.magnet")) {
 					data.setMagnet(!data.hasMagnet());
 				} else {
 					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("no-permission"), player));
 					return;
 				}
 			} else if (event.getRawSlot() == autoSortSlot) {
-				if (player.hasPermission("havenbags.features.autosort")) {
+				if (player.hasPermission("havenbags.autosort")) {
 					data.setAutoSort(!data.hasAutoSort());
 				} else {
 					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("no-permission"), player));
 					return;
 				}
 			} else if (event.getRawSlot() == refillingSlot) {
-				if (player.hasPermission("havenbags.features.refill")) {
+				if (player.hasPermission("havenbags.refill")) {
 					data.setRefill(!data.hasRefill());
 				} else {
 					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("no-permission"), player));
