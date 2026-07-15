@@ -230,7 +230,13 @@ public final class Main extends JavaPlugin implements Listener {
 
         // Optional: Add custom charts
         metrics.addCustomChart(new Metrics.SimplePie("language", () -> config.getString("language")));
-        
+
+		Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+			@Override
+			public void run() {
+				Eco.init();
+			}
+		}, 20L);
         
     	//activeBags.clear();
     }
