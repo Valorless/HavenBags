@@ -239,6 +239,9 @@ bag-content-item-amount: '&7%item% &7x%amount%'
 # If bag content exceeds the number of bag-content-preview-size.
 bag-content-and-more: '  &7And more..'
 
+# Should items stack, showing 2 stacks of 64 as x128, instead of 2 x64.
+bag-content-stack: true
+
 # If bag has an effect.
 # %effect% - effect displayname.
 bag-effect: '&7Effect: %effect%'
