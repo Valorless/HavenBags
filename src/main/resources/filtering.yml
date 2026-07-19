@@ -60,25 +60,7 @@ filters:
     - TORCHFLOWER_SEEDS
     - PITCHER_POD
     # Flowers
-    - DANDELION
-    - POPPY
-    - BLUE_ORCHID
-    - ALLIUM
-    - AZURE_BLUET
-    - RED_TULIP
-    - ORANGE_TULIP
-    - WHITE_TULIP
-    - PINK_TULIP
-    - OXEYE_DAISY
-    - CORNFLOWER
-    - LILY_OF_THE_VALLEY
-    - WITHER_ROSE
-    - TORCHFLOWER
-    - SUNFLOWER
-    - LILAC
-    - ROSE_BUSH
-    - PEONY
-    - PITCHER_PLANT
+    - '#minecraft:flowers' # Accepts tags, so this will accept all flowers in the game.
     # Wheat
     - WHEAT
  wood:

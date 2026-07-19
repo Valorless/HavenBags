@@ -5,10 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -34,6 +31,7 @@ import valorless.havenbags.database.EtherealBags;
 import valorless.havenbags.Database.BagSimple;
 import valorless.havenbags.datamodels.*;
 import valorless.havenbags.datamodels.Bag;
+import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.TextFeatures;
@@ -130,10 +128,24 @@ public class AutoPickup implements Listener {
 		Log.debug(Main.plugin, "[DI-145] " + "Filters: " + f.length);
 		for(int i = 0; i < f.length; i++) {
 			String key = String.valueOf(f[i]);
+			List<String> items = new ArrayList<>();
+			for(String item : filter.getStringList(String.format("filters.%s.items", key))){
+				if(item.startsWith("#")){ // item tag
+					List<Material> materials = getTagItems(item.substring(1)); // remove # and get materials.
+					if(materials.isEmpty()){
+						Log.error(Main.plugin, String.format("[Filters] Tag '%s' couldnt be found, skipping.", item));
+						continue;
+					}
+					for(Material material : materials){
+						items.add(material.toString());
+					}
+				}
+				else items.add(item);
+			}
 			Filter entry = new Filter(
 					key,
 					filter.getString(String.format("filters.%s.displayname", key)),
-					filter.getStringList(String.format("filters.%s.items", key))
+					items
 			);
 			if(filter.hasKey(String.format("filters.%s.gui.show", key))){
 				entry.guiShow = filter.getBool(String.format("filters.%s.gui.show", key));
@@ -939,5 +951,30 @@ public class AutoPickup implements Listener {
 			player.spawnParticle(Particle.ITEM, loc, count, 0, 0.1, 0, force, item);
 		}
 		player.spawnParticle(Particle.SMOKE, loc, 5, 0, 0.1, 0, 0.02);
+	}
+
+	/**
+	 * Returns all materials belonging to a Minecraft tag.
+	 * Checks both the blocks and items registries, returning the first non-null result.
+	 *
+	 * @param tag The tag string, e.g. "minecraft:logs" or just "logs".
+	 * @return A list of materials in the tag, or an empty list if the tag does not exist.
+	 */
+	public static List<Material> getTagItems(String tag) {
+		// Check manually defined tags first
+		String normalised = tag.contains(":") ? tag : "minecraft:" + tag;
+
+		// Strip namespace prefix if present (e.g. "minecraft:logs" -> "logs")
+		String key = tag.contains(":") ? tag.split(":", 2)[1] : tag;
+		String namespace = tag.contains(":") ? tag.split(":", 2)[0] : "minecraft";
+		NamespacedKey namespacedKey = new NamespacedKey(namespace, key);
+
+		Tag<Material> blockTag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, namespacedKey, Material.class);
+		if(blockTag != null) return new ArrayList<>(blockTag.getValues());
+
+		Tag<Material> itemTag = Bukkit.getTag(Tag.REGISTRY_ITEMS, namespacedKey, Material.class);
+		if(itemTag != null) return new ArrayList<>(itemTag.getValues());
+
+		return new ArrayList<>();
 	}
 }
