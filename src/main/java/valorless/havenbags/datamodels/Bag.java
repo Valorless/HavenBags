@@ -65,6 +65,8 @@ public class Bag {
 	private String effect = "null";
 	/** Tooltip style string */
 	private String tooltipStyle = null;
+	/** Auto-crafting feature enabled flag */
+	private boolean autocraft = false;
 	
 	/** Indicates if the data has changed since last save */
 	boolean changed = false;
@@ -524,14 +526,35 @@ public class Bag {
 		this.effect = effect;
 		this.changed = true;
 	}
-	
+
+	/** @return tooltip style string */
 	public String getTooltipStyle() {
 		return tooltipStyle;
 	}
+
+	/**
+	 * Set tooltip style string.
+	 * @param tooltipStyle style string
+	 */
 	public void setTooltipStyle(String tooltipStyle) {
 		this.tooltipStyle = tooltipStyle;
 		this.changed = true;
 	}
+
+	/** @return true if auto-crafting feature active */
+	public boolean hasAutoCraft() {
+		return autocraft;
+	}
+
+	/**
+	 * Enable/disable auto-crafting feature.
+	 * @param autocraft flag
+	 */
+	public void setAutoCraft(boolean autocraft) {
+		this.autocraft = autocraft;
+		this.changed = true;
+	}
+
 	/** @return true if bag is bound to an owner */
 	public boolean isBound() { 
 		return this.owner != null && !this.owner.equalsIgnoreCase("null") && !this.owner.equalsIgnoreCase("");
@@ -564,6 +587,7 @@ public class Bag {
 	            ", magnet=" + magnet +
 	            ", refill=" + refill +
 	            ", effect=" + effect +
+	            ", autocraft=" + autocraft +
 	            ", changed=" + changed +
 	            ", isOpen=" + isOpen +
 	            ", viewer=" + (viewer != null ? viewer.getName() : "null") +
@@ -606,6 +630,7 @@ public class Bag {
 	    copy.setIgnoreGlobalBlacklist(this.ignoreglobalblacklist);
 	    copy.setMagnet(this.magnet);
 	    copy.setRefill(this.refill);
+		copy.setAutoCraft(this.autocraft);
 	    copy.setEffect(this.effect);
 		copy.setTooltipStyle(this.tooltipStyle);
 
@@ -628,5 +653,4 @@ public class Bag {
 
 	    return copy;
 	}
-
 }

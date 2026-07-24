@@ -92,6 +92,9 @@ public class FeaturesGUI implements Listener {
 	int autoPickupSlot;
 	ToggleButton autoPickup;
 
+	int autoCraftSlot;
+	ToggleButton autoCraft;
+
 	int magnetSlot;
 	ToggleButton magnet;
 
@@ -129,6 +132,9 @@ public class FeaturesGUI implements Listener {
 
 		this.refillingSlot = Main.config.getInt("features-gui.slots.refilling.slot");
 		this.refilling = createButton("refilling");
+
+		this.autoCraftSlot = Main.config.getInt("features-gui.slots.auto-craft.slot");
+		this.autoCraft = createButton("auto-craft");
 
 		//this.inv = Bukkit.createInventory(player, invSize, Lang.Parse(Main.config.getString("features-gui.title"), player));
 
@@ -213,6 +219,8 @@ public class FeaturesGUI implements Listener {
 				inv.setItem(autoSortSlot, data.hasAutoSort() ? autoSort.enabled : autoSort.disabled);
 			if (refillingSlot != -1)
 				inv.setItem(refillingSlot, data.hasRefill() ? refilling.enabled : refilling.disabled);
+			if (autoCraftSlot != -1)
+				inv.setItem(autoCraftSlot, data.hasAutoCraft() ? autoCraft.enabled : autoCraft.disabled);
 		}
 	}
 
@@ -257,6 +265,7 @@ public class FeaturesGUI implements Listener {
 					event.getRawSlot() != magnetSlot &&
 					event.getRawSlot() != autoSortSlot &&
 					event.getRawSlot() != refillingSlot &&
+					event.getRawSlot() != autoCraftSlot &&
 					event.getRawSlot() < invSize) {
 				event.setCancelled(true);
 				return;
@@ -268,6 +277,13 @@ public class FeaturesGUI implements Listener {
 				//data.setAutopickup(!data.isAutoPickup());
 				if(player.hasPermission("havenbags.autopickup")) {
 					viewing = ViewingType.AUTO_PICKUP_FILTERS;
+				}else {
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("no-permission"), player));
+					return;
+				}
+			} else if (event.getRawSlot() == autoCraftSlot) {
+				if(player.hasPermission("havenbags.autocraft")) {
+					data.setAutoCraft(!data.hasAutoCraft());
 				}else {
 					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("no-permission"), player));
 					return;

@@ -86,6 +86,9 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.autosort")) {
 				subCommands.add("autosort");
 			}
+			if (sender.hasPermission("havenbags.autocraft")) {
+				subCommands.add("autocraft");
+			}
 			if (sender.hasPermission("havenbags.magnet")) {
 				subCommands.add("magnet");
 			}
@@ -208,6 +211,12 @@ public class TabCompletion implements TabCompleter {
 				StringUtil.copyPartialMatches(cmd, cmds, completions);
 			}
 			if (args[0].equalsIgnoreCase("autosort") && sender.hasPermission("havenbags.autosort")) {
+				List<String> cmds = new ArrayList<String>();
+				cmds.add("on");
+				cmds.add("off");
+				StringUtil.copyPartialMatches(cmd, cmds, completions);
+			}
+			if (args[0].equalsIgnoreCase("autocraft") && sender.hasPermission("havenbags.autocraft")) {
 				List<String> cmds = new ArrayList<String>();
 				cmds.add("on");
 				cmds.add("off");

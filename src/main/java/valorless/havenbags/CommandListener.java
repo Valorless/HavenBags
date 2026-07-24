@@ -60,6 +60,7 @@ public class CommandListener implements CommandExecutor {
 				case "explode": return CommandExplode.run(cmd, "havenbags.empty"); // Not visible in tabcompletion.
 				case "convertdatabase": return CommandConvertDatabase.run(cmd, "havenbags.database");
 				case "autosort": return CommandAutoSort.run(cmd, "havenbags.autosort");
+				case "autocraft": return CommandAutoCraft.run(cmd, "havenbags.autocraft");
 				case "magnet": return CommandMagnet.run(cmd, "havenbags.magnet");
 				case "refill": return CommandRefill.run(cmd, "havenbags.refill");
 				case "effect": return CommandEffect.run(cmd, "havenbags.effects");

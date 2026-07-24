@@ -69,6 +69,7 @@ public class Files {
 		file.set("refill", data.hasRefill());
 		file.set("effect", data.getEffect());
 		file.set("tooltip-style", data.getTooltipStyle());
+		file.set("autosort", data.hasAutoCraft());
 		
 		file.set("content", JsonUtils.toJson(data.getContent()).replace("'", "◊"));
 		file.saveConfig();
@@ -98,6 +99,7 @@ public class Files {
 		data.setRefill(file.getBool("refill"));
 		data.setEffect(file.getString("effect"));
 		data.setTooltipStyle(file.getString("tooltip-style"));
+		data.setAutoCraft(file.getBool("autocraft"));
 		
 		return data;
 	}
@@ -137,49 +139,6 @@ public class Files {
 			items.add(item);
 		}
 		return items;
-	}
-	
-	public static Config createBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content, Player creator, ItemStack bag) {
-		Config bagData = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
-		bagData.set("uuid", uuid);
-		bagData.set("owner", owner);
-		if(creator != null) {
-			bagData.set("creator", creator.getUniqueId().toString());
-		}else {
-			bagData.set("creator", owner);
-		}
-		bagData.set("size", content.size());
-		if(bag.getType() == Material.PLAYER_HEAD) {
-			bagData.set("texture", HeadCreator.getTextureValue(bag));
-			bagData.set("custommodeldata", 0);
-		}else {
-			if(bag.hasItemMeta()) {
-				if(bag.getItemMeta().hasCustomModelData()) {
-					bagData.set("custommodeldata", bag.getItemMeta().getCustomModelData());
-				}else {
-					bagData.set("custommodeldata", 0);
-				}
-			}else {
-				bagData.set("custommodeldata", 0);
-			}
-			bagData.set("texture", Main.config.GetString("bag.texture"));
-		}
-		bagData.set("trusted", new ArrayList<String>());
-		if(PDC.has(bag, "filter")) {
-			bagData.set("auto-pickup", PDC.getString(bag, "filter"));
-		}else {
-			bagData.set("auto-pickup", "null");
-		}
-		bagData.set("weight-max", 0);
-		bagData.set("content", JsonUtils.toJson(content).replace("'", "◊"));
-		bagData.set("autosort", false);
-		bagData.set("blacklist", new ArrayList<String>());
-		bagData.set("whitelist", false);
-		bagData.set("ignoreglobalblacklist", false);
-		bagData.set("magnet", false);
-		bagData.set("refill", false);
-		bagData.saveConfig();
-		return bagData;
 	}
 	
 	public static void deleteFile(String owner, String uuid) {

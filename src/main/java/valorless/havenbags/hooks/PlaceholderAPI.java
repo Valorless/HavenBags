@@ -112,7 +112,7 @@ public class PlaceholderAPI extends PlaceholderExpansion{
 
 		if(identifier.contains("carry")) {
 			if(player instanceof Player pl) {
-				return "" + HavenBags.getBagsInInventory(pl);
+				return "" + HavenBags.getAmountBagsInInventory(pl);
 			}
 			else return "N/A";
 		}

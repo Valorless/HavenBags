@@ -52,6 +52,7 @@ permissions:
       havenbags.upgrade.36: true
       havenbags.upgrade.45: true
       havenbags.autosort: true
+      havenbags.autocraft: true
       havenbags.magnet: true
       havenbags.refill: true
       havenbags.ethereal: true
@@ -180,6 +181,9 @@ permissions:
     default: op
   havenbags.autosort:
     description: Allows you to use the auto-sort feature.
+    default: op
+  havenbags.autocraft:
+    description: Allows you to use the auto-craft feature.
     default: op
   havenbags.magnet:
     description: Allows you to use the magnet feature.

@@ -27,10 +27,7 @@ import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.datamodels.Sound;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.enums.TokenType;
-import valorless.havenbags.features.AutoPickup;
-import valorless.havenbags.features.AutoSorter;
-import valorless.havenbags.features.BagEffects;
-import valorless.havenbags.features.CustomData;
+import valorless.havenbags.features.*;
 import valorless.havenbags.mods.HavenBagsPreview;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
@@ -470,6 +467,15 @@ public class HavenBags {
 		if(data.hasAutoSort()) {
 			inventory = AutoSorter.sortInventory(inventory);
 		}
+
+		if(Main.config.getBool("auto-craft.enabled")) {
+			if(data.hasAutoCraft()) {
+				if(player.isOnline()) {
+					AutoCraft.condenseInventory(data, player.getPlayer());
+				}
+			}
+		}
+
 		if(Main.plugins.getBool("mods.HavenBagsPreview.enabled")) {
 			try {
 				NBT.SetString(bag, "bag-preview-content", gson.toJson(new HavenBagsPreview(inventory)));
@@ -687,6 +693,13 @@ public class HavenBags {
 		}
 		placeholders.add(new Placeholder("%bag-effect%", Lang.parse(Lang.get("bag-effect"), placeholders, player)));
 
+		if(data.hasAutoCraft()) {
+			placeholders.add(new Placeholder("%crafting%", Lang.parse(Lang.get("bag-autocraft-on"), placeholders, player)));
+		}else {
+			placeholders.add(new Placeholder("%crafting%", Lang.parse(Lang.get("bag-autocraft-off"), placeholders, player)));
+		}
+		placeholders.add(new Placeholder("%bag-autocraft%", Lang.parse(Lang.get("bag-autocraft"), placeholders, player)));
+
 		for(String line : Lang.lang.getStringList("bag-lore-add")) {
 			if(line.contains("%bound-to%") && !PDC.getBoolean(bag, "binding")) continue;
 			if(line.contains("%bag-effect%")) {
@@ -698,6 +711,7 @@ public class HavenBags {
 			if(line.contains("%bag-auto-pickup%") && !PDC.has(bag, "filter")) continue;
 			if(line.contains("%bag-weight%") && !Main.weight.getBool("enabled")) continue;
 			if(line.contains("%bag-autosort%") && Lang.lang.getBool("bag-autosort-off-hide")) continue;
+			if(line.contains("%bag-autocraft%") && Lang.lang.getBool("bag-autocraft-off-hide")) continue;
 			if(line.contains("%bag-magnet%") && Lang.lang.getBool("bag-magnet-off-hide")) continue;
 			if(line.contains("%bag-refill%") && Lang.lang.getBool("bag-refill-off-hide")) continue;
 			lore.add(Lang.parse(line, placeholders, player));
@@ -1449,7 +1463,17 @@ public class HavenBags {
 		return bags;
 	}
 
-	public static int getBagsInInventory(Player player) {
+	public static List<Bag> getBagsInInventory(Player player) {
+		List<Bag> bags = new ArrayList<>();
+		for(ItemStack i : player.getInventory().getContents()) {
+			if(HavenBags.isBag(i) && BagState.getState(i) == BagState.USED) {
+				bags.add(Database.getBag(HavenBags.getBagUUID(i)));
+			}
+		}
+		return bags;
+	}
+
+	public static int getAmountBagsInInventory(Player player) {
 		int bags = 0;
 		for(ItemStack i : player.getInventory().getContents()) {
 			if(HavenBags.isBag(i)) {

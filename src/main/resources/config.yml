@@ -237,8 +237,14 @@ auto-pickup:
   events:
    onBlockBreak: true # For effect like "Teleport Drops" from AdvancedEnchants or EliteEnchants.
    onItemPickup: true # To add existing items in the inventory to the bag.
-  
-# Can players trust other players with access to their bound bags?
+
+# Should bags be allowed to auto-craft items in it?
+# This will attempt to craft any 3x3 recipe, and put the result in the bag.
+# This will automatically sort the items in the bag.
+auto-craft:
+ enabled: true
+
+# Are players able to trust others with their bags?
 trusting: true
 
 # Should bags be able to used as quivers?
@@ -437,15 +443,24 @@ features-gui:
  # Slot can also be set to -1 to disable.
  slots:
   auto-pickup:
-   slot: 10
+   slot: 9
    material:
     enabled: LIME_WOOL
     disabled: RED_WOOL
    name: '&eAuto-Pickup'
    lore:
     - '&7Automatically pick up drops.'
+  auto-craft:
+   slot: 11
+   material:
+    enabled: LIME_WOOL
+    disabled: RED_WOOL
+   name: '&eAuto-Craft'
+   lore:
+    - '&7Automatically craft items in the bag.'
+    - '&8Will attempt to craft any 3x3 recipe.'
   magnet:
-   slot: 12
+   slot: 13
    material:
     enabled: LIME_WOOL
     disabled: RED_WOOL
@@ -453,7 +468,7 @@ features-gui:
    lore:
     - '&7Nearby drops will move towards the player.'
   auto-sort:
-   slot: 14
+   slot: 15
    material:
     enabled: LIME_WOOL
     disabled: RED_WOOL
@@ -461,7 +476,7 @@ features-gui:
    lore:
     - '&7Automatically sort items in the bag.'
   refilling:
-   slot: 16
+   slot: 17
    material:
     enabled: LIME_WOOL
     disabled: RED_WOOL

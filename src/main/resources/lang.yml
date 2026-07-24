@@ -96,6 +96,9 @@ refill-command: '&fRefill has been set to: %value%.'
 # Message sent when the player toggles refill.
 effects-command: '&fEffect has been set to: %value%.'
 
+# Message sent when the player toggles auto-crafting.
+auto-craft-command: '&fAuto-craft has been set to: %value%.'
+
 # Message sent to the player trying to open their Ethereal bag, which
 # is currently being viewed by someone with 'havenbags.ethereal.admin'.
 ethereal-open-admin: '&cThis bag is currently being viewed by an admin.'
@@ -190,6 +193,7 @@ bag-lore:
 # %bag-size%
 # %bag-effect%
 # %bag-auto-pickup%
+# %bag-autocraft%
 # %bag-trusted%
 # %bag-autosort%
 # %bag-magnet%
@@ -202,6 +206,7 @@ bag-lore-add:
  - '%bag-size%'
  - '%bag-effect%'
  - '%bag-auto-pickup%'
+ - '%bag-autocraft%'
  - '%bag-trusted%'
  - '%bag-autosort%'
  - '%bag-magnet%'
@@ -283,6 +288,15 @@ bag-refill-off: '&cOff'
 
 # Should the be hidden if 'off' ?
 bag-refill-off-hide: false
+
+# If the bag has auto-craft enabled.
+# %crafting% - bag-autocraft-on or bag-autocraft-off, depending on on/off.
+bag-autocraft: '&7Auto-Craft: %crafting%'
+bag-autocraft-on: '&aOn'
+bag-autocraft-off: '&cOff'
+
+# Should the be hidden if 'off' ?
+bag-autocraft-off-hide: false
 
 ############################################################
 # +------------------------------------------------------+ #

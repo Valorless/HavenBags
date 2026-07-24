@@ -38,6 +38,7 @@ public class DatabaseUtils {
 		text += String.format(", refill:%s", data.hasRefill());
 		text += String.format(", effect:%s", data.getEffect());
 		text += String.format(", tooltip:%s", formatNamespacedKey(data.getTooltipStyle()));
+		text += String.format(", autocraft:%s", data.hasAutoCraft());
 		
 		text += "}";
 		//Log.Info(Main.plugin, text);
@@ -56,6 +57,7 @@ public class DatabaseUtils {
         if(extra.containsKey("refill")) data.setRefill((Boolean) extra.get("refill"));
         if(extra.containsKey("effect")) data.setEffect((String) extra.get("effect"));
         if(extra.containsKey("tooltip")) data.setTooltipStyle(parseNamespacedKey((String) extra.get("tooltip")));
+		if(extra.containsKey("autocraft")) data.setAutoCraft((Boolean) extra.get("autocraft"));
 	}
 	
 	public static Object formatList(List<String> list) {

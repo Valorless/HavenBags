@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 
 public class CommandRawInfo {
@@ -16,7 +17,7 @@ public class CommandRawInfo {
 			
 		if(HavenBags.isBag(hand)) {
 			String info = "§6## HavenBag Bag Raw Information ##";
-			info = info + "\n  §f" + meta.toString();
+			info = info + "\n  §f" + Database.getBag(HavenBags.getBagUUID(hand)).toString();
 			command.sender.sendMessage(info);
 			return true;
 		}

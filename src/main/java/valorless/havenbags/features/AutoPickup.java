@@ -113,6 +113,7 @@ public class AutoPickup implements Listener {
 		        		if(cancel) {
 		        			pickupParticles(player, dropped.getLocation(), item);
 		        			dropped.remove();
+							return;
 		        		}
 		            }	
 		        }

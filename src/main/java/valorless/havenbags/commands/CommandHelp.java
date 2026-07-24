@@ -115,6 +115,10 @@ public class CommandHelp {
 			message.addNewLine(" &e/bags autosort <on/off>",
 					"&eAutomatically sort the contents of a bag.");
 		}
+		if(player.hasPermission("havenbags.autocraft") || player.hasPermission("havenbags.help")) {
+			message.addNewLine(" &e/bags autocraft <on/off>",
+					"&eAutomatically craft the contents of a bag.");
+		}
 		if(player.hasPermission("havenbags.database") || player.hasPermission("havenbags.help")) {
 			message.addNewLine(" &e/bags convertdatabase <files/sqlite/mysql>",
 					"&eSeamlessly change & convert how the plugin stores it's data.");
