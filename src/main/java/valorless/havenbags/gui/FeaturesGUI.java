@@ -17,6 +17,7 @@ import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.Experimental;
 import valorless.havenbags.datamodels.Bag;
+import valorless.havenbags.datamodels.Filter;
 import valorless.havenbags.enums.GUIAction;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.persistentdatacontainer.PDC;
@@ -414,7 +415,7 @@ public class FeaturesGUI implements Listener {
 		PDC.setString(nullEntry, "filter", "null");
 		filters.add(nullEntry);
 
-		for(AutoPickup.Filter filter : AutoPickup.getNoGenFilters()){
+		for(Filter filter : AutoPickup.getNoGenFilters()){
 			if(!filter.guiShow) continue;
 			ItemStack guiEntry = filter.guiIcon.startsWith("nexo:") ?
 					NexoItems.itemFromId(filter.guiIcon.replace("nexo:", "")).build() :

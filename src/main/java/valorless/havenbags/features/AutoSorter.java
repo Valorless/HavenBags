@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -56,6 +57,8 @@ public class AutoSorter {
 			});
 		}catch(Exception e) {}
 
+		restackInventory(content);
+
         return content;
     }
 
@@ -80,4 +83,30 @@ public class AutoSorter {
     	}
         return null;
     }
+
+	static void restackInventory(List<ItemStack> content) {
+		for(int index = 0; index < content.size()-1; index++){
+			ItemStack stack1 = content.get(index);
+			if(stack1 == null) continue;
+			if(stack1.getType() == Material.AIR) continue;
+			int two = index+1;
+			ItemStack stack2 = content.get(two);
+			while(stack2 == null || stack2.getType() == Material.AIR || !stack1.isSimilar(stack2)){
+				if(two == content.size()-1) break;
+				two++;
+				stack2 = content.get(two);
+			}
+			if(stack1.isSimilar(stack2)){
+				int amount = stack1.getAmount() + stack2.getAmount();
+				if(stack1.getMaxStackSize() != stack1.getType().getMaxStackSize()) continue;
+				if(amount > stack1.getMaxStackSize()){
+					stack1.setAmount(stack1.getMaxStackSize());
+					stack2.setAmount(amount - stack1.getMaxStackSize());
+				}else{
+					stack1.setAmount(amount);
+					stack2.setType(Material.AIR);
+				}
+			}
+		}
+	}
 }

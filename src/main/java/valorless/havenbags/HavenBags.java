@@ -470,7 +470,7 @@ public class HavenBags {
 
 		if(Main.config.getBool("auto-craft.enabled")) {
 			if(data.hasAutoCraft()) {
-				if(player.isOnline()) {
+				if(player != null && player.isOnline()) {
 					AutoCraft.condenseInventory(data, player.getPlayer());
 				}
 			}

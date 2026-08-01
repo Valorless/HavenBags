@@ -48,42 +48,13 @@ public class AutoPickup implements Listener {
 
 	private static boolean enabled = false;
 
-	public static class Filter {
-		public String key;
-		public String displayname;
-		public List<String> entries;
-		public String guiIcon;
-		public List<String> guiLore = List.of(
-				"&fItems:"
-		);
-		public String lineFormat = "&7 ⏵ %s";
-		public String andMore = "&7... and %s more";
-		public int loreLimit = 10;
-		public boolean guiShow = true;
-
-		
-		public Filter(String key, String displayname, List<String> entries) {
-			this.key = key;
-			this.displayname = displayname;
-			this.entries = entries;
-			this.guiIcon = entries.isEmpty() ? "NAME_TAG" : entries.getFirst();
-		}
-
-		public Filter(String key, String displayname, List<String> entries, List<String> guiLore, String lineFormat) {
-			this.key = key;
-			this.displayname = displayname;
-			this.entries = entries;
-			this.guiIcon = entries.isEmpty() ? "NAME_TAG" : entries.getFirst();
-			this.guiLore = guiLore;
-			this.lineFormat = lineFormat;
-		}
-	}
-
 	public static Config filter;
 	
 	private static final List<Filter> filters = new ArrayList<>();
 	/** A list of filters without generated filters for specific items, used for the GUI, to prevent lag when opening and bloating the GUI. */
 	private static final List<Filter> noGenFilters = new ArrayList<>();
+
+	private static final List<CustomItemTag> customItemTags = new ArrayList<>();
 		
 	public static void init() {
 		Log.debug(Main.plugin, "[DI-16] Registering AutoPickup");
@@ -125,13 +96,41 @@ public class AutoPickup implements Listener {
 		if(!Main.config.getBool("auto-pickup.enabled")) return;
 		filters.clear();
 		noGenFilters.clear();
-		Object[] f = filter.getConfigurationSection("filters").getKeys(false).toArray();
-		Log.debug(Main.plugin, "[DI-145] " + "Filters: " + f.length);
-		for(int i = 0; i < f.length; i++) {
-			String key = String.valueOf(f[i]);
+		customItemTags.clear();
+		long startTime1 = System.currentTimeMillis();
+		Log.info(Main.plugin, "Creating CustomItemTags..");
+		for(String tag : filter.getConfigurationSection("custom-item-tags").getKeys(false)) {
+			List<String> items = new ArrayList<>();
+			for(String item : filter.getStringList(String.format("filters.%s", tag))) {
+				if(item.startsWith("#")) {
+					List<Material> materials = getTagItems(item.substring(1)); // remove # and get materials.
+					if(materials.isEmpty()){
+						Log.error(Main.plugin, String.format("[Filters] Tag '%s' couldnt be found, skipping.", item));
+						continue;
+					}
+					for(Material material : materials){
+						items.add(material.toString());
+					}
+				}else{
+					items.add(item);
+				}
+			}
+			customItemTags.add(new CustomItemTag("#" + tag, items));
+		}
+		long endTime1 = System.currentTimeMillis();
+		long duration1 = endTime1 - startTime1;
+		Log.info(Main.plugin, String.format("Loaded %s CustomItemTags. %sms", filter.getConfigurationSection("custom-item-tags").getKeys(false).size(), duration1));
+		//Object[] f = filter.getConfigurationSection("filters").getKeys(false).toArray();
+		Log.debug(Main.plugin, "[DI-145] " + "Filters: " + filter.getConfigurationSection("filters").getKeys(false).size());
+		for(String key : filter.getConfigurationSection("filters").getKeys(false)) {
 			List<String> items = new ArrayList<>();
 			for(String item : filter.getStringList(String.format("filters.%s.items", key))){
 				if(item.startsWith("#")){ // item tag
+					if(customItemTags.stream().anyMatch(t -> t.tag.equalsIgnoreCase(item))){
+						CustomItemTag customTag = customItemTags.stream().filter(t -> t.tag.equalsIgnoreCase(item)).findFirst().get();
+						items.addAll(customTag.items);
+						continue;
+					}
 					List<Material> materials = getTagItems(item.substring(1)); // remove # and get materials.
 					if(materials.isEmpty()){
 						Log.error(Main.plugin, String.format("[Filters] Tag '%s' couldnt be found, skipping.", item));
@@ -174,7 +173,7 @@ public class AutoPickup implements Listener {
 		
 		try {
 			if(filter.getBool("allow-specific")) {
-				long startTime = System.currentTimeMillis();
+				long startTime2 = System.currentTimeMillis();
 				Log.info(Main.plugin, "Creating filters..");
 				int i = 0;
 				List<Material> validMaterials = Arrays.stream(Material.values())
@@ -193,9 +192,9 @@ public class AutoPickup implements Listener {
 						//e.printStackTrace();
 					}
 				}
-				long endTime = System.currentTimeMillis();
-				long duration = endTime - startTime;
-				Log.info(Main.plugin, String.format("Created %s filters. %sms", i, duration));
+				long endTime2 = System.currentTimeMillis();
+				long duration2 = endTime2 - startTime2;
+				Log.info(Main.plugin, String.format("Created %s filters. %sms", i, duration2));
 			}
 		}catch(Exception e) {
 			Log.error(Main.plugin, "Something went wrong creating filters for specific items:");

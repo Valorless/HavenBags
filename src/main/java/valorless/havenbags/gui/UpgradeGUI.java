@@ -274,8 +274,8 @@ public class UpgradeGUI implements Listener {
 			return;
 		}
 		if(event.getRawSlot() != resultSlot) return; // Only handle clicks in the result slot
-		if(event.getInventory().getItem(itemSlot1) == null) return;
-		if(event.getInventory().getItem(itemSlot2) == null) return;
+		//if(event.getInventory().getItem(itemSlot1) == null) return;
+		//if(event.getInventory().getItem(itemSlot2) == null) return;
 		if(event.getInventory().getItem(resultSlot) == null) return;
 
 		Player player = (Player) event.getWhoClicked();
@@ -312,7 +312,7 @@ public class UpgradeGUI implements Listener {
 					}
 				}
 			}
-			HavenBags.updateBagLore(clicked, null);
+			HavenBags.updateBagLore(clicked, player);
 		}
 		else if(resultType == ResultType.Skin) {
 
@@ -633,7 +633,7 @@ public class UpgradeGUI implements Listener {
 			if(Main.weight.getBool("weight-per-size")) {
 				PDC.setDouble(item, "weight-limit", Main.weight.getDouble(String.format("weight-size-%s", to)));
 			}
-			HavenBags.updateBagLore(item, null, true);
+			HavenBags.updateBagLore(item, player, true);
 			if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
 				if(owner.equalsIgnoreCase("ownerless")) {
 					HeadCreator.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-ownerless-%s", to)));

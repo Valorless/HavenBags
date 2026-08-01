@@ -15,6 +15,12 @@ import java.util.*;
 public class AutoCraft {
 
     public static void condenseInventory(Bag bag, Player player) {
+        //if(!player.getName().equalsIgnoreCase("alynie")) return;
+        condense(bag, player);
+        condense(bag, player);
+    }
+
+    static void condense(Bag bag, Player player) {
         List<ItemStack> content = bag.getContent();
         List<ItemStack> toCraft = new ArrayList<>();
         List<ItemStack> crafted = new ArrayList<>();
@@ -29,6 +35,9 @@ public class AutoCraft {
                     amount -= 9;
                     item.setAmount(amount);
                     //Log.info(Main.plugin, "Added " + clone.getType() + " x9 to crafting list. Remaining: " + amount);
+                }
+                if(amount == 0){
+                    item.setType(Material.AIR);
                 }
                 //if(item.getAmount() >= 9) {
                 //    ItemStack clone = item.clone();
@@ -55,20 +64,75 @@ public class AutoCraft {
 
             if (recipe != null) {
                 ItemStack result = recipe.getResult();
-                //Log.info(Main.plugin, "Crafting result: " + result.getAmount());
+                //if(player.getName().equalsIgnoreCase("alynie")) Log.info(Main.plugin, "Crafting result: " + result.getAmount());
                 crafted.add(result);
             }else{
                 //Failed, put the old back in
-                //Log.info(Main.plugin, "Failed to craft " + ingredient.getType() + " x9. Returning to inventory.");
+                //if(player.getName().equalsIgnoreCase("alynie")) Log.info(Main.plugin, "Failed to craft " + ingredient.getType() + " x9. Returning to inventory.");
                 crafted.add(ingredient);
             }
         }
 
-        AutoSorter.sortInventory(content);
+        //AutoSorter.sortInventory(content);
+        restackInventory(content);
 
         for(ItemStack item : crafted) {
-            HavenBags.addItemToInventory(bag.getContent() ,bag.getSize(), item, player);
+            restackInventory(content);
+            if(!HavenBags.addItemToInventory(bag.getContent() ,bag.getSize(), item, player)){
+                player.getWorld().dropItem(player.getLocation(), item);
+            }
         }
+    }
 
+    static void jrestackInventory(List<ItemStack> content) {
+        for(int index = 0; index < content.size()-1; index++){
+            ItemStack stack1 = content.get(index);
+            if(stack1 == null) continue;
+            if(stack1.getType() == Material.AIR) continue;
+            int two = index+1;
+            ItemStack stack2 = content.get(two);
+            while(stack2 == null || stack1.getType() == Material.AIR){
+                if(two == content.size()-1) break;
+                two++;
+                stack2 = content.get(two);
+            }
+            if(stack1.isSimilar(stack2)){
+                int amount = stack1.getAmount() + stack2.getAmount();
+                if(stack1.getMaxStackSize() != stack1.getType().getMaxStackSize()) continue;
+                if(amount > stack1.getMaxStackSize()){
+                    stack1.setAmount(stack1.getMaxStackSize());
+                    stack2.setAmount(amount - stack1.getMaxStackSize());
+                }else{
+                    stack1.setAmount(amount);
+                    stack2.setType(Material.AIR);
+                }
+            }
+        }
+    }
+
+    static void restackInventory(List<ItemStack> content) {
+        for(int index = 0; index < content.size()-1; index++){
+            ItemStack stack1 = content.get(index);
+            if(stack1 == null) continue;
+            if(stack1.getType() == Material.AIR) continue;
+            int two = index+1;
+            ItemStack stack2 = content.get(two);
+            while(stack2 == null || stack2.getType() == Material.AIR || !stack1.isSimilar(stack2)){
+                if(two == content.size()-1) break;
+                two++;
+                stack2 = content.get(two);
+            }
+            if(stack1.isSimilar(stack2)){
+                int amount = stack1.getAmount() + stack2.getAmount();
+                if(stack1.getMaxStackSize() != stack1.getType().getMaxStackSize()) continue;
+                if(amount > stack1.getMaxStackSize()){
+                    stack1.setAmount(stack1.getMaxStackSize());
+                    stack2.setAmount(amount - stack1.getMaxStackSize());
+                }else{
+                    stack1.setAmount(amount);
+                    stack2.setType(Material.AIR);
+                }
+            }
+        }
     }
 }

@@ -500,3 +500,13 @@ filters:
    - GLOWSTONE_DUST
    - QUARTZ
    - ANCIENT_DEBRIS   
+
+custom-item-tags:
+ # would be used as '#example_tag'
+ # Accepts vanilla tags as well, so you can use '#minecraft:planks' for example.
+ # All vanilla tags: https://minecraft.wiki/w/Item_tag_(Java_Edition)
+ example_tag:
+  - DIRT
+  - DIORITE
+  - '#minecraft:planks' # Accepts tags, so this will accept all planks in the game.
+  - 'nexo:example_item' # Accepts Nexo items with "nexo:item-id" format, just like regular filters.

@@ -3,6 +3,7 @@ package valorless.havenbags.features;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,17 +36,22 @@ public class Refill implements Listener {
 	    	if(bags.isEmpty()) return;
 	    	Log.debug(Main.plugin, "Bags! " + bags.size());
 	    	for(BagSimple bag : bags) {
-	    		Bag data = Database.getBag(HavenBags.getBagUUID(bag.item), null);
+	    		Bag data = Database.getBag(HavenBags.getBagUUID(bag.item));
 	    		if(!data.hasRefill()) continue;
 				ItemStack block = refill(item, bag, player);
 		        Log.debug(Main.plugin, "block?");
 				if(block == null) continue;
 		        Log.debug(Main.plugin, "block!");
 				Bukkit.getScheduler().runTaskLater(Main.plugin, () -> {
-					boolean hasSpace = player.getInventory().firstEmpty() != -1;
-					
-					if(hasSpace) player.getInventory().addItem(block);
-					else player.getWorld().dropItem(player.getLocation(), block);
+					// Hand empty? Give item directly.
+					if(player.getInventory().getItemInMainHand().getType() == Material.AIR) {
+						player.getInventory().setItemInMainHand(block);
+					}else {
+						boolean hasSpace = player.getInventory().firstEmpty() != -1;
+
+						if (hasSpace) player.getInventory().addItem(block);
+						else player.getWorld().dropItem(player.getLocation(), block);
+					}
 				}, 1L);
 				
 				return;
