@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.nexomc.nexo.api.NexoItems;
+import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -44,6 +45,10 @@ public class CustomBags {
 			if(material.startsWith("nexo:")){
 				String nexoId = material.substring(5);
 				item = NexoItems.exists(nexoId) ? NexoItems.itemFromId(nexoId).build() : new ItemStack(Material.PLAYER_HEAD);
+			}
+			else if(material.startsWith("oraxen:")){
+				String oraxenId = material.substring(7);
+				item = OraxenItems.getItemById(oraxenId).build();
 			}
 			else {
 				Material mat = file.getMaterial(String.format("bags.%s.material", key));

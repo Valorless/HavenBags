@@ -22,27 +22,27 @@ save-type: 'sqlite'
 
 # MySQL database settings.
 mysql:
- host: 'localhost'
- port: 3306
- # Database name.
- name: 'minecraft'
- user: 'admin'
- password: 'pass'
- # Connection timeout in seconds
- connect_timeout: 30
- # Socket timeout in seconds
- socket_timeout: 60
- # Maximum number of bags to load/save in a single database chunk.
- # Adjust based on your server's performance and memory.
- max_chunk_size: 200
+  host: 'localhost'
+  port: 3306
+  # Database name.
+  name: 'minecraft'
+  user: 'admin'
+  password: 'pass'
+  # Connection timeout in seconds
+  connect_timeout: 30
+  # Socket timeout in seconds
+  socket_timeout: 60
+  # Maximum number of bags to load/save in a single database chunk.
+  # Adjust based on your server's performance and memory.
+  max_chunk_size: 200
 
 auto-save:
- # How often should we save bags onto the server?
- # In seconds.
- # Default: 1200 = 20min
- interval: 1200
- # Should HavenBags write in the console when saving?
- message: true
+  # How often should we save bags onto the server?
+  # In seconds.
+  # Default: 1200 = 20min
+  interval: 1200
+  # Should HavenBags write in the console when saving?
+  message: true
 
 # Language used when translating material and item names.
 ## Supported languages:
@@ -65,93 +65,93 @@ auto-save:
 language: 'en_us'
 
 bag:
- # Should the bags use heads or items?
- # HEAD - use Player Heads.
- # ITEM - use regular items.
- type: HEAD
- # Texture of the bag if the bag-type is 'HEAD'. Must be Base64 format.
- # You can get textures from https://minecraft-heads.com/
- # The texture by default: https://minecraft-heads.com/custom-heads/decoration/1906-bag
- # At the bottom of the page there's a section called "For Developers".
- # Inside "For Developers" is a value based off of a large amount of random letters, numbers and symbols. That is the Base64 texture.
- texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0='
- # Item material if the bag-type is 'ITEM'
- # Supports Nexo by doing 'nexo:id'.
- material: ENDER_CHEST
- # Custom Model Data if the bag-type is 'ITEM'
- modeldata: 0
- # Item Model if the bag-type is 'ITEM'
- itemmodel: ''
- # Tooltip Style
- tooltip-style: ''
+  # Should the bags use heads or items?
+  # HEAD - use Player Heads.
+  # ITEM - use regular items.
+  type: HEAD
+  # Texture of the bag if the bag-type is 'HEAD'. Must be Base64 format.
+  # You can get textures from https://minecraft-heads.com/
+  # The texture by default: https://minecraft-heads.com/custom-heads/decoration/1906-bag
+  # At the bottom of the page there's a section called "For Developers".
+  # Inside "For Developers" is a value based off of a large amount of random letters, numbers and symbols. That is the Base64 texture.
+  texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0='
+  # Item material if the bag-type is 'ITEM'
+  # Supports Nexo by doing 'nexo:id'.
+  material: ENDER_CHEST
+  # Custom Model Data if the bag-type is 'ITEM'
+  modeldata: 0
+  # Item Model if the bag-type is 'ITEM'
+  itemmodel: ''
+  # Tooltip Style
+  tooltip-style: ''
 
 # Want CustomModelData per size instead?
 # You can fill these with the same method as above.
 # Existing bags are not updated.
 # Accepts item models too.
 bag-custom-model-datas:
- enabled: false
- size-9: 0
- size-18: 0
- size-27: 0
- size-36: 0
- size-45: 0
- size-54: 0
- size-ownerless-9: 0
- size-ownerless-18: 0
- size-ownerless-27: 0
- size-ownerless-36: 0
- size-ownerless-45: 0
- size-ownerless-54: 0
+  enabled: false
+  size-9: 0
+  size-18: 0
+  size-27: 0
+  size-36: 0
+  size-45: 0
+  size-54: 0
+  size-ownerless-9: 0
+  size-ownerless-18: 0
+  size-ownerless-27: 0
+  size-ownerless-36: 0
+  size-ownerless-45: 0
+  size-ownerless-54: 0
 
 # Want textures per size instead?
 # You can fill these with the same method as above.
 # Existing bags are not updated.
 bag-textures:
- enabled: false
- size-9: ''
- size-18: ''
- size-27: ''
- size-36: ''
- size-45: ''
- size-54: ''
- size-ownerless-9: ''
- size-ownerless-18: ''
- size-ownerless-27: ''
- size-ownerless-36: ''
- size-ownerless-45: ''
- size-ownerless-54: ''
- 
+  enabled: false
+  size-9: ''
+  size-18: ''
+  size-27: ''
+  size-36: ''
+  size-45: ''
+  size-54: ''
+  size-ownerless-9: ''
+  size-ownerless-18: ''
+  size-ownerless-27: ''
+  size-ownerless-36: ''
+  size-ownerless-45: ''
+  size-ownerless-54: ''
+
 # Should we change the bag's texture regarless of other settings,
 # based on how full the bag is?
 capacity-based-textures:
- enabled: false
- # Defined capacities and their defined textures.
- # If a bag is over the capacity defined, they get the texture.
- textures:
-  '0': ''
-  '25': ''
-  '50': ''
-  '70': ''
-  '90': ''
-  
+  enabled: false
+  # Defined capacities and their defined textures.
+  # If a bag is over the capacity defined, they get the texture.
+  textures:
+    '0': ''
+    '25': ''
+    '50': ''
+    '70': ''
+    '90': ''
+
 sound:
- # Sound played when opening a bag.
- # Sounds: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
- open:
-  key: 'ITEM_BUNDLE_INSERT'
-  volume: 1.0
-  pitch: 1.0
- # Sound played when closing a bag.
- close:
-  key: 'ITEM_BUNDLE_DROP_CONTENTS'
-  volume: 1.0
-  pitch: 1.0
- # Sound played when a bag is dropped due to the inventory being full.
- inventory-full:
-  key: 'ENTITY_VILLAGER_NO'
-  volume: 1.0
-  pitch: 1.0
+  # Sound played when opening a bag.
+  # Sounds: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+  open:
+    key: 'ITEM_BUNDLE_INSERT'
+    volume: 1.0
+    pitch: 1.0
+  # Sound played when closing a bag.
+  close:
+    key: 'ITEM_BUNDLE_DROP_CONTENTS'
+    volume: 1.0
+    pitch: 1.0
+  # Sound played when a bag is dropped due to the inventory being full.
+  inventory-full:
+    key: 'ENTITY_VILLAGER_NO'
+    volume: 1.0
+    pitch: 1.0
 
 # The max amount of bags a player can create.
 # Note that is they lose a bag, they'll need it restored, 
@@ -165,34 +165,34 @@ carry-limit: 3
 
 # Should bags' data get deleted if the bag item is destroyed?
 hardcore-bags:
- enabled: false
- unbound: true
- bound: true
- unused: true
- used: true
+  enabled: false
+  unbound: true
+  bound: true
+  unused: true
+  used: true
 
 # Should bags be protected from being destroyed by things such as Fire, Lava, Cactus, and other things?
 protect-bags:
- enabled: true
- unbound: true
- bound: true
- unused: true
- used: true
- bag-health:
-  # Should protected bags have a certain amount of health, before they break?
-  enabled: false
-  # Delay between taking damage.
-  damage-delay: 5 # 5 second delay
-  # Health based on the amount of slots
-  health:
-   # Default health if the desired slot isnt on the list.
-   default: 3
-   '9': 3
-   '18': 4
-   '27': 5
-   '36': 6
-   '45': 8
-   '54': 10
+  enabled: true
+  unbound: true
+  bound: true
+  unused: true
+  used: true
+  bag-health:
+    # Should protected bags have a certain amount of health, before they break?
+    enabled: false
+    # Delay between taking damage.
+    damage-delay: 5 # 5 second delay
+    # Health based on the amount of slots
+    health:
+      # Default health if the desired slot isnt on the list.
+      default: 3
+      '9': 3
+      '18': 4
+      '27': 5
+      '36': 6
+      '45': 8
+      '54': 10
 
 # Should dropped bags only be able to be picked up by their owner?
 protect-bags-players: false
@@ -209,11 +209,11 @@ bags-in-bundles: false
 # Should bags always remain in the player's inventory?
 # Good to use alongside Soulbound, otherwise death will drop the item.
 inventory-lock:
- enabled: false
- unbound: false
- bound: true
- unused: false
- used: true
+  enabled: false
+  unbound: false
+  bound: true
+  unused: false
+  used: true
 
 # Should bags be kept through death?
 # May be incompatible with other plugins.
@@ -224,25 +224,25 @@ old-help-menu: false
 
 # Can bags automatically pick up drops?
 auto-pickup:
- enabled: true
- sound: 
-  key: 'ENTITY_ITEM_PICKUP'
-  volume: 0.8
-  pitch:
-   min: 1.05
-   max: 1.25
- # Should Auto-Pickup put items from the inventory into the bag as well?
- inventory:
   enabled: true
-  events:
-   onBlockBreak: true # For effect like "Teleport Drops" from AdvancedEnchants or EliteEnchants.
-   onItemPickup: true # To add existing items in the inventory to the bag.
+  sound:
+    key: 'ENTITY_ITEM_PICKUP'
+    volume: 0.8
+    pitch:
+      min: 1.05
+      max: 1.25
+  # Should Auto-Pickup put items from the inventory into the bag as well?
+  inventory:
+    enabled: true
+    events:
+      onBlockBreak: true # For effect like "Teleport Drops" from AdvancedEnchants or EliteEnchants.
+      onItemPickup: true # To add existing items in the inventory to the bag.
 
 # Should bags be allowed to auto-craft items in it?
 # This will attempt to craft any 3x3 recipe, and put the result in the bag.
 # This will automatically sort the items in the bag.
 auto-craft:
- enabled: true
+  enabled: true
 
 # Are players able to trust others with their bags?
 trusting: true
@@ -261,36 +261,36 @@ quiver-shield-fix: 2
 # Should players be able to magnify their bags?
 # If enabled, nearby drops will move towards the player.
 magnet:
- enabled: true
- tick-rate: 2 # How often the task should run.
- range: 5.0
- speed: 0.1
- vertical: false # Should drops ignore gravity to move vertically towards the player?
- require-autopickup: false
- only-autopickup-items: false
- instant: false # This will teleport the items to the player instantly,
- # instead of moving them over time.
- 
+  enabled: true
+  tick-rate: 2 # How often the task should run.
+  range: 5.0
+  speed: 0.1
+  vertical: false # Should drops ignore gravity to move vertically towards the player?
+  require-autopickup: false
+  only-autopickup-items: false
+  instant: false # This will teleport the items to the player instantly,
+  # instead of moving them over time.
+
 effects:
- refresh-rate: 100 # How often the task should run. 100 ticks = 5s.
+  refresh-rate: 100 # How often the task should run. 100 ticks = 5s.
 
 # Bag Upgrades
 # If enabled, remember to allow "ANVIL" in 'allowed-containers'.
 upgrades:
- # Can players upgrade bags in Anvils?
- enabled: false
- # Should bags keep their texture or upgrade to the next bag size?
- # (Ignored if 'bag-textures' is disabled)
- keep-texture: false
- # Bag upgrades.
- # <> = Optional
- # MATERIAL:AMOUNT:<CUSTOMMODELDATA>
- from-9-to-18: EMERALD:5:90000
- from-18-to-27: DIAMOND:10:90001
- from-27-to-36: NETHERITE_INGOT:1:90002
- from-36-to-45: NETHERITE_BLOCK:1:90003
- from-45-to-54: END_CRYSTAL:1
- 
+  # Can players upgrade bags in Anvils?
+  enabled: false
+  # Should bags keep their texture or upgrade to the next bag size?
+  # (Ignored if 'bag-textures' is disabled)
+  keep-texture: false
+  # Bag upgrades.
+  # <> = Optional
+  # MATERIAL:AMOUNT:<CUSTOMMODELDATA>
+  from-9-to-18: EMERALD:5:90000
+  from-18-to-27: DIAMOND:10:90001
+  from-27-to-36: NETHERITE_INGOT:1:90002
+  from-36-to-45: NETHERITE_BLOCK:1:90003
+  from-45-to-54: END_CRYSTAL:1
+
 # Token
 # Used to create a generic token, which you can edit in-game.
 # The rest of the data for the token is given when using the command.
@@ -298,188 +298,225 @@ upgrades:
 # You can create effects in the 'effects.yml' file.
 # Placeholders work in names and lore.
 token:
- skin:
-  displayname: '&aSkin Token'
-  # If material is PLAYER_HEAD, the head's texture will be the same as the skin.
-  material: PLAYER_HEAD
-  custommodeldata: 0 # 0 to ignore
-  itemmodel: ''
-  # Placeholders:
-  # %skin% - Name of the skin found in textures.yml. 
-  lore:
-   - '&7Combine with a bag in a fletching table to apply.'
-   - '&7Skin: &e%skin%'
-   # You can add extra lore in-game, with things such as which skin it is.
- effect:
-  displayname: '&eEffect Token'
-  material: PLAYER_HEAD
-  # base64 texture for PLAYER_HEAD material, can also be a value from textures.yml.
-  texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMzNGQxMmY3YWM5MzliMTE1MWQxMjE0NmQwMjM5ZWYwMTg4ZTQwM2VlMTk2NmQzZGIxOTllNjY0ZmYzODI4MyJ9fX0='
-  custommodeldata: 0 # 0 to ignore
-  itemmodel: ''
-  # Placeholders:
-  # %effect% - Name of the effect found in effects.yml. 
-  lore:
-   - '&7Combine with a bag in a fletching table to apply.'
-   - '&7Effect: &e%effect%'
-   # You can add extra lore in-game, with things such as effect effects.
-  
+  skin:
+    displayname: '&aSkin Token'
+    # If material is PLAYER_HEAD, the head's texture will be the same as the skin.
+    material: PLAYER_HEAD
+    custommodeldata: 0 # 0 to ignore
+    itemmodel: ''
+    # Placeholders:
+    # %skin% - Name of the skin found in textures.yml.
+    lore:
+      - '&7Combine with a bag in a fletching table to apply.'
+      - '&7Skin: &e%skin%'
+      # You can add extra lore in-game, with things such as which skin it is.
+  effect:
+    displayname: '&eEffect Token'
+    material: PLAYER_HEAD
+    # base64 texture for PLAYER_HEAD material, can also be a value from textures.yml.
+    texture: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMzNGQxMmY3YWM5MzliMTE1MWQxMjE0NmQwMjM5ZWYwMTg4ZTQwM2VlMTk2NmQzZGIxOTllNjY0ZmYzODI4MyJ9fX0='
+    custommodeldata: 0 # 0 to ignore
+    itemmodel: ''
+    # Placeholders:
+    # %effect% - Name of the effect found in effects.yml.
+    lore:
+      - '&7Combine with a bag in a fletching table to apply.'
+      - '&7Effect: &e%effect%'
+      # You can add extra lore in-game, with things such as effect effects.
+
 # Should upgrades and skins be applied through an anvil?
 bag-upgrades-anvil: false
-  
+
 # Custom GUI used to upgrade and skin bags.
-upgrade-gui: 
- enabled: true
- block: FLETCHING_TABLE
- noteblock: # Requires "block" to be NOTE_BLOCK.
-  instrument: BASS_DRUM # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Instrument.html
-  note: 0
- title: '&eBag Upgrade'
- gui-size: 27 # Must be to the power of 9. i.e. Rows*9, 3*9 = 27
- slots:
-  bag: 10 # Bag and Token can be used interchangeable.
-  token: 12
-  result: 15 # upgrade/skin result
- filler: GRAY_STAINED_GLASS_PANE # Set to AIR to have no fillers, useful when using custom gui.
- custom-filler:
-  '0': LIME_STAINED_GLASS_PANE # Each corner of the 27 slot gui.
-  '8': LIME_STAINED_GLASS_PANE
-  '18': LIME_STAINED_GLASS_PANE
-  '26': LIME_STAINED_GLASS_PANE
- success-sound: ENTITY_VILLAGER_WORK_FLETCHER # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+upgrade-gui:
+  enabled: true
+  block: FLETCHING_TABLE
+  noteblock: # Requires "block" to be NOTE_BLOCK.
+    instrument: BASS_DRUM # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Instrument.html
+    note: 0
+  title: '&eBag Upgrade'
+  gui-size: 27 # Must be to the power of 9. i.e. Rows*9, 3*9 = 27
+  slots:
+    bag: 10 # Bag and Token can be used interchangeable.
+    token: 12
+    result: 15 # upgrade/skin result
+  filler: GRAY_STAINED_GLASS_PANE # Set to AIR to have no fillers, useful when using custom gui.
+  custom-filler:
+    '0': LIME_STAINED_GLASS_PANE # Each corner of the 27 slot gui.
+    '8': LIME_STAINED_GLASS_PANE
+    '18': LIME_STAINED_GLASS_PANE
+    '26': LIME_STAINED_GLASS_PANE
+  success-sound: ENTITY_VILLAGER_WORK_FLETCHER # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
 
 # Which containers are the player allowed to interact with bags?
 # Use this to prevent the player using bags in unintended ways, such as crafting.
 # Full list of InventoryTypes: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/inventory/InventoryType.html
 # Default: CRAFTING, HOPPER, PLAYER, CREATIVE
 allowed-containers:
-- CHEST
-- ENDER_CHEST
-- BARREL
-- SHULKER_BOX
-- MERCHANT
-- ANVIL
+  - CHEST
+  - ENDER_CHEST
+  - BARREL
+  - SHULKER_BOX
+  - MERCHANT
+  - ANVIL
 
 # Specify if bags should not work in specific worlds.
 # Worlds do not include _nether or _the_end.
 # You have to manually add those.
 blacklist:
- - world_name
- - world_name_nether
- - another_world
- 
+  - world_name
+  - world_name_nether
+  - another_world
+
 # GUI where the players can restore or delete their own bags.
 player-gui:
- enabled: false
- # Can players restore their own bags?
- self-restore: true
- # Can players delete their own bags?
- self-delete: true
- 
+  enabled: false
+  # Can players restore their own bags?
+  self-restore: true
+  # Can players delete their own bags?
+  self-delete: true
+
 # Automatically write extra "tags" onto bag items when they update.
 # You can set different tags per bag size (9, 18, etc.), stored either as NBT or plugin-namespaced PDC keys.
 custom-data:
- # Should we apply custom data entries onto bags when they update?
- enabled: false
- '9': # Affect 9 slot bags, can hold multiple entries.
-  example:
-   # Storage backend for a configured data entry, either NBT or PDC.
-   type: NBT
-   # The key for this entry.
-   key: 'coolKey'
-   # The value for this entry.
-   # Supports: String/Integer/Double/Boolean/Float/UUID
-   value: 44
-  example2:
-   # Storage backend for this entry, either NBT or PDC.
-   type: PDC
-   # Plugin name used for PDC namespacing.
-   plugin: 'HavenBags'
-   # The key for this entry.
-   key: 'coolKey2'
-   # The value for this entry.
-   value: 'awesomeValue'
-   # PersistentDataType - PDC only
-   # Supports: String/Integer/Double/Boolean/Float/UUID
-   pdc-type: STRING
- '18': # Affect 18 slot bags, can hold multiple entries.
-  example:
-   # Storage backend for this entry, either NBT or PDC.
-   type: PDC
-   # Plugin name used for PDC namespacing.
-   plugin: 'HavenBags'
-   # The key for this entry.
-   key: 'coolKey'
-   # The value for this entry.
-   value: 44
-   # PersistentDataType - PDC only
-   # Supports: String/Integer/Double/Boolean/Float/UUID
-   pdc-type: INTEGER
+  # Should we apply custom data entries onto bags when they update?
+  enabled: false
+  '9': # Affect 9 slot bags, can hold multiple entries.
+    example:
+      # Storage backend for a configured data entry, either NBT or PDC.
+      type: NBT
+      # The key for this entry.
+      key: 'coolKey'
+      # The value for this entry.
+      # Supports: String/Integer/Double/Boolean/Float/UUID
+      value: 44
+    example2:
+      # Storage backend for this entry, either NBT or PDC.
+      type: PDC
+      # Plugin name used for PDC namespacing.
+      plugin: 'HavenBags'
+      # The key for this entry.
+      key: 'coolKey2'
+      # The value for this entry.
+      value: 'awesomeValue'
+      # PersistentDataType - PDC only
+      # Supports: String/Integer/Double/Boolean/Float/UUID
+      pdc-type: STRING
+  '18': # Affect 18 slot bags, can hold multiple entries.
+    example:
+      # Storage backend for this entry, either NBT or PDC.
+      type: PDC
+      # Plugin name used for PDC namespacing.
+      plugin: 'HavenBags'
+      # The key for this entry.
+      key: 'coolKey'
+      # The value for this entry.
+      value: 44
+      # PersistentDataType - PDC only
+      # Supports: String/Integer/Double/Boolean/Float/UUID
+      pdc-type: INTEGER
 
 # GUI where the players can view and toggle different features for the bags.
-# Materials support Nexo by doing 'nexo:id'.
+# Materials support Nexo & Oraxen by doing 'nexo:id' or 'oraxen:id'.
 features-gui:
- enabled: true
- # The action used to open the GUI.
- # Doing this click action on the bag in the inventory will open the GUI.
- # Available actions: DOUBLE_CLICK, LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT, MIDDLE
- opens-by: RIGHT
- # GUI title
- titles:
-  main: '&eHavenBags Features'
-  auto-pickup: '&eAuto-Pickup'
- # Slot size of the GUI. Must be to the power of 9. i.e. Rows*9, 3*9 = 27.
- gui-size: 27
- # Used to fill empty slots in the GUI, so it looks nicer. Set to AIR to have no fillers, useful when using custom gui.
- filler: GRAY_STAINED_GLASS_PANE
- # Custom fillers for specific slots. Will override the main filler for the specified slots.
- custom-filler:
-  '0': LIME_STAINED_GLASS_PANE # Each corner of the 27 slot gui.
-  '8': LIME_STAINED_GLASS_PANE
-  '18': LIME_STAINED_GLASS_PANE
-  '26': LIME_STAINED_GLASS_PANE
- # Buttons for toggling features.
- # Will skip any features that are disabled in the main config.
- # Slot can also be set to -1 to disable.
- slots:
-  auto-pickup:
-   slot: 9
-   material:
-    enabled: LIME_WOOL
-    disabled: RED_WOOL
-   name: '&eAuto-Pickup'
-   lore:
-    - '&7Automatically pick up drops.'
-  auto-craft:
-   slot: 11
-   material:
-    enabled: LIME_WOOL
-    disabled: RED_WOOL
-   name: '&eAuto-Craft'
-   lore:
-    - '&7Automatically craft items in the bag.'
-    - '&8Will attempt to craft any 3x3 recipe.'
-  magnet:
-   slot: 13
-   material:
-    enabled: LIME_WOOL
-    disabled: RED_WOOL
-   name: '&eMagnet'
-   lore:
-    - '&7Nearby drops will move towards the player.'
-  auto-sort:
-   slot: 15
-   material:
-    enabled: LIME_WOOL
-    disabled: RED_WOOL
-   name: '&eAuto-Sort'
-   lore:
-    - '&7Automatically sort items in the bag.'
-  refilling:
-   slot: 17
-   material:
-    enabled: LIME_WOOL
-    disabled: RED_WOOL
-   name: '&eAuto-Refill'
-   lore:
-    - '&7Automatically refill stacks in the inventory from the bag.'
+  enabled: true
+  # The action used to open the GUI.
+  # Doing this click action on the bag in the inventory will open the GUI.
+  # Available actions: DOUBLE_CLICK, LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT, MIDDLE
+  opens-by: RIGHT
+  # GUI title
+  titles:
+    main: '&eHavenBags Features'
+    auto-pickup: '&eAuto-Pickup'
+  # Slot size of the GUI. Must be to the power of 9. i.e. Rows*9, 3*9 = 27.
+  gui-size: 27
+  # Used to fill empty slots in the GUI, so it looks nicer. Set to AIR to have no fillers, useful when using custom gui.
+  filler: GRAY_STAINED_GLASS_PANE
+  # Custom fillers for specific slots. Will override the main filler for the specified slots.
+  custom-filler:
+    '0': LIME_STAINED_GLASS_PANE # Each corner of the 27 slot gui.
+    '8': LIME_STAINED_GLASS_PANE
+    '18': LIME_STAINED_GLASS_PANE
+    '26': LIME_STAINED_GLASS_PANE
+  # Buttons for toggling features.
+  # Will skip any features that are disabled in the main config.
+  # Slot can also be set to -1 to disable.
+  slots:
+    auto-pickup:
+      slot: 9
+      material:
+        enabled: LIME_WOOL
+        disabled: RED_WOOL
+      name: '&eAuto-Pickup'
+      lore:
+        - '&7Automatically pick up drops.'
+    auto-craft:
+      slot: 11
+      material:
+        enabled: LIME_WOOL
+        disabled: RED_WOOL
+      name: '&eAuto-Craft'
+      lore:
+        - '&7Automatically craft items in the bag.'
+        - '&8Will attempt to craft any 3x3 recipe.'
+    magnet:
+      slot: 13
+      material:
+        enabled: LIME_WOOL
+        disabled: RED_WOOL
+      name: '&eMagnet'
+      lore:
+        - '&7Nearby drops will move towards the player.'
+    auto-sort:
+      slot: 15
+      material:
+        enabled: LIME_WOOL
+        disabled: RED_WOOL
+      name: '&eAuto-Sort'
+      lore:
+        - '&7Automatically sort items in the bag.'
+    refilling:
+      slot: 17
+      material:
+        enabled: LIME_WOOL
+        disabled: RED_WOOL
+      name: '&eAuto-Refill'
+      lore:
+        - '&7Automatically refill stacks in the inventory from the bag.'
+  pages-customization:
+    # "rows" of 6 means 5 rows of items, and 1 row of buttons.
+    # The buttons are always in the bottom row.
+    rows: 6
+    # Should the GUI hide the page navigation buttons if there is only 1 page?
+    # The Return button will still be shown.
+    hide-one-page-navigation: false
+    # The slots for the buttons range from 0 to 8, and are always in the bottom row of the inventory.
+    # The slots are in order from left to right.
+    return:
+      slot: 8
+      # Can any vanilla material, to use the default head-with-textures, leave it "default".
+      # Supports custom items by using "nexo:id" or "oraxen:id".
+      # Note that Name and Lore are ignored if using a custom item.
+      material: default
+      name: '&eReturn'
+      lore:
+        - '&7Return to the main menu.'
+    next-page:
+      slot: 5
+      material: default
+      name: '&eNext Page'
+      lore:
+        - '&7Go to the next page.'
+    prev-page:
+      slot: 3
+      material: default
+      name: '&ePrevious Page'
+      lore:
+        - '&7Go to the previous page.'
+    page-indicator:
+      slot: 4
+      material: default
+      # Placeholder %page% is available, to both name and lore.
+      name: '&fPage: %page%'
+      lore:
+        - '&7Shows the current page.'

@@ -152,6 +152,7 @@ public final class Main extends JavaPlugin implements Listener {
 			papi.register();
 		}
 		new NexoHook();
+		new OraxenHook();
 		ChestSortHook.hook();
 		PvPManagerHook.hook();
 		if(ProtocolLibHook.hook()) {

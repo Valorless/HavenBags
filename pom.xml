@@ -199,6 +199,10 @@
             <!--<url>https://repo.nexomc.com/snapshots</url>-->
             <url>https://repo.nexomc.com/releases</url>
         </repository>
+        <repository>
+            <id>oraxen</id>
+            <url>https://repo.oraxen.com/releases</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -351,5 +355,17 @@
             <version>1.7</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+        <groupId>io.th0rgal</groupId>
+        <artifactId>oraxen</artifactId>
+        <version>1.218.0</version>
+        <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+    </dependency>
     </dependencies>
 </project>

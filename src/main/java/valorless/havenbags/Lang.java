@@ -18,6 +18,10 @@ public class Lang {
 	
 	public static Config lang;
 	//public static String plugin = "§7[§aHaven§bBags§7]§r";
+
+	public static String parse(String text) {
+		return parse(text, null);
+	}
 	
 	public static String parse(String text, OfflinePlayer player) {
 		if(!Utils.IsStringNullOrEmpty(text)) {

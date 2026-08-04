@@ -1,6 +1,7 @@
 package valorless.havenbags.gui;
 
 import com.nexomc.nexo.api.NexoItems;
+import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -116,6 +117,10 @@ public class FeaturesGUI implements Listener {
 
 	ViewingType viewing = ViewingType.MAIN;
 
+	int pageRows = 2;
+	boolean hideOnePageNavigation = false;
+	HashMap<GUIAction, GUI.GUIButton> pageButtons = new HashMap<>();
+
 	public FeaturesGUI(Player player, ItemStack bagItem, Bag bagData) {
 		this.data = bagData;
 		this.bagItem = bagItem;
@@ -141,6 +146,8 @@ public class FeaturesGUI implements Listener {
 
 		this.filler = Main.config.getString("features-gui.filler");
 
+		setupPageCustomization();
+
 		updateGUI();
 
 		//BukkitRunnable task = new BukkitRunnable() {
@@ -158,11 +165,32 @@ public class FeaturesGUI implements Listener {
 		Log.debug(Main.plugin, "[FeaturesGUI] Opening FeaturesGUI for " + player.getName());
 	}
 
+	private void setupPageCustomization() {
+		List<String> keys = List.of("return", "next-page", "prev-page", "page-indicator");
+		List<GUIAction> actions = List.of(GUIAction.RETURN, GUIAction.NEXT_PAGE, GUIAction.PREV_PAGE, GUIAction.PAGE_INDICATOR);
+		for (int i = 0; i < keys.size(); i++) {
+			String key = keys.get(i);
+			GUIAction action = actions.get(i);
+			String path = String.format("features-gui.pages-customization.%s", key);
+			pageButtons.put(action, new GUI.GUIButton(
+					Main.config.getString(path + ".name"),
+					Main.config.getStringList(path + ".lore"),
+					Main.config.getString(path + ".material"),
+					Main.config.getInt(path + ".slot")
+			));
+		}
+
+		pageRows = Main.config.getInt("features-gui.pages-customization.rows");
+		hideOnePageNavigation = Main.config.getBool("features-gui.pages-customization.hide-one-page-navigation");
+	}
+
 	void mainPage(){
 		inv = Bukkit.createInventory(player, invSize, Lang.parse(Main.config.getString("features-gui.titles.main"), player));
 		ItemStack fillerItem;
 		if(filler.startsWith("nexo:")){
 			fillerItem = NexoItems.itemFromId(filler.replace("nexo:", "")).build();
+		}else if(filler.startsWith("oraxen:")){
+			fillerItem = OraxenItems.getItemById(filler.replace("oraxen:", "")).build();
 		}else{
 			fillerItem = new ItemStack(Material.valueOf(filler.toUpperCase()));
 			if(fillerItem.getType() != Material.AIR) {
@@ -193,6 +221,8 @@ public class FeaturesGUI implements Listener {
 
 			if(customFiller.startsWith("nexo:")){
 				customFillerItem = NexoItems.itemFromId(filler.replace("nexo:", "")).build();
+			}else if(customFiller.startsWith("oraxen:")){
+				customFillerItem = OraxenItems.getItemById(filler.replace("oraxen:", "")).build();
 			}else{
 				customFillerItem = new ItemStack(Material.valueOf(customFiller.toUpperCase()));
 				if(fillerItem.getType() != Material.AIR) {
@@ -240,13 +270,22 @@ public class FeaturesGUI implements Listener {
 			mainPage();
 			player.openInventory(inv);
 		} else if (viewing == ViewingType.AUTO_PICKUP_FILTERS) {
-			inv = GUI.createPage(
+			inv = GUI.createCustomPage(
 					player,
-					Lang.parse(Main.config.getString("features-gui.titles.auto-pickup"),player),
+					Lang.parse(Main.config.getString("features-gui.titles.auto-pickup"), player),
 					page,
 					autoPickupFilters(),
-					(invSize/9)
+					pageRows,
+					hideOnePageNavigation,
+					pageButtons
 			);
+			//inv = GUI.createPage(
+			//		player,
+			//		Lang.parse(Main.config.getString("features-gui.titles.auto-pickup"), player),
+			//		page,
+			//		autoPickupFilters(),
+			//		(invSize/9)
+			//);
 			player.openInventory(inv);
 
 		}
@@ -358,7 +397,6 @@ public class FeaturesGUI implements Listener {
 	}
 
 	public ToggleButton createButton(String key){
-
 		String enabledKey = String.format("features-gui.slots.%s.material.enabled", key);
 		String disabledKey = String.format("features-gui.slots.%s.material.disabled", key);
 		String enabled = Main.config.getString(enabledKey);
@@ -366,12 +404,16 @@ public class FeaturesGUI implements Listener {
 
 		ItemStack enabledItem = enabled.startsWith("nexo:") ?
 				NexoItems.itemFromId(enabled.replace("nexo:", "")).build() :
-				new ItemStack(Material.valueOf(enabled.toUpperCase()));
+				enabled.startsWith("oraxen:") ?
+						OraxenItems.getItemById(enabled.replace("oraxen:", "")).build() :
+						new ItemStack(Material.valueOf(enabled.toUpperCase()));
 		ItemStack disabledItem = disabled.startsWith("nexo:") ?
 				NexoItems.itemFromId(disabled.replace("nexo:", "")).build() :
-				new ItemStack(Material.valueOf(disabled.toUpperCase()));
+				disabled.startsWith("oraxen:") ?
+						OraxenItems.getItemById(disabled.replace("oraxen:", "")).build() :
+						new ItemStack(Material.valueOf(disabled.toUpperCase()));
 
-		if(!enabled.startsWith("nexo:")){
+		if(!enabled.startsWith("nexo:") && !enabled.startsWith("oraxen:")){
 			ItemMeta meta = enabledItem.getItemMeta();
 			meta.setDisplayName(Lang.parse(Main.config.getString(String.format("features-gui.slots.%s.name", key)), player));
 			List<String> lore = new ArrayList<>();
@@ -382,7 +424,7 @@ public class FeaturesGUI implements Listener {
 			enabledItem.setItemMeta(meta);
 		}
 
-		if(!disabled.startsWith("nexo:")){
+		if(!disabled.startsWith("nexo:") && !disabled.startsWith("oraxen:")){
 			ItemMeta meta = disabledItem.getItemMeta();
 			meta.setDisplayName(Lang.parse(Main.config.getString(String.format("features-gui.slots.%s.name", key)), player));
 			List<String> lore = new ArrayList<>();
@@ -402,7 +444,9 @@ public class FeaturesGUI implements Listener {
 		String nullMat = AutoPickup.filter.getString("gui.reset-filter.icon");
 		ItemStack nullEntry = nullMat.startsWith("nexo:") ?
 				NexoItems.itemFromId(nullMat.replace("nexo:", "")).build() :
-				new ItemStack(Material.valueOf(nullMat.toUpperCase()));
+				nullMat.startsWith("oraxen:") ?
+						OraxenItems.getItemById(nullMat.replace("oraxen:", "")).build() :
+						new ItemStack(Material.valueOf(nullMat.toUpperCase()));
 		ItemMeta nullMeta = nullEntry.getItemMeta();
 		nullMeta.setDisplayName(Lang.parse(AutoPickup.filter.getString("gui.reset-filter.displayname"), player));
 
@@ -419,7 +463,9 @@ public class FeaturesGUI implements Listener {
 			if(!filter.guiShow) continue;
 			ItemStack guiEntry = filter.guiIcon.startsWith("nexo:") ?
 					NexoItems.itemFromId(filter.guiIcon.replace("nexo:", "")).build() :
-					new ItemStack(Material.valueOf(filter.guiIcon.toUpperCase()));
+					filter.guiIcon.startsWith("oraxen:") ?
+							OraxenItems.getItemById(filter.guiIcon.replace("oraxen:", "")).build() :
+							new ItemStack(Material.valueOf(filter.guiIcon.toUpperCase()));
 			ItemMeta meta = guiEntry.getItemMeta();
 			meta.setDisplayName(Lang.parse(filter.displayname, player));
 
