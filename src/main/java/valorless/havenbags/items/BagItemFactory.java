@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.nexomc.nexo.api.NexoItems;
+import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -110,6 +111,9 @@ public final class BagItemFactory {
         if(Main.config.getString("bag.material").startsWith("nexo:")){
             String nexoId = Main.config.getString("bag.material").substring(5);
             bagItem = NexoItems.exists(nexoId) ? NexoItems.itemFromId(nexoId).build() : new ItemStack(Material.PLAYER_HEAD);
+        }else if(Main.config.getString("bag.material").startsWith("oraxen:")){
+            String oraxenId = Main.config.getString("bag.material").substring(7);
+            bagItem = OraxenItems.exists(oraxenId) ? OraxenItems.getItemById(oraxenId).build() : new ItemStack(Material.PLAYER_HEAD);
         }else {
             if (Main.config.getString("bag.type").equalsIgnoreCase("HEAD")) {
                 if (Main.config.getBool("bag-textures.enabled")) {
