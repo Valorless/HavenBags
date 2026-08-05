@@ -496,7 +496,6 @@ features-gui:
       slot: 8
       # Can any vanilla material, to use the default head-with-textures, leave it "default".
       # Supports custom items by using "nexo:id" or "oraxen:id".
-      # Note that Name and Lore are ignored if using a custom item.
       material: default
       name: '&eReturn'
       lore:

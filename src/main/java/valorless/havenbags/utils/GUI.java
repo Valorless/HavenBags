@@ -236,20 +236,19 @@ public class GUI {
                 guiButton.material.startsWith("oraxen:") ?
                         OraxenItems.getItemById(guiButton.material.replace("oraxen:", "")).build() :
                         guiButton.material.equalsIgnoreCase("default") ?
-                            createButton(action, action.equals(GUIAction.NEXT_PAGE) ?
-                                 NEXT_TEXTURE : action.equals(GUIAction.PREV_PAGE) ? PREV_TEXTURE : RETURN_TEXTURE) :
-                            new ItemStack(Material.valueOf(guiButton.material.toUpperCase()));
+                                createButton(action, action.equals(GUIAction.NEXT_PAGE) ?
+                                        NEXT_TEXTURE : action.equals(GUIAction.PREV_PAGE) ? PREV_TEXTURE : RETURN_TEXTURE) :
+                                new ItemStack(Material.valueOf(guiButton.material.toUpperCase()));
 
-        if(!guiButton.material.startsWith("nexo:") && !guiButton.material.startsWith("oraxen:")) {
-            ItemMeta meta = button.getItemMeta();
-            meta.setDisplayName(Lang.parse(guiButton.name));
-            List<String> lore = new ArrayList<>();
-            for (String line : guiButton.lore) {
-                lore.add(Lang.parse(line));
-            }
-            meta.setLore(lore);
-            button.setItemMeta(meta);
+        ItemMeta meta = button.getItemMeta();
+        meta.setDisplayName(Lang.parse(guiButton.name));
+        List<String> lore = new ArrayList<>();
+        for (String line : guiButton.lore) {
+            lore.add(Lang.parse(line));
         }
+        meta.setLore(lore);
+        button.setItemMeta(meta);
+
 
         // Store GUI action in NBT
         PDC.setString(button, "bag-action", action.toString());
@@ -263,45 +262,18 @@ public class GUI {
                 guiButton.material.startsWith("oraxen:") ?
                         OraxenItems.getItemById(guiButton.material.replace("oraxen:", "")).build() :
                         guiButton.material.equalsIgnoreCase("default") ?
-                            createPageButton(page) :
-                            new ItemStack(Material.valueOf(guiButton.material.toUpperCase()));
+                                createPageButton(page) :
+                                new ItemStack(Material.valueOf(guiButton.material.toUpperCase()));
 
-        if(guiButton.material.startsWith("nexo:") || guiButton.material.startsWith("oraxen:")) {
-            if (Server.VersionHigherOrEqualTo(Server.Version.v1_20_5)) {
-                // ItemUtils load and apply ItemMeta, therefore is done before/after own ItemMeta manipulation.
-                if (ItemUtils.HasItemName(button)) {
-                    String name = ItemUtils.GetItemName(button).replace("%page%", String.valueOf(page));
-                    ItemUtils.SetItemName(button, name);
-                }
-            }
-
-            ItemMeta meta = button.getItemMeta();
-            if (meta.hasItemName() && meta.getItemName().contains("%page%")) {
-                String name = meta.getItemName().replace("%page%", String.valueOf(page));
-                meta.setItemName(name);
-            }
-            if (meta.hasDisplayName() && meta.getDisplayName().contains("%page%")) {
-                String name = meta.getDisplayName().replace("%page%", String.valueOf(page));
-                meta.setDisplayName(name);
-            }
-
-            if (meta.hasLore() && meta.getLore().stream().anyMatch(line -> line.contains("%page%"))) {
-                List<String> lore = meta.getLore();
-                lore.replaceAll(s -> s.replace("%page%", String.valueOf(page)));
-                meta.setLore(lore);
-            }
-
-            button.setItemMeta(meta);
-        }else{
-            ItemMeta meta = button.getItemMeta();
-            meta.setDisplayName(Lang.parse(guiButton.name.replace("%page%", String.valueOf(page))));
-            List<String> lore = new ArrayList<>();
-            for (String line : guiButton.lore) {
-                lore.add(Lang.parse(line.replace("%page%", String.valueOf(page))));
-            }
-            meta.setLore(lore);
-            button.setItemMeta(meta);
+        ItemMeta meta = button.getItemMeta();
+        meta.setDisplayName(Lang.parse(guiButton.name.replace("%page%", String.valueOf(page))));
+        List<String> lore = new ArrayList<>();
+        for (String line : guiButton.lore) {
+            lore.add(Lang.parse(line.replace("%page%", String.valueOf(page))));
         }
+        meta.setLore(lore);
+        button.setItemMeta(meta);
+
 
         // Store GUI action in NBT
         PDC.setString(button, "bag-action", GUIAction.NONE.toString());

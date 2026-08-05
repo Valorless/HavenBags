@@ -413,27 +413,23 @@ public class FeaturesGUI implements Listener {
 						OraxenItems.getItemById(disabled.replace("oraxen:", "")).build() :
 						new ItemStack(Material.valueOf(disabled.toUpperCase()));
 
-		if(!enabled.startsWith("nexo:") && !enabled.startsWith("oraxen:")){
-			ItemMeta meta = enabledItem.getItemMeta();
-			meta.setDisplayName(Lang.parse(Main.config.getString(String.format("features-gui.slots.%s.name", key)), player));
-			List<String> lore = new ArrayList<>();
-			for(String line : Main.config.getStringList(String.format("features-gui.slots.%s.lore", key))){
-				lore.add(Lang.parse(line, player));
-			}
-			meta.setLore(lore);
-			enabledItem.setItemMeta(meta);
+		ItemMeta emeta = enabledItem.getItemMeta();
+		emeta.setDisplayName(Lang.parse(Main.config.getString(String.format("features-gui.slots.%s.name", key)), player));
+		List<String> elore = new ArrayList<>();
+		for(String line : Main.config.getStringList(String.format("features-gui.slots.%s.lore", key))){
+			elore.add(Lang.parse(line, player));
 		}
+		emeta.setLore(elore);
+		enabledItem.setItemMeta(emeta);
 
-		if(!disabled.startsWith("nexo:") && !disabled.startsWith("oraxen:")){
-			ItemMeta meta = disabledItem.getItemMeta();
-			meta.setDisplayName(Lang.parse(Main.config.getString(String.format("features-gui.slots.%s.name", key)), player));
-			List<String> lore = new ArrayList<>();
-			for(String line : Main.config.getStringList(String.format("features-gui.slots.%s.lore", key))){
-				lore.add(Lang.parse(line, player));
-			}
-			meta.setLore(lore);
-			disabledItem.setItemMeta(meta);
+		ItemMeta dmeta = disabledItem.getItemMeta();
+		dmeta.setDisplayName(Lang.parse(Main.config.getString(String.format("features-gui.slots.%s.name", key)), player));
+		List<String> dlore = new ArrayList<>();
+		for(String line : Main.config.getStringList(String.format("features-gui.slots.%s.lore", key))){
+			dlore.add(Lang.parse(line, player));
 		}
+		dmeta.setLore(dlore);
+		disabledItem.setItemMeta(dmeta);
 
 		return new ToggleButton(enabledItem, disabledItem);
 	}
