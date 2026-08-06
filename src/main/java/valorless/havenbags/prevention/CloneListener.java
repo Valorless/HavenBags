@@ -18,13 +18,13 @@ import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.persistentdatacontainer.PDC;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.utils.Utils;
 
 public class CloneListener implements Listener{
 
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-10] Registering CloneListener");
+		Log.debug(Main.plugin, "[DI-10] Registering CloneListener");
 		Bukkit.getServer().getPluginManager().registerEvents(new CloneListener(), Main.plugin);
 	}
 
@@ -38,7 +38,7 @@ public class CloneListener implements Listener{
 		//	if(item == null) continue;
 		//	Log.Debug(Main.plugin, item.getType().name());
 		//}
-		Proccess(event.getPlayer());
+		Process(event.getPlayer());
     }
 	
 	@EventHandler
@@ -46,18 +46,18 @@ public class CloneListener implements Listener{
 		//Log.Debug(Main.plugin, event.getEventName());
 		//Log.Debug(Main.plugin, event.getWhoClicked().getName());
 		//Log.Debug(Main.plugin, event.getInventory().getType().name());
-		Proccess(event.getWhoClicked());
+		Process(event.getWhoClicked());
 	}
 	
-	public void Proccess(HumanEntity entity) {
+	public void Process(HumanEntity entity) {
 		Player player = (Player)entity;
 		for(ItemStack item : player.getInventory().getContents()) {
 			if(item == null) continue;
 			if(item.getItemMeta() == null) { return; }
 			
-			if(PDC.Has(item, "uuid")) {
+			if(PDC.has(item, "uuid")) {
 				while(item.getAmount() > 1) {
-					Log.Debug(Main.plugin, "[DI-191] " + "Stacked bag found!");
+					Log.debug(Main.plugin, "[DI-191] " + "Stacked bag found!");
 					
 					ItemStack clone = item.clone();
 					clone.setAmount(1);
@@ -65,39 +65,39 @@ public class CloneListener implements Listener{
 					ItemMeta meta = clone.getItemMeta();
 					
 					List<Placeholder> placeholders = new ArrayList<Placeholder>();
-	            	placeholders.add(new Placeholder("%size%", PDC.GetInteger(clone, "size")));
+	            	placeholders.add(new Placeholder("%size%", PDC.getInteger(clone, "size")));
 					
-					boolean canbind = PDC.GetBoolean(clone, "binding");
+					boolean canbind = PDC.getBoolean(clone, "binding");
 					if(canbind) {
-						meta.setDisplayName(Lang.Get("bag-unbound-name"));
+						meta.setDisplayName(Lang.get("bag-unbound-name"));
 						List<String> lore = new ArrayList<String>();
-						for (String l : Lang.lang.GetStringList("bag-lore")) {
-				        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
+						for (String l : Lang.lang.getStringList("bag-lore")) {
+				        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.parse(l, player));
 				        }
-				        if(PDC.Has(clone, "size")) {
-				        	lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
+				        if(PDC.has(clone, "size")) {
+				        	lore.add(Lang.parse(Lang.get("bag-size"), placeholders, player));
 				        }
 						meta.setLore(lore);
 						clone.setItemMeta(meta);
 					}else {
-						meta.setDisplayName(Lang.Get("bag-ownerless-unused"));
+						meta.setDisplayName(Lang.get("bag-ownerless-unused"));
 						List<String> lore = new ArrayList<String>();
-						for (String l : Lang.lang.GetStringList("bag-lore")) {
-				        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, player));
+						for (String l : Lang.lang.getStringList("bag-lore")) {
+				        	if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.parse(l, player));
 				        }
-				        if(PDC.Has(clone, "size")) {
-				        	lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
+				        if(PDC.has(clone, "size")) {
+				        	lore.add(Lang.parse(Lang.get("bag-size"), placeholders, player));
 				        }
 						meta.setLore(lore);
 						clone.setItemMeta(meta);
 					}
 					
 					
-					Log.Debug(Main.plugin, "[DI-192] " + "Giving cloned bag a new id");
-					PDC.SetString(clone, "uuid", UUID.randomUUID().toString());
-					PDC.SetString(clone, "owner", "null");
+					Log.debug(Main.plugin, "[DI-192] " + "Giving cloned bag a new id");
+					PDC.setString(clone, "uuid", UUID.randomUUID().toString());
+					PDC.setString(clone, "owner", "null");
 
-					Log.Debug(Main.plugin, "[DI-193] " + "Splitting bags apart");
+					Log.debug(Main.plugin, "[DI-193] " + "Splitting bags apart");
 					item.setAmount(item.getAmount() - 1);
 					player.getInventory().addItem(clone);
 				}

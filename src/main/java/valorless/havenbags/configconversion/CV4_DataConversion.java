@@ -18,10 +18,10 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.DoNotCall;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 
@@ -74,16 +74,16 @@ public class CV4_DataConversion {
 	 */
 	@DoNotCall("Internal Use Only")
 	public static void check(@NotNull Config config) throws InvalidConfigurationException {
-		if(config.GetInt("config-version") < 4) {
-    		Log.Warning(Main.plugin, "Old data storage found, updating bag data!");
+		if(config.getInt("config-version") < 4) {
+    		Log.warning(Main.plugin, "Old data storage found, updating bag data!");
     		//Log.Error(plugin, "Debugging. Old data files are not removed.");
-    		Log.Error(Main.plugin, "Old data files are not removed, in case of failure.");
-    		config.Set("config-version", 4);
-    		config.SaveConfig();
+    		Log.error(Main.plugin, "Old data files are not removed, in case of failure.");
+    		config.set("config-version", 4);
+    		config.saveConfig();
     		int converted = 0;
     		int failed = 0;
     		
-    		List<String> owners	= BagData.GetBagOwners();
+    		List<String> owners	= Database.getBagOwners();
     		for(String owner : owners) {
     			List<String> bags = GetBags(owner);
     			for(String bag : bags) {
@@ -107,17 +107,17 @@ public class CV4_DataConversion {
     	    			}finally {
     	    				try {
     	    					Config bagData = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, bag));
-    	    					bagData.Set("uuid", bag);
-    	    					bagData.Set("owner", owner);
-    	    					bagData.Set("creator", "null");
-    	    					bagData.Set("size", cont.size());
-    	    					bagData.Set("texture", config.Get("bag-texture"));
-    	    					bagData.Set("custommodeldata", 0);
-    	    					bagData.Set("trusted", new ArrayList<String>());
-    	    					bagData.Set("auto-pickup", "null");
-    	    					bagData.Set("weight-max", 0);
-    	    					bagData.Set("content", JsonUtils.toJson(cont).replace("'", "◊"));
-    	    					bagData.SaveConfig();
+    	    					bagData.set("uuid", bag);
+    	    					bagData.set("owner", owner);
+    	    					bagData.set("creator", "null");
+    	    					bagData.set("size", cont.size());
+    	    					bagData.set("texture", config.get("bag-texture"));
+    	    					bagData.set("custommodeldata", 0);
+    	    					bagData.set("trusted", new ArrayList<String>());
+    	    					bagData.set("auto-pickup", "null");
+    	    					bagData.set("weight-max", 0);
+    	    					bagData.set("content", JsonUtils.toJson(cont).replace("'", "◊"));
+    	    					bagData.saveConfig();
     	    					converted++;
     	    				}catch(Exception E) {
     	    					//E.printStackTrace();
@@ -131,12 +131,12 @@ public class CV4_DataConversion {
     		    		//config.Set("config-version", 3);
     		    		//config.SaveConfig();
     					e.printStackTrace();
-    					Log.Error(Main.plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s/%s.json", owner, bag)));
+    					Log.error(Main.plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s/%s.json", owner, bag)));
     				}
     			}
     		}
-    		Log.Info(Main.plugin, String.format("Converted %s Data Files!", converted));
-    		Log.Info(Main.plugin, String.format("Failed: %s.", failed));
+    		Log.info(Main.plugin, String.format("Converted %s Data Files!", converted));
+    		Log.info(Main.plugin, String.format("Failed: %s.", failed));
     	}
 	}
     
@@ -151,17 +151,17 @@ public class CV4_DataConversion {
      *         (an empty list is returned on error)
      */
     static List<String> GetBags(@NotNull String player){
-		Log.Debug(Main.plugin, "[DI-21] " + player);
+		Log.debug(Main.plugin, "[DI-21] " + player);
 		try {
 			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
 					.filter(file -> !file.isDirectory())
-					.filter(file -> !file.getName().contains(".yml"))
 					.map(File::getName)
+					.filter(name -> !name.contains(".yml"))
 					.collect(Collectors.toList());
-			for(int i = 0; i < bags.size(); i++) {
-				//Log.Debug(Main.plugin, bags.get(i));
-				bags.set(i, bags.get(i).replace(".yml", ""));
-			}
+            bags.replaceAll(s -> {
+                //Log.Debug(Main.plugin, bags.get(i));
+                return s.replace(".yml", "");
+            });
 			return bags;
 		} catch (Exception e) {
 			return new ArrayList<String>();

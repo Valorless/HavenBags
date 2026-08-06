@@ -21,7 +21,8 @@ public class CommandGive {
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 	static String bagTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+        if(!command.sender.hasPermission(permission)) return false;
 
 		ItemStack bagItem = new ItemStack(Material.DIRT);
 		bagTexture = Main.config.getString("bag.texture");
@@ -57,12 +58,12 @@ public class CommandGive {
 
                 bagItem = BagItemFactory.createBagItem(false, slots, receiver);
                 receiver.getInventory().addItem(bagItem);
-                placeholders.add(new Placeholder("%name%", Lang.Get("bag-ownerless-unused")));
-                receiver.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("bag-given"), placeholders));
+                placeholders.add(new Placeholder("%name%", Lang.get("bag-ownerless-unused")));
+                receiver.sendMessage(Lang.get("prefix") + Lang.parse(Lang.get("bag-given"), placeholders));
                 Log.debug(Main.plugin, "[DI-140] " + String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size, "false"));
                 //sender.sendMessage(JsonUtils.toJson(bagItem));
             }else {
-                command.sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-ownerless-no-size"));
+                command.sender.sendMessage(Lang.get("prefix") + Lang.get("bag-ownerless-no-size"));
             }
         }
         else {
@@ -74,8 +75,8 @@ public class CommandGive {
                 bagItem = BagItemFactory.createBagItem(false, slots, receiver);
 
                 receiver.getInventory().addItem(bagItem);
-                placeholders.add(new Placeholder("%name%", Lang.Get("bag-unbound-name")));
-                receiver.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("bag-given"), placeholders));
+                placeholders.add(new Placeholder("%name%", Lang.get("bag-unbound-name")));
+                receiver.sendMessage(Lang.get("prefix") + Lang.parse(Lang.get("bag-given"), placeholders));
                 //receiver.sendMessage(Lang.Get("prefix") + Lang.Get("bag-given", Lang.Get("bag-unbound-name")));
                 //sender.sendMessage(JsonUtils.toJson(bagItem));
                 Log.debug(Main.plugin, "[DI-141] " + String.format("Bag created: %s %s %s %s", "null", "null", size, "true"));
@@ -83,7 +84,7 @@ public class CommandGive {
             catch (NumberFormatException ex){
                 ex.printStackTrace();
                 placeholders.add(new Placeholder("%value%", command.args[2]));
-                command.sender.sendMessage(Lang.Get("prefix") + Lang.Parse(Lang.Get("number-conversion-error"), placeholders));
+                command.sender.sendMessage(Lang.get("prefix") + Lang.parse(Lang.get("number-conversion-error"), placeholders));
             }
         }
         return true;

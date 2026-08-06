@@ -1,15 +1,14 @@
 package valorless.havenbags.annotations;
 
-import static java.lang.annotation.ElementType.PARAMETER;
-
 import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
  * Indicates that a method parameter must not be null.
  */
 @Documented
-@Target(PARAMETER)
+@Target({ElementType.PARAMETER, ElementType.METHOD})
 public @interface NotNull {
 
 	/**

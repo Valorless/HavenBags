@@ -4,262 +4,100 @@ import java.io.File;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-
-import valorless.havenbags.commands.HBCommand;
+import valorless.havenbags.commands.*;
 import valorless.havenbags.commands.debug.DebugHandler;
 import valorless.havenbags.commands.fun.CommandExplode;
-import valorless.havenbags.gui.PlayerGUI;
-import valorless.havenbags.commands.CommandAutoSort;
-import valorless.havenbags.commands.CommandAutopickup;
-import valorless.havenbags.commands.CommandClearContent;
-import valorless.havenbags.commands.CommandConvertDatabase;
-import valorless.havenbags.commands.CommandConvertEpicBackpacks;
-import valorless.havenbags.commands.CommandConvertMinepacks;
-import valorless.havenbags.commands.CommandCreate;
-import valorless.havenbags.commands.CommandCustomContent;
-import valorless.havenbags.commands.CommandEffect;
-import valorless.havenbags.commands.CommandEmpty;
-import valorless.havenbags.commands.CommandEthereal;
-import valorless.havenbags.commands.CommandGUI;
-import valorless.havenbags.commands.CommandGive;
-import valorless.havenbags.commands.CommandInfo;
-import valorless.havenbags.commands.CommandItemModel;
-import valorless.havenbags.commands.CommandMagnet;
-import valorless.havenbags.commands.CommandMod;
-import valorless.havenbags.commands.CommandModelData;
-import valorless.havenbags.commands.CommandOpen;
-import valorless.havenbags.commands.CommandPreview;
-import valorless.havenbags.commands.CommandRawInfo;
-import valorless.havenbags.commands.CommandRefill;
-import valorless.havenbags.commands.CommandReload;
-import valorless.havenbags.commands.CommandReloadPlugin;
-import valorless.havenbags.commands.CommandRename;
-import valorless.havenbags.commands.CommandRestore;
-import valorless.havenbags.commands.CommandTexture;
-import valorless.havenbags.commands.CommandToken;
-import valorless.havenbags.commands.CommandTrust;
-import valorless.havenbags.commands.CommandUntrust;
-import valorless.havenbags.commands.CommandWeight;
+import valorless.valorlessutils.logging.Log;
 
-import valorless.valorlessutils.ValorlessUtils.Log;
-
-@SuppressWarnings("deprecation")
 public class CommandListener implements CommandExecutor {
-	
-	String Name = "§7[§aHaven§bBags§7]§r";
-	
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    	Log.Debug(Main.plugin, "[DI-85] " + "Sender: " + sender.getName());
-    	Log.Debug(Main.plugin, "[DI-86] " + "Command: " + command.toString());
-    	Log.Debug(Main.plugin, "[DI-87] " + "Label: " + label);
+    	Log.debug(Main.plugin, "[DI-85] " + "Sender: " + sender.getName());
+    	Log.debug(Main.plugin, "[DI-86] " + "Command: " + command.toString());
+    	Log.debug(Main.plugin, "[DI-87] " + "Label: " + label);
     	for(int i = 0; i < args.length; i++) {
-			Log.Debug(Main.plugin, "[DI-132] " + "Arg " + i + ": " + args[i]);
+			Log.debug(Main.plugin, "[DI-132] " + "Arg " + i + ": " + args[i]);
 		}
-    	/*for(String arg : args) {
-			Log.Debug(Main.plugin, "[DI-132] " + arg);
-		}*/
     	final HBCommand cmd = new HBCommand(sender, command, label, args);
     	
 		if(args.length == 0) {
-			sender.sendMessage(Name + " HavenBags by Valorless.");
+			//sender.sendMessage(Name + " HavenBags by Valorless.");
 			return false;
 		}
-		else 
-		if (args.length >= 1){
-			try {
-				if(args[0].equalsIgnoreCase("reload") && sender.hasPermission("havenbags.reload")) {
-					return CommandReload.Run(cmd);
-				}
 
-				if(args[0].equalsIgnoreCase("debug")){
-					DebugHandler.debug(cmd);
-					return true;
-				}
+		final String subCommand = args[0];
 
-				if(BagData.isReady() == false) {
-					return true;
-				}
-				
-				if(args[0].equalsIgnoreCase("create") && sender.hasPermission("havenbags.create")) {
-					return CommandCreate.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("give") && sender.hasPermission("havenbags.give")) {
-					return CommandGive.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("restore") && sender.hasPermission("havenbags.restore")) {
-					return CommandRestore.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("preview") && sender.hasPermission("havenbags.preview")) {
-					return CommandPreview.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("rename") && sender.hasPermission("havenbags.rename")) {
-					return CommandRename.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("info") && sender.hasPermission("havenbags.info")) {
-					return CommandInfo.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("rawinfo") && sender.hasPermission("havenbags.info")) {
-					return CommandRawInfo.Run(cmd);
-				}
-				if(args[0].equalsIgnoreCase("gui")) {
-					if( sender.hasPermission("havenbags.gui")) {
-						return CommandGUI.Run(cmd); // AdminGUI
-					} else {
-						if(Main.config.GetBool("player-gui.enabled")) {
-							Player player = (Player) cmd.sender; 
-							PlayerGUI gui = new PlayerGUI(player); // PlayerGUI
-							gui.OpenInventory(player);
-							return true;
-						}
-					}
-				}
-
-				if(args[0].equalsIgnoreCase("empty") && sender.hasPermission("havenbags.empty")) {
-					return CommandEmpty.Run(cmd);
-				}
-
-				if(args[0].equalsIgnoreCase("autopickup") && sender.hasPermission("havenbags.autopickup")) {
-					return CommandAutopickup.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("weight") && sender.hasPermission("havenbags.weight")) {
-					return CommandWeight.Run(cmd);
-				}
-
-				if(args[0].equalsIgnoreCase("help")) {
-					return valorless.havenbags.commands.CommandHelp.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("trust") && sender.hasPermission("havenbags.trust")) {
-					return CommandTrust.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("untrust") && sender.hasPermission("havenbags.trust")) {
-					return CommandUntrust.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("texture") && sender.hasPermission("havenbags.texture")) {
-					return CommandTexture.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("modeldata") && sender.hasPermission("havenbags.modeldata")) {
-					return CommandModelData.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("itemmodel") && sender.hasPermission("havenbags.modeldata")) {
-					return CommandItemModel.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("token") && sender.hasPermission("havenbags.token")) {
-					return CommandToken.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("mod") && Main.plugins.GetBool("mods.HavenBagsPreview.enable-command")) {
-					return CommandMod.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("convertminepacks") && sender.isOp()) {
-					return CommandConvertMinepacks.Run(cmd);
-				}
-				if(args[0].equalsIgnoreCase("convertepicbackpacks") && sender.isOp()) {
-					return CommandConvertEpicBackpacks.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("customcontent") && sender.isOp()) {
-					return CommandCustomContent.Run(cmd);
-				}
-
-				// Not visible in tabcompletion.
-				if(args[0].equalsIgnoreCase("explode") && sender.hasPermission("havenbags.empty")) {
-					return CommandExplode.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("convertdatabase") && sender.hasPermission("havenbags.database")) {
-					return CommandConvertDatabase.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("autosort") && sender.hasPermission("havenbags.autosort")) {
-					return CommandAutoSort.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("clearcontent") && sender.hasPermission("havenbags.autosort")) {
-					if(sender instanceof ConsoleCommandSender) {
-						return CommandClearContent.Run(cmd);
-					}else {
-						sender.sendMessage(Lang.Get("prefix") + "§cYou must run this command from the console.");
-						return true;
-					}
-				}
-				
-				if(args[0].equalsIgnoreCase("magnet") && sender.hasPermission("havenbags.magnet")) {
-					return CommandMagnet.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("refill") && sender.hasPermission("havenbags.refill")) {
-					return CommandRefill.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("effect") && sender.hasPermission("havenbags.effects")) {
-					return CommandEffect.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("open") && sender.hasPermission("havenbags.ethereal")) {
-					return CommandOpen.Run(cmd);
-				}
-				
-				if(args[0].equalsIgnoreCase("ethereal") && sender.hasPermission("havenbags.ethereal")) {
-					return CommandEthereal.Run(cmd);
-				}
-				
-				
-				
-				if(args[0].equalsIgnoreCase("pluginreload") && sender.isOp()) {
-					return CommandReloadPlugin.Run(cmd);
-				}
-				
-				
-			} catch(Exception e) {
-				sender.sendMessage(Lang.Get("prefix") + Lang.Get("malformed-command"));
-				Log.Error(Main.plugin, e.getMessage());
-				//Log.Error(Main.plugin, e.printStackTrace());
-				e.printStackTrace();
+		try {
+			if (subCommand.equals("reload")) {
+				return CommandReload.run(cmd, "havenbags.reload");
 			}
+			if(!Database.isReady()) {
+				return true;
+			}
+			switch(subCommand) {
+				case "create": return CommandCreate.run(cmd, "havenbags.create");
+				case "give": return CommandGive.run(cmd, "havenbags.give");
+				case "rename": return CommandRename.run(cmd, "havenbags.rename");
+				case "info": return CommandInfo.run(cmd, "havenbags.info");
+				case "rawinfo": return CommandRawInfo.run(cmd, "havenbags.info");
+				case "gui": return CommandGUI.run(cmd, "havenbags.info");
+				case "empty": return CommandEmpty.run(cmd, "havenbags.empty");
+				case "autopickup": return CommandAutopickup.run(cmd, "havenbags.autopickup");
+				case "help": return CommandHelp.run(cmd);
+				case "weight": return CommandWeight.run(cmd, "havenbags.weight");
+				case "trust": return CommandTrust.run(cmd, "havenbags.trust");
+				case "untrust": return CommandUntrust.run(cmd, "havenbags.trust");
+				case "texture": return CommandTexture.run(cmd, "havenbags.texture");
+				case "modeldata": return CommandModelData.run(cmd, "havenbags.modeldata");
+				case "itemmodel": return CommandItemModel.run(cmd, "havenbags.modeldata");
+				case "token": return CommandToken.run(cmd, "havenbags.token");
+				case "mod": return CommandMod.run(cmd);
+				case "explode": return CommandExplode.run(cmd, "havenbags.empty"); // Not visible in tabcompletion.
+				case "convertdatabase": return CommandConvertDatabase.run(cmd, "havenbags.database");
+				case "autosort": return CommandAutoSort.run(cmd, "havenbags.autosort");
+				case "autocraft": return CommandAutoCraft.run(cmd, "havenbags.autocraft");
+				case "magnet": return CommandMagnet.run(cmd, "havenbags.magnet");
+				case "refill": return CommandRefill.run(cmd, "havenbags.refill");
+				case "effect": return CommandEffect.run(cmd, "havenbags.effects");
+				case "open": return CommandOpen.run(cmd, "havenbags.ethereal");
+				case "ethereal": return CommandEthereal.run(cmd, "havenbags.ethereal");
+			}
+
+			if(sender.isOp()) {
+				switch (subCommand) {
+					case "debug": return DebugHandler.debug(cmd);
+					case "convertminepacks": return CommandConvertMinepacks.run(cmd);
+					case "convertepicbackpacks": return CommandConvertEpicBackpacks.run(cmd);
+					case "customcontent": return CommandCustomContent.run(cmd);
+					case "pluginreload": return CommandReloadPlugin.run(cmd);
+				}
+			}
+
+			if(subCommand.equalsIgnoreCase("clearcontent")) {
+				if(sender instanceof ConsoleCommandSender) {
+					return CommandClearContent.run(cmd);
+				}else {
+					sender.sendMessage(Lang.get("prefix") + "§cYou must run this command from the console.");
+					return true;
+				}
+			}
+
+			sender.sendMessage("Unknown command.");
+			return false;
+
+
+		} catch(Exception e) {
+			sender.sendMessage(Lang.get("prefix") + Lang.get("malformed-command"));
+			Log.error(Main.plugin, e.getMessage());
+			//Log.Error(Main.plugin, e.printStackTrace());
+			e.printStackTrace();
+			return false;
 		}
-		sender.sendMessage("Unknown command.");
-        return false;
-    }
-	
-	String FixMaterialName(String string) {
-    	string = string.replace('_', ' ');
-        char[] charArray = string.toCharArray();
-        boolean foundSpace = true;
-        for(int i = 0; i < charArray.length; i++) {
-        	charArray[i] = Character.toLowerCase(charArray[i]);
-        	if(Character.isLetter(charArray[i])) {
-        		if(foundSpace) {
-        			charArray[i] = Character.toUpperCase(charArray[i]);
-        			foundSpace = false;
-        		}
-        	}
-        	else {
-        		foundSpace = true;
-        	}
-        }
-        string = String.valueOf(charArray);
-    	return string;
     }
 	
 	public static Set<String> listFilesUsingJavaIO(String dir) {

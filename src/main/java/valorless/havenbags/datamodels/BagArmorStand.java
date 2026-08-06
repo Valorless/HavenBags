@@ -66,7 +66,7 @@ public class BagArmorStand {
         
         Tags.Set(Main.plugin, armorStand.getPersistentDataContainer(), "HavenBags", "back-bag", TagType.STRING);
         Bukkit.getScheduler().runTaskLater(Main.plugin, () -> {
-        	if(!Main.config.GetBool("back-bag.show-own")) trackedPlayer.hideEntity(plugin, armorStand);
+        	if(!Main.config.getBool("back-bag.show-own")) trackedPlayer.hideEntity(plugin, armorStand);
         	// Was still showing for some reason
 		}, 1L);
         
@@ -103,9 +103,9 @@ public class BagArmorStand {
 
         Vector right = forward.clone().crossProduct(new Vector(0, 1, 0)).normalize();
         
-        Vector offset = new Vector(Main.config.GetDouble("back-bag.offset.position.x"), 
-				Main.config.GetDouble("back-bag.offset.position.y"), 
-				Main.config.GetDouble("back-bag.offset.position.z"));
+        Vector offset = new Vector(Main.config.getDouble("back-bag.offset.position.x"),
+				Main.config.getDouble("back-bag.offset.position.y"),
+				Main.config.getDouble("back-bag.offset.position.z"));
 
         Vector adjusted = forward.multiply(offset.getZ())
                                 .add(right.multiply(offset.getX()))
@@ -119,12 +119,12 @@ public class BagArmorStand {
 
         Location loc = getOffsetLocation();
 
-        float combinedYaw = normalizeYaw(trackedPlayer.getLocation().getYaw() + Main.config.GetDouble("back-bag.offset.rotation").floatValue());
+        float combinedYaw = normalizeYaw(trackedPlayer.getLocation().getYaw() + Main.config.getDouble("back-bag.offset.rotation").floatValue());
         loc.setYaw(combinedYaw);
-        loc.setPitch(Main.config.GetDouble("back-bag.offset.pitch").floatValue());
+        loc.setPitch(Main.config.getDouble("back-bag.offset.pitch").floatValue());
 
         armorStand.teleport(loc);
-        armorStand.setHeadPose(armorStand.getHeadPose().setX((float) Math.toRadians(Main.config.GetDouble("back-bag.offset.pitch").floatValue())));
+        armorStand.setHeadPose(armorStand.getHeadPose().setX((float) Math.toRadians(Main.config.getDouble("back-bag.offset.pitch").floatValue())));
     }
     
     private void updateScale() {
@@ -141,7 +141,7 @@ public class BagArmorStand {
 
                 if (playerScale != null && standScale != null) {
                     double playerValue = playerScale.getValue();
-                    standScale.setBaseValue(Main.config.GetDouble("back-bag.scale") * playerValue);
+                    standScale.setBaseValue(Main.config.getDouble("back-bag.scale") * playerValue);
                 }
         	}
         }
@@ -154,8 +154,8 @@ public class BagArmorStand {
         	return;
         }
 
-        ItemStack helmet = (!HavenBags.GetBagsDataInInventory(trackedPlayer).isEmpty()) ?
-                HavenBags.GetBagsDataInInventory(trackedPlayer).get(0).item.clone() : new ItemStack(Material.AIR);
+        ItemStack helmet = (!HavenBags.getBagsDataInInventory(trackedPlayer).isEmpty()) ?
+                HavenBags.getBagsDataInInventory(trackedPlayer).get(0).item.clone() : new ItemStack(Material.AIR);
         
         if(trackedPlayer.getGameMode() == GameMode.SPECTATOR) helmet = new ItemStack(Material.AIR);
         if(trackedPlayer.isDead()) helmet = new ItemStack(Material.AIR);
@@ -186,9 +186,9 @@ public class BagArmorStand {
     }
     
     public boolean isHoldingBag() {
-    	String back = HavenBags.GetBagUUID((!HavenBags.GetBagsDataInInventory(trackedPlayer).isEmpty()) ?
-                HavenBags.GetBagsDataInInventory(trackedPlayer).get(0).item.clone() : new ItemStack(Material.AIR));
-    	String hand = HavenBags.GetBagUUID(trackedPlayer.getInventory().getItemInMainHand());
+    	String back = HavenBags.getBagUUID((!HavenBags.getBagsDataInInventory(trackedPlayer).isEmpty()) ?
+                HavenBags.getBagsDataInInventory(trackedPlayer).get(0).item.clone() : new ItemStack(Material.AIR));
+    	String hand = HavenBags.getBagUUID(trackedPlayer.getInventory().getItemInMainHand());
     	if (back == null || hand == null) return false;
     	return back.equalsIgnoreCase(hand);
     }

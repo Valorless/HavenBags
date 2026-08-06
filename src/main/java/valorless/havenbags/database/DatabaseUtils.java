@@ -7,17 +7,17 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.valorlessutils.utils.Utils;
 
 public class DatabaseUtils {
 
-	public class Extra {
+	public static class Extra {
 		public boolean autoSort;
 		// Wtf was this even for?
 	}
 	
-	public static String Extra(Data data) {
+	public static String extra(Bag data) {
 		String text = "extra{";
 		
 		text += String.format("autosort:%s", data.hasAutoSort());
@@ -38,13 +38,14 @@ public class DatabaseUtils {
 		text += String.format(", refill:%s", data.hasRefill());
 		text += String.format(", effect:%s", data.getEffect());
 		text += String.format(", tooltip:%s", formatNamespacedKey(data.getTooltipStyle()));
+		text += String.format(", autocraft:%s", data.hasAutoCraft());
 		
 		text += "}";
 		//Log.Info(Main.plugin, text);
 		return text;
 	}
 	
-	public static void ApplyExtra(Data data, String datastring) {
+	public static void applyExtra(Bag data, String datastring) {
 		Map<String, Object> extra = DatabaseUtils.ParseExtra(datastring);
         if(extra.containsKey("autosort")) data.setAutoSort((Boolean) extra.get("autosort"));
         if(extra.containsKey("material")) data.setMaterial((String) extra.get("material"));
@@ -56,6 +57,7 @@ public class DatabaseUtils {
         if(extra.containsKey("refill")) data.setRefill((Boolean) extra.get("refill"));
         if(extra.containsKey("effect")) data.setEffect((String) extra.get("effect"));
         if(extra.containsKey("tooltip")) data.setTooltipStyle(parseNamespacedKey((String) extra.get("tooltip")));
+		if(extra.containsKey("autocraft")) data.setAutoCraft((Boolean) extra.get("autocraft"));
 	}
 	
 	public static Object formatList(List<String> list) {

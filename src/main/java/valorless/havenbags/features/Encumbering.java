@@ -21,26 +21,26 @@ import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.utils.Utils;
 
 
 public class Encumbering implements Listener {
 	
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-17] Registering Encumbering");
+		Log.debug(Main.plugin, "[DI-17] Registering Encumbering");
 		Bukkit.getServer().getPluginManager().registerEvents(new Encumbering(), Main.plugin);
 		
-		Reload();
+		reload();
 	}
 	
-	private static List<PotionEffect> effects = new ArrayList<PotionEffect>();
+	private static final List<PotionEffect> effects = new ArrayList<>();
 	private static Double percent = 0.0;
 	private static String message;
 	private static String not;
 	private static boolean enabled;
-	private static List<BagWeight> bagWeights = new ArrayList<BagWeight>();
-	private static List<Player> encumbered = new ArrayList<Player>();
+	private static final List<BagWeight> bagWeights = new ArrayList<>();
+	private static final List<Player> encumbered = new ArrayList<>();
 	
 	private static class BagWeight{
 		public Double weight = 0.0;
@@ -50,21 +50,21 @@ public class Encumbering implements Listener {
 		}
 	}
 	
-	static BagWeight GetBag(Player player) {
+	static BagWeight getBag(Player player) {
 		for(BagWeight bag : bagWeights) {
 			if(bag.player == player) return bag;
 		}
 		return null;
 	}
 	
-	static boolean Contains(Player player) {
+	static boolean contains(Player player) {
 		for(BagWeight bag : bagWeights) {
 			if(bag.player == player) return true;
 		}
 		return false;
 	}
 	
-	static boolean IsEncumbered(Player player) {
+	static boolean isEncumbered(Player player) {
 		for(BagWeight bag : bagWeights) {
 			if(bag.player == player) {
 				if(bag.weight > percent) return true;
@@ -73,23 +73,23 @@ public class Encumbering implements Listener {
 		return false;
 	}
 	
-	public static void Reload() {
-		Log.Debug(Main.plugin, "[DI-91] " + "[Encumbering] Reloading.");
-		enabled = Main.weight.GetBool("over-encumber.enabled");
-		Log.Debug(Main.plugin, "[DI-92] " + "[Encumbering] " + enabled);
-		percent = Main.weight.GetDouble("over-encumber.percent");
-		Log.Debug(Main.plugin, "[DI-93] " + "[Encumbering] " + percent);
-		message = Lang.Parse(Lang.Get("prefix") + Main.weight.GetString("over-encumber.message"), null);
-		Log.Debug(Main.plugin, "[DI-94] " + "[Encumbering] " + message);
-		not = Lang.Parse(Lang.Get("prefix") + Main.weight.GetString("over-encumber.not"), null);
-		Log.Debug(Main.plugin, "[DI-95] " + "[Encumbering] " + not);
-		ReloadEffects();
+	public static void reload() {
+		Log.debug(Main.plugin, "[DI-91] " + "[Encumbering] Reloading.");
+		enabled = Main.weight.getBool("over-encumber.enabled");
+		Log.debug(Main.plugin, "[DI-92] " + "[Encumbering] " + enabled);
+		percent = Main.weight.getDouble("over-encumber.percent");
+		Log.debug(Main.plugin, "[DI-93] " + "[Encumbering] " + percent);
+		message = Lang.parse(Lang.get("prefix") + Main.weight.getString("over-encumber.message"), null);
+		Log.debug(Main.plugin, "[DI-94] " + "[Encumbering] " + message);
+		not = Lang.parse(Lang.get("prefix") + Main.weight.getString("over-encumber.not"), null);
+		Log.debug(Main.plugin, "[DI-95] " + "[Encumbering] " + not);
+		reloadEffects();
 		encumbered.clear();
 		bagWeights.clear();
 		for(Player player : Bukkit.getOnlinePlayers()) {
-			if(player.getActivePotionEffects().size() != 0) {
+			if(!player.getActivePotionEffects().isEmpty()) {
 				for(PotionEffect effect : effects) {
-					Log.Debug(Main.plugin, "[DI-96] " + effect.toString());
+					Log.debug(Main.plugin, "[DI-96] " + effect.toString());
 					if(player.hasPotionEffect(effect.getType())) {
 						for(PotionEffect eff : player.getActivePotionEffects()) {
 							if(eff.getAmplifier() != effect.getAmplifier()) continue;
@@ -99,34 +99,33 @@ public class Encumbering implements Listener {
 					}
 				}
 			}
-			UpdateWeight(player);
+			updateWeight(player);
 		}
 	}
 	
-	public static void ReloadEffects() {
-		List<String> effectsCfg = Main.weight.GetStringList("over-encumber.effects");
+	public static void reloadEffects() {
+		List<String> effectsCfg = Main.weight.getStringList("over-encumber.effects");
 		effects.clear();
 		for(String eff : effectsCfg) {
 			String[] split = eff.split(":");
 			PotionEffectType type = PotionEffectType.getByName(split[0]);
-			int level = Integer.valueOf(split[1]) - 1;
+			int level = Integer.parseInt(split[1]) - 1;
 			try {
 				PotionEffect effect = new PotionEffect(type, Integer.MAX_VALUE, level, false, false, true);
 				effects.add(effect);
 			}catch(Exception e) {
-				Log.Error(Main.plugin, "[Encumbering] Failed to load PotionEffect '" + split[0] + "'");
-				Log.Error(Main.plugin, "[Encumbering] It may have a different name on some server versions.");
+				Log.error(Main.plugin, "[Encumbering] Failed to load PotionEffect '" + split[0] + "'");
+				Log.error(Main.plugin, "[Encumbering] It may have a different name on some server versions.");
 			}
-			Log.Debug(Main.plugin, "[DI-97] " + "[Encumbering] " + eff);
+			Log.debug(Main.plugin, "[DI-97] " + "[Encumbering] " + eff);
 		}
 	}
 		
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = false) // Have this listen last.
-	public static void OnInventoryClose(InventoryCloseEvent e) {
+	public static void onInventoryClose(InventoryCloseEvent e) {
 		if(!enabled) return;
 		Player player = (Player)e.getPlayer();
-		if(player == null) return;
-		UpdateWeight(player);
+        updateWeight(player);
 	}
 	
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = false) // Have this listen last.
@@ -137,10 +136,10 @@ public class Encumbering implements Listener {
 		if(e.getItem().getOwner() != null) {
 			if(e.getItem().getOwner() != player.getUniqueId()) return;
 		}
-		if(HavenBags.IsBag(e.getItem().getItemStack())) {
+		if(HavenBags.isBag(e.getItem().getItemStack())) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 			    public void run() {
-					UpdateWeight(player);
+					updateWeight(player);
 			    }
 			}, 5L);
 		}
@@ -149,35 +148,35 @@ public class Encumbering implements Listener {
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = false) // Have this listen last.
     public void onPlayerDropItem(PlayerDropItemEvent e) {
 		if(!enabled) return;
-		Player player = (Player)e.getPlayer();
-		if(HavenBags.IsBag(e.getItemDrop().getItemStack())) {
-			UpdateWeight(player);
+		Player player = e.getPlayer();
+		if(HavenBags.isBag(e.getItemDrop().getItemStack())) {
+			updateWeight(player);
 		}
 	}
 	
 	
-	public static void UpdateWeight(Player player) {
-		Log.Debug(Main.plugin, "[DI-98] " + "[Encumbering] " + player.toString());
+	public static void updateWeight(Player player) {
+		Log.debug(Main.plugin, "[DI-98] " + "[Encumbering] " + player.toString());
 		for(BagWeight bw : bagWeights) {
 			if(bw.player == player) bw.weight = 0.0; 
 		}
 		for(ItemStack i : player.getInventory().getContents()) {
 			//Log.Debug(Main.plugin, HavenBags.BagState(i).toString());
-			if(HavenBags.IsBag(i) && BagState.getState(i) == BagState.USED) { 
-				String uuid = PDC.GetString(i, "uuid");
+			if(HavenBags.isBag(i) && BagState.getState(i) == BagState.USED) {
+				String uuid = PDC.getString(i, "uuid");
 				if(uuid.equalsIgnoreCase("null")) continue;
-				if(PDC.Has(i, "weight")) {
-					Double weight = Utils.Percent(PDC.GetDouble(i, "weight"), PDC.GetDouble(i, "weight-limit"));
-					Log.Debug(Main.plugin, "[DI-99] " + "[Encumbering] " + weight);
+				if(PDC.has(i, "weight")) {
+					Double weight = Utils.Percent(PDC.getDouble(i, "weight"), PDC.getDouble(i, "weight-limit"));
+					Log.debug(Main.plugin, "[DI-99] " + "[Encumbering] " + weight);
 					//bagWeights.add(new Bag(uuid, Utils.Percent(PDC.GetDouble(i, "bag-weight"), PDC.GetDouble(i, "bag-weight-limit"))));
-					if(!Contains(player)) {
+					if(!contains(player)) {
 						BagWeight bag = new BagWeight(player, weight);
 						bagWeights.add(bag);
-						Log.Debug(Main.plugin, "[DI-100] " + "[Encumbering] Added weight");
+						Log.debug(Main.plugin, "[DI-100] " + "[Encumbering] Added weight");
 					}else {
-						if(weight > GetBag(player).weight) {
-							GetBag(player).weight = weight;
-							Log.Debug(Main.plugin, "[DI-101] " + "[Encumbering] Updated weight");
+						if(weight > getBag(player).weight) {
+							getBag(player).weight = weight;
+							Log.debug(Main.plugin, "[DI-101] " + "[Encumbering] Updated weight");
 						}
 					}
 					
@@ -186,27 +185,27 @@ public class Encumbering implements Listener {
 		}
 		
 		if(!encumbered.contains(player)) {
-			if(!IsEncumbered(player)) return;
+			if(!isEncumbered(player)) return;
 			player.sendMessage(message);
 			encumbered.add(player);
 			for(PotionEffect effect : effects) {
-				Log.Debug(Main.plugin, "[DI-102] " + effect.toString());
+				Log.debug(Main.plugin, "[DI-102] " + effect.toString());
 				if(!player.hasPotionEffect(effect.getType())) {
 					player.addPotionEffect(effect);
 				}
 			}
 		}
 		if(encumbered.contains(player)){
-			if(IsEncumbered(player)) return;
+			if(isEncumbered(player)) return;
 			player.sendMessage(not);
 			encumbered.remove(player);
-			if(player.getActivePotionEffects().size() == 0) return;
+			if(player.getActivePotionEffects().isEmpty()) return;
 			for(PotionEffect effect : effects) {
-				Log.Debug(Main.plugin, "[DI-103] " + effect.toString());
+				Log.debug(Main.plugin, "[DI-103] " + effect.toString());
 				if(player.hasPotionEffect(effect.getType())) {
 					for(PotionEffect eff : player.getActivePotionEffects()) {
 						if(eff.getAmplifier() != effect.getAmplifier()) continue;
-							player.removePotionEffect(effect.getType());
+						player.removePotionEffect(effect.getType());
 					
 					}
 				}

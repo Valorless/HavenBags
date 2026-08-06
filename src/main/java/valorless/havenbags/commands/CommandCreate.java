@@ -21,7 +21,8 @@ public class CommandCreate {
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 	static String bagTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 		ItemStack bagItem = new ItemStack(Material.DIRT);
 		bagTexture = Main.config.getString("bag.texture");
 		
@@ -34,13 +35,13 @@ public class CommandCreate {
 					//int slots = HavenBags.findClosestNine(size);
 					bagItem = BagItemFactory.createBagItem(false, size, (Player)command.sender);
 					if(!HavenBags.isPowerOfNine(size)) {
-						PDC.SetBoolean(bagItem, "upgrade", false);
+						PDC.setBoolean(bagItem, "upgrade", false);
 					}
 					Bukkit.getPlayer(command.sender.getName()).getInventory().addItem(bagItem);
 					Log.debug(Main.plugin, "[DI-138] " + String.format("Bag created: %s %s %s %s (ownerless)", "null", "null", size, "false"));
 					//sender.sendMessage(JsonUtils.toJson(bagItem));
 				}else {
-					command.sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-ownerless-no-size"));
+					command.sender.sendMessage(Lang.get("prefix") + Lang.get("bag-ownerless-no-size"));
 				}
 			}
 			else {
@@ -51,7 +52,7 @@ public class CommandCreate {
 
 					bagItem = BagItemFactory.createBagItem(false, size, (Player)command.sender);
 					if(!HavenBags.isPowerOfNine(size)) {
-						PDC.SetBoolean(bagItem, "upgrade", false);
+						PDC.setBoolean(bagItem, "upgrade", false);
 					}
 					
 					Bukkit.getPlayer(command.sender.getName()).getInventory().addItem(bagItem);
@@ -59,7 +60,7 @@ public class CommandCreate {
 				}
 				catch (NumberFormatException ex){
 					ex.printStackTrace();
-					command.sender.sendMessage(Lang.Get("prefix") + String.format(Lang.Get("number-conversion-error"), command.args[1]));
+					command.sender.sendMessage(Lang.get("prefix") + String.format(Lang.get("number-conversion-error"), command.args[1]));
 				}
 			}
 		}else {

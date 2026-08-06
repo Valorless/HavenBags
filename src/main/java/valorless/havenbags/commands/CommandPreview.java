@@ -12,11 +12,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.CommandListener;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.gui.BagGUI;
 import valorless.havenbags.persistentdatacontainer.PDC;
@@ -54,14 +54,14 @@ public class CommandPreview {
 			String dirPath = String.format("%s/bags/%s/", Main.plugin.getDataFolder(), owner);
 			File dir = new File(dirPath);
 			if(!dir.exists()) {
-				command.sender.sendMessage(Lang.Parse(Lang.Get("player-no-bags"), placeholders, player));
+				command.sender.sendMessage(Lang.parse(Lang.get("player-no-bags"), placeholders, player));
 				return true;
 			}
 			if (command.args.length >= 3){ // Bag UUID
 				String uuid = command.args[2];
 				String path = String.format("%s/bags/%s/%s.yml", Main.plugin.getDataFolder(), owner, uuid);
 				File bagData;
-				Data bag = BagData.GetBag(uuid, null);
+				Bag bag = Database.getBag(uuid, null);
 				try {
 					bagData = new File(path);
 				} catch(Exception e) {
@@ -70,7 +70,7 @@ public class CommandPreview {
 					return true;
 				}
 				if(!bagData.exists()) {
-					command.sender.sendMessage(Lang.Get("prefix") + Lang.Get("bag-not-found"));
+					command.sender.sendMessage(Lang.get("prefix") + Lang.get("bag-not-found"));
 					return true;
 				}
 				List<ItemStack> contSize = new ArrayList<ItemStack>();
@@ -81,17 +81,17 @@ public class CommandPreview {
 				} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
 					bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
 				} else {
-					command.sender.sendMessage(Lang.Get("prefix") + "&cbag-type must be either HEAD or ITEM.");
+					command.sender.sendMessage(Lang.get("prefix") + "&cbag-type must be either HEAD or ITEM.");
 					return true;
 				}
-				PDC.SetString(bagItem, "uuid", uuid);
-				PDC.SetInteger(bagItem, "size", contSize.size());
+				PDC.setString(bagItem, "uuid", uuid);
+				PDC.setinteger(bagItem, "size", contSize.size());
 				if(owner.equalsIgnoreCase("ownerless")) {
-					PDC.SetString(bagItem, "owner", owner);
-					PDC.SetBoolean(bagItem, "binding", false);
+					PDC.setString(bagItem, "owner", owner);
+					PDC.setBoolean(bagItem, "binding", false);
 				}else {
-					PDC.SetString(bagItem, "owner", owner);
-					PDC.SetBoolean(bagItem, "binding", true);
+					PDC.setString(bagItem, "owner", owner);
+					PDC.setBoolean(bagItem, "binding", true);
 				}
 				ItemMeta bagMeta = bagItem.getItemMeta();
 				if(Main.config.GetInt("bag.modeldata") != 0) {
@@ -110,9 +110,9 @@ public class CommandPreview {
 				}
 
 				if(owner.equalsIgnoreCase("ownerless")) {
-					bagMeta.setDisplayName(Lang.Get("bag-ownerless-used"));
+					bagMeta.setDisplayName(Lang.get("bag-ownerless-used"));
 				}else {
-					bagMeta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), placeholders, player));
+					bagMeta.setDisplayName(Lang.parse(Lang.lang.GetString("bag-bound-name"), placeholders, player));
 					
 				}
 
@@ -126,17 +126,17 @@ public class CommandPreview {
 		    					itemph.add(new Placeholder("%item%", Content.get(i).getItemMeta().getDisplayName()));
 		    					itemph.add(new Placeholder("%amount%", Content.get(i).getAmount()));
 		    					if(Content.get(i).getAmount() != 1) {
-		    						items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+		    						items.add(Lang.parse(Lang.get("bag-content-item-amount"), itemph, player));
 		    					} else {
-		    						items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+		    						items.add(Lang.parse(Lang.get("bag-content-item"), itemph, player));
 		    					}
 			    			}else {
 		    	    			itemph.add(new Placeholder("%item%", Main.translator.Translate(Content.get(i).getType().getTranslationKey())));
 		    	    			itemph.add(new Placeholder("%amount%", Content.get(i).getAmount()));
 		    	    			if(Content.get(i).getAmount() != 1) {
-		        					items.add(Lang.Parse(Lang.Get("bag-content-item-amount"), itemph, player));
+		        					items.add(Lang.parse(Lang.get("bag-content-item-amount"), itemph, player));
 		        				} else {
-		        					items.add(Lang.Parse(Lang.Get("bag-content-item"), itemph, player));
+		        					items.add(Lang.parse(Lang.get("bag-content-item"), itemph, player));
 		        				}
 			    			}
 			    			a++;
@@ -145,7 +145,7 @@ public class CommandPreview {
 					List<String> lore = new ArrayList<String>();
 					for (String l : Lang.lang.GetStringList("bag-lore")) {
 						if(!Utils.IsStringNullOrEmpty(l)) {
-							lore.add(Lang.Parse(l, player));
+							lore.add(Lang.parse(l, player));
 							
 						}
 					}
@@ -155,17 +155,17 @@ public class CommandPreview {
 					//		if(!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(String.format(l, Bukkit.getOfflinePlayer(UUID.fromString(owner)).getPlayer().getName())));
 					//	}
 					//}
-					if(PDC.GetBoolean(bagItem, "binding")) {
+					if(PDC.getBoolean(bagItem, "binding")) {
 						placeholders.add(new Placeholder("%owner%", player.getName()));
-			            lore.add(Lang.Parse(Lang.Get("bound-to"), placeholders, player));
+			            lore.add(Lang.parse(Lang.get("bound-to"), placeholders, player));
 			        }
 					//lore.add("§7Size: " + contSize.size());
 					//lore.add(Lang.Get("bag-size", contSize.size()));
 					placeholders.add(new Placeholder("%size%", contSize.size()));
-		            lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, player));
+		            lore.add(Lang.parse(Lang.get("bag-size"), placeholders, player));
 					if(a > 0) {
 						//lore.add("§7Content:");
-						lore.add(Lang.Get("bag-content-title"));
+						lore.add(Lang.get("bag-content-title"));
 						for(int k = 0; k < items.size(); k++) {
 							if(k < 5) {
 								lore.add("  " + items.get(k));
@@ -173,7 +173,7 @@ public class CommandPreview {
 						}
 						if(a > 5) {
 							//lore.add("  §7And more..");
-							lore.add(Lang.Get("bag-content-and-more"));
+							lore.add(Lang.get("bag-content-and-more"));
 						}
 					}
 					bagMeta.setLore(lore);
@@ -181,9 +181,9 @@ public class CommandPreview {
 
 				bagItem.setItemMeta(bagMeta);
 
-				BagGUI gui = new BagGUI(Main.plugin, PDC.GetInteger(bagItem, "size"), Bukkit.getPlayer(command.sender.getName()), bagItem, bagItem.getItemMeta(), true);
+				BagGUI gui = new BagGUI(Main.plugin, PDC.getInteger(bagItem, "size"), Bukkit.getPlayer(command.sender.getName()), bagItem, bagItem.getItemMeta(), true);
 				//Bukkit.getServer().getPluginManager().registerEvents(gui, plugin);
-				gui.OpenInventory(Bukkit.getPlayer(command.sender.getName()));
+				gui.openInventory(Bukkit.getPlayer(command.sender.getName()));
 				//HavenBags.activeBags.remove(gui);
 				
 				Log.Debug(Main.plugin, "[DI-142] " + "Attempting to preview bag");
@@ -194,7 +194,7 @@ public class CommandPreview {
 				//String owner = args[1];
 				String path = String.format("%s/bags/%s/", Main.plugin.getDataFolder(), owner);
 				Set<String> files = CommandListener.listFilesUsingJavaIO(path);
-				String fileString = Lang.Get("prefix") + Lang.Parse(Lang.Get("bags-of"), placeholders, player);
+				String fileString = Lang.get("prefix") + Lang.parse(Lang.get("bags-of"), placeholders, player);
 				List<String> fileNames = new ArrayList<String>();
 				fileNames.addAll(files);
 				for(int i = 0; i < files.size(); i++) {

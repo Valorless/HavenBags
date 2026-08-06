@@ -6,7 +6,7 @@ import java.io.FilenameFilter;
 import valorless.havenbags.Main;
 import valorless.havenbags.annotations.DoNotCall;
 import valorless.havenbags.annotations.NotNull;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.uuid.UUIDFetcher;
 
@@ -55,10 +55,10 @@ public class CV2_BagConversion {
 	 */
 	@DoNotCall("Internal Use Only")
 	public static void check(@NotNull Config config) {
-		if(config.GetInt("config-version") < 2) {
-			Log.Warning(Main.plugin, "Old configuration found, updating bag data!");
-			config.Set("config-version", 2);
-			config.SaveConfig();
+		if(config.getInt("config-version") < 2) {
+			Log.warning(Main.plugin, "Old configuration found, updating bag data!");
+			config.set("config-version", 2);
+			config.saveConfig();
 
 			File file = new File(String.format("%s/bags", Main.plugin.getDataFolder()));
 			String[] directories = file.list(new FilenameFilter() {
@@ -74,12 +74,12 @@ public class CV2_BagConversion {
 					File f = new File(String.format("%s/bags/%s", Main.plugin.getDataFolder(), folder));
 					File to = new File(String.format("%s/bags/%s", Main.plugin.getDataFolder(), UUIDFetcher.getUUID(folder)));
 					f.renameTo(to);
-					Log.Warning(Main.plugin, String.format("%s => %s", 
+					Log.warning(Main.plugin, String.format("%s => %s",
 							String.format("/bags/%s", folder), 
 							String.format("/bags/%s", UUIDFetcher.getUUID(folder))
 							));
 				} catch(Exception e) {
-					Log.Error(Main.plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s", folder)));
+					Log.error(Main.plugin, String.format("Failed to convert %s, may require manual update.", String.format("/bags/%s", folder)));
 				}
 			}
 		}	

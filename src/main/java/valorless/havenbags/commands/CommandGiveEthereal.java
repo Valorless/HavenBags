@@ -21,7 +21,7 @@ public class CommandGiveEthereal {
 				.filter(p -> p.getName() != null && p.getName().equalsIgnoreCase(playerName))
 				.findFirst()
 				.orElse(null);
-		Integer size = Integer.valueOf(command.args[3]);
+		int size = Integer.parseInt(command.args[3]);
 		String id = command.args[4];
 		
 		if(EtherealBags.addBag(target.getPlayer().getUniqueId(), id, size)){

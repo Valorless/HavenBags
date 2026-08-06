@@ -41,14 +41,14 @@ public class CommandRemoveEthereal {
 				return true;
 			}
 			if(!EtherealBags.hasBag(target.getUniqueId(), bagId)) {
-				command.sender.sendMessage(Lang.Parse(Lang.Get("prefix") + Lang.Get("bag-does-not-exist"), null));
+				command.sender.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("bag-does-not-exist"), null));
 				return true;
 			}
 			if(EtherealBags.removeBag(target.getUniqueId(), bagId)){
-				command.sender.sendMessage(Lang.Parse(Lang.Get("prefix") + "Ethereal bag removed.", null));
+				command.sender.sendMessage(Lang.parse(Lang.get("prefix") + "Ethereal bag removed.", null));
 				Log.Info(Main.plugin, "[CommandEthereal][DI-305] " + command.sender.getName() + " removed ethereal bag " + bagId + " from " + target.getName());
 			}else {
-				command.sender.sendMessage(Lang.Parse(Lang.Get("prefix") + "§cError removing ethereal bag.", null));
+				command.sender.sendMessage(Lang.parse(Lang.get("prefix") + "§cError removing ethereal bag.", null));
 				Log.Error(Main.plugin, "[CommandEthereal][DI-306] " + "Error removing ethereal bag " + bagId + " from " + target.getName());
 				
 			}

@@ -1,58 +1,72 @@
 package valorless.havenbags.hooks;
 
-import java.math.BigDecimal;
-import org.bukkit.entity.Player;
-import com.earth2me.essentials.User;
-import net.ess3.api.IEssentials;
+import java.util.UUID;
+
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 
 /**
- * Handles economy integration for the transmog system.
- * 
- * <p>This class integrates with the Essentials economy plugin to manage costs
- * for applying transmog appearances. Different appearances can have custom prices
- * configured, with a default price for unconfigured transmogs.</p>
- * 
- * <p>Pricing is based on the transmog type and item model, allowing administrators
- * to set higher costs for rare or desirable appearances.</p>
- * 
- * <p><strong>Note:</strong> Currently disabled in the codebase but ready for future use.</p>
+ * Minimal wrapper around the active Vault economy provider.
+ * <p>
+ * This utility centralizes balance checks and withdrawals used by HavenBags features.
+ * The provider instance is resolved through {@link VaultHook#getEconomy()} during
+ * {@link #init()} and then reused by the static helper methods in this class.
+ * </p>
+ * <p>
+ * Call {@link #init()} once during plugin startup before using
+ * {@link #canAfford(UUID, double)} or {@link #takeMoney(UUID, double)}.
+ * </p>
  */
 public class Eco {
-	
-	private static IEssentials ess;
-	
+
+	private static Economy eco;
+
 	/**
-	 * Initializes the economy integration with Essentials.
+	 * Initializes the cached Vault economy provider.
 	 */
 	public static void init() {
-        ess = EssentialsHook.getInstance();
+        eco = VaultHook.getEconomy();
 	}
 	
 	/**
-	 * Checks if a player can afford the transaction.
-	 * 
-	 * @param player the player to check
-	 * @param price the price of the transaction
-	 * @return true if the player has enough money, false otherwise
+	 * Checks whether a player has enough balance for a charge.
+	 *
+	 * @param player the UUID of the player to check
+	 * @param price the amount that would be charged
+	 * @return {@code true} when the player balance is greater than or equal to {@code price}
 	 */
-	public static Boolean canAfford(Player player, double price) {
-		User user = ess.getUser(player);
-		BigDecimal bal = user.getMoney();
-		BigDecimal cost = BigDecimal.valueOf(price);
-		
-		if(bal.compareTo(cost) == -1) return false;
-		else return true;
+	public static Boolean canAfford(UUID player, double price) {
+		double bal = eco.getBalance(Bukkit.getOfflinePlayer(player));
+        return !(bal - price < 0);
+	}
+
+	/**
+	 * Gets the current balance of a player.
+	 *
+	 * @param player the UUID of the player to check
+	 * @return the player's current balance
+	 */
+	public static double getBalance(UUID player) {
+		return eco.getBalance(Bukkit.getOfflinePlayer(player));
 	}
 	
 	/**
-	 * Deducts money from a player's account.
-	 * 
-	 * @param player the player to charge
-	 * @param amount the amount to deduct
+	 * Withdraws funds from a player's account.
+	 *
+	 * @param player the UUID of the player to charge
+	 * @param amount the amount to withdraw
 	 */
-	public static void takeMoney(Player player, double amount) {
-		User user = ess.getUser(player);
-		user.takeMoney(BigDecimal.valueOf(amount));
+	public static void takeMoney(UUID player, double amount) {
+		eco.withdrawPlayer(Bukkit.getOfflinePlayer(player), amount);
+	}
+
+	/**
+	 * Deposits funds to a player's account.
+	 * @param player the UUID of the player to give
+	 * @param amount the amount to deposit
+	 */
+	public static void giveMoney(UUID player, double amount) {
+		eco.depositPlayer(Bukkit.getOfflinePlayer(player), amount);
 	}
 	
 }

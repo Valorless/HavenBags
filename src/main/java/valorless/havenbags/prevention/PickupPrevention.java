@@ -13,23 +13,22 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import valorless.havenbags.*;
 import valorless.havenbags.persistentdatacontainer.PDC;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 
 public class PickupPrevention implements Listener {
 	public static JavaPlugin plugin;
-	String Name = "§7[§aHaven§bBags§7]§r";
-	
+
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-12] Registering PickupPrevention");
+		Log.debug(Main.plugin, "[DI-12] Registering PickupPrevention");
 		Bukkit.getServer().getPluginManager().registerEvents(new PickupPrevention(), Main.plugin);
 	}
 	
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		if(!Main.config.GetBool("protect-bags-players")) return;
+		if(!Main.config.getBool("protect-bags-players")) return;
 		ItemStack item = event.getItemDrop().getItemStack();
-		if(!HavenBags.IsBag(item)) return;
-		String owner = PDC.GetString(item, "owner");
+		if(!HavenBags.isBag(item)) return;
+		String owner = PDC.getString(item, "owner");
 		if(owner.equalsIgnoreCase("ownerless") && owner.equalsIgnoreCase("null")) return;
 		try {
 			event.getItemDrop().setOwner(UUID.fromString(owner));
@@ -38,7 +37,7 @@ public class PickupPrevention implements Listener {
 	
 	@EventHandler
 	public void onHopperPickup(InventoryMoveItemEvent e) {		
-		if(HavenBags.IsBag(e.getItem())){
+		if(HavenBags.isBag(e.getItem())){
 			if(e.getDestination().getType() == InventoryType.HOPPER) {
 				e.setCancelled(true);
 			}

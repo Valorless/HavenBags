@@ -20,6 +20,8 @@ malformed-command: '&cUnknown command, are you missing some parameters?'
 # i.e auto-pickup.
 feature-disabled: '&cSorry, this feature is disabled.'
 
+no-permission: '&cYou do not have permission to use this.'
+
 ### Player ###
 
 # Message sent to player should their bag's content fail to load.
@@ -93,6 +95,9 @@ refill-command: '&fRefill has been set to: %value%.'
 
 # Message sent when the player toggles refill.
 effects-command: '&fEffect has been set to: %value%.'
+
+# Message sent when the player toggles auto-crafting.
+auto-craft-command: '&fAuto-craft has been set to: %value%.'
 
 # Message sent to the player trying to open their Ethereal bag, which
 # is currently being viewed by someone with 'havenbags.ethereal.admin'.
@@ -179,7 +184,8 @@ bag-ownerless-used: '&aBag'
 # Bag lore.
 bag-lore:
  - '&fA well crafted bag, suited for carrying stuff.'
- - '&8ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ'
+ - '&8⏵ ᴜꜱᴇ ᴛᴏ ᴏᴘᴇɴ'
+ - '&8⏵ ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ ꜰᴇᴀᴛᴜʀᴇꜱ'
 
 ## Additional bag lore, will always be after 'bag-lore'
 # Placeholders are connected to the config entries with the same name.
@@ -187,6 +193,7 @@ bag-lore:
 # %bag-size%
 # %bag-effect%
 # %bag-auto-pickup%
+# %bag-autocraft%
 # %bag-trusted%
 # %bag-autosort%
 # %bag-magnet%
@@ -199,6 +206,7 @@ bag-lore-add:
  - '%bag-size%'
  - '%bag-effect%'
  - '%bag-auto-pickup%'
+ - '%bag-autocraft%'
  - '%bag-trusted%'
  - '%bag-autosort%'
  - '%bag-magnet%'
@@ -235,6 +243,9 @@ bag-content-item-amount: '&7%item% &7x%amount%'
 
 # If bag content exceeds the number of bag-content-preview-size.
 bag-content-and-more: '  &7And more..'
+
+# Should items stack, showing 2 stacks of 64 as x128, instead of 2 x64.
+bag-content-stack: true
 
 # If bag has an effect.
 # %effect% - effect displayname.
@@ -277,6 +288,15 @@ bag-refill-off: '&cOff'
 
 # Should the be hidden if 'off' ?
 bag-refill-off-hide: false
+
+# If the bag has auto-craft enabled.
+# %crafting% - bag-autocraft-on or bag-autocraft-off, depending on on/off.
+bag-autocraft: '&7Auto-Craft: %crafting%'
+bag-autocraft-on: '&aOn'
+bag-autocraft-off: '&cOff'
+
+# Should the be hidden if 'off' ?
+bag-autocraft-off-hide: false
 
 ############################################################
 # +------------------------------------------------------+ #

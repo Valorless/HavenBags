@@ -1,16 +1,5 @@
 package valorless.havenbags.features;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
-
-import com.github.retrooper.packetevents.PacketEvents;
 /*
 import com.github.retrooper.packetevents.event.player.PlayerPacketEvent;
 import com.github.retrooper.packetevents.event.player.PlayerPacketListener;
@@ -18,13 +7,6 @@ import com.github.retrooper.packetevents.packettype.PacketType.Play.Server;
 import com.github.retrooper.packetevents.packetwrappers.play.server.WrappedPacketWindowItems;
 import com.github.retrooper.packetevents.packetwrappers.play.server.WrappedPacketSetSlot;
 */
-
-import valorless.havenbags.BagData;
-import valorless.havenbags.HavenBags;
-import valorless.havenbags.Lang;
-import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
-import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class WeightTooltipPacketEvents {
 	

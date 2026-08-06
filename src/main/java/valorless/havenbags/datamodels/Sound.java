@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.sound.SFX;
 
 /**
@@ -103,7 +103,7 @@ public class Sound {
 		}catch(IncompatibleClassChangeError e) {
 			SFX.Play(key, volume, pitch, location);
 		}catch(Exception e) {
-			Log.Debug(Main.plugin, "Failed to play sound: " + this.toString());
+			Log.debug(Main.plugin, "Failed to play sound: " + this.toString());
 		}
 	}
     
@@ -119,7 +119,7 @@ public class Sound {
 		}catch(IncompatibleClassChangeError e) {
 			SFX.Play(key, volume, pitch, player);
 		}catch(Exception e) {
-			Log.Debug(Main.plugin, "Failed to play sound: " + this.toString());
+			Log.debug(Main.plugin, "Failed to play sound: " + this.toString());
 		}
     	
 	}

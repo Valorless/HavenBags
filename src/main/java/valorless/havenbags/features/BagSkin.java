@@ -14,25 +14,26 @@ import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.Base64Validator;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.havenbags.utils.HeadCreator;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.items.ItemUtils;
 
 public class BagSkin implements Listener{
 	
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-19] Registering BagSkin");
+		Log.debug(Main.plugin, "[DI-19] Registering BagSkin");
 		Bukkit.getServer().getPluginManager().registerEvents(new BagSkin(), Main.plugin);
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPrepareAnvilMonitor(PrepareAnvilEvent event) {
-		if(!Main.config.GetBool("bag-event-monitor")) return;
+		if(!Main.config.getBool("bag-event-monitor")) return;
 		onPrepareAnvil(event);
 	}
 	
@@ -44,8 +45,8 @@ public class BagSkin implements Listener{
 		ItemStack skin = null;
 		try {
 			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(0), event.getInventory().getItem(1)))) {
-				if(HavenBags.IsBag(item)) bag = item;
-				if(PDC.Has(item, "token-skin")) skin = item;
+				if(HavenBags.isBag(item)) bag = item;
+				if(PDC.has(item, "token-skin")) skin = item;
 			}
 		}
 		catch(Exception e) {}
@@ -55,23 +56,23 @@ public class BagSkin implements Listener{
 		//Log.Debug(Main.plugin, bag.toString());
 		//Log.Debug(Main.plugin, skin.toString());
 		
-		if(!HavenBags.IsBag(bag)) return;
-		Log.Debug(Main.plugin, "[DI-66] " + "[BagSkin] Was bag.");
-		if(PDC.Has(bag, "skin")) {
-			if(PDC.GetBoolean(bag, "skin") == false) {
-				Log.Debug(Main.plugin, "[DI-247] [BagUpgrade] Bag cannot be skinned.");
+		if(!HavenBags.isBag(bag)) return;
+		Log.debug(Main.plugin, "[DI-66] " + "[BagSkin] Was bag.");
+		if(PDC.has(bag, "skin")) {
+			if(PDC.getBoolean(bag, "skin") == false) {
+				Log.debug(Main.plugin, "[DI-247] [BagUpgrade] Bag cannot be skinned.");
 				return;
 			}
 		}
 		if(BagState.getState(bag) == BagState.NEW) return;
-		Log.Debug(Main.plugin, "[DI-67] " + "[BagSkin] BagState.Used");
-		if(!PDC.Has(skin, "token-skin")) return;
-		Log.Debug(Main.plugin, "[DI-68] " + "[BagSkin] Found skin.");
+		Log.debug(Main.plugin, "[DI-67] " + "[BagSkin] BagState.Used");
+		if(!PDC.has(skin, "token-skin")) return;
+		Log.debug(Main.plugin, "[DI-68] " + "[BagSkin] Found skin.");
 		
 		ItemStack result = bag.clone();
 		
 		event.getInventory().setRepairCost(0);
-		event.setResult(GetResult(result, skin));		
+		event.setResult(getResult(result, skin));
 	}
 	
 	@EventHandler
@@ -85,109 +86,109 @@ public class BagSkin implements Listener{
 		ItemStack skin = null;
 		try {
 			for (ItemStack item : new ArrayList<>(List.of(event.getInventory().getItem(0), event.getInventory().getItem(1)))) {
-				if(PDC.Has(item, "token-skin")) skin = item;
+				if(PDC.has(item, "token-skin")) skin = item;
 			}
 		}
 		catch(Exception e) {}
 		if(clicked == null || skin == null) return;
-		if(!PDC.Has(skin, "token-skin")) return; // If the item in slot 2 isnt a skin token, return.
-		Log.Debug(Main.plugin, "[DI-69] " + "[BagSkin] is bag?");
-		if(HavenBags.IsBag(clicked)) {
+		if(!PDC.has(skin, "token-skin")) return; // If the item in slot 2 isnt a skin token, return.
+		Log.debug(Main.plugin, "[DI-69] " + "[BagSkin] is bag?");
+		if(HavenBags.isBag(clicked)) {
 			ItemMeta meta = clicked.getItemMeta();
-			String value = PDC.GetString(skin, "token-skin");
+			String value = PDC.getString(skin, "token-skin");
 			try {
-				int cmd = Integer.valueOf(value);
+				int cmd = Integer.parseInt(value);
 				if(value != null && meta.hasCustomModelData()) {
-					Log.Debug(Main.plugin, "[DI-70] " + "[BagSkin] CustomModelData Skin.");
+					Log.debug(Main.plugin, "[DI-70] " + "[BagSkin] CustomModelData Skin.");
 					meta.setCustomModelData(cmd);
 					clicked.setItemMeta(meta);
 				}
 			}catch(Exception e) {
-				if(value.chars().count() < 30) {
-					Log.Debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
-					String texture = Main.textures.GetString(String.format("textures.%s", value));
+				if((long) value.length() < 30) {
+					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
+					String texture = Main.textures.getString(String.format("textures.%s", value));
 					if(BagState.getState(clicked) == BagState.NEW) {
-						BagData.setTextureValue(clicked, texture);
+						HeadCreator.setTextureValue(clicked, texture);
 					}else {
-						BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(texture);
+						Database.getBag(HavenBags.getBagUUID(clicked)).setTexture(texture);
 					}
 				}else {
-					Log.Debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
+					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
 						if(BagState.getState(clicked) == BagState.NEW) {
-							BagData.setTextureValue(clicked, value);
+							HeadCreator.setTextureValue(clicked, value);
 						}else {
-							BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(value);
+							Database.getBag(HavenBags.getBagUUID(clicked)).setTexture(value);
 						}
 					}else {
-						Log.Debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
+						Log.debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
 						return;
 					}
 				}
-				Log.Debug(Main.plugin, "[DI-71] " + "[BagSkin] Texture Skin.");
-				BagData.GetBag(HavenBags.GetBagUUID(clicked), clicked).setTexture(value);
+				Log.debug(Main.plugin, "[DI-71] " + "[BagSkin] Texture Skin.");
+				Database.getBag(HavenBags.getBagUUID(clicked)).setTexture(value);
 			}
-			Log.Debug(Main.plugin, "[DI-72] " + "[BagSkin] Applied skin!");
+			Log.debug(Main.plugin, "[DI-72] " + "[BagSkin] Applied skin!");
 		}
 		
 	}
 	
-	ItemStack GetResult(ItemStack item, ItemStack skin) {
-		Log.Debug(Main.plugin, "[DI-73] " + "[BagSkin] Preparing Result.");
+	ItemStack getResult(ItemStack item, ItemStack skin) {
+		Log.debug(Main.plugin, "[DI-73] " + "[BagSkin] Preparing Result.");
 		ItemMeta meta = item.getItemMeta();
-		String value = PDC.GetString(skin, "token-skin");
-		String type = PDC.Has(skin, "token-type") ? PDC.GetString(skin, "token-type") : null;
+		String value = PDC.getString(skin, "token-skin");
+		String type = PDC.has(skin, "token-type") ? PDC.getString(skin, "token-type") : null;
 		
 		if(type != null) {
 			if(type.equalsIgnoreCase("texture")) {
-				if(value.chars().count() < 30) {
-					Log.Debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
-					String texture = Main.textures.GetString(String.format("textures.%s", value));
-					BagData.setTextureValue(item, texture);
+				if((long) value.length() < 30) {
+					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
+					String texture = Main.textures.getString(String.format("textures.%s", value));
+					HeadCreator.setTextureValue(item, texture);
 				}else {
-					Log.Debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
+					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						BagData.setTextureValue(item, value);
+						HeadCreator.setTextureValue(item, value);
 					}else {
-						Log.Debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
+						Log.debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
 						item = new ItemStack(Material.AIR);
 					}
 				}
 			}
 			else if(type.equalsIgnoreCase("modeldata")) {
 				try {
-					int cmd = Integer.valueOf(value);
+					int cmd = Integer.parseInt(value);
 					if(value != null) {
-						Log.Debug(Main.plugin, "[DI-74] " + "[BagSkin] CustomModelData Skin.");
+						Log.debug(Main.plugin, "[DI-74] " + "[BagSkin] CustomModelData Skin.");
 						meta.setCustomModelData(cmd);
 						item.setItemMeta(meta);
 					}
 				}catch(Exception e) {}
 			}
 			else if(type.equalsIgnoreCase("itemmodel")) {
-				Log.Debug(Main.plugin, "[DI-249] " + "[BagSkin] ItemModel Skin.");
+				Log.debug(Main.plugin, "[DI-249] " + "[BagSkin] ItemModel Skin.");
 				ItemUtils.SetItemModel(item, value);
 			}
 			
 		}else { // Handle old tokens
 			try {
-				int cmd = Integer.valueOf(value);
+				int cmd = Integer.parseInt(value);
 				if(value != null) {
-					Log.Debug(Main.plugin, "[DI-74] " + "[BagSkin] CustomModelData Skin.");
+					Log.debug(Main.plugin, "[DI-74] " + "[BagSkin] CustomModelData Skin.");
 					meta.setCustomModelData(cmd);
 					item.setItemMeta(meta);
 				}
 			}catch(Exception e) {
-				if(value.chars().count() < 30) {
-					Log.Debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
-					String texture = Main.textures.GetString(String.format("textures.%s", value));
-					BagData.setTextureValue(item, texture);
+				if((long) value.length() < 30) {
+					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Textures.yml Skin.");
+					String texture = Main.textures.getString(String.format("textures.%s", value));
+					HeadCreator.setTextureValue(item, texture);
 				}else {
-					Log.Debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
+					Log.debug(Main.plugin, "[DI-75] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
-						BagData.setTextureValue(item, value);
+						HeadCreator.setTextureValue(item, value);
 					}else {
-						Log.Debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
+						Log.debug(Main.plugin, "[DI-76] [UpgradeGUI] Invalid Skin.");
 						item = new ItemStack(Material.AIR);
 					}
 				}

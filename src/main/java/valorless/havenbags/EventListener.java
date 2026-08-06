@@ -8,44 +8,50 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
-import valorless.havenbags.BagData.Bag;
+import org.bukkit.inventory.ItemStack;
+import valorless.havenbags.api.HavenBagsAPI;
+import valorless.havenbags.datamodels.Bag;
+import valorless.havenbags.enums.BagState;
+import valorless.havenbags.gui.FeaturesGUI;
 import valorless.havenbags.gui.UpgradeGUI;
 import valorless.havenbags.utils.NoteBlockUtils;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 
 public class EventListener implements Listener {
 
 	public static Material upgradeBlock = Material.FLETCHING_TABLE; // The block that opens the upgrade GUI
 
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-266] Registering EventListener");
+		Log.debug(Main.plugin, "[DI-266] Registering EventListener");
 		Bukkit.getServer().getPluginManager().registerEvents(new EventListener(), Main.plugin);
 
 		try {
-			upgradeBlock = Main.config.GetMaterial("upgrade-gui.block");
+			upgradeBlock = Main.config.getMaterial("upgrade-gui.block");
 		} catch (Exception e) {
-			Log.Error(Main.plugin, "[DI-286] Failed to get upgrade block from config, using default: " + upgradeBlock);
+			Log.error(Main.plugin, "[DI-286] Failed to get upgrade block from config, using default: " + upgradeBlock);
 		}
 	}
 
 	//@EventHandler Unused, but kept for future reference
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		if(HavenBags.InventoryContainsBag(player)) {
-			for(Bag bag : HavenBags.GetBagsDataInInventory(player)) {
-				HavenBags.UpdateBagLore(bag.item, player);
+		if(HavenBags.inventoryContainsBag(player)) {
+			for(Database.BagSimple bag : HavenBags.getBagsDataInInventory(player)) {
+				HavenBags.updateBagLore(bag.item, player);
 			}
 		}
 
 	}
 
 	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		if(!Main.config.GetBool("upgrade-gui.enabled")) return;
+	public void onUpgradeGUI(PlayerInteractEvent event) {
+		if(!Main.config.getBool("upgrade-gui.enabled")) return;
 		Player player = event.getPlayer();
 
 		if(event.getHand() != EquipmentSlot.HAND) return;
@@ -55,9 +61,9 @@ public class EventListener implements Listener {
 				if(block.getType() == upgradeBlock) {
 					if(upgradeBlock == Material.NOTE_BLOCK) {
 						if(block.getBlockData() instanceof NoteBlock nb) {
-							if(NoteBlockUtils.compateNoteBlock(nb, 
-									Main.config.GetString("upgrade-gui.noteblock.instrument"), 
-									Main.config.GetInt("upgrade-gui.noteblock.note"))) {
+							if(NoteBlockUtils.compateNoteBlock(nb,
+									Main.config.getString("upgrade-gui.noteblock.instrument"),
+									Main.config.getInt("upgrade-gui.noteblock.note"))) {
 								// If the block is a Note Block with the correct instrument and note, open the upgrade GUI
 								event.setCancelled(true);
 								new UpgradeGUI(player);
@@ -71,6 +77,57 @@ public class EventListener implements Listener {
 			}
 		}
 
+	}
+
+	/**
+	 * Handles inventory click events to open the features GUI when the configured item is clicked.
+	 * <p>
+	 * Checks if the features GUI is enabled in the config, and if the clicked item matches the configured "opens-by" item.
+	 * If both conditions are met, cancels the event and opens the FeaturesGUI for the player.
+	 *
+	 * @param event The InventoryClickEvent triggered when a player clicks in their inventory
+	 */
+	@EventHandler
+	public void onFeatureGUI(InventoryClickEvent event) {
+		if(!Main.config.getBool("features-gui.enabled")) return;
+		//if(event.getInventory().getType() != org.bukkit.event.inventory.InventoryType.PLAYER) return; // Only trigger for player inventory
+		ClickType reqClick = ClickType.valueOf(Main.config.getString("features-gui.opens-by").toUpperCase());
+		if(event.getClick() == reqClick) {
+			Player player = (Player) event.getWhoClicked();
+			ItemStack clickedItem = event.getCurrentItem();
+			if (HavenBags.isBag(clickedItem) && BagState.getState(clickedItem) == BagState.USED) {
+				event.setCancelled(true);
+				if(!player.hasPermission("havenbags.use")) {
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("bag-cannot-use"), null));
+					return;
+				}
+
+				if(FeaturesGUI.OpenGUIs.get(player) != null){
+					FeaturesGUI.OpenGUIs.get(player).close();
+					player.closeInventory();
+					Bukkit.getScheduler().runTaskLater(Main.plugin, () -> {
+						Bag data = HavenBagsAPI.getBag(HavenBags.getBagUUID(clickedItem));
+
+						if(!HavenBags.isOwner(clickedItem, player) && !data.isPlayerTrusted(player.getName())) {
+							player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("bag-cannot-use"), player));
+							return;
+						}
+
+						new FeaturesGUI(player, clickedItem, data);
+					},5L);
+					return;
+				}
+
+				Bag data = HavenBagsAPI.getBag(HavenBags.getBagUUID(clickedItem));
+
+				if(!HavenBags.isOwner(clickedItem, player) && !data.isPlayerTrusted(player.getName())) {
+					player.sendMessage(Lang.parse(Lang.get("prefix") + Lang.get("bag-cannot-use"), player));
+					return;
+				}
+
+				new FeaturesGUI(player, clickedItem, data);
+			}
+		}
 	}
 
 }

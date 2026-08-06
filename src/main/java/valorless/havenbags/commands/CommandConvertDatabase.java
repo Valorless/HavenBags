@@ -3,7 +3,7 @@ package valorless.havenbags.commands;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Main;
 import valorless.havenbags.enums.DatabaseType;
 import valorless.valorlessutils.ValorlessUtils.Log;
@@ -12,17 +12,18 @@ public class CommandConvertDatabase {
 	
 	static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 		try {
 			DatabaseType type = DatabaseType.get(command.args[1].toUpperCase());
 			if(type == null) {
 				return false;
 			}
 			
-			BagData.ChangeDatabase(type);
+			Database.changeDatabase(type);
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
         		public void run() {
-        			BagData.SaveData(false, true);
+        			Database.saveData(false, true);
         		}
     		}, 1);
 			

@@ -22,7 +22,7 @@ import valorless.valorlessutils.utils.Utils;
 @Deprecated(since = "1.39.0", forRemoval = true)
 public class CustomRecipes {
 	
-	public class BagInfo {
+	public static class BagInfo {
 	    private Material mat = Material.PLAYER_HEAD;
 	    private int size = 1;
 	    private boolean canBind = true;
@@ -164,7 +164,7 @@ public class CustomRecipes {
 	 * @param template The BagInfo object containing the template information for creating the bag.
 	 * @return An ItemStack representing the created bag.
 	 */
-	public static ItemStack CreateBag(BagInfo template) {
+	public static ItemStack createBag(BagInfo template) {
 	    // Create a new ItemStack with the material from the template
 	    ItemStack bag = new ItemStack(template.getMaterial());
 	    List<Placeholder> placeholders = new ArrayList<Placeholder>();
@@ -177,21 +177,21 @@ public class CustomRecipes {
 	    	if(!Utils.IsStringNullOrEmpty(template.getTexture()) || !template.getTexture().equalsIgnoreCase("none")) {
 	    		bag = HeadCreator.itemFromBase64(template.getTexture());
 	    	}else {
-	    		if (Main.config.GetBool("bag-textures.enabled")) {
+	    		if (Main.config.getBool("bag-textures.enabled")) {
 	            	// Use specific textures based on the bag size
 	            	for (int s = 9; s <= 54; s += 9) {
 	            		if (size == s) {
-	            			bag = HeadCreator.itemFromBase64(Main.config.GetString("bag-textures.size-" + size));
+	            			bag = HeadCreator.itemFromBase64(Main.config.getString("bag-textures.size-" + size));
 	            		}
 	            	}
 	    		} else {
 	    			// Use a general texture if specific sizes are not configured
-	    			bag = HeadCreator.itemFromBase64(Main.config.GetString("bag-texture"));
+	    			bag = HeadCreator.itemFromBase64(Main.config.getString("bag-texture"));
 	    		}
 	    	}
-	    } else if (Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
+	    } else if (Main.config.getString("bag.type").equalsIgnoreCase("ITEM")) {
 	        // Use a material specified in the config for ITEM type bags
-	        bag = new ItemStack(Main.config.GetMaterial("bag.material"));
+	        bag = new ItemStack(Main.config.getMaterial("bag.material"));
 	    }
 
 	    // Set metadata (custom model data, display name, lore) for the bag
@@ -199,14 +199,14 @@ public class CustomRecipes {
 	    
 	    // If the template contains custom model data, apply it
 	    if (template.getModelData() == 0) {
-	        if (Main.config.GetInt("bag.modeldata") != 0) {
-	            bagMeta.setCustomModelData(Main.config.GetInt("bag.modeldata"));
+	        if (Main.config.getInt("bag.modeldata") != 0) {
+	            bagMeta.setCustomModelData(Main.config.getInt("bag.modeldata"));
 	        }
-	        if (Main.config.GetBool("bag-custom-model-datas.enabled")) {
+	        if (Main.config.getBool("bag-custom-model-datas.enabled")) {
 	            // Apply custom model data based on the bag size
 	            for (int s = 9; s <= 54; s += 9) {
 	                if (size == s) {
-	                    bagMeta.setCustomModelData(Main.config.GetInt("bag-custom-model-datas.size-" + size));
+	                    bagMeta.setCustomModelData(Main.config.getInt("bag-custom-model-datas.size-" + size));
 	                }
 	            }
 	        }
@@ -216,25 +216,25 @@ public class CustomRecipes {
 	    }
 
 	    // Set the display name for the bag
-	    bagMeta.setDisplayName(Lang.Get("bag-unbound-name"));
+	    bagMeta.setDisplayName(Lang.get("bag-unbound-name"));
 
 	    // Set the lore for the bag by parsing the template and adding placeholders for size
 	    List<String> lore = new ArrayList<String>();
-	    for (String l : Lang.lang.GetStringList("bag-lore")) {
-	        if (!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.Parse(l, template.getPlayer()));
+	    for (String l : Lang.lang.getStringList("bag-lore")) {
+	        if (!Utils.IsStringNullOrEmpty(l)) lore.add(Lang.parse(l, template.getPlayer()));
 	    }
 	    placeholders.add(new Placeholder("%size%", size));
-	    lore.add(Lang.Parse(Lang.Get("bag-size"), placeholders, template.getPlayer()));
+	    lore.add(Lang.parse(Lang.get("bag-size"), placeholders, template.getPlayer()));
 
 	    // Apply the lore to the bag metadata
 	    bagMeta.setLore(lore);
 	    bag.setItemMeta(bagMeta);
 
 	    // Set custom NBT data for the bag (UUID, owner, size, and binding capability)
-	    PDC.SetString(bag, "uuid", "null");
-	    PDC.SetString(bag, "owner", "null");
-	    PDC.SetInteger(bag, "size", size);
-	    PDC.SetBoolean(bag, "binding", template.isCanBind());
+	    PDC.setString(bag, "uuid", "null");
+	    PDC.setString(bag, "owner", "null");
+	    PDC.setinteger(bag, "size", size);
+	    PDC.setBoolean(bag, "binding", template.isCanBind());
 
 	    // Return the created ItemStack representing the bag
 	    return bag;

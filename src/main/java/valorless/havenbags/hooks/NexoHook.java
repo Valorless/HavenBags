@@ -51,7 +51,7 @@ public class NexoHook implements Listener {
 	public void onItemsLoaded(NexoItemsLoadedEvent event) {
 		Log.info(Main.plugin, "Nexo Ready.");
 		ready = true;
-		CustomBags.initiate();
+		CustomBags.init();
 	}
 	
 	/**
@@ -108,7 +108,7 @@ public class NexoHook implements Listener {
 	 * @return a list of ConfigurationSection objects representing individual recipes
 	 */
 	@SuppressWarnings("rawtypes")
-	public static List<ConfigurationSection> GetRecipes(Config config) {
+	public static List<ConfigurationSection> getRecipes(Config config) {
 		List<ConfigurationSection> list = new ArrayList<ConfigurationSection>();
 		Iterator keys = config.getFile().getConfig().getKeys(false).iterator();
 

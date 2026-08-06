@@ -2,9 +2,9 @@ package valorless.havenbags.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.valorlessutils.ValorlessUtils.Log;
 
 public class CommandClearContent {
@@ -13,20 +13,20 @@ public class CommandClearContent {
 	
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command) {
 
 		if (command.args.length == 2){
 			String target = command.args[1];
-			Data bag = BagData.GetBag(target, null);
+			Bag bag = Database.getBag(target, null);
 			if(bag != null) {
-				return BagData.ClearBagContent(target);
+				return Database.clearBagContent(target);
 			}
 			else if(target.equalsIgnoreCase("all")) {
-				return BagData.ClearAllBagContents();
+				return Database.clearAllBagContents();
 			}
 			else if(Bukkit.getPlayer(target) != null) {
 				Player player = Bukkit.getPlayer(target);
-				return BagData.ClearBagContentPlayer(player.getUniqueId().toString());
+				return Database.clearBagContentPlayer(player.getUniqueId().toString());
 			}
 			else {
 				Log.Error(Main.plugin, "Unable to find the targetted bag(s) to clear.");

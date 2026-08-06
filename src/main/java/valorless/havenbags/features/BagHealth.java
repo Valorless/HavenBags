@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import valorless.havenbags.Main;
 import valorless.havenbags.persistentdatacontainer.PDC;
+import valorless.valorlessutils.logging.Log;
 
 // Called from BagDamagePrevetion.
 
@@ -40,7 +41,7 @@ public class BagHealth {
 	/** Default maximum health to use when no per-size override exists (loaded from config). */
 	private static int defaultHealth = 0;
 	/** Map of bag size (slot count) to maximum health (loaded from config). */
-	private static HashMap<Integer, Integer> healthBySize = new HashMap<>();
+	private static final HashMap<Integer, Integer> healthBySize = new HashMap<>();
 	
 	private static final Map<UUID, Long> damageCooldowns = new HashMap<>();
 	private static long cooldownMs = 0L;
@@ -68,27 +69,28 @@ public class BagHealth {
 	 * Non-numeric keys (besides {@code default}) will be ignored with a warning.
 	 */
 	public static void reload() {
-		enabled = Main.config.GetBool("protect-bags.bag-health.enabled") && Main.config.GetBool("protect-bags.enabled");
-		defaultHealth = Main.config.GetInt("protect-bags.bag-health.health.default");
+		enabled = Main.config.getBool("protect-bags.bag-health.enabled") && Main.config.GetBool("protect-bags.enabled");
+		defaultHealth = Main.config.getInt("protect-bags.bag-health.health.default");
 		
 		// Cooldown (seconds -> ms)
-		double seconds = Main.config.GetDouble("protect-bags.bag-health.damage-delay");
+		double seconds = Main.config.getDouble("protect-bags.bag-health.damage-delay");
 		if(seconds < 0) seconds = 0;
 		cooldownMs = (long) (seconds * 1000.0);
 		
 		healthBySize.clear();
-		if(Main.config.HasKey("protect-bags.bag-health.health")) {
-			for (String key : Main.config.GetFile().getSection("protect-bags.bag-health.health").getKeys(false)) {
+		if(Main.config.hasKey("protect-bags.bag-health.health")) {
+			for (String key : Main.config.getFile().getSection("protect-bags.bag-health.health").getKeys(false)) {
 				if("default".equalsIgnoreCase(key)) {
 					// Skip the "default" key, it's not a bag size.
 					continue;
 				}
 				try {
 					int size = Integer.parseInt(key);
-					int health = Main.config.GetInt("protect-bags.bag-health.health." + key);
+					int health = Main.config.getInt("protect-bags.bag-health.health." + key);
 					healthBySize.put(size, health);
 				} catch (NumberFormatException e) {
-					Main.plugin.getLogger().warning("Invalid bag size in config for bag health: " + key + ". Skipping.");
+					Log.warning(Main.plugin, "Invalid bag size in config for bag health: " + key + ". Skipping.");
+					//Main.plugin.getLogger().warning("Invalid bag size in config for bag health: " + key + ". Skipping.");
 				}
 			}
 		}
@@ -112,7 +114,7 @@ public class BagHealth {
 	 * @return The current damage value of the bag, or 0 if unset
 	 */
 	public static int getDamage(ItemStack bag) {
-		return PDC.Has(bag, "damage") ? PDC.GetInteger(bag, "damage") : 0;
+		return PDC.has(bag, "damage") ? PDC.getInteger(bag, "damage") : 0;
 	}
 	
 	/**
@@ -124,7 +126,7 @@ public class BagHealth {
 	 * @param damage The damage value to set for the bag
 	 */
 	public static void setDamage(ItemStack bag, int damage) {
-		PDC.SetInteger(bag, "damage", damage);
+		PDC.setinteger(bag, "damage", damage);
 	}
 	
 	/**
@@ -150,7 +152,7 @@ public class BagHealth {
 	 * @return The current health of the bag
 	 */
 	public static int getCurrentHealth(ItemStack bag) {
-		int slots = PDC.GetInteger(bag, "size");
+		int slots = PDC.getInteger(bag, "size");
 		int maxHealth = healthBySize.getOrDefault(slots, defaultHealth);
 		int damage = getDamage(bag);
 		return maxHealth - damage;
@@ -166,9 +168,8 @@ public class BagHealth {
 	 * @return The maximum health of the bag based on its size
 	 */
 	public static int getMaxHealth(ItemStack bag) {
-		int slots = PDC.GetInteger(bag, "size");
-		int maxHealth = healthBySize.getOrDefault(slots, defaultHealth);
-		return maxHealth;
+		int slots = PDC.getInteger(bag, "size");
+        return healthBySize.getOrDefault(slots, defaultHealth);
 	}
 	
 	/**

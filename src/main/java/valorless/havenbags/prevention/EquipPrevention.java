@@ -13,12 +13,12 @@ import org.bukkit.inventory.PlayerInventory;
 
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 
 public class EquipPrevention implements Listener {
 	
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-14] Registering EquipPrevention");
+		Log.debug(Main.plugin, "[DI-14] Registering EquipPrevention");
 		Bukkit.getServer().getPluginManager().registerEvents(new EquipPrevention(), Main.plugin);
 	}
 
@@ -27,7 +27,7 @@ public class EquipPrevention implements Listener {
 		if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE) {
             return;
         }
-        Log.Debug(Main.plugin, "[DI-194] " + "[EquipPrevention] " + event.getWhoClicked().getOpenInventory().getTopInventory().getType());
+        Log.debug(Main.plugin, "[DI-194] " + "[EquipPrevention] " + event.getWhoClicked().getOpenInventory().getTopInventory().getType());
         // Check if the event involves a player's own inventory
 		//Log.Debug(Main.plugin, event.getWhoClicked().getOpenInventory().getTopInventory().getType().toString());
         if (event.getWhoClicked().getOpenInventory().getTopInventory().getType() != InventoryType.CRAFTING) {
@@ -37,18 +37,18 @@ public class EquipPrevention implements Listener {
         // Handle regular clicks
         if (event.getSlot() == 39) {
             //if (event.getCursor() != null && event.getCursor().getType() == Material.PLAYER_HEAD) {
-            if (event.getCursor() != null && HavenBags.IsBag(event.getCursor())) {
-                Log.Debug(Main.plugin, "[DI-195] " + "[EquipPrevention] Head!");
+            if (event.getCursor() != null && HavenBags.isBag(event.getCursor())) {
+                Log.debug(Main.plugin, "[DI-195] " + "[EquipPrevention] Head!");
                 event.setCancelled(true);
                 //event.getWhoClicked().sendMessage("You cannot wear player heads!");
             }
         }
         // Handle shift-clicks
         else if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
-            Log.Debug(Main.plugin, "[DI-196] " + "[EquipPrevention] Shift Click!");
+            Log.debug(Main.plugin, "[DI-196] " + "[EquipPrevention] Shift Click!");
             //if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.PLAYER_HEAD) {
-            if (event.getCurrentItem() != null && HavenBags.IsBag(event.getCurrentItem())) {
-                Log.Debug(Main.plugin, "[DI-197] " + "[EquipPrevention] Bag!");
+            if (event.getCurrentItem() != null && HavenBags.isBag(event.getCurrentItem())) {
+                Log.debug(Main.plugin, "[DI-197] " + "[EquipPrevention] Bag!");
                 Inventory clickedInventory = event.getClickedInventory();
                 Inventory topInventory = event.getView().getTopInventory();
                 PlayerInventory playerInventory = (PlayerInventory) event.getWhoClicked().getInventory();

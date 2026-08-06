@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import valorless.havenbags.Main;
 import valorless.havenbags.datamodels.BagArmorStand;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.tags.TagType;
 import valorless.valorlessutils.tags.Tags;
 
@@ -21,8 +21,8 @@ public class BackBag implements Listener {
 	public static BukkitTask cleantask;
 	
 	public static void init() {
-		if(!Main.config.GetBool("back-bag.enabled")) return;
-		Log.Debug(Main.plugin, "[DI-250] Registering BackBag");
+		if(!Main.config.getBool("back-bag.enabled")) return;
+		Log.debug(Main.plugin, "[DI-250] Registering BackBag");
 		Bukkit.getServer().getPluginManager().registerEvents(new BackBag(), Main.plugin);
 		
 		Restore();
@@ -31,7 +31,7 @@ public class BackBag implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		if(!Main.config.GetBool("back-bag.enabled")) return;
+		if(!Main.config.getBool("back-bag.enabled")) return;
 		
 		Player player = event.getPlayer();
 
@@ -62,7 +62,7 @@ public class BackBag implements Listener {
 
 	                    if (!tracked) {
 	                        stand.remove();
-	                        Log.Debug(Main.plugin, "Removed rogue armor stand: " + stand.getUniqueId());
+	                        Log.debug(Main.plugin, "Removed rogue armor stand: " + stand.getUniqueId());
 	                    }
 	                }
 	            });

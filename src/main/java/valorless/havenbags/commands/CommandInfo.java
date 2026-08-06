@@ -11,8 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatMessageType;
-import valorless.havenbags.BagData;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.Database;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.datamodels.Message;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.persistentdatacontainer.PDC;
@@ -23,16 +23,15 @@ import valorless.valorlessutils.utils.Utils;
 
 public class CommandInfo {
 
-	final static String Name = "§7[§aHaven§bBags§7]§r";
-
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 
 		if(command.sender instanceof Player sender) {
 			ItemStack hand = sender.getInventory().getItemInMainHand();
 			ItemMeta meta = sender.getInventory().getItemInMainHand().getItemMeta();
 
-			if(HavenBags.IsBag(hand) && BagState.getState(hand) == BagState.USED) {
-				Data data = BagData.GetBag(HavenBags.GetBagUUID(hand), hand);
+			if(HavenBags.isBag(hand) && BagState.getState(hand) == BagState.USED) {
+				Bag data = Database.getBag(HavenBags.getBagUUID(hand));
 
 				String uuid = data.getUuid();
 				String owner = data.getOwner();
@@ -46,9 +45,9 @@ public class CommandInfo {
 				if(uuid.equalsIgnoreCase("null")) {
 					weight = "0.0";
 				}else {
-					weight = TextFeatures.LimitDecimal(String.valueOf(HavenBags.GetWeight(hand)),2);
+					weight = TextFeatures.limitDecimal(String.valueOf(HavenBags.getWeight(hand)),2);
 				}
-				String limit = String.valueOf(PDC.GetDouble(hand, "weight-limit").intValue());
+				String limit = String.valueOf(PDC.getDouble(hand, "weight-limit").intValue());
 				List<String> lore = meta.getLore();
 
 				String _lore = "";
@@ -59,17 +58,17 @@ public class CommandInfo {
 				Message message = new Message(ChatMessageType.CHAT, 
 						"  §fUUID: §e" + uuid + " §7(§eClick to copy§7)"
 						);
-				message.SetHoverText(Lang.Parse("Click to copy.", sender));
+				message.sethovertext(Lang.parse("Click to copy.", sender));
 				message.addCopyToClipboardEvent(uuid);
-				message.Send(sender);
+				message.send(sender);
 
 				if(!Utils.IsStringNullOrEmpty(data.getTexture()) && hand.getType() == Material.PLAYER_HEAD) { 
 					Message texture = new Message(ChatMessageType.CHAT, 
 							"  §fTexture: ... §7(§eClick to copy§7)"
 							);
-					texture.SetHoverText(Lang.Parse( "Base64: " + data.getTexture(), sender));
+					texture.sethovertext(Lang.parse( "Base64: " + data.getTexture(), sender));
 					texture.addCopyToClipboardEvent(data.getTexture());
-					texture.Send(sender);
+					texture.send(sender);
 				}
 
 				List<String> infoList = new ArrayList<String>();
@@ -81,9 +80,9 @@ public class CommandInfo {
 							Message m_owner = new Message(ChatMessageType.CHAT, 
 									String.format("  §fOwner: §e%s (%s)", Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName(), owner) + " §7(§eClick to copy§7)"
 									);
-							m_owner.SetHoverText(Lang.Parse("Click to copy.", sender));
+							m_owner.sethovertext(Lang.parse("Click to copy.", sender));
 							m_owner.addCopyToClipboardEvent(owner);
-							m_owner.Send(sender);
+							m_owner.send(sender);
 							//infoList.add(String.format("  §fOwner: §e%s (%s)", Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName(), owner)); 
 						} catch(Exception e) {
 							infoList.add("  §fOwner: §4Error");

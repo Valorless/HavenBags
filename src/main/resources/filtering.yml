@@ -4,11 +4,43 @@
 # Whether specific items can be chosen as a custom filter.
 allow-specific: false
 
+gui:
+ # Item shown in the filter selection GUI for the "no filter" option.
+ reset-filter:
+  # Supports Nexo items with "nexo:item-id" format.
+  icon: BARRIER
+  displayname: '&cReset Filter'
+  lore:
+   - '&7Remove the current filter from the bag.'
+
 filters:
  # Filter name, as shown when typing the command.
  plants:
   # Display name, shown in the bag's lore.
   displayname: '&aPlants'
+  # GUI settings for this filter.
+  # Note that all entries to "gui" are optional, and can be used standalone.
+  # Any missing values are defaulted.
+  gui:
+   # Whether to show this filter in the filter selection GUI.
+   # This does not affect whether the filter can be applied using commands.
+   show: false
+   # Item shown in the filter selection GUI.
+   # Supports Nexo items with "nexo:item-id" format.
+   # If not specified, the first item in the "items" list will be used as the icon.
+   icon: WHEAT_SEEDS
+   # Lore shown in the filter selection GUI.
+   # List of items will always appear underneath this.
+   lore:
+    - '&fItems:'
+   # Formatting for the items shown in the filter selection GUI.
+   # %s will be replaced with the item's localized name.
+   line-format: "&7 ⏵ %s"
+   # Max amount of items shown in the lore. If there are more, it will show "and x more..."
+   lore-limit: 10
+   # Format for the "and x more" line.
+   # %s will be replaced with the amount of items not shown due to the lore limit.
+   and-more: '&7... and %s more'
   # Permission required to use/apply this filter.
   permission: 
    node: havenbags.plants
@@ -28,25 +60,7 @@ filters:
     - TORCHFLOWER_SEEDS
     - PITCHER_POD
     # Flowers
-    - DANDELION
-    - POPPY
-    - BLUE_ORCHID
-    - ALLIUM
-    - AZURE_BLUET
-    - RED_TULIP
-    - ORANGE_TULIP
-    - WHITE_TULIP
-    - PINK_TULIP
-    - OXEYE_DAISY
-    - CORNFLOWER
-    - LILY_OF_THE_VALLEY
-    - WITHER_ROSE
-    - TORCHFLOWER
-    - SUNFLOWER
-    - LILAC
-    - ROSE_BUSH
-    - PEONY
-    - PITCHER_PLANT
+    - '#minecraft:flowers' # Accepts tags, so this will accept all flowers in the game.
     # Wheat
     - WHEAT
  wood:
@@ -486,3 +500,13 @@ filters:
    - GLOWSTONE_DUST
    - QUARTZ
    - ANCIENT_DEBRIS   
+
+custom-item-tags:
+ # would be used as '#example_tag'
+ # Accepts vanilla tags as well, so you can use '#minecraft:planks' for example.
+ # All vanilla tags: https://minecraft.wiki/w/Item_tag_(Java_Edition)
+ example_tag:
+  - DIRT
+  - DIORITE
+  - '#minecraft:planks' # Accepts tags, so this will accept all planks in the game.
+  - 'nexo:example_item' # Accepts Nexo items with "nexo:item-id" format, just like regular filters.

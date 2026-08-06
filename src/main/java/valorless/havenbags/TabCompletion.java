@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.StringUtil;
 
 import valorless.havenbags.database.EtherealBags;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.enums.BagState;
 import valorless.havenbags.features.AutoPickup;
 import valorless.havenbags.features.BagEffects;
@@ -45,12 +45,6 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.give")) {
 				subCommands.add("give");
 			}
-			if (sender.hasPermission("havenbags.restore")) {
-				//subCommands.add("restore");
-			}
-			if (sender.hasPermission("havenbags.preview")) {
-				//subCommands.add("preview");
-			}
 			if (sender.hasPermission("havenbags.rename")) {
 				subCommands.add("rename");
 			}
@@ -58,7 +52,7 @@ public class TabCompletion implements TabCompleter {
 				subCommands.add("info");
 				subCommands.add("rawinfo");
 			}
-			if (sender.hasPermission("havenbags.gui") || Main.config.GetBool("player-gui.enabled")) {
+			if (sender.hasPermission("havenbags.gui") || Main.config.getBool("player-gui.enabled")) {
 				subCommands.add("gui");
 			}
 			if (sender.hasPermission("havenbags.empty")) {
@@ -92,6 +86,9 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.autosort")) {
 				subCommands.add("autosort");
 			}
+			if (sender.hasPermission("havenbags.autocraft")) {
+				subCommands.add("autocraft");
+			}
 			if (sender.hasPermission("havenbags.magnet")) {
 				subCommands.add("magnet");
 			}
@@ -101,7 +98,7 @@ public class TabCompletion implements TabCompleter {
 			if (sender.hasPermission("havenbags.effects")) {
 				subCommands.add("effect");
 			}
-			if(Main.plugins.GetBool("mods.HavenBagsPreview.enable-command")) {
+			if(Main.plugins.getBool("mods.HavenBagsPreview.enable-command")) {
 				subCommands.add("mod");
 			}
 			if (sender.hasPermission("havenbags.ethereal")) {
@@ -150,14 +147,14 @@ public class TabCompletion implements TabCompleter {
 				// /bags restore <player>
 				//List<String> playerNames = getOnlinePlayerNames();
 				//playerNames.add("ownerless");
-				List<String> playerNames = GetBagOwners();
+				List<String> playerNames = getBagOwners();
 				StringUtil.copyPartialMatches(cmd, playerNames, completions);
 			}
 			if (args[0].equalsIgnoreCase("preview") && sender.hasPermission("havenbags.preview")) {
 				// /bags preview <player>
 				//List<String> playerNames = getOnlinePlayerNames();
 				//playerNames.add("ownerless");
-				List<String> playerNames = GetBagOwners();
+				List<String> playerNames = getBagOwners();
 				StringUtil.copyPartialMatches(cmd, playerNames, completions);
 			}
 			if (args[0].equalsIgnoreCase("gui") && sender.hasPermission("havenbags.gui")) {
@@ -167,7 +164,7 @@ public class TabCompletion implements TabCompleter {
 				StringUtil.copyPartialMatches(cmd, cmds, completions);
 			}
 			if (args[0].equalsIgnoreCase("autopickup") && sender.hasPermission("havenbags.autopickup")) {
-				List<String> filters = AutoPickup.GetFilterNames((Player)sender);
+				List<String> filters = AutoPickup.getFilterNames((Player)sender);
 				filters.add("none");
 				StringUtil.copyPartialMatches(cmd, filters, completions);
 			}
@@ -178,9 +175,9 @@ public class TabCompletion implements TabCompleter {
 				Player player = (Player)sender;
 				ItemStack item = player.getInventory().getItemInMainHand();
 				if(item != null) {
-					if(HavenBags.IsBag(item)) {
+					if(HavenBags.isBag(item)) {
 						if(BagState.getState(item) == BagState.USED) {
-							Data data = BagData.GetBag(HavenBags.GetBagUUID(item), null);
+							Bag data = Database.getBag(HavenBags.getBagUUID(item), null);
 							List<String> list = data.getTrusted();
 							StringUtil.copyPartialMatches(cmd, list, completions);
 						}
@@ -214,6 +211,12 @@ public class TabCompletion implements TabCompleter {
 				StringUtil.copyPartialMatches(cmd, cmds, completions);
 			}
 			if (args[0].equalsIgnoreCase("autosort") && sender.hasPermission("havenbags.autosort")) {
+				List<String> cmds = new ArrayList<String>();
+				cmds.add("on");
+				cmds.add("off");
+				StringUtil.copyPartialMatches(cmd, cmds, completions);
+			}
+			if (args[0].equalsIgnoreCase("autocraft") && sender.hasPermission("havenbags.autocraft")) {
 				List<String> cmds = new ArrayList<String>();
 				cmds.add("on");
 				cmds.add("off");
@@ -290,12 +293,12 @@ public class TabCompletion implements TabCompleter {
 			}
 			if (args[0].equalsIgnoreCase("restore") && sender.hasPermission("havenbags.restore")) {
 				// /bags restore <player> <uuid>
-				List<String> bags = GetBags(args[1]);
+				List<String> bags = getBags(args[1]);
 				StringUtil.copyPartialMatches(cmd, bags, completions);
 			}
 			if (args[0].equalsIgnoreCase("preview") && sender.hasPermission("havenbags.preview")) {
 				// /bags restore <player> <uuid>
-				List<String> bags = GetBags(args[1]);
+				List<String> bags = getBags(args[1]);
 				StringUtil.copyPartialMatches(cmd, bags, completions);
 			}
 			if (args[0].equalsIgnoreCase("gui") && args[1].equalsIgnoreCase("restore") && sender.hasPermission("havenbags.gui")) {
@@ -354,7 +357,7 @@ public class TabCompletion implements TabCompleter {
 
 			if (args[0].equalsIgnoreCase("customcontent") && sender.hasPermission("havenbags.editor")) {
 				if(args[1].equalsIgnoreCase("load")) {
-					StringUtil.copyPartialMatches(cmd, ListCustomContent(), completions);
+					StringUtil.copyPartialMatches(cmd, listCustomContent(), completions);
 				}
 				if(args[1].equalsIgnoreCase("save")) {
 					List<String> cmds = new ArrayList<String>();
@@ -382,7 +385,7 @@ public class TabCompletion implements TabCompleter {
 				StringUtil.copyPartialMatches(cmd, getOnlinePlayerNames(), completions);
 			}
 			if (args[0].equalsIgnoreCase("ethereal") && args[2].equalsIgnoreCase("autopickup") && sender.hasPermission("havenbags.ethereal")) {
-				List<String> filters = AutoPickup.GetFilterNames((Player)sender);
+				List<String> filters = AutoPickup.getFilterNames((Player)sender);
 				filters.add("none");
 				StringUtil.copyPartialMatches(cmd, filters, completions);
 			}
@@ -417,9 +420,6 @@ public class TabCompletion implements TabCompleter {
 				id.add("<id>");
 				StringUtil.copyPartialMatches(cmd, id, completions);
 			}
-		} 
-		else {
-			
 		}
 		return completions;
 	}
@@ -434,13 +434,13 @@ public class TabCompletion implements TabCompleter {
 	
 	private List<String> getTextures() {
 		List<String> textures = new ArrayList<>();
-		for (Object texture : Main.textures.GetConfigurationSection("textures").getKeys(false).toArray()) {
+		for (Object texture : Main.textures.getConfigurationSection("textures").getKeys(false).toArray()) {
 			textures.add(texture.toString());
 		}
 		return textures;
 	}
 	
-	public List<String> GetBags(String player){
+	public List<String> getBags(String player){
 		try {
 			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), player)).listFiles())
 					.filter(file -> !file.isDirectory())
@@ -456,7 +456,7 @@ public class TabCompletion implements TabCompleter {
 		}
 	}
 	
-	public List<String> GetBagOwners(){
+	public List<String> getBagOwners(){
 		try {
 			List<String> bagOwners = Stream.of(new File(String.format("%s/bags/", Main.plugin.getDataFolder())).listFiles())
 					.filter(file -> file.isDirectory())
@@ -468,7 +468,7 @@ public class TabCompletion implements TabCompleter {
 		}
 	}
 	
-	public List<String> ListCustomContent(){
+	public List<String> listCustomContent(){
 		try {
 			List<String> files = Stream.of(new File(String.format("%s/customcontent/", Main.plugin.getDataFolder())).listFiles())
 					.filter(file -> !file.isDirectory())

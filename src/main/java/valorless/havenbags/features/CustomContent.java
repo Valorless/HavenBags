@@ -17,7 +17,7 @@ import valorless.valorlessutils.config.Config;
 
 public class CustomContent implements Listener {
 	
-	private static Inventory inv = Bukkit.createInventory(null, 54, "HavenBags CustomContent Editor");
+	private static final Inventory inv = Bukkit.createInventory(null, 54, "HavenBags CustomContent Editor");
 	
 	public static void open(@NotNull Player player) {
 		player.openInventory(inv);
@@ -39,8 +39,8 @@ public class CustomContent implements Listener {
 		
 		for(int i = 0; i < getContent().length; i++) {
 			String index = ""+i;
-			if(file.HasKey(index)) {
-				content.add((ItemStack) file.Get(index));
+			if(file.hasKey(index)) {
+				content.add((ItemStack) file.get(index));
 			}
 			else content.add(null);
 		}
@@ -62,8 +62,8 @@ public class CustomContent implements Listener {
 		Config file = new Config(Main.plugin, String.format("/customcontent/%s.yml", name));
 		for(int i = 0; i < inv.getContents().length; i++) {
 			String index = ""+i;
-			file.GetFile().set(index, inv.getContents()[i]);
+			file.getFile().set(index, inv.getContents()[i]);
 		}
-		file.SaveConfig();
+		file.saveConfig();
 	}
 }

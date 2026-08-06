@@ -14,13 +14,13 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.gson.JsonObject;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.Main;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.utils.FoodComponentFixer;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.json.JsonUtils;
 
 public class SQLite {
@@ -37,10 +37,10 @@ public class SQLite {
         database = this;
         try {
             connect();
-			Log.Info(Main.plugin,"Connected to SQLite!");
+			Log.info(Main.plugin,"Connected to SQLite!");
             setupTables();
         } catch (SQLException e) {
-			Log.Error(Main.plugin,"Could not connect to SQLite!");
+			Log.error(Main.plugin,"Could not connect to SQLite!");
             e.printStackTrace();
         }
     }
@@ -62,7 +62,7 @@ public class SQLite {
     public void close() throws SQLException {
         if (connection != null && !connection.isClosed()) {
             connection.close();
-            Log.Info(Main.plugin, "Disconnected from SQLite!");
+            Log.info(Main.plugin, "Disconnected from SQLite!");
         }
     }
 
@@ -130,7 +130,7 @@ public class SQLite {
         }
     }
 
-    public void saveBag(Data data) {
+    public void saveBag(Bag data) {
         String sql = "INSERT INTO bags (uuid, owner, creator, size, texture, custommodeldata, " +
                      "itemmodel, trusted, auto_pickup, weight, weight_max, content, extra) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
@@ -170,7 +170,7 @@ public class SQLite {
             stmt.setDouble(10, data.getWeight());
             stmt.setDouble(11, data.getWeightMax());
             stmt.setString(12, JsonUtils.toJson(data.getContent()));
-            stmt.setString(13, DatabaseUtils.Extra(data));
+            stmt.setString(13, DatabaseUtils.extra(data));
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -257,7 +257,7 @@ public class SQLite {
         return owners;
     }
     
-    public Data loadBag(String uuid) {
+    public Bag loadBag(String uuid) {
         String sql = "SELECT * FROM bags WHERE uuid = ?";
         
         try {
@@ -275,7 +275,7 @@ public class SQLite {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                Data data = new Data(
+                Bag data = new Bag(
                     rs.getString("uuid"),
                     rs.getString("owner")
                 );
@@ -290,7 +290,7 @@ public class SQLite {
                 data.setWeightMax(rs.getDouble("weight_max"));
                 data.setContent(loadContent(rs.getString("content"), data.getUuid()));
                 
-                DatabaseUtils.ApplyExtra(data, rs.getString("extra"));
+                DatabaseUtils.applyExtra(data, rs.getString("extra"));
                 
                 return data;
             }
@@ -320,7 +320,7 @@ public class SQLite {
 	}
     
     public List<ItemStack> loadContent(String jsonString, String uuid) {
-    	List<JsonObject> json = BagData.deserializeItemStackList(jsonString);
+    	List<JsonObject> json = Database.deserializeItemStackList(jsonString);
 		
 		List<ItemStack> items = new ArrayList<>();
 		for(JsonObject e : json) {
@@ -336,15 +336,15 @@ public class SQLite {
 				items.add(null); 
 				continue;
 			}
-			if(Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
+			if(Server.versionHigherOrEqualTo(Version.v1_21_4)) {
 				try {
 					item = JsonUtils.fromJson(
 							FoodComponentFixer.fixFoodJson(entry)
 							);
 				}catch(Exception E) {
-					Log.Error(Main.plugin, uuid);
-					Log.Error(Main.plugin, entry);
-					Log.Info(Main.plugin, FoodComponentFixer.fixFoodJson(entry));
+					Log.error(Main.plugin, uuid);
+					Log.error(Main.plugin, entry);
+					Log.info(Main.plugin, FoodComponentFixer.fixFoodJson(entry));
 					E.printStackTrace();
 				}
 			}else {

@@ -17,8 +17,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -104,27 +104,6 @@
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <!-- or the latest version -->
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>org.json:json</include>
-                                </includes>
-                            </artifactSet>
                         </configuration>
                     </execution>
                 </executions>
@@ -219,6 +198,10 @@
             <!--<url>https://repo.nexomc.com/snapshots</url>-->
             <url>https://repo.nexomc.com/releases</url>
         </repository>
+        <repository>
+            <id>oraxen</id>
+            <url>https://repo.oraxen.com/releases</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -233,7 +216,7 @@
             <groupId>com.github.Valorless</groupId>
             <artifactId>ValorlessUtils</artifactId>
             <!--<version>84d5a61370</version>-->
-            <version>1.19.0</version>
+            <version>e4c5f91dce</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -246,7 +229,7 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20211205</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -357,6 +340,24 @@
             <artifactId>nexo</artifactId>
             <!-- <version>1.17.0</version> -->
             <version>1.23</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.th0rgal</groupId>
+            <artifactId>oraxen</artifactId>
+            <version>1.218.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>

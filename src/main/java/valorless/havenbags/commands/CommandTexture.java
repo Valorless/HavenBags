@@ -3,43 +3,45 @@ package valorless.havenbags.commands;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import valorless.havenbags.BagData;
+import valorless.havenbags.Database;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Lang;
 import valorless.havenbags.Main;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.utils.Utils;
 
 public class CommandTexture {
 	
 	final static String Name = "§7[§aHaven§bBags§7]§r";
 
-	public static boolean Run(HBCommand command) {
+	public static boolean run(HBCommand command, String permission) {
+		if(!command.sender.hasPermission(permission)) return false;
 		
 		Player player = (Player)command.sender;
 		if(command.args.length >= 2) {
 			ItemStack item = player.getInventory().getItemInMainHand();
-			if(HavenBags.IsBag(item)) {
-				if(HavenBags.IsOwner(item, player) || player.hasPermission("havenbags.bypass")) {
+			if(HavenBags.isBag(item)) {
+				if(HavenBags.isOwner(item, player) || player.hasPermission("havenbags.bypass")) {
 					if(command.args[1].chars().count() > 30) {
 						
 						try {
-							BagData.GetBag(HavenBags.GetBagUUID(item), item).setTexture(command.args[1]);
+							Database.getBag(HavenBags.getBagUUID(item)).setTexture(command.args[1]);
 						}catch(Exception e) {} // No data found, just change the texture of the item only.
-						BagData.setTextureValue(item, command.args[1]);
+						HeadCreator.setTextureValue(item, command.args[1]);
 					}else {
 						String texture = Main.textures.GetString(String.format("textures.%s", command.args[1]));
 				        if(Utils.IsStringNullOrEmpty(texture)) {
-				        	player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-texture-not-found").replace("%texture%", command.args[1]));
+				        	player.sendMessage(Lang.get("prefix") + Lang.get("bag-texture-not-found").replace("%texture%", command.args[1]));
 				        	return true;
 				        }
 						try {
-							BagData.GetBag(HavenBags.GetBagUUID(item), item).setTexture(texture);
+							Database.getBag(HavenBags.getBagUUID(item)).setTexture(texture);
 						}catch(Exception e) {} // No data found, just change the texture of the item only.
-						BagData.setTextureValue(item, texture);
+						HeadCreator.setTextureValue(item, texture);
 					}
 					
 				}else {
-					player.sendMessage(Lang.Get("prefix") + Lang.Get("bag-cannot-use"));
+					player.sendMessage(Lang.get("prefix") + Lang.get("bag-cannot-use"));
 				}
 			}
 			return true;

@@ -18,19 +18,19 @@ import org.bukkit.inventory.ItemStack;
 
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 
 public class Soulbound implements Listener {
     private final Map<UUID, List<ItemStack>> savedItems = new HashMap<>();
 	
 	public static void init() {
-		Log.Debug(Main.plugin, "[DI-230] Registering Soulbound");
+		Log.debug(Main.plugin, "[DI-230] Registering Soulbound");
 		Bukkit.getServer().getPluginManager().registerEvents(new Soulbound(), Main.plugin);
 	}
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-    	if(!Main.config.GetBool("soulbound")) return;
+    	if(!Main.config.getBool("soulbound")) return;
         Player player = event.getEntity();
         if(player.getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY)) return;
         UUID playerId = player.getUniqueId();
@@ -40,7 +40,7 @@ public class Soulbound implements Listener {
         while (iterator.hasNext()) {
             ItemStack item = iterator.next();
 
-            if (HavenBags.IsBag(item)) {
+            if (HavenBags.isBag(item)) {
                 toKeep.add(item.clone()); // Save item for respawn
                 iterator.remove(); // Prevent dropping
             }
@@ -53,7 +53,7 @@ public class Soulbound implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-    	if(!Main.config.GetBool("soulbound")) return;
+    	if(!Main.config.getBool("soulbound")) return;
         Player player = event.getPlayer();
         if(player.getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY)) return;
         UUID playerId = player.getUniqueId();

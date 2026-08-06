@@ -2,6 +2,7 @@ package valorless.havenbags.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import valorless.valorlessutils.logging.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +30,7 @@ public class UpdateChecker {
 					consumer.accept(scanner.next());
 				}
 			} catch (IOException exception) {
-				plugin.getLogger().info("Unable to check for updates: " + exception.getMessage());
+				Log.info(plugin, "Unable to check for updates: " + exception.getMessage());
 			}
 		});
 	}

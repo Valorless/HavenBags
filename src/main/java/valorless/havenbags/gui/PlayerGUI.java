@@ -20,13 +20,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import valorless.havenbags.datamodels.Bag;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.items.ItemUtils;
 import valorless.valorlessutils.utils.Utils;
 import valorless.havenbags.*;
-import valorless.havenbags.datamodels.Data;
 import valorless.havenbags.datamodels.Placeholder;
 import valorless.havenbags.enums.GUIAction;
 import valorless.havenbags.features.Insurance;
@@ -40,7 +40,6 @@ public class PlayerGUI implements Listener {
 	public enum GUIType { Main, Restoration, Deletion, Confirmation }
 
 	public JavaPlugin plugin;
-	String Name = "§7[§aHaven§bBags§7]§r";
 	private Inventory inv;
 	private Player player;
 	private GUIType type = GUIType.Main;
@@ -55,11 +54,11 @@ public class PlayerGUI implements Listener {
 		this.plugin = Main.plugin;
 		this.player = player;
 		
-		Log.Debug(Main.plugin, "[PlayerGUI][DI-287] " + player.getName());
+		Log.debug(Main.plugin, "[PlayerGUI][DI-287] " + player.getName());
 
 		try {
-			content = PrepareMain();
-			Open();
+			content = prepareMain();
+			open();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -69,14 +68,14 @@ public class PlayerGUI implements Listener {
 	 * This method is called when the GUI needs to be refreshed or reloaded.
 	 * It prepares the content based on the current GUI type and opens the inventory.
 	 */
-	void PrepareContent() {
+	void prepareContent() {
 		if(GUIType.Main.equals(type)) {
-			content = PrepareMain();
+			content = prepareMain();
 		}
 		else if(type == GUIType.Restoration ||  type == GUIType.Deletion) {
 			loading = TaskUtils.runAsyncThenSync(() -> {
 			try {
-				content = PreparePlayerBags(player.getUniqueId().toString());
+				content = preparePlayerBags(player.getUniqueId().toString());
 				return content;
 			} catch (Exception e) {
 				player.closeInventory();
@@ -85,34 +84,34 @@ public class PlayerGUI implements Listener {
 			}
 			}, (_content) -> {
 				if(loading == null) {
-					Log.Debug(Main.plugin, "[PlayerGUI][DI-288] " + "Loading task was cancelled for " + player.getName());
+					Log.debug(Main.plugin, "[PlayerGUI][DI-288] " + "Loading task was cancelled for " + player.getName());
 					return;
 				}
 				loading = null;
 				if(unused) return;
 				if(_content != null) {
-					Open();
+					open();
 					return;
 				}
 			});
 		}
 		else if(type == GUIType.Confirmation) {
-			content = PrepareConfirmation();
+			content = prepareConfirmation();
 		}
-		Open();
+		open();
 	}
 	
-	public void OpenInventory(final HumanEntity ent) {
+	public void openInventory(final HumanEntity ent) {
 		ent.openInventory(inv);
 	}
 
 	/** Opens the GUI for the player based on the current type.
 	 * This method creates the inventory and sets the items based on the content prepared for the current GUI type.
 	 */
-	void Open() {
+	void open() {
 
 		if(type == GUIType.Main) {
-			inv = Bukkit.createInventory(player, 9, Lang.Get("playergui-title-main"));
+			inv = Bukkit.createInventory(player, 9, Lang.get("playergui-title-main"));
 			for(int i = 0; i < content.size(); i++) {
 				inv.setItem(i, content.get(i));
 			}
@@ -123,19 +122,19 @@ public class PlayerGUI implements Listener {
 			List<Placeholder> placeholders = new ArrayList<Placeholder>();
 			if(type == GUIType.Restoration) {
 				placeholders.add(new Placeholder("%player%", player.getName()));
-				inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("playergui-bags-of"), placeholders, player),
+				inv = GUI.createPage(player, Lang.parse(Lang.get("playergui-bags-of"), placeholders, player),
 						page, content, 6);
 				
 			}else if(type == GUIType.Deletion) {
 				placeholders.add(new Placeholder("%player%", player.getName()));
-				inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("playergui-bags-of"), placeholders, player),
+				inv = GUI.createPage(player, Lang.parse(Lang.get("playergui-bags-of"), placeholders, player),
 						page, content, 6);
 			}
 
 			player.openInventory(inv);
 		}
 		else if(type == GUIType.Confirmation) {
-			inv = Bukkit.createInventory(player, 9, Lang.Get("playergui-title-confirm"));
+			inv = Bukkit.createInventory(player, 9, Lang.get("playergui-title-confirm"));
 			for(int i = 0; i < content.size(); i++) {
 				inv.setItem(i, content.get(i));
 			}
@@ -167,7 +166,7 @@ public class PlayerGUI implements Listener {
 		}
 		
 		if (view == null || view.getTopInventory() == null || !view.getTopInventory().equals(inv)) {
-			Log.Debug(Main.plugin, "[PlayerGUI][DI-289] Unregistering listener for " + player.getName());
+			Log.debug(Main.plugin, "[PlayerGUI][DI-289] Unregistering listener for " + player.getName());
 			HandlerList.unregisterAll(this);
 			unused = true;
 		}
@@ -189,12 +188,12 @@ public class PlayerGUI implements Listener {
 		
 		if (loading != null) {
 			e.setCancelled(true);
-			String action = PDC.GetString(clickedItem, "bag-action");
+			String action = PDC.getString(clickedItem, "bag-action");
 			if(action != null && action.equalsIgnoreCase("return")){
 				loading.cancel();
 				loading = null;
 				type = GUIType.Main;
-				Reload(e);
+				reload(e);
 				return;
 			}
 			return;
@@ -202,14 +201,14 @@ public class PlayerGUI implements Listener {
 
 
 		if (type == GUIType.Main) {
-			String action = PDC.GetString(clickedItem, "bag-action");
+			String action = PDC.getString(clickedItem, "bag-action");
 			if(action != null && action.equalsIgnoreCase("restore")){
 				type = GUIType.Restoration;
-				Reload(e);
+				reload(e);
 			}
 			else if(action != null && action.equalsIgnoreCase("delete")){
 				type = GUIType.Deletion;
-				Reload(e);
+				reload(e);
 			}
 			e.setCancelled(true);
 			return;
@@ -218,13 +217,13 @@ public class PlayerGUI implements Listener {
 		if (type == GUIType.Restoration) {
 			GUIAction action = null;
 			try {
-				action = GUIAction.valueOf(PDC.GetString(clickedItem, "bag-action"));
+				action = GUIAction.valueOf(PDC.getString(clickedItem, "bag-action"));
 			} catch(Exception E) {}
 
 			if(action != null) {
 				if(action.equals(GUIAction.RETURN)){
 					type = GUIType.Main;
-					Reload(e);
+					reload(e);
 					return;
 				}
 
@@ -232,7 +231,7 @@ public class PlayerGUI implements Listener {
 					List<Placeholder> placeholders = new ArrayList<Placeholder>();
 					page--;
 					placeholders.add(new Placeholder("%player%", player.getName()));
-					inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("playergui-bags-of"), placeholders, player),
+					inv = GUI.createPage(player, Lang.parse(Lang.get("playergui-bags-of"), placeholders, player),
 							page, content, 6);
 
 					player.openInventory(inv);
@@ -244,7 +243,7 @@ public class PlayerGUI implements Listener {
 					List<Placeholder> placeholders = new ArrayList<Placeholder>();
 					page++;
 					placeholders.add(new Placeholder("%player%", player.getName()));
-					inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("playergui-bags-of"), placeholders, player),
+					inv = GUI.createPage(player, Lang.parse(Lang.get("playergui-bags-of"), placeholders, player),
 							page, content, 6);
 					player.openInventory(inv);
 					e.setCancelled(true);
@@ -265,12 +264,12 @@ public class PlayerGUI implements Listener {
 					if(insurance.claimInsurance(player)) {
 						//player.sendMessage(Lang.Get("insurance.claimed"));
 					}else {
-						player.sendMessage(Lang.Get("prefix") + Lang.Get("insurance.fail"));
+						player.sendMessage(Lang.get("prefix") + Lang.get("insurance.fail"));
 						e.setCancelled(true);
 						return;
 					}
 				}else {
-					player.sendMessage(Lang.Get("prefix") + Lang.Get("insurance.cooldown"));
+					player.sendMessage(Lang.get("prefix") + Lang.get("insurance.cooldown"));
 					e.setCancelled(true);
 					return;
 				}
@@ -289,13 +288,13 @@ public class PlayerGUI implements Listener {
 		if (type == GUIType.Deletion) {        	
 			GUIAction action = null;
 			try {
-				action = GUIAction.valueOf(PDC.GetString(clickedItem, "bag-action"));
+				action = GUIAction.valueOf(PDC.getString(clickedItem, "bag-action"));
 			} catch(Exception E) {}
 
 			if(action != null) {
 				if(action.equals(GUIAction.RETURN)){
 					type = GUIType.Main;
-					Reload(e);
+					reload(e);
 					return;
 				}
 
@@ -304,7 +303,7 @@ public class PlayerGUI implements Listener {
 					page--;
 
 					placeholders.add(new Placeholder("%player%", player.getName()));
-					inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("playergui-bags-of"), placeholders, player),
+					inv = GUI.createPage(player, Lang.parse(Lang.get("playergui-bags-of"), placeholders, player),
 							page, content, 6);
 					
 					player.openInventory(inv);
@@ -316,7 +315,7 @@ public class PlayerGUI implements Listener {
 					page++;
 
 					placeholders.add(new Placeholder("%player%", player.getName()));
-					inv = GUI.CreatePage(player, Lang.Parse(Lang.Get("playergui-bags-of"), placeholders, player),
+					inv = GUI.createPage(player, Lang.parse(Lang.get("playergui-bags-of"), placeholders, player),
 							page, content, 6);
 					
 					player.openInventory(inv);
@@ -331,15 +330,15 @@ public class PlayerGUI implements Listener {
 
 			selectedBag = clickedItem;
 			type = GUIType.Confirmation;
-			Reload(e);
+			reload(e);
 			e.setCancelled(true);
 			return;
 		}
 		if (type == GUIType.Confirmation) {
-			String action = PDC.GetString(clickedItem, "bag-action");
+			String action = PDC.getString(clickedItem, "bag-action");
 			if(action != null && action.equalsIgnoreCase("cancel")){
 				type = GUIType.Deletion;
-				Reload(e);
+				reload(e);
 				return;
 			}
 
@@ -350,23 +349,23 @@ public class PlayerGUI implements Listener {
 						if(insurance.claimInsurance(player)) {
 							//player.sendMessage(Lang.Get("insurance.claimed"));
 						}else {
-							player.sendMessage(Lang.Get("prefix") + Lang.Get("insurance.fail"));
+							player.sendMessage(Lang.get("prefix") + Lang.get("insurance.fail"));
 							e.setCancelled(true);
 							return;
 						}
 					}else {
-						player.sendMessage(Lang.Get("prefix") + Lang.Get("insurance.cooldown"));
+						player.sendMessage(Lang.get("prefix") + Lang.get("insurance.cooldown"));
 						e.setCancelled(true);
 						return;
 					}
 				}
-				String uuid = PDC.GetString(selectedBag, "uuid");
+				String uuid = PDC.getString(selectedBag, "uuid");
 
-				Data data = BagData.GetBag(uuid, null).clone();
-				BagData.DeleteBag(uuid);
+				Bag data = Database.getBag(uuid, null).clone();
+				Database.deleteBag(uuid);
 
 				type = GUIType.Deletion;
-				Reload(e);
+				reload(e);
 				return;
 			}
 
@@ -375,18 +374,18 @@ public class PlayerGUI implements Listener {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	/** Reloads the GUI content based on the current type and resets the cursor and current item.
 	 * This method is called when the GUI needs to be refreshed or reloaded.
 	 * @param event The InventoryClickEvent that triggered the reload, can be null.
 	 */
-	void Reload(InventoryClickEvent... event) {
+	@SuppressWarnings("deprecation")
+	void reload(InventoryClickEvent... event) {
 		try {
 			if(event != null && event.length != 0) {
 				event[0].setCursor(new ItemStack(Material.AIR));
 				event[0].setCurrentItem(new ItemStack(Material.AIR));
 			}
-			PrepareContent();
+			prepareContent();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -394,45 +393,45 @@ public class PlayerGUI implements Listener {
 
 	// Utils
 
-	ArrayList<ItemStack> PrepareMain() {
+	ArrayList<ItemStack> prepareMain() {
 		ArrayList<ItemStack> buttons = new ArrayList<ItemStack>();
 
 		buttons.add(new ItemStack(Material.AIR));
 		buttons.add(new ItemStack(Material.AIR));
 		buttons.add(new ItemStack(Material.AIR));
 
-		if(Main.config.GetBool("player-gui.self-restore")) {
+		if(Main.config.getBool("player-gui.self-restore")) {
 			//Restore
 			String restoreTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiM2FjZGMxMWNhNzQ3YmY3MTBlNTlmNGM4ZTliM2Q5NDlmZGQzNjRjNjg2OTgzMWNhODc4ZjA3NjNkMTc4NyJ9fX0=";
 			ItemStack restoreItem = HeadCreator.itemFromBase64(restoreTexture);
 			ItemMeta restoreMeta = restoreItem.getItemMeta();
-			restoreMeta.setDisplayName(Lang.Get("playergui-restore"));
+			restoreMeta.setDisplayName(Lang.get("playergui-restore"));
 			List<String> r_lore = new ArrayList<String>();
-			for(String line : Lang.lang.GetStringList("playergui-restore-lore")) {
-				r_lore.add(Lang.Parse(line, player));
+			for(String line : Lang.lang.getStringList("playergui-restore-lore")) {
+				r_lore.add(Lang.parse(line, player));
 			}
 			//r_lore.add("§7Restore bags of online players.");
 			restoreMeta.setLore(r_lore);
 			restoreItem.setItemMeta(restoreMeta);
-			PDC.SetString(restoreItem, "bag-action", "restore");
+			PDC.setString(restoreItem, "bag-action", "restore");
 			buttons.add(restoreItem);
 
 			buttons.add(new ItemStack(Material.AIR));
 		}
 
-		if(Main.config.GetBool("player-gui.self-delete")) {
+		if(Main.config.getBool("player-gui.self-delete")) {
 			//Deletion
 			String deleteTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0=";
 			ItemStack deleteItem = HeadCreator.itemFromBase64(deleteTexture);
 			ItemMeta deleteMeta = deleteItem.getItemMeta();
-			deleteMeta.setDisplayName(Lang.Get("playergui-delete"));
+			deleteMeta.setDisplayName(Lang.get("playergui-delete"));
 			List<String> d_lore = new ArrayList<String>();
-			for(String line : Lang.lang.GetStringList("playergui-delete-lore")) {
-				d_lore.add(Lang.Parse(line, player));
+			for(String line : Lang.lang.getStringList("playergui-delete-lore")) {
+				d_lore.add(Lang.parse(line, player));
 			}
 			deleteMeta.setLore(d_lore);
 			deleteItem.setItemMeta(deleteMeta);
-			PDC.SetString(deleteItem, "bag-action", "delete");
+			PDC.setString(deleteItem, "bag-action", "delete");
 			buttons.add(deleteItem);
 		}
 
@@ -445,44 +444,44 @@ public class PlayerGUI implements Listener {
 		}
 	}
 
-	List<ItemStack> PreparePlayerBags(String playeruuid) {
+	List<ItemStack> preparePlayerBags(String playeruuid) {
 		List<ItemStack> bags = new ArrayList<ItemStack>();
-		List<Data> bagdata = BagData.GetBagsData(playeruuid);
+		List<Bag> bagdata = Database.getBagsData(playeruuid);
 
-		for(Data data : bagdata){
+		for(Bag data : bagdata){
 			List<ItemStack> Content  = data.getContent();
 			if (Content == null) continue;
 
-			String bagTexture = Main.config.GetString("bag.texture");
+			String bagTexture = Main.config.getString("bag.texture");
 			ItemStack bagItem = new ItemStack(Material.AIR);
 
 			if(data.getMaterial() != null) {
 				bagItem.setType(data.getMaterial());
 				if(data.getMaterial() == Material.PLAYER_HEAD) {
 					if(!Utils.IsStringNullOrEmpty(data.getTexture())) {
-						BagData.setTextureValue(bagItem, data.getTexture());
+						HeadCreator.setTextureValue(bagItem, data.getTexture());
 					}else {
-						BagData.setTextureValue(bagItem, bagTexture);
+						HeadCreator.setTextureValue(bagItem, bagTexture);
 					}
 				}
 			}
 			else {
-				if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")){
+				if(Main.config.getString("bag.type").equalsIgnoreCase("HEAD")){
 					if(!Utils.IsStringNullOrEmpty(data.getTexture())) {
 						bagItem = HeadCreator.itemFromBase64(data.getTexture());
 					}else {
 						bagItem = HeadCreator.itemFromBase64(bagTexture);
 					}
-				} else if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
-					bagItem = new ItemStack(Main.config.GetMaterial("bag.material"));
+				} else if(Main.config.getString("bag.type").equalsIgnoreCase("ITEM")) {
+					bagItem = new ItemStack(Main.config.getMaterial("bag.material"));
 				}
 			}
 
 			ItemMeta meta = bagItem.getItemMeta();
 			if(!Utils.IsStringNullOrEmpty(data.getName()) && !data.getName().equalsIgnoreCase("null")) {
-				meta.setDisplayName(Lang.Parse(data.getName(), player));
+				meta.setDisplayName(Lang.parse(data.getName(), player));
 			}else {
-				meta.setDisplayName(Lang.Parse(Lang.lang.GetString("bag-bound-name"), player));
+				meta.setDisplayName(Lang.parse(Lang.lang.getString("bag-bound-name"), player));
 			}
 			
 			if(data.getModeldata() != null && data.getModeldata() != 0) {
@@ -492,10 +491,10 @@ public class PlayerGUI implements Listener {
 			bagItem.setItemMeta(meta);
 
 			if(Server.VersionHigherOrEqualTo(Version.v1_21_2)) {
-				ItemUtils.SetItemName(bagItem, Lang.Parse(Lang.lang.GetString("bag-bound-name"), player));
+				ItemUtils.SetItemName(bagItem, Lang.parse(Lang.lang.getString("bag-bound-name"), player));
 			}
 
-			PDC.SetString(bagItem, "uuid", data.getUuid());
+			PDC.setString(bagItem, "uuid", data.getUuid());
 			// No need to set more, will be added automatically by HavenBags.UpdateBagItem(), which runs HavenBags.UpdateNBT();
 
 			modifyMaxStack(bagItem, 1);
@@ -505,19 +504,19 @@ public class PlayerGUI implements Listener {
 			}
 
 			try {
-				HavenBags.UpdateBagItem(bagItem, player);
+				HavenBags.updateBagItem(bagItem, player);
 			}catch(Exception e) {
-				HavenBags.UpdateBagItem(bagItem, null);
+				HavenBags.updateBagItem(bagItem, null);
 			}
 			
 			Insurance insurance = Insurance.getInstance();	
 			if(insurance != null) {
 				double cost = insurance.getCurrentInsuranceCost(player);
-				String line = Main.config.GetString("insurance.lore").replace("%cost%", Extra.formatDouble(cost));
+				String line = Main.config.getString("insurance.lore").replace("%cost%", Extra.formatDouble(cost));
 				ItemMeta m = bagItem.getItemMeta();
 				List<String> lore = m.getLore();
 				if(lore == null) lore = new ArrayList<String>();
-				lore.add(Lang.Parse(line, player));
+				lore.add(Lang.parse(line, player));
 				m.setLore(lore);
 				bagItem.setItemMeta(m);
 			}
@@ -528,21 +527,21 @@ public class PlayerGUI implements Listener {
 		return bags;
 	}
 
-	ArrayList<ItemStack> PrepareConfirmation() {
+	ArrayList<ItemStack> prepareConfirmation() {
 		ArrayList<ItemStack> buttons = new ArrayList<ItemStack>();
 
 		//Cancel
 		String cancelTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1NDgzNjJhMjRjMGZhODQ1M2U0ZDkzZTY4YzU5NjlkZGJkZTU3YmY2NjY2YzAzMTljMWVkMWU4NGQ4OTA2NSJ9fX0=";
 		ItemStack cancelItem = HeadCreator.itemFromBase64(cancelTexture);
 		ItemMeta cancelMeta = cancelItem.getItemMeta();
-		cancelMeta.setDisplayName(Lang.Get("playergui-cancel"));
+		cancelMeta.setDisplayName(Lang.get("playergui-cancel"));
 		List<String> c_lore = new ArrayList<String>();
-		for(String line : Lang.lang.GetStringList("cancel-lore")) {
-			c_lore.add(Lang.Parse(line, player));
+		for(String line : Lang.lang.getStringList("cancel-lore")) {
+			c_lore.add(Lang.parse(line, player));
 		}
 		cancelMeta.setLore(c_lore);
 		cancelItem.setItemMeta(cancelMeta);
-		PDC.SetString(cancelItem, "bag-action", "cancel");
+		PDC.setString(cancelItem, "bag-action", "cancel");
 		buttons.add(cancelItem);
 
 		buttons.add(new ItemStack(Material.AIR));
@@ -559,14 +558,14 @@ public class PlayerGUI implements Listener {
 		String comfirmTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTc5YTVjOTVlZTE3YWJmZWY0NWM4ZGMyMjQxODk5NjQ5NDRkNTYwZjE5YTQ0ZjE5ZjhhNDZhZWYzZmVlNDc1NiJ9fX0=";
 		ItemStack confirmItem = HeadCreator.itemFromBase64(comfirmTexture);
 		ItemMeta confirmMeta = confirmItem.getItemMeta();
-		confirmMeta.setDisplayName(Lang.Get("playergui-confirm"));
+		confirmMeta.setDisplayName(Lang.get("playergui-confirm"));
 		List<String> co_lore = new ArrayList<String>();
-		for(String line : Lang.lang.GetStringList("confirm-lore")) {
-			co_lore.add(Lang.Parse(line, player));
+		for(String line : Lang.lang.getStringList("confirm-lore")) {
+			co_lore.add(Lang.parse(line, player));
 		}
 		confirmMeta.setLore(co_lore);
 		confirmItem.setItemMeta(confirmMeta);
-		PDC.SetString(confirmItem, "bag-action", "confirm");
+		PDC.setString(confirmItem, "bag-action", "confirm");
 		buttons.add(confirmItem);
 
 		return buttons;

@@ -5,7 +5,7 @@ import valorless.havenbags.Main;
 
 public class TextFeatures {
 	
-	public static String CreateBar(double progress, double total, int barLength) {
+	public static String createBar(double progress, double total, int barLength) {
 		double filledRatio = (double) progress / total;
 	    int filledLength = (int) (barLength * filledRatio);
 	    int remainingLength = barLength - filledLength;
@@ -20,7 +20,7 @@ public class TextFeatures {
 	    return bar.toString();
 	}
 	
-	public static String CreateBar(double progress, double total, int barLength, String barColor, String fillColor, char barStyle, char fillStyle) {
+	public static String createBar(double progress, double total, int barLength, String barColor, String fillColor, char barStyle, char fillStyle) {
 		double filledRatio = (double) progress / total;
 	    int filledLength = (int) (barLength * filledRatio);
 	    int remainingLength = barLength - filledLength;
@@ -39,16 +39,16 @@ public class TextFeatures {
 	    return bar.toString();
 	}
 	
-	public static String CreateBarWeight(double progress, double total, int barLength) {
+	public static String createBarWeight(double progress, double total, int barLength) {
 		double filledRatio = (double) progress / total;
 	    int filledLength = (int) (barLength * filledRatio);
 	    int remainingLength = barLength - filledLength;
-	    char fillStyle = Lang.ParsePlaceholderChar(Main.weight.GetString("fill-style"));
-	    char barStyle = Lang.ParsePlaceholderChar(Main.weight.GetString("bar-style"));
-	    String fillColor = Lang.Parse(Main.weight.GetString("fill-color"), null);
-	    String barColor = Lang.Parse(Main.weight.GetString("bar-color"), null);
-	    String barStart = Lang.Parse(Main.weight.GetString("bar-start"), null);
-	    String barEnd = Lang.Parse(Main.weight.GetString("bar-end"), null);
+	    char fillStyle = Lang.parsePlaceholderChar(Main.weight.getString("fill-style"));
+	    char barStyle = Lang.parsePlaceholderChar(Main.weight.getString("bar-style"));
+	    String fillColor = Lang.parse(Main.weight.getString("fill-color"), null);
+	    String barColor = Lang.parse(Main.weight.getString("bar-color"), null);
+	    String barStart = Lang.parse(Main.weight.getString("bar-start"), null);
+	    String barEnd = Lang.parse(Main.weight.getString("bar-end"), null);
 	    
 		StringBuilder bar = new StringBuilder(barColor + barStart);
 	    for (int i = 0; i < filledLength; i++) {
@@ -63,7 +63,7 @@ public class TextFeatures {
 	    return bar.toString();
 	}
 	
-	public static String LimitCharacters(String text, int length) {
+	public static String limitCharacters(String text, int length) {
 		String t = "";
 		try {
 			if(length > text.length()) length = text.length();
@@ -74,7 +74,7 @@ public class TextFeatures {
 		return t;
 	}
 	
-	public static String LimitDecimal(String text, int length) {
+	public static String limitDecimal(String text, int length) {
 		String t = "";
 		try {
 			String[] split = text.split("\\.");

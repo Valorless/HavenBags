@@ -3,7 +3,7 @@ package valorless.havenbags.prevention;
 import valorless.havenbags.HavenBags;
 import valorless.havenbags.Main;
 import valorless.havenbags.database.BagCache.Observer;
-import valorless.valorlessutils.ValorlessUtils.*;
+import valorless.valorlessutils.logging.Log;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,7 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class PlacementBlocker implements Listener {
 	
 	public static void init() {
-    	Log.Debug(Main.plugin, "[DI-7] Registering PlacementBlocker");
+    	Log.debug(Main.plugin, "[DI-7] Registering PlacementBlocker");
 		Bukkit.getServer().getPluginManager().registerEvents(new PlacementBlocker(), Main.plugin);
 	}
 	
@@ -28,45 +28,45 @@ public class PlacementBlocker implements Listener {
 		ItemMeta nbt = item.getItemMeta();
 		//ItemStack offItem = event.getPlayer().getInventory().getItemInOffHand();
 		//ItemMeta offMeta = offItem.getItemMeta();
-		Log.Debug(Main.plugin, "[PlacementBlocker][DI-201] " + "Block Placed: " + block.getType().toString());
-		Log.Debug(Main.plugin, "[PlacementBlocker][DI-202] " + "Player Holding: " + item.getType().toString());
+		Log.debug(Main.plugin, "[PlacementBlocker][DI-201] " + "Block Placed: " + block.getType().toString());
+		Log.debug(Main.plugin, "[PlacementBlocker][DI-202] " + "Player Holding: " + item.getType().toString());
 		
 		if(nbt != null) {
-			Observer.CheckItem(event.getItemInHand());
+			Observer.checkItem(event.getItemInHand());
 		}
 		
-		if(HavenBags.IsBag(event.getItemInHand())) {
+		if(HavenBags.isBag(event.getItemInHand())) {
 			event.setCancelled(true); 
 			return;
 		}
 		
 		if(nbt != null) {
-			Log.Debug(Main.plugin, "[PlacementBlocker][DI-203] " + "Block has ItemMeta.");
-			if(HavenBags.IsBag(item)) {
-				Log.Debug(Main.plugin, "[PlacementBlocker][DI-204] " + "Block was bag!");
+			Log.debug(Main.plugin, "[PlacementBlocker][DI-203] " + "Block has ItemMeta.");
+			if(HavenBags.isBag(item)) {
+				Log.debug(Main.plugin, "[PlacementBlocker][DI-204] " + "Block was bag!");
 				block.setType(Material.AIR);
 				event.setCancelled(true);
 			}
-			if(HavenBags.IsSkinToken(item)) {
-				Log.Debug(Main.plugin, "[PlacementBlocker][DI-205] " + "Block was skin token!");
+			if(HavenBags.isSkinToken(item)) {
+				Log.debug(Main.plugin, "[PlacementBlocker][DI-205] " + "Block was skin token!");
 				block.setType(Material.AIR);
 				event.setCancelled(true);
 			}
 		}
 		if(item.getType() == Material.AIR) {
-			if(Main.config.GetString("bag.type").equalsIgnoreCase("ITEM")) {
-			if(block.getType() == Main.config.GetMaterial("bag.material")) {
+			if(Main.config.getString("bag.type").equalsIgnoreCase("ITEM")) {
+			if(block.getType() == Main.config.getMaterial("bag.material")) {
 				block.setType(Material.AIR);
 				event.setCancelled(true);
-				Log.Debug(Main.plugin, "[PlacementBlocker][DI-206] " + "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
-				Log.Debug(Main.plugin, "[PlacementBlocker][DI-207] " + "Block was likely bag, removing.");
+				Log.debug(Main.plugin, "[PlacementBlocker][DI-206] " + "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
+				Log.debug(Main.plugin, "[PlacementBlocker][DI-207] " + "Block was likely bag, removing.");
 			}
-			}else if(Main.config.GetString("bag.type").equalsIgnoreCase("HEAD")) {
+			}else if(Main.config.getString("bag.type").equalsIgnoreCase("HEAD")) {
 				if(block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
 					block.setType(Material.AIR);
 					event.setCancelled(true);
-					Log.Debug(Main.plugin, "[PlacementBlocker][DI-206] " + "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
-					Log.Debug(Main.plugin, "[PlacementBlocker][DI-207] " + "Block was likely bag, removing.");
+					Log.debug(Main.plugin, "[PlacementBlocker][DI-206] " + "Player was caught holding AIR, usually triggered by BagListener removing the item from the player when it's a bag.");
+					Log.debug(Main.plugin, "[PlacementBlocker][DI-207] " + "Block was likely bag, removing.");
 				}
 			} 
 		}

@@ -1,7 +1,7 @@
 package valorless.havenbags.database;
 
-import valorless.havenbags.BagData;
-import valorless.havenbags.datamodels.Data;
+import valorless.havenbags.Database;
+import valorless.havenbags.datamodels.Bag;
 import valorless.havenbags.persistentdatacontainer.PDC;
 import valorless.havenbags.utils.FoodComponentFixer;
 
@@ -20,15 +20,16 @@ import org.jetbrains.annotations.NotNull;
 import com.google.gson.JsonObject;
 
 import valorless.havenbags.Main;
+import valorless.havenbags.utils.HeadCreator;
 import valorless.valorlessutils.Server;
 import valorless.valorlessutils.Server.Version;
-import valorless.valorlessutils.ValorlessUtils.Log;
+import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.json.JsonUtils;
 
 public class Files {
 	
-	public static void saveBag(Data data) {
+	public static void saveBag(Bag data) {
 		String uuid = data.getUuid();
     	String owner = data.getOwner();
     	
@@ -47,63 +48,65 @@ public class Files {
 		
 		Config file = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
 		
-		if(!file.HasKey("uuid")) file.Set("uuid", data.getUuid());
-		if(!file.HasKey("owner")) file.Set("owner", data.getOwner());
-		if(!file.HasKey("creator")) file.Set("creator", data.getCreator());
-		file.Set("size", data.getSize());
-		file.Set("texture", data.getTexture());
-		file.Set("custommodeldata", data.getModeldata());
-		file.Set("itemmodel", data.getItemmodel());
-		file.Set("trusted", data.getTrusted());
-		file.Set("auto-pickup", data.getAutopickup());
-		file.Set("weight", data.getWeight());
-		file.Set("weight-max", data.getWeightMax());
-		file.Set("autosort", data.hasAutoSort());
-		if(data.getMaterial() != null) file.Set("material", data.getMaterial().toString());
-		if(data.getName() != null) file.Set("name", data.getName());
-		file.Set("blacklist", data.getBlacklist());
-		file.Set("whitelist", data.isWhitelist());
-		file.Set("ignoreglobalblacklist", data.isIngoreGlobalBlacklist());
-		file.Set("magnet", data.hasMagnet());
-		file.Set("refill", data.hasRefill());
-		file.Set("effect", data.getEffect());
-		file.Set("tooltip-style", data.getTooltipStyle());
+		if(!file.hasKey("uuid")) file.set("uuid", data.getUuid());
+		if(!file.hasKey("owner")) file.set("owner", data.getOwner());
+		if(!file.hasKey("creator")) file.set("creator", data.getCreator());
+		file.set("size", data.getSize());
+		file.set("texture", data.getTexture());
+		file.set("custommodeldata", data.getModeldata());
+		file.set("itemmodel", data.getItemmodel());
+		file.set("trusted", data.getTrusted());
+		file.set("auto-pickup", data.getAutopickup());
+		file.set("weight", data.getWeight());
+		file.set("weight-max", data.getWeightMax());
+		file.set("autosort", data.hasAutoSort());
+		if(data.getMaterial() != null) file.set("material", data.getMaterial().toString());
+		if(data.getName() != null) file.set("name", data.getName());
+		file.set("blacklist", data.getBlacklist());
+		file.set("whitelist", data.isWhitelist());
+		file.set("ignoreglobalblacklist", data.isIngoreGlobalBlacklist());
+		file.set("magnet", data.hasMagnet());
+		file.set("refill", data.hasRefill());
+		file.set("effect", data.getEffect());
+		file.set("tooltip-style", data.getTooltipStyle());
+		file.set("autosort", data.hasAutoCraft());
 		
-		file.Set("content", JsonUtils.toJson(data.getContent()).replace("'", "◊"));
-		file.SaveConfig();
+		file.set("content", JsonUtils.toJson(data.getContent()).replace("'", "◊"));
+		file.saveConfig();
 	}
 
-	public static Data loadBag(String owner, String uuid) {
-		Data data = new Data(uuid, owner);
+	public static Bag loadBag(String owner, String uuid) {
+		Bag data = new Bag(uuid, owner);
 		Config file = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
 		
-		data.setCreator(file.GetString("creator"));
-		data.setSize(file.GetInt("size"));
-		data.setTexture(file.GetString("texture"));
-		data.setModeldata(file.GetInt("custommodeldata"));
-		data.setItemmodel(file.GetString("itemmodel"));
-		data.setTrusted(file.GetStringList("trusted"));
-		data.setAutopickup(file.GetString("auto-pickup"));
-		data.setWeight(file.GetInt("weight"));
-		data.setWeightMax(file.GetInt("weight-max"));
+		data.setCreator(file.getString("creator"));
+		data.setSize(file.getInt("size"));
+		data.setTexture(file.getString("texture"));
+		data.setModeldata(file.getInt("custommodeldata"));
+		data.setItemmodel(file.getString("itemmodel"));
+		data.setTrusted(file.getStringList("trusted"));
+		data.setAutopickup(file.getString("auto-pickup"));
+		data.setWeight(file.getInt("weight"));
+		data.setWeightMax(file.getInt("weight-max"));
 		data.setContent(loadContent(file));
-		data.setAutoSort((file.HasKey("autosort")) ? file.GetBool("autosort") : false);
-		data.setMaterial((file.HasKey("material")) ? Material.valueOf(file.GetString("material").toUpperCase()) : null);
-		data.setName((file.HasKey("name")) ? file.GetString("name") : null);
-		data.setBlacklist(file.GetStringList("blacklist"));
-		data.setWhitelist(file.GetBool("whitelist"));
-		data.setIgnoreGlobalBlacklist(file.GetBool("ignoreglobalblacklist"));
-		data.setMagnet(file.GetBool("magnet"));
-		data.setRefill(file.GetBool("refill"));
-		data.setEffect(file.GetString("effect"));
-		data.setTooltipStyle(file.GetString("tooltip-style"));
+		data.setAutoSort((file.hasKey("autosort")) ? file.getBool("autosort") : false);
+		data.setMaterial((file.hasKey("material")) ? Material.valueOf(file.getString("material").toUpperCase()) : null);
+		data.setName((file.hasKey("name")) ? file.getString("name") : null);
+		data.setBlacklist(file.getStringList("blacklist"));
+		data.setWhitelist(file.getBool("whitelist"));
+		data.setIgnoreGlobalBlacklist(file.getBool("ignoreglobalblacklist"));
+		data.setMagnet(file.getBool("magnet"));
+		data.setRefill(file.getBool("refill"));
+		data.setEffect(file.getString("effect"));
+		data.setTooltipStyle(file.getString("tooltip-style"));
+		data.setAutoCraft(file.getBool("autocraft"));
 		
 		return data;
 	}
 	
 	private static List<ItemStack> loadContent(Config file) {
-		String uuid = file.GetString("uuid");
-		List<JsonObject> json = BagData.deserializeItemStackList(file.GetString("content"));
+		String uuid = file.getString("uuid");
+		List<JsonObject> json = Database.deserializeItemStackList(file.getString("content"));
 		
 		List<ItemStack> items = new ArrayList<>();
 		for(JsonObject e : json) {
@@ -125,9 +128,9 @@ public class Files {
 							FoodComponentFixer.fixFoodJson(entry)
 							);
 				}catch(Exception E) {
-					Log.Error(Main.plugin, uuid);
-					Log.Error(Main.plugin, entry);
-					Log.Info(Main.plugin, FoodComponentFixer.fixFoodJson(entry));
+					Log.error(Main.plugin, uuid);
+					Log.error(Main.plugin, entry);
+					Log.info(Main.plugin, FoodComponentFixer.fixFoodJson(entry));
 					E.printStackTrace();
 				}
 			}else {
@@ -138,66 +141,23 @@ public class Files {
 		return items;
 	}
 	
-	public static Config createBag(@NotNull String uuid,@NotNull String owner,@NotNull List<ItemStack> content, Player creator, ItemStack bag) {
-		Config bagData = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
-		bagData.Set("uuid", uuid);
-		bagData.Set("owner", owner);
-		if(creator != null) {
-			bagData.Set("creator", creator.getUniqueId().toString());
-		}else {
-			bagData.Set("creator", owner);
-		}
-		bagData.Set("size", content.size());
-		if(bag.getType() == Material.PLAYER_HEAD) {
-			bagData.Set("texture", BagData.getTextureValue(bag));
-			bagData.Set("custommodeldata", 0);
-		}else {
-			if(bag.hasItemMeta()) {
-				if(bag.getItemMeta().hasCustomModelData()) {
-					bagData.Set("custommodeldata", bag.getItemMeta().getCustomModelData());
-				}else {
-					bagData.Set("custommodeldata", 0);
-				}
-			}else {
-				bagData.Set("custommodeldata", 0);
-			}
-			bagData.Set("texture", Main.config.GetString("bag.texture"));
-		}
-		bagData.Set("trusted", new ArrayList<String>());
-		if(PDC.Has(bag, "filter")) {
-			bagData.Set("auto-pickup", PDC.GetString(bag, "filter"));
-		}else {
-			bagData.Set("auto-pickup", "null");
-		}
-		bagData.Set("weight-max", 0);
-		bagData.Set("content", JsonUtils.toJson(content).replace("'", "◊"));
-		bagData.Set("autosort", false);
-		bagData.Set("blacklist", new ArrayList<String>());
-		bagData.Set("whitelist", false);
-		bagData.Set("ignoreglobalblacklist", false);
-		bagData.Set("magnet", false);
-		bagData.Set("refill", false);
-		bagData.SaveConfig();
-		return bagData;
-	}
-	
 	public static void deleteFile(String owner, String uuid) {
 		Config file = new Config(Main.plugin, String.format("/bags/%s/%s.yml", owner, uuid));
-		file.GetFile().deleteFile();
+		file.getFile().deleteFile();
 	}
 
-	public static List<String> GetBags(@NotNull String playerUUID){
-		Log.Debug(Main.plugin, "[DI-32] " + playerUUID);
+	public static List<String> getBags(@NotNull String playerUUID){
+		Log.debug(Main.plugin, "[DI-32] " + playerUUID);
 		try {
 			List<String> bags = Stream.of(new File(String.format("%s/bags/%s/", Main.plugin.getDataFolder(), playerUUID)).listFiles())
 					.filter(file -> !file.isDirectory())
-					.filter(file -> !file.getName().contains(".json"))
 					.map(File::getName)
+					.filter(name -> !name.contains(".json"))
 					.collect(Collectors.toList());
-			for(int i = 0; i < bags.size(); i++) {
-				//Log.Debug(Main.plugin, bags.get(i));
-				bags.set(i, bags.get(i).replace(".yml", ""));
-			}
+            bags.replaceAll(s -> {
+                //Log.Debug(Main.plugin, bags.get(i));
+                return s.replace(".yml", "");
+            });
 			return bags;
 		} catch (Exception e) {
 			e.printStackTrace();
