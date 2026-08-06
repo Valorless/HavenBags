@@ -336,7 +336,7 @@ public class SQLite {
 				items.add(null); 
 				continue;
 			}
-			if(Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
+			if(Server.versionHigherOrEqualTo(Version.v1_21_4)) {
 				try {
 					item = JsonUtils.fromJson(
 							FoodComponentFixer.fixFoodJson(entry)

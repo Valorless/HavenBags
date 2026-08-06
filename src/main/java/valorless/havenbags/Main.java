@@ -34,6 +34,7 @@ import valorless.havenbags.utils.NoteBlockUtils;
 import valorless.havenbags.utils.UpdateChecker;
 import valorless.valorlessutils.Metrics;
 import valorless.valorlessutils.Server;
+import valorless.valorlessutils.Standalone;
 import valorless.valorlessutils.logging.Log;
 import valorless.valorlessutils.config.Config;
 import valorless.valorlessutils.translate.Translator;
@@ -73,9 +74,32 @@ public final class Main extends JavaPlugin implements Listener {
 	
 	public void onLoad() {
 		plugin = this;
+
+		if(!getDescription().getVersion().contains("-standalone")) {
+			// Check if a correct version of ValorlessUtils is in use, otherwise don't run the rest of the code.
+			if (!valorlessUtils()) return;
+		}else{
+			Standalone.onLoad(this);
+			//ValorlessUtils.plugin = this;
+			//Field vLang = ReflectUtils.getField(ValorlessUtils.class, "lang");
+			//vLang.setAccessible(true);
+            //try {
+            //    vLang.set(null, new valorless.valorlessutils.color.Lang(this));
+            //} catch (IllegalAccessException e) {
+            //    throw new RuntimeException(e);
+            //}
+			//Field version = ReflectUtils.getField(ValorlessUtils.class, "version");
+			//version.setAccessible(true);
+			//try {
+			//	version.set(null, Server.resolveVersion());
+			//} catch (IllegalAccessException e) {
+			//	throw new RuntimeException(e);
+			//}
+		}
+
 		Log.debug(plugin, Bukkit.getVersion());
 		Log.debug(plugin, Bukkit.getBukkitVersion());
-		Server.ResolveVersion();
+		Server.resolveVersion();
 
 		validateConfigs();
 
@@ -137,10 +161,11 @@ public final class Main extends JavaPlugin implements Listener {
 	@SuppressWarnings("removal")
 	@Override
     public void onEnable() {
+		if(getDescription().getVersion().contains("-standalone")) {
+			Standalone.onEnable(this);
+		}
+
 		Log.debug(plugin, "HavenBags Debugging Enabled!");
-		
-		// Check if a correct version of ValorlessUtils is in use, otherwise don't run the rest of the code.
-		if(!valorlessUtils()) return;
 		
 		registerSoftCrash();
 		
@@ -207,7 +232,7 @@ public final class Main extends JavaPlugin implements Listener {
 				newVersion = version;
 				String update = version.replace(".", "");
 				newupdate = Integer.parseInt(update);
-				String current = getDescription().getVersion().replace(".", "");;
+				String current = getDescription().getVersion().replace(".", "").replace("-standalone", "");
 				int v = Integer.parseInt(current);
 				
 

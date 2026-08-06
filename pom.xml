@@ -107,9 +107,108 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <!-- Copy & filter the standalone plugin.yml (no depend: ValorlessUtils) -->
+                    <execution>
+                        <id>copy-standalone-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/classes-standalone</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources-standalone</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             
+    <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.5.1</version>
+            <executions>
+                <!--
+                    Standalone JAR runs FIRST so it reads the original unshaded project JAR.
+                    This ensures ValorlessUtils (and all other compile-scope deps) are included.
+                    Uses an explicit outputFile so the build number appears in the filename.
+                -->
+                <execution>
+                    <id>standalone</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <shadedArtifactAttached>true</shadedArtifactAttached>
+                        <createDependencyReducedPom>false</createDependencyReducedPom>
+                        <outputFile>${project.build.directory}/${project.build.finalName}-standalone.jar</outputFile>
+                        <!-- Replace plugin.yml with the standalone variant (no depend: ValorlessUtils) -->
+                        <filters>
+                            <filter>
+                                <artifact>*:*</artifact>
+                                <excludes>
+                                    <exclude>plugin.yml</exclude>
+                                </excludes>
+                            </filter>
+                        </filters>
+                        <transformers>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                                <resource>plugin.yml</resource>
+                                <file>${project.build.directory}/classes-standalone/plugin.yml</file>
+                            </transformer>
+                        </transformers>
+                    </configuration>
+                </execution>
+                <!--
+                    Regular JAR runs SECOND — replaces the main artifact.
+                    Excludes ValorlessUtils; includes mysql-connector-j + sqlite-jdbc.
+                -->
+                <execution>
+                    <id>regular</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <shadedArtifactAttached>false</shadedArtifactAttached>
+                        <createDependencyReducedPom>true</createDependencyReducedPom>
+                        <artifactSet>
+                            <excludes>
+                                <exclude>com.github.Valorless:ValorlessUtils</exclude>
+                            </excludes>
+                        </artifactSet>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+        <!-- Delete the "original-*.jar" side-effect left by the shade plugin -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+                <execution>
+                    <id>delete-original-jar</id>
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+                    <configuration>
+                        <target>
+                            <delete>
+                                <fileset dir="${project.build.directory}" includes="original-*.jar"/>
+                            </delete>
+                        </target>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+
     <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
@@ -217,8 +316,8 @@
             <groupId>com.github.Valorless</groupId>
             <artifactId>ValorlessUtils</artifactId>
             <!--<version>84d5a61370</version>-->
-            <version>1.19.0</version>
-            <scope>provided</scope>
+            <version>e4c5f91dce</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.mojang</groupId>
@@ -269,14 +368,14 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.2.0</version>
             <!-- Check for the latest version -->
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.42.0.0</version>
             <!-- Update to latest version -->
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <!--  
         <dependency>
