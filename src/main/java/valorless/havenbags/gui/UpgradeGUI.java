@@ -4,6 +4,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import com.nexomc.nexo.api.NexoItems;
+import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -536,36 +539,76 @@ public class UpgradeGUI implements Listener {
 			Log.debug(Main.plugin, "[DI-274] [UpgradeGUI] Is player the owner of the bag, or has bypass?");
 			if(!HavenBags.isOwner(bag, player)) return null;
 
-
 			Log.debug(Main.plugin, "[DI-274] [UpgradeGUI] Do materials match?");
-			String[] split = Main.config.getString(String.format("upgrades.from-%s-to-%s", size, size+9)).split(":");
-			int cmd = 0;
-			String model = null;
-			Material requirement = Material.getMaterial(split[0]);
+			String req = Main.config.getString(String.format("upgrades.from-%s-to-%s", size, size+9));
+			int type = 0; // 0 = vanilla, 1 = nexo, 2 = oraxen
+			if(req.startsWith("nexo:")){
+				req = req.substring(5);
+				type = 1;
+			}
+			if(req.startsWith("oraxen:")) {
+				req = req.substring(7);
+				type = 2;
+			}
+			String[] split = req.split(":");
+			String material = split[0];
 			int amount = Integer.parseInt(split[1]);
-			upgAmount = amount;
-			try {
-				if(split.length == 3) {
-					cmd = Integer.parseInt(split[2]);
-					if(token.hasItemMeta()) {
-						if(token.getItemMeta().hasCustomModelData() == false) return null;
-						if(token.getItemMeta().getCustomModelData() != cmd) return null;
+			switch (type){
+				case 1 -> {
+					String id = material;
+					if(!NexoItems.exists(id)) return null;
+					if(!NexoItems.exists(token)) return null;
+					if(token.getAmount() < amount) return null;
+					if(NexoItems.idFromItem(token).equalsIgnoreCase(id)) {
+						upgAmount = amount;
+						ItemStack result = bag.clone();
+						resultType = ResultType.Upgrade;
+						return getUpgradeResult(result, size+9, bag);
 					}else return null;
 				}
-			}catch(Exception e) { //ItemModel
-				if(split.length == 3 && Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
-					model = split[2];
-					if(token.hasItemMeta()) {
-						if(ItemUtils.GetItemModel(token) == null) return null;
-						if(!ItemUtils.GetItemModel(token).getKey().equalsIgnoreCase(model)) return null;
+				case 2 -> {
+					String id = material;
+					if(!OraxenItems.exists(id)) return null;
+					if(!OraxenItems.exists(token)) return null;
+					if(token.getAmount() < amount) return null;
+					if(OraxenItems.getIdByItem(token).equalsIgnoreCase(id)) {
+						upgAmount = amount;
+						ItemStack result = bag.clone();
+						resultType = ResultType.Upgrade;
+						return getUpgradeResult(result, size+9, bag);
 					}else return null;
+
+				}
+				default -> {
+					Log.debug(Main.plugin, "[DI-274] [UpgradeGUI] Do materials match?");
+					int cmd = 0;
+					String model = null;
+					Material requirement = Material.getMaterial(split[0]);
+					upgAmount = amount;
+					try {
+						if(split.length == 3) {
+							cmd = Integer.parseInt(split[2]);
+							if(token.hasItemMeta()) {
+								if(token.getItemMeta().hasCustomModelData() == false) return null;
+								if(token.getItemMeta().getCustomModelData() != cmd) return null;
+							}else return null;
+						}
+					}catch(Exception e) { //ItemModel
+						if(Server.versionHigherOrEqualTo(Version.v1_21_4)) {
+							model = split[2];
+							if(token.hasItemMeta()) {
+								if(ItemUtils.GetItemModel(token) == null) return null;
+								if(!ItemUtils.GetItemModel(token).getKey().equalsIgnoreCase(model)) return null;
+							}else return null;
+						}
+					}
+					if(token.getType() != requirement || token.getAmount() < amount) return null;
+					ItemStack result = bag.clone();
+					resultType = ResultType.Upgrade;
+					return getUpgradeResult(result, size+9, bag);
 				}
 			}
-			if(token.getType() != requirement || token.getAmount() < amount) return null;
-			ItemStack result = bag.clone();
-			resultType = ResultType.Upgrade;
-			return getUpgradeResult(result, size, size+9, bag, token);
-		}
+        }
 		//return null;
 	}
 
@@ -618,28 +661,23 @@ public class UpgradeGUI implements Listener {
 		}
 	}
 
-	ItemStack getUpgradeResult(ItemStack item, int from, int to, ItemStack bag, ItemStack upgrade) {
+	ItemStack getUpgradeResult(ItemStack item, int to, ItemStack bag) {
 		ItemMeta meta = item.getItemMeta();
 		List<String> newLore = new ArrayList<String>();
 		String owner = PDC.getString(bag, "owner");
 
-		String[] split = Main.config.getString(String.format("upgrades.from-%s-to-%s", from, to)).split(":");
-		Material requirement = Material.getMaterial(split[0]);
-		int amount = Integer.parseInt(split[1]);
-		if(upgrade.getType() == requirement && upgrade.getAmount() >= amount) {
-			meta.setLore(newLore);
-			item.setItemMeta(meta);
-			PDC.setinteger(item, "size", to);
-			if(Main.weight.getBool("weight-per-size")) {
-				PDC.setDouble(item, "weight-limit", Main.weight.getDouble(String.format("weight-size-%s", to)));
-			}
-			HavenBags.updateBagLore(item, player, true);
-			if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
-				if(owner.equalsIgnoreCase("ownerless")) {
-					HeadCreator.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-ownerless-%s", to)));
-				}else {
-					HeadCreator.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-%s", to)));
-				}
+		meta.setLore(newLore);
+		item.setItemMeta(meta);
+		PDC.setinteger(item, "size", to);
+		if(Main.weight.getBool("weight-per-size")) {
+			PDC.setDouble(item, "weight-limit", Main.weight.getDouble(String.format("weight-size-%s", to)));
+		}
+		HavenBags.updateBagLore(item, player, true);
+		if(Main.config.getBool("bag-textures.enabled") && !Main.config.getBool("upgrades.keep-texture")) {
+			if(owner.equalsIgnoreCase("ownerless")) {
+				HeadCreator.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-ownerless-%s", to)));
+			}else {
+				HeadCreator.setTextureValue(item, Main.config.getString(String.format("bag-textures.size-%s", to)));
 			}
 		}
 		return item;
@@ -657,10 +695,16 @@ public class UpgradeGUI implements Listener {
 					Log.debug(Main.plugin, "[DI-276] [UpgradeGUI] Textures.yml Skin.");
 					String texture = Main.textures.getString(String.format("textures.%s", value));
 					HeadCreator.setTextureValue(item, texture);
+					if(Server.versionHigherOrEqualTo(Version.v1_21_4)) {
+						ItemUtils.SetItemModel(item, "minecraft:player_head");
+					}
 				}else {
 					Log.debug(Main.plugin, "[DI-276] [UpgradeGUI] Texture Skin.");
 					if(Base64Validator.isValidBase64(value)) {
 						HeadCreator.setTextureValue(item, value);
+						if(Server.versionHigherOrEqualTo(Version.v1_21_4)) {
+							ItemUtils.SetItemModel(item, "minecraft:player_head");
+						}
 					}else {
 						Log.debug(Main.plugin, "[DI-277] [UpgradeGUI] Invalid Skin.");
 						item = new ItemStack(Material.AIR);
@@ -678,7 +722,7 @@ public class UpgradeGUI implements Listener {
 					}
 				}catch(Exception e) {}
 			}
-			else if(type == TokenType.ItemModel && Server.VersionHigherOrEqualTo(Version.v1_21_4)) {
+			else if(type == TokenType.ItemModel && Server.versionHigherOrEqualTo(Version.v1_21_4)) {
 				Log.debug(Main.plugin, "[DI-279] [UpgradeGUI] ItemModel Skin.");
 				ItemUtils.SetItemModel(item, value);
 			}

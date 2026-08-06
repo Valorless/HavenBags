@@ -165,19 +165,21 @@ public final class BagItemFactory {
 
         modifyMaxStack(bagItem, 1);
 
-        if(Main.config.getBool("bag-custom-model-datas.enabled")) {
-            for(int s = 9; s <= 54; s += 9) {
-                if(size == s) {
-                    if(!Utils.IsStringNullOrEmpty(Main.config.getString("bag-custom-model-datas.size-" + size)) &&
-                            !Main.config.getString("bag-custom-model-datas.size-" + size).matches("-?\\d+(\\.\\d+)?")) {
-                        ItemUtils.SetItemModel(bagItem, Main.config.getString("bag-custom-model-datas.size-" + size));
+        if(Server.versionHigherOrEqualTo(Server.Version.v1_21_4)) {
+            if (Main.config.getBool("bag-custom-model-datas.enabled")) {
+                for (int s = 9; s <= 54; s += 9) {
+                    if (size == s) {
+                        if (!Utils.IsStringNullOrEmpty(Main.config.getString("bag-custom-model-datas.size-" + size)) &&
+                                !Main.config.getString("bag-custom-model-datas.size-" + size).matches("-?\\d+(\\.\\d+)?")) {
+                            ItemUtils.SetItemModel(bagItem, Main.config.getString("bag-custom-model-datas.size-" + size));
+                        }
                     }
                 }
             }
-        }
 
-        if(!Utils.IsStringNullOrEmpty(Main.config.getString("bag.itemmodel"))) {
-            ItemUtils.SetItemModel(bagItem, Main.config.getString("bag.itemmodel"));
+            if (!Utils.IsStringNullOrEmpty(Main.config.getString("bag.itemmodel"))) {
+                ItemUtils.SetItemModel(bagItem, Main.config.getString("bag.itemmodel"));
+            }
         }
 
         if(!HavenBags.isPowerOfNine(size)) {
