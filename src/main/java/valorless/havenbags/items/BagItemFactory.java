@@ -137,13 +137,19 @@ public final class BagItemFactory {
         ItemMeta bagMeta = bagItem.getItemMeta();
         if(Main.config.getInt("bag.modeldata") != 0 && Main.config.getString("bag.type").equalsIgnoreCase("ITEM")) {
             bagMeta.setCustomModelData(Main.config.getInt("bag.modeldata"));
+        }
+
+        if(Main.config.getString("bag.type").equalsIgnoreCase("ITEM")) {
             if(Main.config.getBool("bag-custom-model-datas.enabled")) {
                 for(int s = 9; s <= 54; s += 9) {
-                    if(size == s) {
-                        bagMeta.setCustomModelData(binding ?
-                                Main.config.getInt("bag-custom-model-datas.size-" + size) :
-                                Main.config.getInt("bag-custom-model-datas.size-ownerless-" + size));
-                    }
+                    try {
+                        if (size == s) {
+                            int bound = Main.config.getInt("bag-custom-model-datas.size-" + size);
+                            int ownerless = Main.config.getInt("bag-custom-model-datas.size-ownerless-" + size);
+                            if (binding && bound != 0) bagMeta.setCustomModelData(bound);
+                            if (!binding && ownerless != 0) bagMeta.setCustomModelData(ownerless);
+                        }
+                    }catch (Exception e) {}
                 }
             }
         }
