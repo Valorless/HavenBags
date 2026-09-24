@@ -61,7 +61,7 @@ public class EventListener implements Listener {
 				if(block.getType() == upgradeBlock) {
 					if(upgradeBlock == Material.NOTE_BLOCK) {
 						if(block.getBlockData() instanceof NoteBlock nb) {
-							if(NoteBlockUtils.compateNoteBlock(nb,
+							if(NoteBlockUtils.compareNoteBlock(nb,
 									Main.config.getString("upgrade-gui.noteblock.instrument"),
 									Main.config.getInt("upgrade-gui.noteblock.note"))) {
 								// If the block is a Note Block with the correct instrument and note, open the upgrade GUI

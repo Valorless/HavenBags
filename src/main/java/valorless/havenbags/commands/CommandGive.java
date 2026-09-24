@@ -72,7 +72,7 @@ public class CommandGive {
                 size = Integer.parseInt(command.args[2]);
                 int slots = HavenBags.findClosestNine(size);
 
-                bagItem = BagItemFactory.createBagItem(false, slots, receiver);
+                bagItem = BagItemFactory.createBagItem(true, slots, receiver);
 
                 receiver.getInventory().addItem(bagItem);
                 placeholders.add(new Placeholder("%name%", Lang.get("bag-unbound-name")));

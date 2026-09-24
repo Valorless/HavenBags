@@ -44,8 +44,8 @@ public class Insurance {
 	private final InsuranceType type;
 	
 	public Insurance () {
-		if(Main.config.getBool("insurance.enabled") == false ) {
-			data = null;
+		this.data = Main.insurance;
+		if(data.getBool("enabled") == false ) {
 			type = null;
 			cooldownMillis = 0;
 			resetTimeMillis = 0;
@@ -55,7 +55,6 @@ public class Insurance {
 		}
 		if(!VaultHook.isHooked()) throw new IllegalStateException("Vault must be hooked to use insurance feature.");
 		instance = this;
-		this.data = Main.insurance;
 		this.type = InsuranceType.fromString(data.getString("type"));
 		this.defaultCost = data.getDouble("default-cost");
 		this.incrementValue = data.getDouble("increment-value");

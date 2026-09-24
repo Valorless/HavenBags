@@ -14,7 +14,7 @@ public class NoteBlockUtils implements Listener {
 	// NoteBlock.getNote().getId() returns 0–24 (across octaves)
 
 	@SuppressWarnings("deprecation")
-	public static Boolean compateNoteBlock(NoteBlock noteBlock, String instrument, int note) {
+	public static Boolean compareNoteBlock(NoteBlock noteBlock, String instrument, int note) {
 		if (noteBlock == null || instrument == null) {
 			Log.debug(Main.plugin, "NoteBlock or instrument is null.");
 			return false;

@@ -565,34 +565,34 @@ public class Bag {
 	 * @return readable summary
 	 */
 	@Override
-	public String toString() {
-	    return "Bag{" +
-	            "uuid='" + uuid + '\'' +
-	            ", owner='" + owner + '\'' +
-	            ", creator='" + creator + '\'' +
-	            ", size=" + size +
-	            ", texture='" + texture + '\'' +
-	            ", material=" + (material != null ? material.name() : "null") +
-	            ", name='" + name + '\'' +
-	            ", modeldata=" + modeldata +
-	            ", itemmodel='" + itemmodel + '\'' +
-	            ", trusted=" + trusted +
-	            ", autopickup='" + autopickup + '\'' +
-	            ", weight=" + weight +
-	            ", weightMax=" + weightMax +
-	            ", autosort=" + autosort +
-	            ", blacklist=" + blacklist +
-	            ", whitelist=" + whitelist +
-	            ", ignoreglobalblacklist=" + ignoreglobalblacklist +
-	            ", magnet=" + magnet +
-	            ", refill=" + refill +
-	            ", effect=" + effect +
-	            ", autocraft=" + autocraft +
-	            ", changed=" + changed +
-	            ", isOpen=" + isOpen +
-	            ", viewer=" + (viewer != null ? viewer.getName() : "null") +
-	            '}';
-	}
+		public String toString() {
+			return "Bag{" +
+					"uuid='" + uuid + '\'' +
+					", owner='" + owner + '\'' +
+					", creator='" + creator + '\'' +
+					", size=" + size +
+					", texture='" + texture + '\'' +
+					", material=" + (material != null ? material.name() : "null") +
+					", name='" + name + '\'' +
+					", modeldata=" + modeldata +
+					", itemmodel='" + itemmodel + '\'' +
+					", trusted=" + trusted +
+					", autopickup='" + autopickup + '\'' +
+					", weight=" + weight +
+					", weightMax=" + weightMax +
+					", autosort=" + autosort +
+					", blacklist=" + blacklist +
+					", whitelist=" + whitelist +
+					", ignoreglobalblacklist=" + ignoreglobalblacklist +
+					", magnet=" + magnet +
+					", refill=" + refill +
+					", effect=" + effect +
+					", autocraft=" + autocraft +
+					", changed=" + changed +
+					", isOpen=" + isOpen +
+					", viewer=" + (viewer != null ? viewer.getName() : "null") +
+					'}';
+		}
 	
 	
 	/**

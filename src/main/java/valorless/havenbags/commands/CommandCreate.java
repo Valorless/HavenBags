@@ -50,7 +50,7 @@ public class CommandCreate {
 					int size = Integer.parseInt(command.args[1]);
 					//int slots = HavenBags.findClosestNine(size);
 
-					bagItem = BagItemFactory.createBagItem(false, size, (Player)command.sender);
+					bagItem = BagItemFactory.createBagItem(true, size, (Player)command.sender);
 					if(!HavenBags.isPowerOfNine(size)) {
 						PDC.setBoolean(bagItem, "upgrade", false);
 					}
